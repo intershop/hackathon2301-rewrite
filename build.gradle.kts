@@ -66,10 +66,11 @@ val repoPassword: String by project
 repositories {
     mavenLocal()
     mavenCentral()
-    /*
+
+    // can be removed for a customization configuration
     maven {
-        name = "ReleaseRepository"
-        url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-maven-artifacts/maven/v1")
+        name = "ICM-AS"
+        url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-as-releases/maven/v1")
         credentials {
             username = repoUser
             password = repoPassword
@@ -78,7 +79,18 @@ repositories {
             releasesOnly()
         }
     }
-    */
+    // can be removed for a customization configuration
+    maven {
+        name = "SOLRCLOUD"
+        url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-solrcloud-releases/maven/v1")
+        credentials {
+            username = repoUser
+            password = repoPassword
+        }
+        mavenContent {
+            releasesOnly()
+        }
+    }
 }
 
 intershop {
@@ -187,7 +199,7 @@ subprojects {
 
             implementation(platform(project(":versions")))
             testImplementation(platform(project(":versions_test")))
-/*
+
             cartridge(platform("com.intershop.icm:versions:${icmVersion}"))
             implementation(platform("com.intershop.icm:versions:${icmVersion}"))
 
@@ -195,22 +207,19 @@ subprojects {
             implementation(platform("com.intershop.solrcloud:solrcloud_versions:${solrVersion}"))
 
             testImplementation(platform("com.intershop.icm:versions_test:${icmVersion}"))
-*/
         }
 
         plugins.withType<com.intershop.gradle.icm.cartridge.TestPlugin> {
             dependencies {
                 val implementation by configurations
-/*
                 implementation(platform("com.intershop.icm:versions_test:${icmVersion}"))
-*/
                 implementation(platform(project(":versions_test")))
             }
         }
 
         extensions.getByType(JavaPluginExtension::class.java).apply {
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(11))
+                languageVersion.set(JavaLanguageVersion.of(17))
             }
         }
 
@@ -224,7 +233,7 @@ subprojects {
                 val opt = options as StandardJavadocDocletOptions
                 // without the -quiet option, the build fails
                 opt.addStringOption("Xdoclint:none", "-quiet")
-                opt.links("http://docs.oracle.com/en/java/javase/11/docs/api/")
+                opt.links("http://docs.oracle.com/en/java/javase/17/docs/api/")
             }
         }
 

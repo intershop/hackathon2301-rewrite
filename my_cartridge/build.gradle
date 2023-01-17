@@ -12,7 +12,7 @@ test {
 
 dependencies {
 
-    // testImplementation 'com.intershop.platform:pf_unit_test'
+    testImplementation 'com.intershop.platform:pf_unit_test'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
 

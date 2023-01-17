@@ -32,7 +32,7 @@ pluginManagement {
         /*
         maven {
             name = "PluginRepository"
-            url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-maven-artifacts/maven/v1")
+            url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-as-libraries-releases/maven/v1")
             credentials {
                 username = repoUser
                 password = repoPassword
