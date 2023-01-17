@@ -1,0 +1,37 @@
+# name of the root directory
+# rename of directory and use in azure-pipeline.yml
+projectDirectory=
+
+# default is ${projectDirectory}-ci-configuration
+# configurationProjectDirectory=
+
+# project configuration
+## used in settings.gradle.kts
+rootProject=
+
+## used in build.gradle.kts
+description=
+group=
+productID=
+productName=
+copyrightOwner=
+copyrightFrom=
+organization=
+
+# ADO settings
+adoOrganization=
+adoProject=
+
+# versions
+# used in gradle.properties
+icmVersion=11.0.9
+solrVersion=4.0.9
+headlessVersion=1.0.6
+responsiveVersion=40.0.0
+
+icmWAVersion=2.4.4
+icmWAAgentVersion=4.0.0
+
+customerRegistry=
+
+

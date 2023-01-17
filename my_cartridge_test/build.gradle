@@ -1,0 +1,21 @@
+plugins {
+   id "java"
+   id 'com.intershop.icm.cartridge.test'
+}
+
+description = "Test example cartridge"
+
+dependencies {
+
+   // provided by
+   cartridge 'com.intershop.platform:etest'
+   cartridge 'com.intershop.platform:pf_unit_test'
+
+   cartridgeRuntime 'com.intershop.platform:bc_service'
+   cartridgeRuntime 'com.intershop.platform:orm_oracle'
+   cartridgeRuntime 'com.intershop.platform:orm_mssql'
+
+   // provided by
+   implementation 'junit:junit'
+}
+

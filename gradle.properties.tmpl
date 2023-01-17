@@ -1,0 +1,23 @@
+# build configuration
+org.gradle.parallel = true
+org.gradle.workers.max = 4
+
+org.gradle.jvmargs=-XX:+UseConcMarkSweepGC -XX:MaxMetaspaceSize=3G -XX:-UseGCOverheadLimit -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+
+icmVersion = <@icmVersion@>
+solrVersion = <@solrVersion@>
+headlessVersion = <@headlessVersion@>
+
+icmCustomizationBaseVersion = 1.0.1
+icmWAVersion = <@icmWAVersion@>
+icmWAAgentVersion = <@icmWAAgentVersion@>
+
+# used for other components of ICM
+icmDockerRegistry = docker.tools.intershop.com/icm/intershophub
+dockerRegistry = <@customerRegistry@>
+
+adoOrganizationName = <@adoOrganization@>
+adoProjectName = <@adoProject@>
+
+repoUser = ""
+repoPassword = ""

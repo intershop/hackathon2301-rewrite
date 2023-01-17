@@ -1,0 +1,16 @@
+plugins {
+    id 'java'
+    id 'com.intershop.icm.cartridge.test'
+}
+
+description = 'Runnable Feature - all headless cartridges'
+
+dependencies {
+
+    cartridgeRuntime "com.intershop.icm:ft_icm_as_test"
+
+    cartridgeRuntime project(':ft_production')
+
+    // add your test cartridge here
+    cartridgeRuntime project(":my_cartridge_test")
+}

@@ -1,0 +1,229 @@
+trigger:
+  branches:
+    include:
+      - master
+      - develop
+      - release/*
+      - feature/*
+      - hotfix/*
+
+  tags:
+    include:
+      - version/*
+
+variables:
+  - group: icm11-build-configuration
+  - name:  GRADLE_USER_HOME
+    value: $(Pipeline.Workspace)/.gradle
+  - name:  PROJECT_PATH
+    value: <@rootProject@>
+  - name:  CONTAINER_PREFIX
+    value: <@projectDirectory@>
+  - name:  isVersion
+    value: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/version')]
+  - name:  ENV_PATH
+    value: environment
+  - name:  PROJECT_ROOT
+    value: $(Build.Repository.LocalPath)
+  - name:  REPOSITORIES_CONF
+    value: '-PrepoUser=PAT -PrepoPassword=$(System.AccessToken)'
+  - name:  DIRECTORIES_CONF
+    value: '-DlicenseDir=/home/intershop/icm-license -DconfigDir=$(Pipeline.Workspace)/s/$(ENV_PATH)/environment'
+
+stages:
+- stage: Build
+  pool: '$(BUILD_AGENT_POOL)'
+
+  jobs:
+  - job: Build
+    timeoutInMinutes: 315
+    workspace:
+      clean: all
+
+    steps:
+    - checkout: self
+      path: s/$(PROJECT_PATH)
+      clean: true
+
+    # must be replaced for the project configuration
+    - checkout: 'git://<@adoProject@>/<@rootProject@>-ci-configuration'
+      path: s/$(ENV_PATH)
+      clean: true
+
+    # This task is necessary for the version calculation.
+    # Otherwise the git repo is always in detached head and
+    # SNAPSHOTS are not longer separeted by their name.
+    - task: CmdLine@2
+      displayName: Checkout $(Build.SourceBranchName)
+      inputs:
+        workingDirectory: $(PROJECT_PATH)
+        script: |
+           BRANCH="${BUILD_SOURCEBRANCHNAME}"
+           if [[ "${BUILD_SOURCEBRANCH}" =~ ^refs/heads.* ]]; then
+             BRANCH="${BUILD_SOURCEBRANCH/refs\/heads\//}"
+           fi
+          git status
+          git branch -a
+          echo "checkout ${BRANCH}"
+          if [ "${BRANCH}" == "master" ]; then
+            git checkout
+          else
+            git checkout ${BRANCH}
+          fi
+      condition: and(eq(variables.isVersion, false), ne(variables['Build.SourceBranchName'], 'merge'))
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: $(INTERSHOP_REPO_SERVICE_CONNECTION)
+        command: 'login'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: $(REPO_SERVICE_CONNECTION)
+        command: 'login'
+    
+    - task: Cache@2
+      inputs:
+        key: 'gradle'
+        restoreKeys: gradle
+        path: $(GRADLE_USER_HOME)
+      displayName: Gradle build cache
+
+    - task: JavaToolInstaller@0
+      inputs:
+        versionSpec: '11'
+        jdkArchitectureOption: 'x64'
+        jdkSourceOption: 'PreInstalled'
+
+    - task: Gradle@2
+      displayName: Check version
+      continueOnError: true
+      inputs:
+        cwd: $(PROJECT_PATH)
+        gradleWrapperFile: $(PROJECT_PATH)/gradlew
+        gradleOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        tasks: '-version'
+
+    - task: Gradle@2
+      displayName: Clean up container (start)
+      continueOnError: true
+      inputs:
+        cwd: $(PROJECT_PATH)
+        gradleWrapperFile: $(PROJECT_PATH)/gradlew
+        options: '-s -i --max-workers 6 $(DIRECTORIES_CONF) $(REPOSITORIES_CONF)'
+        gradleOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        tasks: 'clean containerClean'
+
+    # the task contains the publishing of test results
+    - task: Gradle@2
+      displayName: Gradle build
+      continueOnError: false
+      inputs:
+        cwd: $(PROJECT_PATH)
+        gradleWrapperFile: $(PROJECT_PATH)/gradlew
+        options: '--refresh-dependencies --scan -s --max-workers 6 -PrunOnCI=true $(DIRECTORIES_CONF) $(REPOSITORIES_CONF)'
+        gradleOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        tasks: 'startMSSQL dbPrepare test ishUnitTestReport -x=containerClean'
+
+    - task: Gradle@2
+      displayName: Gradle geb tests
+      continueOnError: false
+      inputs:
+        cwd: $(PROJECT_PATH)
+        gradleWrapperFile: $(PROJECT_PATH)/gradlew
+        options: '--refresh-dependencies --scan -s --max-workers 6 -PrunOnCI=true $(DIRECTORIES_CONF) $(REPOSITORIES_CONF)'
+        gradleOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        tasks: 'startSolrCloud startMailSrv startAS startWA startWAA rebuildSearchIndex gebTest'
+
+    - task: CmdLine@2
+      displayName: docker write logs geb tests
+      inputs:
+        workingDirectory: $(PROJECT_PATH)
+        script: |
+          docker ps
+          mkdir -p build/geb
+          cd build/geb/
+          echo log $(CONTAINER_PREFIX)-wa
+          docker logs $(CONTAINER_PREFIX)-wa &> wa_log.txt
+          echo log $(CONTAINER_PREFIX)-waa
+          docker logs $(CONTAINER_PREFIX)-waa &> waa_log.txt
+          echo log $(CONTAINER_PREFIX)-as
+          docker logs $(CONTAINER_PREFIX)-as &> as_log.txt
+      condition: succeededOrFailed()
+
+    # the task contains the publishing of test results
+    - task: Gradle@2
+      displayName: Gradle publish artifacts
+      continueOnError: false
+      inputs:
+        cwd: $(PROJECT_PATH)
+        gradleWrapperFile: $(PROJECT_PATH)/gradlew
+        options: '--refresh-dependencies --scan -s --max-workers 6 -PrunOnCI=true $(DIRECTORIES_CONF) $(REPOSITORIES_CONF)'
+        gradleOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: true
+        tasks: 'buildImages dockerPublish publish -x=check'
+
+    - task: PublishPipelineArtifact@1
+      displayName: Provide developer files logs for tests
+      inputs:
+        targetPath: '$(PROJECT_PATH)/build/ishunitrunner'
+        artifactType: 'pipeline'
+        artifactName: ishUnitTest_artifacts
+      condition: succeededOrFailed()
+
+    - task: PublishPipelineArtifact@1
+      displayName: Provide geb test log files
+      inputs:
+        targetPath: '$(PROJECT_PATH)/build/geb'
+        artifactType: 'pipeline'
+        artifactName: geb_test_log_files
+      condition: succeededOrFailed()
+
+    - task: PublishPipelineArtifact@1
+      displayName: Provide developer files logs
+      inputs:
+        targetPath: '$(PROJECT_PATH)/build/server/logs'
+        artifactType: 'pipeline'
+        artifactName: build_artifacts
+      condition: succeededOrFailed()
+
+    - task: PublishPipelineArtifact@1
+      displayName: Provide developer files Geb tests (sub project my_geb_test)
+      inputs:
+        targetPath: '$(PROJECT_PATH)/my_geb_test/target/reports/tests/gebTest'
+        artifactType: 'pipeline'
+        artifactName: test_geb_artifacts
+      condition: succeededOrFailed()
+
+    - task: Gradle@2
+      displayName: Clean up container (finish)
+      inputs:
+        cwd: $(PROJECT_PATH)
+        gradleWrapperFile: $(PROJECT_PATH)/gradlew
+        options: '-s --max-workers 6 $(DIRECTORIES_CONF) $(REPOSITORIES_CONF)'
+        gradleOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        tasks: 'clean containerClean'
+      condition: succeededOrFailed()

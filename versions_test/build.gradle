@@ -1,0 +1,29 @@
+plugins {
+    id 'java-platform'
+}
+
+group = rootProject.group
+
+dependencies {
+    constraints {
+        /* add additional versions for project TEST dependencies here, which are not provided by icm-as
+
+        api "org.mockito:mockito-core:3.10.0"
+         */
+    }
+}
+
+def depConstraints = project.dependencies.constraints
+
+rootProject.subprojects { subprj ->
+    plugins.withType(com.intershop.gradle.icm.cartridge.CartridgePlugin) {
+        depConstraints.add("api", subprj)
+    }
+    plugins.withType(com.intershop.gradle.icm.cartridge.DevelopmentPlugin) {
+        depConstraints.add("api", subprj)
+    }
+}
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}

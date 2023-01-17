@@ -1,0 +1,20 @@
+plugins {
+    id "java"
+    id "com.intershop.gradle.isml"
+    id 'com.intershop.icm.cartridge.product'
+}
+
+description = "My demo carridge"
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+
+    testImplementation 'com.intershop.platform:pf_unit_test'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+
+}
+

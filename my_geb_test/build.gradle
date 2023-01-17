@@ -1,0 +1,16 @@
+plugins {
+    id "com.intershop.gradle.icm.docker.gebtest"
+}
+
+ext.displayName = "Geb tests for customization"
+
+// workaround for gebtest plugin
+tasks.withType(Copy) {
+    it.setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+dependencies {
+    implementation(libs.bundles.geb)
+    implementation(libs.bundles.selenium)
+    implementation(libs.bundles.testscontainers)
+}
