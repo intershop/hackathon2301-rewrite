@@ -29,6 +29,7 @@ pluginManagement {
     val repoPassword: String by settings
 
     repositories {
+        /*
         maven {
             name = "PluginRepository"
             url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-maven-artifacts/maven/v1")
@@ -37,6 +38,7 @@ pluginManagement {
                 password = repoPassword
             }
         }
+        */
         gradlePluginPortal()
         mavenCentral()
         mavenLocal()
@@ -92,7 +94,7 @@ gradleEnterprise {
 }
 
 // define root project name
-rootProject.name = "<@rootProject@>"
+rootProject.name = "hackathon2301-rewrite"
 
 val excludeList = listOf("gradle", ".gradle", "target", "build", "bin", "reports", "buildSrc", "config", "sites", "docker")
 

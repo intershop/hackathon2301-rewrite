@@ -65,6 +65,8 @@ val repoPassword: String by project
 
 repositories {
     mavenLocal()
+    mavenCentral()
+    /*
     maven {
         name = "ReleaseRepository"
         url = uri("https://pkgs.dev.azure.com/${adoOrganizationName}/${adoProjectName}/_packaging/icm-maven-artifacts/maven/v1")
@@ -76,6 +78,7 @@ repositories {
             releasesOnly()
         }
     }
+    */
 }
 
 intershop {
@@ -97,23 +100,6 @@ intershop {
         }
 
         modules {
-            register("solrcloud") {
-                dependency.set("com.intershop.solrcloud:f_solrcloud:${solrVersion}")
-
-                image.set("${icmDockerRegistry}/icm-as-customization-f_solrcloud:${solrVersion}")
-                testImage.set("${icmDockerRegistry}/icm-as-customization-f_solrcloud-test:${solrVersion}")
-
-                configPackage {
-                    // see #71795
-                    exclude("**/cluster/staging.properties")
-                }
-            }
-
-            register("headless") {
-                dependency.set("com.intershop.headless:headless:${headlessVersion}")
-                image.set("${icmDockerRegistry}/icm-as-customization-headless:${headlessVersion}")
-                testImage.set("${icmDockerRegistry}/icm-as-customization-headless:${headlessVersion}")
-            }
         }
 
         serverDirConfig {
@@ -199,21 +185,25 @@ subprojects {
             val implementation by configurations
             val testImplementation by configurations
 
+            implementation(platform(project(":versions")))
+            testImplementation(platform(project(":versions_test")))
+/*
             cartridge(platform("com.intershop.icm:versions:${icmVersion}"))
             implementation(platform("com.intershop.icm:versions:${icmVersion}"))
 
             cartridge(platform("com.intershop.solrcloud:solrcloud_versions:${solrVersion}"))
             implementation(platform("com.intershop.solrcloud:solrcloud_versions:${solrVersion}"))
 
-            implementation(platform(project(":versions")))
-            testImplementation(platform(project(":versions_test")))
             testImplementation(platform("com.intershop.icm:versions_test:${icmVersion}"))
+*/
         }
 
         plugins.withType<com.intershop.gradle.icm.cartridge.TestPlugin> {
             dependencies {
                 val implementation by configurations
+/*
                 implementation(platform("com.intershop.icm:versions_test:${icmVersion}"))
+*/
                 implementation(platform(project(":versions_test")))
             }
         }

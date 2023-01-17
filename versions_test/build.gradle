@@ -10,6 +10,35 @@ dependencies {
 
         api "org.mockito:mockito-core:3.10.0"
          */
+
+        api "io.rest-assured:rest-assured:5.1.1"
+        api "io.rest-assured:json-path:5.1.1"
+        api "io.rest-assured:xml-path:5.1.1"
+
+        api "junit:junit:4.13.2"
+
+        api "net.sourceforge.htmlunit:htmlunit:2.58.0"
+        api "net.sourceforge.htmlunit:htmlunit-core-js:2.58.0"
+        api "net.sourceforge.htmlunit:htmlunit-cssparser:1.11.0" 
+        api "net.sourceforge.htmlunit:neko-htmlunit:2.58.0"
+
+        api "org.hamcrest:hamcrest:2.2"
+
+        api "org.junit.jupiter:junit-jupiter:5.9.0"
+        api "org.junit.jupiter:junit-jupiter-api:5.9.0"
+        api "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+        api "org.junit.jupiter:junit-jupiter-params:5.9.0"
+
+        api "org.junit.platform:junit-platform-commons:1.9.0"
+        api "org.junit.platform:junit-platform-runner:1.9.0"
+
+        api "org.junit.vintage:junit-vintage-engine:5.9.0"
+        
+        api "org.mockito:mockito-core:4.8.0"
+        api "org.mockito:mockito-junit-jupiter:4.8.0"
+
+        api "org.perf4j:perf4j:0.9.16"
+        api "org.w3c.css:sac:1.3"
     }
 }
 

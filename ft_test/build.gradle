@@ -7,7 +7,7 @@ description = 'Runnable Feature - all headless cartridges'
 
 dependencies {
 
-    cartridgeRuntime "com.intershop.icm:ft_icm_as_test"
+    // cartridgeRuntime "com.intershop.icm:ft_icm_as_test"
 
     cartridgeRuntime project(':ft_production')
 
