@@ -1,0 +1,19 @@
+plugins {
+    id "java"
+    id "com.intershop.gradle.isml"
+    id 'com.intershop.icm.cartridge.product'
+}
+
+description = "My demo carridge"
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation 'com.intershop.platform:core'
+
+    implementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:1.13.1"))
+    implementation("org.openrewrite:rewrite-java")
+    runtimeOnly("org.openrewrite:rewrite-java-11")
+}
