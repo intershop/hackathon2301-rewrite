@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
 import com.google.inject.Inject;
 import com.intershop.beehive.core.capi.common.SystemException;
 import com.intershop.beehive.core.capi.currency.CurrencyMgr;
@@ -28,6 +26,8 @@ import com.intershop.component.mail.capi.MailResult;
 import com.intershop.component.mail.capi.SendMailService;
 import com.intershop.component.order.capi.OrderBORepository;
 import com.intershop.component.service.capi.chain.envelope.Envelope;
+
+import jakarta.servlet.ServletException;
 
 public class BasketServiceOrderCreationHandlerImpl implements BasketServiceOrderCreationHandler
 {   

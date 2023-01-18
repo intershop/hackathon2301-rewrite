@@ -1,7 +1,7 @@
 <iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
 <isinclude template="modules/captcha/Modules">
 
-<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
 <isgetpreference preferencekey="intershop.CaptchaPreferences.RedemptionOfGiftCardsAndCertificates" domainname="#CurrentOrganization:OwningDomain:DomainName#" type="String" return="GiftCardAndCertificateCaptchaPreference">	
 <%

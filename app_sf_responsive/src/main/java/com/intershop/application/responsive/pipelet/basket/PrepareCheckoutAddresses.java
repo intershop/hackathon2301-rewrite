@@ -82,15 +82,6 @@ public class PrepareCheckoutAddresses extends Pipelet
         return PIPELET_NEXT;
     }
 
-    /**
-     * The pipelet's initialization method is called whenever the pipeline used
-     * to read and process pipelet configuration values that are required during
-     * the pipelet execution later on.
-     * 
-     * @throws PipelineInitializationException
-     *             Thrown if some error occurred when reading the pipelet
-     *             configuration.
-     */
     @Override
     public void init() throws PipelineInitializationException
     {

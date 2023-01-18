@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 
 import com.intershop.application.responsive.capi.basket.BasketCookieHandler;
 import com.intershop.beehive.bts.capi.orderprocess.basket.BasketConstants;
@@ -16,6 +15,8 @@ import com.intershop.beehive.core.capi.log.Logger;
 import com.intershop.beehive.core.capi.request.Request;
 import com.intershop.component.basket.capi.BasketBO;
 import com.intershop.component.basket.capi.BasketBORepository;
+
+import jakarta.servlet.http.Cookie;
 
 /**
  * Default implementation for basket cookie handling. Only handles cookies for time-based baskets.
@@ -217,7 +218,7 @@ public class BasketCookieHandlerImpl implements BasketCookieHandler
         Domain domain = domainMgr.getDomainByUUID(repositoryID);
         Configuration configuration = configurationMgr.getConfiguration(domain);
         double maxAgeMin = configuration.getDouble(BasketConstants.BASKET_LIFETIME_MINS,
-                        new Double(BasketConstants.DEFAULT_BASKET_LIFETIME_MINS));
+                        Double.valueOf(BasketConstants.DEFAULT_BASKET_LIFETIME_MINS));
         return (int)(maxAgeMin * 60);
     }
 

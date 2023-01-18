@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import javax.servlet.http.Cookie;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,9 +35,11 @@ import com.intershop.beehive.core.capi.domain.DomainMgr;
 import com.intershop.beehive.core.capi.request.Request;
 import com.intershop.beehive.core.capi.request.ServletRequest;
 import com.intershop.beehive.core.capi.request.ServletResponse;
-import com.intershop.beehive.core.request.test.RequestRule;
 import com.intershop.component.basket.capi.BasketBO;
 import com.intershop.component.basket.capi.BasketBORepository;
+import com.intershop.platform.core.request.testrule.RequestRule;
+
+import jakarta.servlet.http.Cookie;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasketCookieHandlerImplTest
@@ -289,7 +289,7 @@ public class BasketCookieHandlerImplTest
      */
     private <T> void mockConfigurationValue(Configuration configuration, Class<T> type, String key, T value)
     {
-        Answer<T> returnValueOrDefault = new Answer<T>()
+        Answer<T> returnValueOrDefault = new Answer<>()
         {
             @Override
             public T answer(InvocationOnMock invocation) throws Throwable

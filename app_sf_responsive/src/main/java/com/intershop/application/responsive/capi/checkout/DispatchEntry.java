@@ -45,7 +45,7 @@ public class DispatchEntry implements Comparable<DispatchEntry>
     @Override
     public int compareTo(DispatchEntry o)
     {
-        return new Integer(this.getPosition()).compareTo(new Integer(o.getPosition()));
+        return Integer.valueOf(this.getPosition()).compareTo(Integer.valueOf(o.getPosition()));
     }
   
 }

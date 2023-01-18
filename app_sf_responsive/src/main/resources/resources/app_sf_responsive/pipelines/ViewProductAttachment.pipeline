@@ -98,8 +98,8 @@ reasons.
   </nodes>
 <!--@Location 1,15-->
   <nodes xsi:type="pipeline:PipeletNode" nodeID="BrowseDirectory4">
+	  <configurationValues name="IncludeParentDirectories" value="true"/>
     <configurationValues name="Recursive" value="true"/>
-    <configurationValues name="IncludeParentDirectories" value="true"/>
     <configurationValues name="UnitDirectory" value="SECURE_STATIC_DIR"/>
     <pipelet href="enfinity:/bc_foundation/pipelets/BrowseDirectory.xml"/>
     <nodeSuccessors name="next" next="ConcatenateStrings2"/>
