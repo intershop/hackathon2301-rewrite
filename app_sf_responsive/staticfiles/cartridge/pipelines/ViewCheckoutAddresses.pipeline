@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This includes pipelines for the address handling in the checkout process for example change address form functionality if the user change the country etc.
+@Group Checkout-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewCheckoutAddresses" type="view">
+<!--Verify if Newsletter Checkbox 
+should be shown.
+@Location 2,5-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text0"/>
+<!--TODO: Move to Wishlist
+@Location 14,2-->
+  <nodes xsi:type="pipeline:Text" nodeID="TextNode2"/>
+<!--@Location 9,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode27" name="AdjustedEntryPoint"
+      callMode="Private">
+<!--@BendPoints 19,2-->
+    <nodeSuccessors name="next" next="CallNode61"/>
+  </nodes>
+<!--@Location 9,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode61">
+<!--@BendPoints 19,15-->
+    <nodeSuccessors name="next" next="JoinNode25"/>
+    <startNode referencedName="ViewCheckoutAddresses-Prefix"/>
+  </nodes>
+<!--@Location 10,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode25">
+    <nodeSuccessors name="next" next="DecisionNode4"/>
+  </nodes>
+<!--@Location 10,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="CurrentCartBO:ShipToAddressesSet"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="DecisionNode0"/>
+<!--@BendPoints 25,17-->
+    <nodeSuccessors name="decision_no" next="DecisionNode1"/>
+  </nodes>
+<!--@Location 10,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="CurrentCartBO:InvoiceToAddressBO"
+      operator="undef">
+<!--@BendPoints 24,19 24,21-->
+    <nodeSuccessors name="decision_yes" next="JoinNode0"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode3"/>
+  </nodes>
+<!--@Location 12,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="CheckUserLoggedIn0"/>
+  </nodes>
+<!--@Location 12,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn0">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+<!--@BendPoints 25,24-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode8"/>
+  </nodes>
+<!--@Location 11,11-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="JumpNode11"/>
+  </nodes>
+<!--@Location 11,12-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode11">
+    <startNode referencedName="ViewCheckoutAddressBook-EditAddress"/>
+  </nodes>
+<!--@Location 12,12-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode8">
+    <startNode referencedName="ViewCheckoutNewUserAddress-NewAddresses"/>
+  </nodes>
+<!--@Location 10,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="CurrentCartBO:Extension(&quot;ShippingBucket&quot;):MultipleShipToAddresses"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="JumpNode12"/>
+<!--@BendPoints 23,21-->
+    <nodeSuccessors name="decision_no" next="JoinNode4"/>
+  </nodes>
+<!--@Location 10,11-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode12">
+    <startNode referencedName="ViewCheckoutMultipleAddresses-SelectMultipleShipToAddresses"/>
+  </nodes>
+<!--@Location 12,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="CurrentCartBO:InvoiceToAddressBO"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="JoinNode0"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 13,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="CurrentCartBO:InvoiceToAddressBO:ShipToAddress"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 29,19-->
+    <nodeSuccessors name="decision_yes" next="StartSafeChangesBlock1"/>
+<!--@BendPoints 27,21-->
+    <nodeSuccessors name="decision_no" next="JoinNode0"/>
+  </nodes>
+<!--@Location 14,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock1">
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="CallNode6"/>
+  </nodes>
+<!--@Location 14,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="EndSafeChangesBlock1"/>
+    <parameterBindings name="AddressID" objectPath="CurrentCartBO:InvoiceToAddressBO:ID"/>
+    <parameterBindings name="CurrentCart" objectPath="CurrentCart"/>
+    <parameterBindings name="CustomerBORepository" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+    <parameterBindings name="OverrideShippingAddress" constant="(Boolean)false"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <startNode referencedName="ProcessCheckoutAddresses-SetAsShippingAddress"/>
+  </nodes>
+<!--@Location 14,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock1">
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="CallNode9"/>
+  </nodes>
+<!--@Location 14,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="RemoveDictionaryValues0"/>
+    <parameterBindings name="BasketBO" objectPath="CurrentCartBO"/>
+    <startNode referencedName="ProcessCheckoutAddresses-CheckDefaultSettings"/>
+  </nodes>
+<!--@Location 14,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValues0">
+    <configurationValues name="Keys" value="JumpStep, newaddress"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValues.xml"/>
+    <nodeSuccessors name="next" next="JumpNode13"/>
+  </nodes>
+<!--@Location 14,15-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode13">
+    <startNode referencedName="ViewCheckoutAddresses-Review"/>
+  </nodes>
+<!--@Location 6,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode14" name="ContinueCheckout">
+    <nodeSuccessors name="next" next="CallNode51"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode51">
+    <nodeSuccessors name="next" next="JumpNode10"/>
+    <startNode referencedName="ViewCheckoutAddresses-Prefix"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode10">
+    <startNode referencedName="ViewCheckoutShipping-Start"/>
+  </nodes>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+    <nodeSuccessors name="next" next="DispatchFormAction1"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction1">
+    <configurationValues name="OutValue_0" value="ViewCheckoutAddresses-RemoveRestrictedPLI"/>
+    <configurationValues name="OutValue_1" value="ViewCheckoutNewUserAddress-AddAddresses"/>
+    <configurationValues name="OutValue_2" value="ViewCheckoutNewUserAddress-LoginUser"/>
+    <configurationValues name="OutValue_3" value="ViewCheckoutAddresses-ContinueCheckout"/>
+    <configurationValues name="OutValue_4" value="ViewCheckoutAddressBook-DeleteAddress"/>
+    <configurationValues name="OutValue_5" value="ViewCheckoutAddressBook-AddNewAddress"/>
+    <configurationValues name="OutValue_6" value="ViewCheckoutAddressBook-UpdateAddress"/>
+    <configurationValues name="OutValue_7" value="ViewCheckoutAddressBook-AddNewAddress"/>
+    <configurationValues name="OutValue_8" value="ViewCheckoutMultipleAddresses-MultipleShipping"/>
+    <configurationValues name="OutValue_9" value="ViewCheckoutMultipleAddresses-SelectMultipleShipToAddresses"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+    <nodeSuccessors name="next" next="JoinNode7"/>
+<!--@BendPoints 3,3-->
+    <nodeSuccessors name="pipelet_error" next="DispatchFormAction0"/>
+    <parameterBindings name="Key_0" objectPath="removeRestrictedPLI"/>
+    <parameterBindings name="Key_1" objectPath="continue"/>
+    <parameterBindings name="Key_2" objectPath="signIn"/>
+    <parameterBindings name="Key_3" objectPath="skip"/>
+    <parameterBindings name="Key_4" objectPath="delete"/>
+    <parameterBindings name="Key_5" objectPath="addNewBilling"/>
+    <parameterBindings name="Key_6" objectPath="updateAddress"/>
+    <parameterBindings name="Key_7" objectPath="addAndSelectAsBilling"/>
+    <parameterBindings name="Key_8" objectPath="multipleShipping"/>
+    <parameterBindings name="Key_9" objectPath="selectMultipleShipToAddresses"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="DecisionNode5"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="newaddress"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="Jump1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode8"/>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="JumpNode2"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewCheckoutAddresses-Start"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewCheckoutMultipleAddresses-ApplyMultipleShipToAddresses"/>
+    <configurationValues name="OutValue_1" value="ViewCheckoutMultipleAddresses-SetShippingAddress"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode8"/>
+    <parameterBindings name="Key_0" objectPath="applyMultipleShipToAddresses"/>
+    <parameterBindings name="Key_1" objectPath="setShippingAddress"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 22,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" visibility="Private"
+      name="GetActiveEmailProvider" callMode="Private">
+    <nodeSuccessors name="next" next="GetProviderDefinition0"/>
+    <parameters name="Domain" type="com.intershop.beehive.core.capi.domain.Domain"
+        optional="true"/>
+  </nodes>
+<!--@Location 22,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProviderDefinition0">
+    <pipelet href="enfinity:/bc_marketing/pipelets/GetProviderDefinition.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <returnValueBindings name="ProviderDefinition" objectPath="ActiveEmailProvider"/>
+  </nodes>
+<!--@Location 22,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="ActiveEmailProvider" type="com.intershop.component.marketing.capi.emailmarketing.EmailMarketingProviderDefinition"
+        optional="true"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="Prefix" callMode="Private">
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="GetApplicationPreference0"/>
+    <startNode referencedName="ViewCheckout-Prefix"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationPreference0">
+    <configurationValues name="DefaultApplicationPreferenceKey" value="BasketEmailOptIn"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/GetApplicationPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode31"/>
+<!--@BendPoints 9,5-->
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue1"/>
+    <parameterBindings name="Application" objectPath="CurrentRequest:RequestApplication"/>
+    <parameterBindings name="ApplicationPreferenceKey" nullBinding="true"/>
+    <parameterBindings name="DomainPreference" objectPath="CurrentDomain"/>
+    <returnValueBindings name="ApplicationPreferenceStringValue" objectPath="BasketEmailOptIn"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode31">
+    <nodeSuccessors name="next" next="CallNode4"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="VerifyInteger2"/>
+    <parameterBindings name="Domain" objectPath="CurrentApplication:Domain"/>
+    <startNode referencedName="ViewCheckoutAddresses-GetActiveEmailProvider"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+    <nodeSuccessors name="next" next="JoinNode33"/>
+<!--@BendPoints 8,13 8,15-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode33"/>
+    <parameterBindings name="LocalizedString" constant="1"/>
+    <returnValueBindings name="IntegerObject" objectPath="CurrentStep"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode33">
+    <nodeSuccessors name="next" next="GetDomainPreference0"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference0">
+    <configurationValues name="DefaultPreferenceKey" value="PickupInStoreEnabled"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode5"/>
+<!--@BendPoints 9,17-->
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue0"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <returnValueBindings name="Preference" objectPath="PickupInStoreEnabledPreference"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="PickupInStoreEnabled"/>
+  </nodes>
+<!--@Location 3,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="EndNode1"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1"/>
+<!--@Location 4,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="PickupInStoreEnabled"/>
+    <configurationValues name="Value" value="false"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 9,21-->
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="BasketEmailOptIn"/>
+    <configurationValues name="Value" value="'no'"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 9,9-->
+    <nodeSuccessors name="next" next="JoinNode31"/>
+  </nodes>
+<!--@Location 14,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode25" name="RemoveAndAddToWishlistRestrictedPLI">
+    <nodeSuccessors name="next" next="JumpNode19"/>
+  </nodes>
+<!--@Location 14,1-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode19">
+    <startNode referencedName="ViewCheckoutAddresses-Start"/>
+  </nodes>
+<!--@Location 18,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" name="RemoveRestrictedGiftWrapPLI">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 18,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="RemoveGiftWrapOption0"/>
+    <parameterBindings name="BasketBORepository" objectPath="ApplicationBO:Repository(&quot;BasketBORepository&quot;)"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ViewCart-GetCurrentCartBO"/>
+    <returnValueBindings name="BasketBO" objectPath="CurrentCartBO"/>
+  </nodes>
+<!--@Location 18,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveGiftWrapOption0">
+    <pipelet href="enfinity:/sld_ch_b2c_base/pipelets/RemoveGiftWrapOption.xml"/>
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <parameterBindings name="ProductLineItem" objectPath="CurrentCartBO:ProductLineItemBOByID(ProductLineItemUUID)"/>
+  </nodes>
+<!--@Location 18,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="DecisionNode8"/>
+    <parameterBindings name="BasketBO" objectPath="CurrentCartBO"/>
+    <startNode referencedName="ProcessBasketInvalidation-InvalidateBasketCalculation"/>
+  </nodes>
+<!--@Location 18,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode8" conditionKey="CurrentCartBO:AllProductLineItemBOs:Size"
+      operator="gt" conditionValue="0">
+    <nodeSuccessors name="decision_yes" next="JumpNode0"/>
+    <nodeSuccessors name="decision_no" next="JumpNode4"/>
+  </nodes>
+<!--@Location 18,5-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewCheckoutGifting-Start"/>
+  </nodes>
+<!--@Location 19,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode4">
+    <startNode referencedName="ViewCart-View"/>
+  </nodes>
+<!--@Location 16,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode26" name="RemoveRestrictedPLI">
+    <nodeSuccessors name="next" next="CallNode_FAJtgADuEei22udXInN7Pw"/>
+  </nodes>
+<!--@Location 16,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_FAJtgADuEei22udXInN7Pw">
+    <nodeSuccessors name="next" next="GetBasketProductLineItemBO_FAK7oADuEei22udXInN7Pw"/>
+    <startNode referencedName="ViewCart-Prefix"/>
+  </nodes>
+<!--@Location 16,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketProductLineItemBO_FAK7oADuEei22udXInN7Pw">
+    <pipelet href="enfinity:/sld_ch_b2c_base/pipelets/GetBasketProductLineItemBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode_ENNqIADtEei22udXInN7Pw"/>
+    <nodeSuccessors name="pipelet_error" next="InteractionNode_FANX4ADuEei22udXInN7Pw"/>
+    <parameterBindings name="BasketBO" objectPath="CurrentCartBO"/>
+    <parameterBindings name="PLIID" objectPath="ProductLineItemUUID"/>
+    <returnValueBindings name="BasketProductLineItemBO" objectPath="ProductLineItem"/>
+  </nodes>
+<!--@Location 16,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_ENNqIADtEei22udXInN7Pw">
+    <nodeSuccessors name="next" next="JumpNode16"/>
+    <startNode referencedName="ProcessBasket-RemoveLineItem"/>
+  </nodes>
+<!--@Location 16,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode16">
+    <startNode referencedName="ViewCheckoutAddresses-Start"/>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode_FANX4ADuEei22udXInN7Pw">
+    <template referencedName="cart/LineItemNotFound"/>
+  </nodes>
+<!--@Location 20,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" name="RemoveRestrictedWarrantyPLI">
+    <nodeSuccessors name="next" next="CallNode7"/>
+  </nodes>
+<!--@Location 20,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="RemoveWarrantyLineItem1"/>
+    <parameterBindings name="BasketBORepository" objectPath="ApplicationBO:Repository(&quot;BasketBORepository&quot;)"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ViewCart-GetCurrentCartBO"/>
+    <returnValueBindings name="BasketBO" objectPath="CurrentCartBO"/>
+  </nodes>
+<!--@Location 20,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveWarrantyLineItem1">
+    <pipelet href="enfinity:/sld_ch_b2c_base/pipelets/RemoveWarrantyLineItem.xml"/>
+    <nodeSuccessors name="next" next="CallNode5"/>
+    <parameterBindings name="ProductLineItem" objectPath="CurrentCartBO:ProductLineItemBOByID(ProductLineItemUUID)"/>
+  </nodes>
+<!--@Location 20,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="DecisionNode7"/>
+    <parameterBindings name="BasketBO" objectPath="CurrentCartBO"/>
+    <startNode referencedName="ProcessBasketInvalidation-InvalidateBasketCalculation"/>
+  </nodes>
+<!--@Location 20,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="CurrentCartBO:AllProductLineItemBOs:Size"
+      operator="gt" conditionValue="0">
+    <nodeSuccessors name="decision_yes" next="JumpNode5"/>
+    <nodeSuccessors name="decision_no" next="JumpNode6"/>
+  </nodes>
+<!--@Location 20,5-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode5">
+    <startNode referencedName="ViewCheckoutAddresses-Start"/>
+  </nodes>
+<!--@Location 21,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode6">
+    <startNode referencedName="ViewCart-View"/>
+  </nodes>
+<!--@Location 10,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Review">
+    <nodeSuccessors name="next" next="CallNode53"/>
+  </nodes>
+<!--@Location 10,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode53">
+    <nodeSuccessors name="next" next="SetDictionaryValue2"/>
+    <startNode referencedName="ViewCheckoutAddresses-Prefix"/>
+  </nodes>
+<!--@Location 10,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="JumpStep"/>
+    <configurationValues name="Value" value="1"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 21,9-->
+    <nodeSuccessors name="next" next="JoinNode13"/>
+  </nodes>
+<!--@Location 11,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode13">
+    <nodeSuccessors name="next" next="DecisionNode6"/>
+  </nodes>
+<!--@Location 11,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="newaddress"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="CallNode17"/>
+<!--@BendPoints 24,11 24,15-->
+    <nodeSuccessors name="decision_no" next="JoinNode6"/>
+  </nodes>
+<!--@Location 11,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <startNode referencedName="ViewCheckout-AdjustJumpStep"/>
+  </nodes>
+<!--@Location 11,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="JoinNode25"/>
+  </nodes>
+<!--@Location 11,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode22" name="Start">
+    <nodeSuccessors name="next" next="CallNode_t1gk4DJbEeitIbLIizZqXw"/>
+  </nodes>
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_t1gk4DJbEeitIbLIizZqXw">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="PageName" constant="addresses"/>
+    <parameterBindings name="PageType" constant="checkout"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 11,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="CallNode12"/>
+    <startNode referencedName="ViewCheckoutAddresses-Prefix"/>
+  </nodes>
+<!--@Location 11,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+    <nodeSuccessors name="next" next="JoinNode13"/>
+    <parameterBindings name="Cart" objectPath="CurrentCart"/>
+    <parameterBindings name="CustomerBORepository" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <startNode referencedName="ProcessCheckout-DefaultSettings"/>
+  </nodes>
+</pipeline:Pipeline>

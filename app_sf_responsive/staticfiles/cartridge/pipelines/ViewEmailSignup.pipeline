@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Handles the email sign up functionality.
+@Group OnlineMarketing-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewEmailSignup" type="view">
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Dispatch">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction1"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction1">
+    <configurationValues name="OutValue_0" value="ViewEmailSignup-Subscribe"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+    <parameterBindings name="Key_0" objectPath="signup"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 4,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Start">
+    <nodeSuccessors name="next" next="CreateForm2"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm2">
+    <configurationValues name="FormName" value="EmailSignupForm"/>
+    <configurationValues name="FormResource" value="EmailSignup"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="FormAlias" nullBinding="true"/>
+    <parameterBindings name="FormName" nullBinding="true"/>
+    <parameterBindings name="FormResource" nullBinding="true"/>
+    <returnValueBindings name="Form" objectPath="EmailSignupForm"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 9,9-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 7,10-->
+    <nodeSuccessors name="next" next="InteractionNode2"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="newsletter/Signup.isml"/>
+  </nodes>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Subscribe">
+    <nodeSuccessors name="next" next="CreateForm1"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm1">
+    <configurationValues name="FormName" value="EmailSignupForm"/>
+    <configurationValues name="FormResource" value="EmailSignup"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 5,4-->
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <parameterBindings name="FormAlias" nullBinding="true"/>
+    <parameterBindings name="FormName" nullBinding="true"/>
+    <parameterBindings name="FormResource" nullBinding="true"/>
+    <returnValueBindings name="Form" objectPath="EmailSignupForm"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="Form" objectPath="EmailSignupForm"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+<!--@BendPoints 5,9-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+<!--@BendPoints 7,8-->
+    <nodeSuccessors name="ERROR" next="JoinNode1"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Email" objectPath="EmailSignupForm:Email:Value"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+    <startNode referencedName="ProcessNewsletter-Subscribe"/>
+  </nodes>
+</pipeline:Pipeline>

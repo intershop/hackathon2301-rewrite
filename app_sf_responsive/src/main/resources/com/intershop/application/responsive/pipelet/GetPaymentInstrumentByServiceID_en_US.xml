@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DDescriptionContainer dbo.type="com.intershop.beehive.core.rapi.common.DDescriptionContainer">
+<localeId>en_US</localeId>
+<descriptions>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletDesc" id="Pipelet1"  localeId="en_US" >
+<description>Resolves the payment instrument for a payment service which has no data stored in a property group and therefor only occur once at the basket. In assumption that it is useful to validate user entered data, the absence of the &apos;Validate&apos; capability is used to detect if this approach is feasible.
+(Payment instruments that implement the &quot;Validate&quot; capability are responsible for themselves.)
+
+If no matching payment service was found for the given ID, or no instrument is found at the basket
+the error exit will be taken. </description>
+</DDescription>
+</descriptions>
+</DDescriptionContainer>

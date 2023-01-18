@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="false">
+<!--- do not compact this template to keep line breaks after the buttons that result in some space when rendering --->
+<iscache type="forbidden">
+<!---
+	Currently we do not cache this page because of the 
+	CAPTCHA form field. CAPTCHAs (actually simple CAPTCHA) 
+	need to work in a non-cached page. It is not trivial
+	to make the CAPTCHA form field a remote include. 
+ --->
+<isinclude template="modules/captcha/Modules"> 
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<isinclude extensionpoint="ExtendAccountCreateFullPage"/>

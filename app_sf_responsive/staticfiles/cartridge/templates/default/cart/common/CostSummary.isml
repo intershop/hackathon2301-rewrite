@@ -1,0 +1,301 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isif condition="#NOT(isDefined(ApplicationBO))#">
+	<isset name="BasketDisplayTaxes" value="#Dictionary:ApplicationBO:Configuration:String("BasketDisplayTaxes")#" scope="request"/>
+	<isset name="BasketDisplayHandlingFee" value="#Dictionary:ApplicationBO:Configuration:String("BasketDisplayHandlingFee")#" scope="request"/>
+<iselse>	
+	<isset name="BasketDisplayTaxes" value="#ApplicationBO:Configuration:String("BasketDisplayTaxes")#" scope="request"/>
+	<isset name="BasketDisplayHandlingFee" value="#ApplicationBO:Configuration:String("BasketDisplayHandlingFee")#" scope="request"/>
+</isif>
+<isset name="CartGifting" value="#CurrentCartBO:Extension("Gifting")#" scope="request"/>
+<isset name="CartPayment" value="#CurrentCartBO:Extension("Payment")#" scope="request"/>
+<isset name="CartShippingCost" value="#CurrentCartBO:Extension("ShippingCost")#" scope="request"/>
+
+<isif condition="#isDefined(OrderBO)#">
+	<isset name="CartAppliedRebates" value="#OrderBO:Extension("AppliedRebate"):AppliedOrderValueRebates#" scope="request"/>
+	<isset name="CartAppliedShippingRebates" value="#OrderBO:Extension("AppliedRebate"):AppliedOrderShippingRebates#" scope="request"/>
+	<isset name="CartAppliedCashbackRebates" value="#OrderBO:Extension("AppliedRebate"):AppliedCashbackRebates#" scope="request"/>
+<iselse>
+	<isset name="CartAppliedRebates" value="#CurrentCartBO:Extension("AppliedRebate"):AppliedBasketValueRebates#" scope="request"/>
+	<isset name="CartAppliedShippingRebates" value="#CurrentCartBO:Extension("AppliedRebate"):AppliedBasketShippingRebates#" scope="request"/>
+	<isset name="CartAppliedCashbackRebates" value="#CurrentCartBO:Extension("AppliedRebate"):AppliedCashbackRebates#" scope="request"/>
+</isif>	
+
+<isif condition="#isDefined(OrderBO)#">
+	<isset name="DisplayEstimated" value="false" scope="request">
+<iselseif condition="#NOT(isdefined(CurrentCartBO:CustomAttributes:Integer("BasketStep"))) OR (CurrentCartBO:CustomAttributes:Integer("BasketStep")<3)#">
+	<isset name="DisplayEstimated" value="true" scope="request">
+<iselse>
+	<isset name="DisplayEstimated" value="false" scope="request">
+</isif>	
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<div class="clearfix">
+	<dl class="dl-horizontal">
+	
+		<!---SubTotal --->
+		<dt><istext key="checkout.cart.subtotal.heading" /></dt>
+		<dd>
+			<isif condition="#PriceDisplayType EQ 'net'#">
+				<isprint value="#CurrentCartBO:DiscountedItemSubtotalNet#">
+			<iselse/>
+				<isprint value="#CurrentCartBO:DiscountedItemSubtotalGross#">
+			</isif>
+		</dd>
+
+		<!---Gifting --->
+		<isif condition = "#(CartGifting:hasGiftingCosts)#">
+			<dt><istext key="checkout.order.giftwrap.label"/></dt>
+			<dd>
+				<isif condition="#PriceDisplayType EQ 'net'#">
+					<isprint value="#CartGifting:GiftingTotalNet#">
+				<iselse>
+					<isprint value="#CartGifting:GiftingTotalGross#">
+				</isif>
+			</dd>
+		</isif>
+
+		<!---Product Configuration --->
+		<isif condition = "#(CurrentCartBO:hasProductConfigurationCosts)#">
+			<dt><istext key="checkout.order.productconfiguration.label"/></dt>
+			<dd><isprint value="#CurrentCartBO:ProductConfigurationTotal#"></dd>
+		</isif>
+		
+		<!--- list all applied order level promotions --->
+		<isif condition="#hasElements(CartAppliedRebates)#">
+			<isloop iterator="CartAppliedRebates" alias="AppliedRebate">
+				<dt>
+					<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+						<isset name="PromoTitle" value="#AppliedRebate:RebateBO:PromotionBO:Title(CurrentSession:Locale)#" scope="request"/>
+						<isif condition="#isDefined(PromoTitle)#">
+							<isHtmlPrint value="#PromoTitle#" mode="storefront">
+						<iselse>
+							<isHtmlPrint value="#AppliedRebate:RebateBO:PromotionBO:DisplayName(CurrentSession:Locale)#" mode="storefront">
+						</isif>
+						<span style="white-space: nowrap;" class="details-link">
+							<a href="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs',AppliedRebate:RebateBO:PromotionBO:PromotionID),Parameter('DisplayType','dialog'))#" data-dialog title="<istext key="promotion.detailslink.label"/>"><istext key="checkout.widget.promotion.details"></a>
+							<isif condition="#NOT isDefined(OrderBO) AND isDefined(AppliedRebate:Code)#">
+								<istext key="promotion.remove.label.space" encoding="off"/><a href="#URL(Action('ViewCart-DeletePromotion'),Parameter('PromotionCode',AppliedRebate:Code),Parameter('JumpTarget',JumpTarget))#"><istext key="promotion.remove.label"/></a>
+							</isif>
+						</span>
+					<iselse>
+						<istext key="checkout.widget.promotion.discount">
+					</isif>
+				</dt>
+				<dd>
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#AppliedRebate:AmountNet:Negated#">
+					<iselse/>
+						<isprint value="#AppliedRebate:AmountGross:Negated#">
+					</isif>
+				</dd>
+			</isloop>
+		</isif>
+		
+		<!---Shipping --->
+		<dt>
+			<isif condition="#DisplayEstimated EQ 'true'#">
+				<istext key="checkout.cart.estimated_shipping_handling.label" />
+			<iselse>
+				<istext key="checkout.order.shipping.label" />
+			</isif>
+		</dt>
+		<dd>
+			<isif condition="#PriceDisplayType EQ 'net'#">
+				<isif condition="#CurrentCartBO:ShippingTotalNet:Available#">
+					<isprint value="#CurrentCartBO:ShippingTotalNet#">
+				<iselse>
+					<isprint value="#CurrentCartBO:ItemSubtotal:ZeroMoney(CurrentCartBO:ItemSubtotal:CurrencyMnemonic)#">
+				</isif>		
+			<iselse>
+				<isif condition="#CurrentCartBO:ShippingTotalGross:Available#">
+					<isprint value="#CurrentCartBO:ShippingTotalGross#">
+				<iselse>
+					<isprint value="#CurrentCartBO:ItemSubtotal:ZeroMoney(CurrentCartBO:ItemSubtotal:CurrencyMnemonic)#">
+				</isif>
+			</isif>
+		</dd>
+
+		<!--- list all applied shipping level promotions --->
+		<isif condition="#hasElements(CartAppliedShippingRebates)#">
+			<isloop iterator="CartAppliedShippingRebates" alias="AppliedRebate">
+				<dt>
+					<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+						<isset name="PromoTitle" value="#AppliedRebate:RebateBO:PromotionBO:Title(CurrentSession:Locale)#" scope="request"/>
+						<isif condition="#isDefined(PromoTitle)#">
+							<isHtmlPrint value="#PromoTitle#" mode="storefront">
+						<iselse>
+							<isHtmlPrint value="#AppliedRebate:RebateBO:PromotionBO:DisplayName(CurrentSession:Locale)#" mode="storefront">
+						</isif>
+						<span style="white-space: nowrap;" class="details-link">
+							<a href="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs',AppliedRebate:RebateBO:PromotionBO:PromotionID),Parameter('DisplayType','dialog'))#" data-dialog title="<istext key="promotion.detailslink.label"/>"><istext key="checkout.widget.promotion.details"></a>
+							<isif condition="#isDefined(AppliedRebate:Code)#">
+								<istext key="promotion.remove.label.space" encoding="off"/>
+								<a href="#URL(Action('ViewCart-DeletePromotion'),Parameter('PromotionCode',AppliedRebate:Code))#"><istext key="promotion.remove.label"/></a>
+							</isif>
+						<span>
+					<iselse>
+						<istext key="checkout.widget.promotion.discount">
+					</isif>
+				</dt>
+				<dd>
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#AppliedRebate:AmountNet:Negated#">
+					<iselse/>
+						<isprint value="#AppliedRebate:AmountGross:Negated#">
+					</isif>
+				</dd>
+			</isloop>
+		</isif>
+		
+		<!---Surcharges --->
+		<isif condition="#hasLoopElements(CurrentCartBO:ItemSurchargeTotalsByType)#">
+			<isloop iterator="CurrentCartBO:ItemSurchargeTotalsByType" alias="GIS">
+				<dt><isprint value="#GIS:DisplayName#">
+					<isTooltip linkclass="details-tooltip" linktextkey="shopping_cart.detail.text" headline="#GIS:DisplayName#" content="#GIS:Description#">
+				</dt>
+				<dd>
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#GIS:AmountNet#">
+					<iselse/>
+						<isprint value="#GIS:AmountGross#">
+					</isif>
+				</dd>
+			</isloop>
+		</isif>
+		
+		<!--- surcharges of bucket grouped (add up) by rules  --->
+		<isif condition="#hasLoopElements(CurrentCartBO:BucketSurchargeTotalsByType)#">
+			<isloop iterator="CurrentCartBO:BucketSurchargeTotalsByType" alias="GBS">
+				<dt><isprint value="#GBS:DisplayName#"></dt>
+				<isTooltip linktextkey="shopping_cart.detail.text" headline="#GBS:DisplayName#" content="#GBS:Description#">
+				<dd>
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#GBS:AmountNet#">
+					<iselse/>
+						<isprint value="#GBS:AmountGross#">
+					</isif>
+				</dd>
+			</isloop>
+		</isif>
+		
+		<!---Limited Tender like gift cards --->
+		<isif condition = "#(isDefined(CurrentCartBO:LimitedTenderTotal)) AND (CurrentCartBO:LimitedTenderTotal:Value != 0.00)#">
+			<dt><istext key="checkout.payment.gift.heading"/></dt>
+			<dd>-<isprint value="#CurrentCartBO:LimitedTenderTotal#"></dd>
+		</isif>
+		
+		<!--- total payment costs --->
+		<isif condition="#CartPayment:PaymentCostsTotal:Value != 0#">
+			<dt><istext key="checkout.cart.payment_cost.label" /></dt>
+			<dd>
+				<isif condition="#PriceDisplayType EQ 'net'#">
+					<isif condition="#CartPayment:PaymentCostsTotalNet:Available#">
+						<isprint value="#CartPayment:PaymentCostsTotalNet#">
+					<iselse>
+						<isprint value="#CartPayment:PaymentCostsTotalNet:ZeroMoney(CurrentCartBO:PurchaseCurrencyCode)#">
+					</isif>
+				<iselse/>
+					<isif condition="#CartPayment:PaymentCostsTotalGross:Available#">
+						<isprint value="#CartPayment:PaymentCostsTotalGross#">
+					<iselse>
+						<isprint value="#CartPayment:PaymentCostsTotalGross:ZeroMoney(CurrentCartBO:PurchaseCurrencyCode)#">
+					</isif>
+				</isif>
+			</dd>
+		</isif>
+		
+		<!---Taxes --->
+		<isif condition="#PriceDisplayType EQ 'net'#">
+			<isif condition="#DisplayEstimated EQ 'true'#">
+				<ISTaxesBox 
+					basketbo="#CurrentCartBO#" 
+					useShortNames="false" 
+					estimated="true"
+					taxesLabel="checkout.tax.TaxesLabel.Estimated_SalesTax"
+					ihfLabel="checkout.tax.ihfLabel.Long"
+					duLabel="checkout.tax.duLabel"
+					displayIHFMode="#BasketDisplayHandlingFee#"
+					displayTaxesMode="#BasketDisplayTaxes#"
+				>
+			<iselse>
+				<ISTaxesBox 
+					basketbo="#CurrentCartBO#" 
+					useShortNames="false" 
+					taxesLabel="checkout.tax.TaxesLabel.SalesTax"
+					ihfLabel="checkout.tax.ihfLabel.Long"
+					duLabel="checkout.tax.duLabel"
+					displayIHFMode="#BasketDisplayHandlingFee#"
+					displayTaxesMode="#BasketDisplayTaxes#"
+				>
+			</isif>
+		<iselse>
+			<isif condition="#DisplayEstimated EQ 'true'#">
+				<ISTaxesBox 
+					basketbo="#CurrentCartBO#" 
+					useShortNames="false" 
+					taxesLabel="checkout.tax.TaxesLabel.Estimated_TotalOrderVat"
+					ihfLabel="checkout.tax.ihfLabel.Long"
+					duLabel="checkout.tax.duLabel"
+					displayIHFMode="#BasketDisplayHandlingFee#"
+					displayTaxesMode="#BasketDisplayTaxes#"
+				>
+			<iselse>
+				<ISTaxesBox 
+					basketbo="#CurrentCartBO#" 
+					useShortNames="false" 
+					taxesLabel="checkout.tax.TaxesLabel.TotalOrderVat"
+					ihfLabel="checkout.tax.ihfLabel.Long"
+					duLabel="checkout.tax.duLabel"
+					displayIHFMode="#BasketDisplayHandlingFee#"
+					displayTaxesMode="#BasketDisplayTaxes#"
+				>
+			</isif>
+		</isif>
+		
+		<!---Cart total --->
+		<dt class="total-price">
+			<isif condition="#DisplayEstimated EQ 'true'#">
+				<istext key="checkout.cart.estimated_total.label" />
+			<iselse>
+				<istext key="checkout.order.total_cost.label" />
+			</isif>	
+		</dt>
+		<dd class="total-price"><isprint value="#CurrentCartBO:BasketTotalPriceMinusLimitedTenderGross#"></dd>
+
+		<!---Cashback--->
+		<isif condition="#hasElements(CartAppliedCashbackRebates)#">
+			<isloop iterator="CartAppliedCashbackRebates" alias="AppliedRebate">
+				<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+					</br>
+					<dt>
+						<isset name="PromoTitle" value="#AppliedRebate:RebateBO:PromotionBO:Title(CurrentSession:Locale)#" scope="request"/>
+						<isif condition="#isDefined(PromoTitle)#">
+							<isHtmlPrint value="#PromoTitle#" mode="storefront">
+						<iselse>
+							<istext key="checkout.order.cashback.total"/>
+						</isif>
+						<isset name="Promotion" value="#AppliedRebate:RebateBO:PromotionBO#" scope="request"/>
+						<isif condition="#isDefined(Promotion:RuleDescription(CurrentSession:Locale)) OR isDefined(Promotion:LegalContentMessage(CurrentSession:Locale)) OR isDefined(Promotion:ExternalDetailsURL)#">
+							<a href="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs',AppliedRebate:RebateBO:PromotionBO:PromotionID),Parameter('DisplayType','dialog'))#" data-dialog class="details-link"
+								title="<istext key="promotion.detailslink.label"/>"><istext key="checkout.widget.promotion.details"></a>
+						</isif>
+					</dt>
+					<dd>
+						<isif condition="#PriceDisplayType EQ 'net'#">
+							<isprint value="#AppliedRebate:AmountNet#">
+						<iselse/>
+							<isprint value="#AppliedRebate:AmountGross#">
+						</isif>
+					</dd>
+				</isif>
+			</isloop>
+		</isif>
+				
+	</dl>
+	
+</div>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="systempage.productListFilter.pagelet2">
+  <pageEntryPointDefinitions name="Page" systemManaged="true">
+    <callParameterDefinitions name="Filter" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="Title" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="ProductBOs" type="java.util.Iterator" />
+    <callParameterDefinitions optional="true" name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO" />
+    <callParameterDefinitions optional="true" name="CatalogCategoryID" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="SortingAttribute" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="PageSize" type="java.lang.Object" />
+    <callParameterDefinitions optional="true" name="PageNumber" type="java.lang.Object" />
+    <callParameterDefinitions optional="true" name="Scope" type="java.lang.String" />
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.page.standard.pagelet2-Interface" />
+  </pageEntryPointDefinitions>
+</pagelet:PageletModel>

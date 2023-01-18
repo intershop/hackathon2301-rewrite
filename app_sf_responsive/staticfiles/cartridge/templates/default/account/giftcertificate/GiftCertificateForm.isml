@@ -1,0 +1,154 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><isprint value="#ProductBO:Name#"></h2>
+		</div>
+		
+		<isif condition="#addToCartBehavior EQ 'expresscart'#">
+			<isset name="GiftCertificateFormAction" value="#URL(Action('ViewExpressShop-Dispatch'), Parameter('SKU', ProductBO:SKU))#" scope="request"/>
+		<iselse>
+			<isset name="GiftCertificateFormAction" value="#URL(Action('ViewGiftCertificates-Dispatch'), Parameter('SKU', ProductBO:SKU), Parameter('AjaxRequestMarker', 'true'))#" scope="request"/>
+		</isif>
+		
+		<isform id="gift-certificate-form" class="form-horizontal bv-form" name="GiftCertificateForm" action="#GiftCertificateFormAction#" method="post">
+			<div class="modal-body">
+				<p><istext key="account.giftcard_helptitle.msg"/></p>
+				
+				<isif condition="#GiftCertificateForm:Invalid#">
+					<div class="alert alert-danger">
+						<istext key="account.giftcard.error"/>
+					</div>
+				</isif>
+				
+				<p class="indicates-required"><span class="required">*</span><istext key="account.required_field.message" /></p>
+				
+				<isif condition="#isDefined(PLIID)#">
+					<input type="hidden" name="PLIID" value="<isprint value="#PLIID#">"/>
+				</isif>
+				
+				<isif condition="#(isDefined(addToCartBehavior))#">
+					<input type="hidden" name="addToCartBehavior" value="<isprint value="#addToCartBehavior#">" />
+				</isif>
+				
+				<div class="form-group <isif condition="#GiftCertificateForm:RecipientEmail:Invalid#">server-error</isif>">
+					<label for="<isprint value="#GiftCertificateForm:RecipientEmail:QualifiedName#">" class="control-label col-sm-4" for="<isprint value="#GiftCertificateForm:RecipientEmail:QualifiedName#">"><istext key="account.giftcard_recipient_email.label"/><span class="required">*</span></label>
+					<div class="col-sm-8">
+						<input
+							type="email" required maxlength="256" aria-required="true"
+							class="form-control"
+							required
+							name="<isprint value="#GiftCertificateForm:RecipientEmail:QualifiedName#">"
+							id="<isprint value="#GiftCertificateForm:RecipientEmail:QualifiedName#">"
+							value="<isif condition="#isDefined(GiftCardParameters:GIFTCARD_RecipientEmail)#"><isprint value="#GiftCardParameters:GIFTCARD_RecipientEmail#"><iselse><isif condition="#GiftCertificateForm:Submitted#"><isprint value="#GiftCertificateForm:RecipientEmail:Value#"></isif></isif>"
+							data-bv-notempty-message="<istext key="account.giftcard_recipient_email.required.error"/>"
+							data-bv-emailaddress-message="<istext key="account.giftcard_recipient_email.invalid.error">"
+						/>
+					</div>
+					<isif condition="#GiftCertificateForm:RecipientEmail:Invalid#"><small class="help-block col-sm-8 col-sm-offset-4"><istext key="account.giftcard_recipient_email.invalid.error" /></small></isif>
+				</div>
+				
+				<div class="form-group <isif condition="#GiftCertificateForm:RecipientName:Invalid#">server-error</isif>">
+					<label for="<isprint value="#GiftCertificateForm:RecipientName:QualifiedName#">" class="control-label col-sm-4" for="<isprint value="#GiftCertificateForm:RecipientName:QualifiedName#">"><istext key="account.giftcard_recipient_name.label"/></label>
+					<div class="col-sm-8">
+						<input maxlength="35" 
+							type="text" aria-required="true"
+							class="form-control"
+							name="<isprint value="#GiftCertificateForm:RecipientName:QualifiedName#">"
+							id="<isprint value="#GiftCertificateForm:RecipientName:QualifiedName#">"
+							value="<isif condition="#isDefined(GiftCardParameters:GIFTCARD_RecipientName)#"><isprint value="#GiftCardParameters:GIFTCARD_RecipientName#"><iselse><isif condition="#GiftCertificateForm:Submitted#"><isprint value="#GiftCertificateForm:RecipientName:Value#"><iselse><isprint value="#CurrentUser:RecipientName#"></isif></isif>"
+							data-validate-error-message="<istext key="account.giftcard_recipient_name.invalid.error">"
+							data-flash-error-keys="fieldFailureMessageGlobal"
+						/>
+					</div>
+					<isif condition="#GiftCertificateForm:RecipientName:Invalid#">
+						<small class="help-block col-sm-8 col-sm-offset-4">
+							<isif condition="#GiftCertificateForm:RecipientName:isError("error.profanitycheck")#">
+								<istext key="checkout.shipping.profanity.error" />&nbsp;
+							<iselse/>
+								<istext key="account.giftcard_recipient_name.invalid.error" />
+							</isif>
+						</small>
+					</isif>
+				</div>
+				
+				<div class="form-group <isif condition="#GiftCertificateForm:UserEmail:Invalid#">server-error</isif>">
+					<label for="<isprint value="#GiftCertificateForm:UserEmail:QualifiedName#">" class="control-label col-sm-4" for="<isprint value="#GiftCertificateForm:UserEmail:QualifiedName#">"><istext key="account.giftcard_user_email.label"/><span class="required">*</span></label>
+					<div class="col-sm-8">
+						<input
+							type="email" required maxlength="256" aria-required="true"
+							class="form-control"
+							name="<isprint value="#GiftCertificateForm:UserEmail:QualifiedName#">"
+							id="<isprint value="#GiftCertificateForm:UserEmail:QualifiedName#">"
+							value="<isif condition="#isDefined(GiftCardParameters:GIFTCARD_SenderEmail:StringValue)#"><isprint value="#GiftCardParameters:GIFTCARD_SenderEmail:StringValue#"><iselse><isif condition="#GiftCertificateForm:Submitted#"><isprint value="#GiftCertificateForm:UserEmail:Value#"><iselse><isif condition="#CurrentSession:LoggedIn#"><isif condition="#NOT(CurrentUser:Profile:DefaultAddress:EMail EQ '')#"><isprint value="#CurrentUser:Profile:DefaultAddress:EMail#"><iselse><isprint value="#CurrentUser:Profile:Credentials:Login#"></isif></isif></isif></isif>"
+							data-bv-notempty-message="<istext key="account.giftcard_user_email.required.error"/>"
+							data-bv-emailaddress-message="<istext key="account.giftcard_user_email.invalid.error">"
+						/>
+					</div>
+					<isif condition="#GiftCertificateForm:UserEmail:Invalid#"><small class="help-block col-sm-8 col-sm-offset-4"><istext key="account.giftcard_user_email.invalid.error" /></small></isif>
+				</div>
+				
+				<div class="form-group <isif condition="#GiftCertificateForm:UserName:Invalid#">server-error</isif>">
+					<label for="<isprint value="#GiftCertificateForm:UserName:QualifiedName#">" class="control-label col-sm-4" for="<isprint value="#GiftCertificateForm:UserName:QualifiedName#">"><istext key="account.giftcard_user_name.label"/></label>
+					<div class="col-sm-8">
+						<input maxlength="35" type="text"
+							class="form-control"
+							name="<isprint value="#GiftCertificateForm:UserName:QualifiedName#">"
+							id="<isprint value="#GiftCertificateForm:UserName:QualifiedName#">"
+							value="<isif condition="#isDefined(GiftCardParameters:GIFTCARD_SenderName:StringValue)#"><isprint value="#GiftCardParameters:GIFTCARD_SenderName:StringValue#"><iselse><isif condition="#GiftCertificateForm:Submitted#"><isprint value="#GiftCertificateForm:UserName:Value#"><iselse><isif condition="#CurrentSession:LoggedIn#"><isprint value="#CurrentUser:Profile:FirstName#"></isif></isif></isif>"
+							data-validate-error-message="<istext key="account.giftcard_user_name.invalid.error">"
+							data-flash-error-keys="fieldFailureMessageGlobal"
+						/>
+					</div>
+					<isif condition="#GiftCertificateForm:UserName:Invalid#">
+						<small class="help-block col-sm-8 col-sm-offset-4">
+							<isif condition="#GiftCertificateForm:UserName:isError("error.profanitycheck")#">
+								<istext key="checkout.shipping.profanity.error" />&nbsp;
+							<iselse/>
+								<istext key="account.giftcard_user_name.invalid.error" />
+							</isif>
+						</small>
+					</isif>
+				</div>
+				
+				<div class="form-group <isif condition="#GiftCertificateForm:Greeting:Invalid#">server-error</isif>">
+					<label for="<isprint value="#GiftCertificateForm:Greeting:QualifiedName#">" class="control-label col-sm-4" for="<isprint value="#GiftCertificateForm:Greeting:QualifiedName#">"><istext key="account.giftcard_greeting.label"/><span class="required">*</span></label>
+					<div class="col-sm-8">
+						<textarea required maxlength="4000" 
+							class="form-control"
+							data-charactercounter="cCounter<isprint value="#GiftCertificateForm:Greeting:QualifiedName#">" 
+							id="<isprint value="#GiftCertificateForm:Greeting:QualifiedName#">" 
+							name="<isprint value="#GiftCertificateForm:Greeting:QualifiedName#">"
+							data-bv-notempty-message="<istext key="account.giftcard_greeting.invalid.error">"
+						>
+							<isif condition="#isDefined(GiftCardParameters:GIFTCARD_GreetingMessage:TextValue)#"><isprint value="#GiftCardParameters:GIFTCARD_GreetingMessage:TextValue#"><iselse><isif condition="#GiftCertificateForm:Submitted#"><isprint value="#GiftCertificateForm:Greeting:Value#"></isif></isif>
+						</textarea>
+					</div>
+					<isif condition="#GiftCertificateForm:Greeting:Invalid#">
+						<small class="help-block col-sm-8 col-sm-offset-4">
+							<isif condition="#GiftCertificateForm:Greeting:isError("error.profanitycheck")#">
+								<istext key="checkout.shipping.profanity.error" />&nbsp;
+							<iselse/>
+								<istext key="account.giftcard_greeting.invalid.error" />
+							</isif>
+						</small>
+					</isif>
+					<div class="col-sm-8 col-sm-offset-4">
+						<small class="input-help"><istext key="checkout.shipping_method.instructions_max_limit.pre.text" /> <span id="cCounter<isprint value="#GiftCertificateForm:Greeting:QualifiedName#">">4000</span> <istext key="checkout.shipping_method.instructions_max_limit.post.text" /></small>
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal-footer">
+				<input type="hidden" data-form-action="true"/>
+				<button type="submit" class="btn btn-primary" name="addProduct" value="Ok"><istext key="account.giftcard.form.ok"/></button>
+				<!--- The hidden input field with name"addProduct" must exists, because it's used in a case when submitting form with javascript. --->
+				<input type="hidden" name="addProduct" value="Ok"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.giftcard.form.cancel"></button>
+			</div>
+		</isform>
+	</div>
+</div>

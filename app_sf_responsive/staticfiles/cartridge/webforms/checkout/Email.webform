@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:webform="http://www.intershop.de/webform/2010" xmlns:core="http://www.intershop.de/core/2010" name="Email">
+  <forms name="email">
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Email" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-regexp">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="regExp" value="^(?!.*@example[.](com|org|net)$).*$"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Newsletter" type="java.lang.String"/>
+  </forms>
+</webform:WebForm>

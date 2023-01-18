@@ -1,0 +1,25 @@
+.loadFont(@Name; @Url ){
+	font-family: @Name;
+    src: url('@{Url}.woff2') format('woff2'),
+     	 url('@{Url}.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+	font-display: swap; 
+}
+
+
+@font-face {
+	.loadFont('robotoregular'; '../fonts/roboto/roboto-regular-webfont')   
+}
+
+@font-face {
+	.loadFont('roboto_condensedregular'; '../fonts/roboto/robotocondensed-regular-webfont')  
+}
+
+@font-face {
+	.loadFont('roboto_condensedbold'; '../fonts/roboto/robotocondensed-bold-webfont')  
+}
+
+@font-face {
+	.loadFont('robotobold'; '../fonts/roboto/roboto-bold-webfont') 
+}

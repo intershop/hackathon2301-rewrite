@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="UpdateEmail">
+  <forms name="UpdateEmailForm">
+    <parameters xsi:type="webform:FormParameter" name="Email" optional="true" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="256"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Login" optional="true" type="java.lang.String">
+      <formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="EmailConfirmation" optional="true" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Email"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Password" optional="true" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-dependency">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="paramName" value="Email"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-required"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Newsletter" type="java.lang.Boolean"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="OrderConfirmationMail" type="java.lang.Boolean"/>
+  </forms>
+  <forms name="UpdateLoginForm">
+    <parameters xsi:type="webform:FormParameter" name="Login" type="java.lang.String">
+      <formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Password" optional="true" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-dependency">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="paramName" value="Email"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-required"/>
+    </parameters>
+  </forms>
+</webform:WebForm>

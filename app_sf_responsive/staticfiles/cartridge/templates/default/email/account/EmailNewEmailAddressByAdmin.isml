@@ -1,0 +1,82 @@
+<iscontent type="text/html" session="false" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+<isinclude template="email/mailTemplate/Modules">
+<isGetLoginPreferenceReader>
+<isset name="Currency" value="#CurrencyCode#" scope="request" />
+<isif condition="#isDefined(TargetApplicationBO)#">
+	<isset name="AppID" value="#TargetApplicationBO:UrlIdentifier#" scope="request" />
+	<isif condition="#NOT(isDefined(Currency)) OR (Currency EQ '')#">
+		<isset name="Currency" value="#TargetApplicationBO:DefaultCurrency:Mnemonic#" scope="request" />
+	</isif>
+<iselse>
+	<isset name="AppID" value="-" scope="request" />
+	<isif condition="#NOT(isDefined(Currency)) OR (Currency EQ '')#">
+		<isset name="Currency" value="-" scope="request" />
+	</isif>
+</isif>
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+
+<subject><istext key="#'email.change'.UserLoginType.'.heading'#" parameter0="#ChannelName#" encoding="off"/></subject>
+
+<isMailHeader ChannelName="#ChannelName#" ShowMyAccountLink="true" ShowCustomerInformation="true">
+
+<p class="header">
+<istext key="#'email.change'.UserLoginType.'.heading'#" parameter0="#ChannelName#"/>
+</p>
+
+<p>
+	<isif condition="#isDefined(UserBO:Title) and (UserBO:Title NE '')#">
+		<istext key="email.dear.label.title_firstname_lastname" parameter0="#UserBO:Title#" parameter1="#UserBO:FirstName#" parameter2="#UserBO:LastName#" />
+	<iselse> 
+		<istext key="email.dear.label.firstname_lastname" parameter0="#UserBO:FirstName#" parameter1="#UserBO:LastName#" />
+	</isif>
+</p>
+
+<p>
+<istext key="#''.UserLoginType.'.update.by_admin.message'#" parameter0="#encodeValue(ChannelName)#" parameter1="#encodeValue(UserBO:Login)#" encoding="off"/>
+</p>
+<p>
+<istext key="#'email.new'.UserLoginType.''#" parameter0="#encodeValue(URL(Action('ViewHomepage-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID)))#" parameter1="#encodeValue(ChannelName)#" encoding="off"/>
+</p>
+<p>
+	<istext key="email.you_need_to_enter.text" encoding="off" />
+</p>
+
+<table cellpadding="0" cellspacing="0" class="mobileButtonPattern" bgcolor="#'#'#1db5b5">
+	<tr>
+		<td>
+			<table cellpadding="0" cellspacing="10" width="100%">
+				<tr>
+					<td class="button">
+						<istext key="email.create_password.button" 
+							parameter0="#SessionlessURLEX('https','',Action('ViewForgotLoginData-NewPassword', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID), Parameter('uid', UserBO:ID), Parameter('Hash', SecureHash))#"
+							encoding="off" 
+						/>
+					</td>
+
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+
+<p class="copyLink">
+	<istext key="email.password.link.expiry" parameter0="#encodeValue(PasswordRelatedLinkLifeTime)#" parameter1="#encodeValue(SessionlessURLEX('https','',Action('ViewForgotLoginData-NewPassword', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID), Parameter('uid', UserBO:ID), Parameter('Hash', SecureHash)))#" encoding="off" />
+</p>
+
+<p>
+	<istext key="email.questions" 
+		parameter0="#URL(Action('ViewHomepage-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID))#" 
+		parameter1="#encodeValue(ChannelName)#" 
+		parameter2="#URL(Action('ViewContent-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID), Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page'))#" 
+		encoding="off" 
+	/> 
+</p>
+	
+<p>
+	<istext key="email.best_regards.label"/><br />
+	<istext key="email.user_services.label" parameter0="#encodeValue(URL(Action('ViewHomepage-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID)))#" parameter1="#encodeValue(ChannelName)#" encoding="off"/>
+</p>
+
+<isinclude template="email/mailTemplate/MailFooter"/>

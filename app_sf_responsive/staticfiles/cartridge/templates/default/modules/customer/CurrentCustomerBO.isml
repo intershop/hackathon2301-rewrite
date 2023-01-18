@@ -1,0 +1,22 @@
+<%@page import="com.intershop.component.customer.capi.CustomerBO"%>
+<%@page import="com.intershop.component.customer.capi.ApplicationBOCustomerExtension"%>
+<%@page import="com.intershop.beehive.core.capi.app.AppContextUtil"%>
+<%@page import="com.intershop.component.application.capi.ApplicationBO"%>
+<%@page import="com.intershop.beehive.app.capi.AppContext"%>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%
+	//take the ApplicationBO
+	AppContext appContext = AppContextUtil.getCurrentAppContext();
+	ApplicationBO applicationBO = appContext.getVariable(ApplicationBO.CURRENT);
+	if (applicationBO == null)
+	{
+	    throw new IllegalStateException("ApplicationBO not available.");
+	}
+
+	//The extension that takes the current user/customer
+	ApplicationBOCustomerExtension customerExt = applicationBO.getExtension(ApplicationBOCustomerExtension.EXTENSION_ID);
+	
+	CustomerBO currentCustomerBO = customerExt.getCurrentCustomerBO();
+
+	getPipelineDictionary().put("currentcustomerbo", currentCustomerBO);
+%>

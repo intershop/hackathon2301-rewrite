@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="GiftCertificateForm">
+  <forms name="GiftCertificateForm">
+    <parameters xsi:type="webform:FormParameter" name="RecipientEmail" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="256"/>
+      </validatorBindings>
+    </parameters>
+        <parameters xsi:type="webform:FormParameter" optional="true" name="RecipientName" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-string"/>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentProductRepository:Domain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="false" name="UserEmail" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="256"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="UserName" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-string"/>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentProductRepository:Domain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Greeting" type="java.lang.String">
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentProductRepository:Domain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="4000"/>
+      </validatorBindings>
+    </parameters>
+  </forms>
+</webform:WebForm>

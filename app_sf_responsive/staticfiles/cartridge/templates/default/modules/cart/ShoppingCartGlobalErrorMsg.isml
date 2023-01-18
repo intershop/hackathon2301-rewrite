@@ -1,0 +1,85 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- BEGIN Global errors --->
+
+<!--- Add To Basket Results Error--->
+<isif condition="#isDefined(addToBasketResults) AND (addToBasketResults:Successes:isEmpty EQ 'true') AND (addToBasketResults:Adjusted:isEmpty EQ 'true')
+		AND (addToBasketResults:Failures:isEmpty EQ 'true')#">
+	<div class="alert alert-info" role="alert">
+		<istext key="shopping_cart.warning.NoProductsForAdding" />
+	</div>
+</isif>
+<isif condition="#hasElements(addToBasketResults:Failures)#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="shopping_cart.update.error" /></li>
+	</ul>
+	<isNotAddedProducts addToBasketResults="#addToBasketResults:Failures#">
+</isif>
+
+<!--- Remove Results By Inventory Error--->
+<isif condition="#hasElements(removeFromBasketResultsInventory:Successes)#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="shopping_cart.update.error" /></li>
+	</ul>
+	<isRemovedProductsError removeFromBasketResults="#removeFromBasketResultsInventory:Successes#">
+</isif>
+
+<!--- Remove Results Due to missing prices Error--->
+<isif condition="#hasElements(removeFromBasketResultsWithoutPrice:Successes)#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="shopping_cart.update.error" /></li>
+	</ul>
+	<isRemovedProductsError removeFromBasketResults="#removeFromBasketResultsWithoutPrice:Successes#">
+</isif>
+
+
+<!--- Add To Basket Results Warning --->
+<isif condition="#addToBasketResults:isAdjusted EQ 'true'#">
+	<div class="alert alert-info" role="alert">
+		<istext key="shopping_cart.adjusted_items.warnung" />
+	</div>
+</isif>
+
+<!--- Adjusted Results By Inventory Warning--->
+<isif condition="#adjustBasketResultsInventory:isAdjusted EQ 'true'#">
+	<div class="alert alert-info" role="alert">
+		<istext key="shopping_cart.adjusted_items.warnung" />
+	</div>
+</isif>
+
+<!--- Adjusted Results Error--->
+<isif condition="#adjustBasketResults:isFailed EQ 'true'#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="shopping_cart.update.error" /></li>
+	</ul>
+</isif>
+
+<!--- Adjusted Results Warning--->
+<isif condition="#adjustBasketResults:isAdjusted EQ 'true'#">
+	<div class="alert alert-info" role="alert">
+		<istext key="shopping_cart.adjusted_items.warnung" />
+	</div>
+</isif>
+
+<!--- Update Variation Results Error--->
+<isif condition="#hasElements(updateVariationResults:Failures)#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="shopping_cart.update.error" /></li>
+	</ul>
+</isif>
+
+<!--- Update Variation Results Warning --->
+<isif condition="#updateVariationResults:isAdjusted EQ 'true'#">
+	<div class="alert alert-info" role="alert">
+		<istext key="shopping_cart.adjusted_items.warnung" />
+	</div>
+</isif>
+
+<!--- Basket Validation --->
+<isBasketValidationMessages basketValidationResults="#basketValidationResults#">
+
+<!--- Order Creation --->
+<isOrderCreationMessages orderCreationResult="#OrderCreationResult#" basketValidationResults="#BasketValidationResults#">
+
+
+<isRemovedProductsError removeFromBasketResults="#basketValidationResults:getParameterValues("RemoveFromBasketResult")#">
+<!--- END Global errors --->

@@ -1,0 +1,76 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(ProductBO:AttributeValue(VariationAttribute:Name))#">
+    <isset name="defaultValue" value="#ProductBO:AttributeValue(VariationAttribute:Name):Object#" scope="request" />
+<iselse>
+    <isset name="defaultValue" value="" scope="request" />
+</isif>
+
+<isset name="defaultValues" value="" scope="request">
+<isif condition="#hasLoopElements(defaultValue)#">
+    <isloop iterator="defaultValue" alias="defValue">
+       <isset name="defaultValues" value="#defaultValues.defValue#" scope="request"/>
+       <isif condition="#hasNext(defValue)#"><isset name="defaultValues" value="#defaultValues.'|'#" scope="request"/></isif>
+    </isloop>
+<iselse/>
+    <isset name="defaultValues" value="#defaultValue#" scope="request">
+</isif>
+
+<ul class="variation-attribute imageVariationList
+	<isif condition="#((VariationAttribute:PresentationOption EQ 'swatchImage') OR (VariationAttribute:PresentationOption EQ 'defaultAndSwatchImage'))#">swatchImage</isif>
+	<isif condition="#((VariationAttribute:PresentationOption EQ 'colorCode') OR (VariationAttribute:PresentationOption EQ 'defaultAndColorCode'))#">colorCode</isif>"
+	data-attribute-uuid="<isprint value="#VariationAttribute:UUID#"/>"
+>
+    <isloop iterator="VariationInfo:VariationValues(VariationAttribute)" alias="VariationValue">
+
+        <!--- get filtered variation product for selected attribute --->
+        <isloop iterator="VariationInfo:VariationProductBOs" alias="Variation">
+            <isif  condition="#Variation:Attribute(VariationAttribute:Name) EQ VariationValue#">
+                <isset name="VariationProduct" value="#Variation#" scope="request">
+            </isif>
+        </isloop>
+
+
+        <isset name="VariationValues" value="" scope="request">
+        <isif condition="#hasLoopElements(VariationValue)#">
+            <isloop iterator="VariationValue" alias="attrValue">
+                <isset name="VariationValues" value="#VariationValues.attrValue#" scope="request"/>
+                <isif condition="#hasNext(attrValue)#"><isset name="VariationValues" value="#VariationValues.'|'#" scope="request"/></isif>
+            </isloop>
+            <iselse/>
+            <isset name="VariationValues" value="#VariationValue#" scope="request">
+        </isif>
+
+        <li class="imageVariationListItem" >
+            <isset name="VariationProductSameConfiguration" value="#VariationInfo:VariationProduct(VariationAttribute, VariationValues)#" scope="request">
+
+            <isif condition="#isDefined(VariationProduct)#">
+                <isif condition="#NOT(isDefined(VariationProductSameConfiguration))#">
+                    <a data-variation-product-attribute="<isprint value="#VariationValue#"/>" data-variation-attribute="<isprint value="#VariationAttribute:Name#">" class="<isif condition="#(defaultValues EQ VariationValues)#">selected</isif>" href="javascript:void(false)" style="opacity: 0.3;" title="<istext key="product.available_in_different_configuration">">
+                        <isif condition="#isDefined(VariationAttribute:DisplayName) AND (VariationAttribute:DisplayName NE "")#">
+                            <isif condition="#(VariationAttribute:PresentationOption EQ 'colorCode') OR (VariationAttribute:PresentationOption EQ 'defaultAndColorCode')#">
+                                <span style="background-color:#'#'#<isprint value="#VariationProduct:AttributeValue(VariationAttribute:PresentationProductAttributeName):StringValue#">"<isif condition="#isDefined(VariationProduct) AND NOT(VariationProduct:Available)#">title="<istext key="product.variation.not_available.text" />"</isif>>&nbsp;</span>
+                            <iselse>
+                                <isinclude template="inc/product/variation/PresentationSwatchImage">
+                            </isif>
+                        <iselse>
+                            <img src="#WebRoot()#/img/not_available.png" alt="<isprint value="#VariationValues#"/>" <isif condition="#isDefined(VariationProduct) AND NOT(VariationProduct:Available)#">title="<istext key="product.variation.not_available.text" />"</isif>/>
+                        </isif>
+                    </a>
+                <iselse>
+                     <a data-variation-product-attribute="<isprint value="#VariationValue#"/>" data-variation-attribute="<isprint value="#VariationAttribute:Name#">" class="<isif condition="#(defaultValues EQ VariationValues)#">selected</isif>" href="javascript:void(false)">
+                         <isif condition="#isDefined(VariationAttribute:DisplayName) AND (VariationAttribute:DisplayName NE "")#">
+                             <isif condition="#(VariationAttribute:PresentationOption EQ 'colorCode') OR (VariationAttribute:PresentationOption EQ 'defaultAndColorCode')#">
+                                 <span style="background-color:#'#'#<isprint value="#VariationProduct:AttributeValue(VariationAttribute:PresentationProductAttributeName):StringValue#">"<isif condition="#isDefined(VariationProduct) AND NOT(VariationProduct:Available)#">title="<istext key="product.variation.not_available.text" />"</isif>>&nbsp;</span>
+                             <iselse>
+                                 <isinclude template="inc/product/variation/PresentationSwatchImage">
+                             </isif>
+                         <iselse>
+                             <img src="#WebRoot()#/img/not_available.png" alt="<isprint value="#VariationValues#"/>" <isif condition="#isDefined(VariationProduct) AND NOT(VariationProduct:Available)#">title="<istext key="product.variation.not_available.text" />"</isif>/>
+                        </isif>
+                     </a>
+                </isif>
+            </isif>
+        </li>
+    </isloop>
+</ul>

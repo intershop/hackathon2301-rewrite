@@ -1,0 +1,115 @@
+<iscontent compact="true" charset="UTF-8">
+
+<isif condition="#isDefined(cssClass)#"><div class="cssClass"></isif>
+	<isif condition="#NOT(basketbo:TaxCalculated)#">
+		<dt><istext key="#taxesLabel#"/></dt>
+		<dd><isprint value="#basketbo:TaxTotal#"/></dd>
+		<span class="error"><istext key="shopping_cart.tax.calculation.error" /></span
+	<iselse>
+		<isif condition="#hasElements(basketbo:TaxTotalsByTaxRate) OR hasElements(basketbo:Duties)#">
+			<isif condition="#(displayIHFMode EQ '3') AND (displayTaxesMode EQ '3')#">
+				<li class="<isprint value="#cssClass#">">
+					<dt><istext key="#ihfLabel#"/></dt>
+					<dd><isprint value="#basketbo:TaxesDutiesAndSurchargesTotal#"/></dd>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+				</li>
+			<iselseif condition="#(displayIHFMode EQ '2') AND (displayTaxesMode EQ '2')#">
+				<isif condition="#isDefined(basketbo:TaxTotalsByTaxRate)#">
+					<isloop iterator="basketbo:TaxTotalsByTaxRate" alias="Tax">
+						<dt>
+							<isif condition="#useShortNames EQ 'true'#">
+								<isif condition="#isDefined(Tax:ShortDisplayName)#">
+									<isprint value="#Tax:ShortDisplayName#"/>
+								<iselse>
+									<istext key="checkout.tax.text"/> <isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>	
+								</isif>
+							<iselse>
+								<isif condition="#isDefined(Tax:DisplayName)#">
+									<isprint value="#Tax:DisplayName#"/>
+								<iselse>
+									<istext key="#taxesLabel#"/>&nbsp;<isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>
+								</isif>
+							</isif>
+						</dt>
+						<dd><isprint value="#Tax:Amount#"/></dd>
+					</isloop>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+				</isif>
+				<isif condition="#isDefined(basketbo:Duties) AND hasElements(basketbo:Duties)#">
+					<isloop iterator="basketbo:Duties" alias="Fee">
+						<dt><isif condition="#useShortNames EQ 'true'#"><isprint value="#Fee:ShortDisplayName#"/><iselse><isprint value="#Fee:DisplayName#"/></isif></dt>
+						<dd><isprint value="#Fee:Amount#"/></dd>
+					</isloop>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+				
+				</isif>
+			<iselseif condition="#(displayIHFMode EQ '1') AND (displayTaxesMode EQ '1')#">
+					<dt><istext key="#taxesLabel#"/></dt>
+					<dd><isprint value="#basketbo:TaxTotal#"/></dd>
+					
+					<isif condition="#basketbo:DutiesAndSurchargesTotal:Available#">
+						<dt><istext key="#duLabel#"/></dt>
+						<dd><isprint value="#basketbo:DutiesAndSurchargesTotal#"/></dd>
+					</isif>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+			<iselse>
+				<isif condition="#displayTaxesMode EQ '1'#">
+					<!--- consolidate taxes --->
+					<dt><istext key="#taxesLabel#"/></dt>
+					<dd><isprint value="#basketbo:TaxTotal#"/></dd>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+					
+				<iselseif condition="#(displayTaxesMode EQ '2') AND isDefined(basketbo:TaxTotalsByTaxRate)#">
+					<!--- breakdown taxes --->
+					<isloop iterator="basketbo:TaxTotalsByTaxRate" alias="Tax">
+						<dt>
+							<isif condition="#useShortNames EQ 'true'#">
+								<isif condition="#isDefined(Tax:ShortDisplayName)#">
+									<isprint value="#Tax:ShortDisplayName#"/>
+								<iselse>
+									<istext key="checkout.tax.text"/> <isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>	
+								</isif>
+							<iselse>
+								<isif condition="#isDefined(Tax:DisplayName)#">
+									<isprint value="#Tax:DisplayName#"/>
+								<iselse>
+									<istext key="#taxesLabel#"/>&nbsp;<isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>
+								</isif>
+							</isif>
+						</dt>
+						<dd><isprint value="#Tax:Amount#"/></dd>
+					</isloop>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+				</isif>
+			</isif>
+		<iselse>
+			<isif condition="#(displayIHFMode EQ '1') OR (displayIHFMode EQ '2')#">
+				<dt><istext key="#ihfLabel#"/></dt>
+				<dd><isprint value="#basketbo:TaxesDutiesAndSurchargesTotal#"/></dd>
+				<isif condition="#estimated EQ 'true'#">
+					<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+				</isif>
+			<iselse>
+				<isif condition="#(displayTaxesMode EQ '1') OR (displayTaxesMode EQ '2')#">
+					<dt><istext key="#taxesLabel#"/></dt>
+					<dd><isprint value="#basketbo:TaxTotal#"/></dd>
+					<isif condition="#estimated EQ 'true'#">
+						<span class="help-block"><istext key="checkout.tax.calculated_at_checkout.text" /></span>
+					</isif>
+				</isif>
+			</isif>
+		</isif>
+	</isif>
+<isif condition="#isDefined(cssClass)#"></div></isif>

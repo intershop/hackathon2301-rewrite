@@ -1,0 +1,48 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isset name="PromotionInformationBOs" value="#PLI:Extension("PromotionInformation"):AppliedRebates#" scope="request"/>
+
+<!--- PLI Promotion Informations --->
+<isloop iterator="PromotionInformationBOs" alias="PromotionInformationBO" counter="promoCounter">
+	<isif condition="#(NOT(PromotionInformationBO:MessageDisabled)) OR (isDefined(PLI:FreeGift))#">
+		<isif condition="#NOT(PromotionInformationBO:MessageDisabled)#">
+			<div class="list-item-promo">
+				<isset name="PromoTitle" value="#PromotionInformationBO:Title(CurrentRequest:Locale)#" scope="request"/>
+				<isif condition="#isDefined(PromoTitle)#">
+					<isHtmlPrint value="#PromoTitle#" mode="storefront">
+					
+					<isif condition="#PromotionInformationBO:isPromotionExisting#">
+						<a href="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs', PromotionInformationBO:PromotionID), Parameter('DisplayType','dialog'))#" data-dialog class="details-link"
+							title="<istext key="promotion.detailslink.label"/>"><istext key="checkout.widget.promotion.details"></a>
+					<iselse>
+						<isset name="dialogId" value="#'data-local-modal-content-'.replace(PromotionInformationBO:PromotionID, '\\.', '-')#" scope="request"/>
+						<!--- <isset name="dialogId" value="#replace(PromotionInformationBO:PromotionID, '\\.', '-')#" scope="request"/>--->
+					    <a data-dialog href="[<isprint value="#dialogId#">]" class="details-link"><istext key="checkout.widget.promotion.details"></a> 
+						<!--- Promotion Details --->
+					    <div class="hidden" <isprint value="#dialogId#"> role="listbox">
+					      <div class="modal-dialog">
+					        <div class="modal-content">
+						        <div class="modal-header" class="item">
+						        	<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+									<h2 class="modal-title"><istext key="promotion.detaillist.title" /></h2>
+								</div>
+								<div class="modal-body">
+									<h3 class="flush"><isHtmlPrint value="#PromotionInformationBO:LongTitle(CurrentRequest:Locale)#"></h3>
+								</div>								
+					        </div>
+					      </div>
+					    </div>
+					</isif>										
+				</isif>
+			</div>
+		</isif>
+	</isif>
+</isloop>
+
+<!---Free Gift --->
+<isif condition="#PLI:FreeGift#">
+	<div class="list-item-promo"> 
+		<span class="-promoInfo"><istext key="checkout.pli.freegift.text" /></span>
+	</div>
+</isif>

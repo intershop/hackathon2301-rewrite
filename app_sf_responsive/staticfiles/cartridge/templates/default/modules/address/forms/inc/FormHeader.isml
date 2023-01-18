@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#webform:isInvalid#" >
+	<!-- Check if it a concurrent modification error occurred -->
+	<isif condition="#hasLoopElements(webform:Errors("error.concurrentModification"))#">
+		<div class="section">
+			<div class="alert alert-danger">
+				<p><istext key="account.address.warning.editedByAnother" /></p>
+			</div>
+			<div>
+				<a class="btn btn-default" href="javascript:window.location.reload()"><istext key="account.reloadpage.button.label"/></a>
+			</div>
+		</div>
+	<iselse>
+		<div class="alert alert-danger">
+			<istext key="account.address_error.message" />
+		</div>
+	</isif>
+</isif>
+
+<isif condition="#isDefined(isRegistration)#">
+	<!--- Address can always be used as invoice and shipping address --->
+	<input type="hidden" name="<isprint value="#webform:UseAsBillingAddress:QualifiedName#">" value="true" />
+	<input type="hidden" name="<isprint value="#webform:UseAsShippingAddress:QualifiedName#">" value="true" />
+</isif>

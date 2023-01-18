@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<ispipeline pipeline="ProcessContentNavigation-Breadcrumbs" alias="dict" params="#ParamMap(ParamEntry('RootID', navigationRoot), ParamEntry('Locale', locale), ParamEntry('PageletEntryPointID', currentPageletEntryPointID))#" />
+
+<ISBreadcrumb
+	showhomelink="true"
+	text0="#dict:Text0#"
+	link0="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', dict:EntryPoint0))#"
+	text1="#dict:Text1#"
+	link1="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', dict:EntryPoint1))#"
+	text2="#dict:Text2#"
+	link2="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', dict:EntryPoint2))#"
+	text3="#dict:Text3#"
+	link3="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', dict:EntryPoint3))#"
+	text4="#dict:Text4#"
+	link4="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', dict:EntryPoint4))#"
+	trailtext0="#dict:TrailText#"
+	separatetrailtext="true"
+>

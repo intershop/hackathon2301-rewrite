@@ -1,0 +1,54 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- TEMPLATENAME: CreateMap.isml --->
+<!--- helper to create a input parameter map for an ispipeline call until it is possible to
+      create a map with some isml function
+
+      mapname the name to store or lookup the map in the dictionary
+      mode add | new
+      key0-9
+      value0-9
+--->
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%@page import = "java.util.Map"%>
+<%@page import = "java.util.HashMap"%>
+<%
+    PipelineDictionary pd = getPipelineDictionary();
+    Map params = null;
+    String mapname = "Map";
+    Object map = getObject("mapname");
+    if(map != null)
+    {
+        mapname = map.toString();
+    }
+    if(pd.containsKey("mode"))
+    {
+        if(getObject("mode").toString().equals("add"))
+        {
+            params = (Map)getObject(mapname);
+            if(params == null)
+            { // no map specified
+                params = new HashMap();
+            }
+        }
+        else
+        {// unknown mode, fallback to create
+            params = new HashMap();
+        }
+    }
+    else
+    { // default mode: create
+         params = new HashMap();
+    }
+    for(int i=0;i<10;i++)
+    {
+        Object key = getObject("key"+i);
+        Object value = getObject("value"+i);
+        if(key != null)
+        {
+            params.put(key, value);
+        }
+        key = null;
+        value = null;
+    }
+    pd.put(mapname, params);
+%>

@@ -1,0 +1,44 @@
+<iscontent personalized="true" charset="UTF-8" compact="true">
+<iscachekey object="#ProductBO#">
+
+<isinclude template="modules/customer/Modules.isml">
+<isCurrentUserBO currentuserbo="CurrentUserBO">
+<ispipeline pipeline="ProcessProductReview-GetReviews" params="#ParamMap(ParamEntry('ProductBO', ProductBO), ParamEntry('ExcludedUserBO', CurrentUserBO), ParamEntry('ListNavigationVO', ListNavigationVO), ParamEntry('CategoryName', CategoryName), ParamEntry('CatalogID', CatalogID))#" alias="ReviewsDict"/>
+<isset name="ListNavigationVO" value="#ReviewsDict:ListNavigationVO#" scope="request">
+<isset name="Reviews" value="#ReviewsDict:Reviews#" scope="request">
+
+
+<isif condition="#hasLoopElements(Reviews)#">
+	<isif condition="#isDefined(ListNavigationVO)#">
+		<p><istext key="review.reviewd.by.other.text" parameter0="#ListNavigationVO:ElementCount#"></p>
+	<iselse>
+		<p><istext key="review.reviewd.by.other.text" parameter0="#Reviews:ElementCount#"></p>
+	</isif>
+	
+	<div>
+		<isloop iterator="Reviews" alias="Review">
+			<ISReviewDetails 
+				ReviewBO="#Review#"
+				DomainName="#DomainName#"
+				User="#CurrentUser#"
+				RichSnippetsEnabled="#RichSnippetsEnabled#"
+			>
+		</isloop>
+		
+		<isif condition="#(ShowPaging EQ 'true') AND (isDefined(ListNavigationVO) AND (ListNavigationVO:PageCount > 1))#">
+			<div class="pagination row col-xs-12">
+				<div class="row">
+					<ismappagination 
+						pipeline="#ListNavigationVO:HandlerPipeline.'-Paging'#"
+						itemcount="#ListNavigationVO:ElementCount#"
+						currentpage="#ListNavigationVO:CurrentPage#"
+						pagecount="#ListNavigationVO:PageCount#"
+						params="#ListNavigationVO:GenericHandlerPipelineParams#"
+					>
+				</div>
+			</div>
+		</isif>
+	</div>
+<iselse>
+	<p><istext key="review.no_reviews"></p>
+</isif>

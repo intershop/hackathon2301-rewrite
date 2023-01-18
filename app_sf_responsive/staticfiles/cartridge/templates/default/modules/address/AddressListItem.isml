@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset value="#replace(addressBO:ID, '\\.','\\-C')#" name="rowid" scope="request">
+<div class="col-md-12">
+	<div class="row myAccount-addressBox" data-testing-id="account-address-details">
+		<div class="col-xs-11 col-sm-7 col-md-5">
+			<div class="pull-right" id="myAccount-actionLinks-<isprint value="#rowid#">">
+				<a class="btn-tool update-address"
+					id="<isprint value="#rowid#">"
+					title="<istext key="account.addresses.edit_address.link" />"
+					href="#URL(Action('ViewUserAddressList-Edit'), Parameter('AddressID', addressBO:ID), Parameter('PreferredShipping', addressBO:ID EQ userBO:PreferredShipToAddressBO:ID), Parameter('PreferredBilling', addressBO:ID EQ userBO:PreferredInvoiceToAddressBO:ID), Parameter('AjaxRequestMarker', 'true'))#"
+				>
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a>
+				<isif condition="#removable EQ 'true'#">
+					<a class="btn-tool remove-address"
+						data-dialog
+						title="<istext key="account.addresses.delete_address.text" />"
+						href="#URL(Action('ViewUserAddressList-SelectPreferredAddresses'), Parameter('AddressID', addressBO:ID), Parameter('DeleteAddress', 'true'), Parameter('AjaxRequestMarker', 'true'))#"
+					>
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
+				</isif>
+			</div>
+			<isaddress address="#addressBO#">
+		</div>
+	</div>
+	<div class="section myAccount-editBox-<isprint value="#rowid#"> myAccount-editBox my-account-address-form-container" style="display:none;"></div>
+</div>

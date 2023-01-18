@@ -1,0 +1,108 @@
+<iscontent compact="true" charset="UTF-8">
+
+
+	<isif condition="#NOT(basketbo:TaxCalculated)#">
+	<tr>
+		<td><istext key="#taxesLabel#"/></td>
+		<td align="right"><isprint value="#basketbo:TaxTotal#"/></td>
+	</tr>	
+	<iselse>
+		<isif condition="#hasElements(basketbo:TaxTotalsByTaxRate) OR hasElements(basketbo:Duties)#">
+			<isif condition="#(displayIHFMode EQ '3') AND (displayTaxesMode EQ '3')#">
+				<tr class="<isprint value="#cssClass#">">
+					<td><istext key="#ihfLabel#"/></td>
+					<td align="right"><isprint value="#basketbo:TaxesDutiesAndSurchargesTotal#"/></td>
+				</tr>
+			<iselseif condition="#(displayIHFMode EQ '2') AND (displayTaxesMode EQ '2')#">
+				<isif condition="#isDefined(basketbo:TaxTotalsByTaxRate)#">
+				
+					<isloop iterator="basketbo:TaxTotalsByTaxRate" alias="Tax">
+					<tr>
+						<td>
+							<isif condition="#useShortNames EQ 'true'#">
+								<isif condition="#isDefined(Tax:ShortDisplayName)#">
+									<isprint value="#Tax:ShortDisplayName#"/>
+								<iselse>
+									<istext key="checkout.tax.text"/> <isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>	
+								</isif>
+							<iselse>
+								<isif condition="#isDefined(Tax:DisplayName)#">
+									<isprint value="#Tax:DisplayName#"/>
+								<iselse>
+									<istext key="#taxesLabel#"/>&nbsp;<isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>
+								</isif>
+							</isif>
+						</td>
+						<td align="right"><isprint value="#Tax:Amount#"/></td>
+					</tr>
+					</isloop>
+				
+				</isif>
+				<isif condition="#isDefined(basketbo:Duties) AND hasElements(basketbo:Duties)#">
+					<isloop iterator="basketbo:Duties" alias="Fee">
+					<tr>
+						<td><isif condition="#useShortNames EQ 'true'#"><isprint value="#Fee:ShortDisplayName#"/><iselse><isprint value="#Fee:DisplayName#"/></isif></td>
+						<td align="right"><isprint value="#Fee:Amount#"/></td>
+					</tr>
+					</isloop>
+				</isif>
+			<iselseif condition="#(displayIHFMode EQ '1') AND (displayTaxesMode EQ '1')#">
+				<tr>
+					<td><istext key="#taxesLabel#"/></td>
+					<td align="right"><isprint value="#basketbo:TaxTotal#"/></td>
+				</tr>	
+					<isif condition="#basketbo:DutiesAndSurchargesTotal:Available#">
+					<tr>
+						<td><istext key="#duLabel#"/></td>
+						<td align="right"><isprint value="#basketbo:DutiesAndSurchargesTotal#"/></td>
+					</tr>
+					</isif>
+			<iselse>
+				<isif condition="#displayTaxesMode EQ '1'#">
+				<tr>
+					<!--- consolidate taxes --->
+					<td><istext key="#taxesLabel#"/></td>
+					<td align="right"><isprint value="#basketbo:TaxTotal#"/></td>
+				</tr>
+				<iselseif condition="#(displayTaxesMode EQ '2') AND isDefined(basketbo:TaxTotalsByTaxRate)#">
+					<!--- breakdown taxes --->
+					<isloop iterator="basketbo:TaxTotalsByTaxRate" alias="Tax">
+					<tr>
+						<td>
+							<isif condition="#useShortNames EQ 'true'#">
+								<isif condition="#isDefined(Tax:ShortDisplayName)#">
+									<isprint value="#Tax:ShortDisplayName#"/>
+								<iselse>
+									<istext key="checkout.tax.text"/> <isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>	
+								</isif>
+							<iselse>
+								<isif condition="#isDefined(Tax:DisplayName)#">
+									<isprint value="#Tax:DisplayName#"/>
+								<iselse>
+									<istext key="#taxesLabel#"/>&nbsp;<isif condition="#isDefined(Tax:Rate)#"><isprint value="#Tax:Rate#"> %</isif>
+								</isif>
+							</isif>
+						</td>
+						<td align="right"><isprint value="#Tax:Amount#"/></td>
+					</tr>
+					</isloop>
+				</isif>
+			</isif>
+		<iselse>
+			<isif condition="#(displayIHFMode EQ '1') OR (displayIHFMode EQ '2')#">
+			<tr>
+				<td><istext key="#ihfLabel#"/></td>
+				<td align="right"><isprint value="#basketbo:TaxesDutiesAndSurchargesTotal#"/></td>
+			</tr>
+			<iselse>
+			
+				<isif condition="#(displayTaxesMode EQ '1') OR (displayTaxesMode EQ '2')#">
+				<tr>
+					<td><istext key="#taxesLabel#"/></td>
+					<td align="right"><isprint value="#basketbo:TaxTotal#"/></td>
+				</tr>
+				</isif>
+			
+			</isif>
+		</isif>
+	</isif>

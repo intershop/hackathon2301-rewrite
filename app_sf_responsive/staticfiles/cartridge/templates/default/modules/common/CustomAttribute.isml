@@ -1,0 +1,55 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+
+<isif condition="#attributelabel NE ''#">
+	<dt class="<isif condition="#twolined EQ 'true'#">ish-ca-type-block<iselse>ish-ca-type</isif>"><isprint value="#attributelabel#">:</dt>
+</isif>
+
+
+<isif condition="#attributevalue:Type EQ '1'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:IntValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '2'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:DoubleValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '3'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><ishtmlprint value="#attributevalue:StringValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '8'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:LongValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '9'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:BooleanValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '10'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:DateValue#" style="DATE_TIME_INPUT"></dd>
+<iselseif condition="#attributevalue:Type EQ '11'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:DecimalValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '12'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:MoneyValue:Value#"> <isprint value="#attributevalue:MoneyValue:CurrencyMnemonic#"></dd>
+<iselseif condition="#attributevalue:Type EQ '13'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:QuantityValue:Value#"> <isprint value="#attributevalue:QuantityValue:Unit#"></dd>
+<iselseif condition="#attributevalue:Type EQ '14'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><isprint value="#attributevalue:TextValue#"></dd>
+<iselseif condition="#attributevalue:Type EQ '17'#">
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><%
+	java.util.Iterator iter = (java.util.Iterator)getObject("attributevalue:Object");
+	while (iter.hasNext())
+	{
+		out.write(encodeString(getFormattedValue(iter.next(), 5)));
+		if(iter.hasNext())
+		{
+		 	out.write((String)getObject("attributeseparator"));
+		}
+	} %></dd>
+<iselseif condition="#(attributevalue:Type==6) or (attributevalue:Type==5) or 
+	(attributevalue:Type==4) or (attributevalue:Type==15) or 
+	(attributevalue:Type==16) or (attributevalue:Type==18)#">
+	
+	<dd class="ish-ca-value<isif condition="#twolined EQ 'true'#"> ish-ca-value-block</isif>"><%
+	java.util.Iterator iter = (java.util.Iterator)getObject("attributevalue:Object");
+	while (iter.hasNext())
+	{
+		out.write(encodeString(getFormattedValue(iter.next(), null)));
+		if(iter.hasNext())
+		{
+		 	out.write((String)getObject("attributeseparator"));
+		}
+	} %></dd>
+</isif>
+<dd style="clear:both;"></dd>

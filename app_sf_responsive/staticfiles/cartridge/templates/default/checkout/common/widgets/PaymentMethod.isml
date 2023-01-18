@@ -1,0 +1,13 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset name="CartPayment" value="#CurrentCartBO:Extension("Payment")#" scope="request"/>
+
+<div class="infobox">
+	<isif condition="#hasElements(CartPayment:PaymentBOs)#">
+		<a data-csrf-guarded class="pull-right btn-tool" href="#URL(Action('ViewCheckoutPayment-Review'))#" title="<istext key="checkout.address.update.label" />"><span class="glyphicon glyphicon-pencil"></span></a>
+	</isif>
+	<h3><istext key="checkout.widget.payment_method.heading" /></h3>
+	
+	<!---show payment details --->	
+	<isPaymentMethodDisplay paymentBOs="#CartPayment:PaymentBOs#">
+</div>

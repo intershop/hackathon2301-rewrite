@@ -1,0 +1,47 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<isset name="ImageViews" value="#ProductBO:Extension("Image"):ImageContainerBO:getImageViewIDsExcludePrimary(ImageType)#" scope="request">
+
+<isif condition="#hasElements(ImageViews)#">
+	<div <isif condition="#isDefined(ExpressShop)#">id="prodimgcarouselexprshop"<iselse>id="prodimgcarousel"</isif> class="carousel slide">
+		<div class="carousel-inner product-img-inner">
+			<isif condition="#isDefined(IncludePrimaryImage) AND (IncludePrimaryImage EQ 'false')#">
+			<iselse>
+				<picture>
+					<isif condition="#isDefined(UseSourceSet)#">
+						<ISProductImage ProductBO="#ProductBO#" ImageType="M" ImageView="#ImageView#" SourceSetMedia="(max-width: 991px)">
+					</isif>
+					<ISProductImage ProductBO="#ProductBO#" ImageType="#ImageType#" RichSnippetsEnabled="#RichSnippetsEnabled#">
+				</picture>
+			</isif>
+			<isloop iterator="ImageViews" alias="ImageView">
+				<picture class="hidden-xs">
+					<isif condition="#isDefined(UseSourceSet)#">
+						<ISProductImage ProductBO="#ProductBO#" ImageType="M" ImageView="#ImageView#" SourceSetMedia="(max-width: 991px)">
+					</isif>
+					<ISProductImage ProductBO="#ProductBO#" ImageType="#ImageType#" ImageView="#ImageView#" RichSnippetsEnabled="#RichSnippetsEnabled#">
+				</picture>
+			</isloop>
+		</div>
+		<a class="left carousel-control" <isif condition="#isDefined(ExpressShop)#">href="#'#'#prodimgcarouselexprshop"<iselse>href="#'#'#prodimgcarousel"</isif> role="button" data-slide="prev">
+			<span class="glyphicon glyphicon-chevron-left"></span>
+		</a>
+		<a class="right carousel-control" <isif condition="#isDefined(ExpressShop)#">href="#'#'#prodimgcarouselexprshop"<iselse>href="#'#'#prodimgcarousel"</isif> role="button" data-slide="next">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+		</a>
+	</div>
+<iselse>
+	<div id="prodimgcarousel" class="carousel slide">
+		<div class="product-img-main product-img-inner">
+			<picture>
+				<isif condition="#isDefined(UseSourceSet)#">
+					<ISProductImage ProductBO="#ProductBO#" ImageType="M" ImageView="front" SourceSetMedia="(max-width: 991px)">
+				</isif>
+				<ISProductImage ProductBO="#ProductBO#" ImageType="#ImageType#" ImageView="front" RichSnippetsEnabled="#RichSnippetsEnabled#">
+			</picture>
+		</div>
+	</div>
+</isif>

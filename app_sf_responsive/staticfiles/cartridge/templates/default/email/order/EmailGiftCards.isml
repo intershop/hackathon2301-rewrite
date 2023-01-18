@@ -1,0 +1,47 @@
+<iscontent type="text/html" session="false" charset="UTF-8" compact="true">
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+
+<subject><istext key="email.gift_cards.heading" parameter0="#ChannelName#" encoding="off"/></subject>
+
+<isinclude template="email/mailTemplate/MailHeader"/>
+
+<p class="header">
+	<istext key="email.gift_cards.heading" parameter0="#ChannelName#" /><br />
+	<isif condition="#isDefined(ReceiverName)#">
+		<span class="name"><isprint value="#ReceiverName#"/></span>
+	</isif>
+</p>
+<p>
+	<istext key="email.gift_cards.present" parameter0="#encodeValue(SenderName)#" parameter1="#encodeValue(MailFrom)#" encoding="off" />
+</p>
+
+<img alt="<isprint value="#PLI:ProductBO:Name#"/>" src="<isprint value="#ContentUrlEx('', '', '', '', '', PLI:ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("S"):ContentRef)#"/>">
+<p>
+	<isprint value="#PLI:ProductName#"><br />
+	<istext key="email.gift_cards.value" parameter0="#PLI:SingleBasePriceNet#"><br />
+	<isset name="GiftCardCredentialsIterator" value="#GiftCardCredentials:Iterator#" scope="request" />
+	<isloop iterator="GiftCardCredentialsIterator" alias="Credentials">
+		<istext key="email.gift_cards.number" parameter0="#Credentials:get("number")#" /> <br/>
+		<isif condition="#isDefined(Credentials:get("pin")) AND (Credentials:get("pin") NE '')#">
+			<istext key="email.gift_cards.pin" parameter0="#Credentials:get("pin")#" />
+		</isif> 
+	</isloop>
+	
+</p>
+<p>
+	<istext key="email.gift_cards.redeem" parameter0="#encodeValue(URLEX(InsecureURL,'',Action('ViewHomepage-Start')))#" parameter1="#encodeValue(ChannelName)#" parameter2="#encodeValue(URLEX(SecureURL,'',Action('ViewUserAccount-Start')))#" encoding="off" /><br /> 
+</p>
+
+<p>
+	<istext key="email.gift_cards.message" />
+</p>
+<p>
+	<isprint value="#MailBody#" encoding="nl2br,html"/>
+</p>
+
+<p>
+	<istext key="email.recommended_product.happy_shopping.text" parameter0="#encodeValue(URLEX(InsecureURL,'',Action('ViewHomepage-Start')))#" parameter1="#encodeValue(ChannelName)#" encoding="off" />
+</p>
+
+<isinclude template="email/mailTemplate/MailFooter"/>

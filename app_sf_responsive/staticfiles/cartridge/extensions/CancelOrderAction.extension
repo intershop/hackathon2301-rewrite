@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensionpoint:ExtensionPointModel
+    xmlns:extensionpoint="http://www.intershop.de/extensionpoint/2011"
+    name="CancelOrderAction">
+    <extensionBindings type="isml"
+        extensionPoint="account/orders/OrderDetails-OrderActions"
+        extension="account/orders/CancelOrder.isml" />
+</extensionpoint:ExtensionPointModel>

@@ -1,0 +1,44 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<isinclude template="modules/hbs/Modules">	<!--- Needed for using the hbs (Handlebars) module --->
+<isinclude template="modules/rest/Modules">
+
+<ishbsJavscriptLibraries
+	excludeAccountingLib="true"
+	excludeDateFormatLib="true"
+>
+<ISRESTConfiguration>
+
+<!--- Get the configuration/preference for link "Subscriptions" --->
+<ISGetCurrentApplication ApplicationBO="ApplicationBO">
+<isset name="EnableRecurringOrders" value="#ApplicationBO:Configuration:String("EnableRecurringOrders")#" scope="request"/>
+
+<!--- Show subscription selection widget only if user is logged in and the preference is enabled --->
+<isif condition="#(CurrentSession:isLoggedIn) AND (isDefined(EnableRecurringOrders)) AND (EnableRecurringOrders EQ "true")#">
+	<iscomment>TODO this check must use a permission (not a role), but implicit permission are given</iscomment>
+	<isif condition="#NOT isDefined(UserBO:Extension("UserBORoleExtension")) OR NOT UserBO:Extension("UserBORoleExtension"):hasRole("APP_B2B_OCI_USER")#">
+
+		<!---
+			Defined specific localization properties that are needed only for JavaScript Handlebars helper "intervalFormatter"
+			!!!This block should be improved with a new better technique to load localization properties from client side!!!
+		--->
+		<script type="text/javascript">
+			$(function() {
+				subscriptionsEditFormLocalizationProperties = {};
+				subscriptionsEditFormLocalizationProperties[RESTConfiguration.getLocale()] = {
+					"subscription.period.days": "<istext key="subscription.period.days"/>",
+					"subscription.period.weeks": "<istext key="subscription.period.weeks"/>",
+					"subscription.period.months": "<istext key="subscription.period.months"/>",
+					"subscription.period.years": "<istext key="subscription.period.years"/>"
+				};
+			});
+		</script>
+
+		<!--- Extension "RecurringBasket" is used within the "SubscriptionEditForm" --->
+		<isset scope="request" name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#">
+		<ishbs folder="cart/subscriptions" name="SubscriptionEditForm">
+
+		<isDatePicker start_date="new Date()" locale="#CurrentSession:Locale#" input_id="CartToSubscriptionStartDate">
+		<isDatePicker start_date="new Date()" locale="#CurrentSession:Locale#" input_id="CartToSubscriptionEndDate">
+	</isif>
+</isif>

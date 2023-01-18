@@ -1,0 +1,232 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<isinclude template="modules/captcha/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="shopping_cart.email_shopping_cart.heading" /></h2>
+		</div>
+		
+		<isif condition="#(EmailShoppingCartForm:Submitted AND (NOT EmailShoppingCartForm:Invalid))#">
+		
+			<div class="modal-body">
+				<isif condition="#isDefined(ERROR_EMAIL_NOT_SENT)#">
+					<div class="alert alert-danger">
+						<div class="kor-form-error-message-contents">
+							<istext key="shopping_cart.email_shopping_cart.email_sent.error" />
+						</div>
+					</div>
+				<iselse>
+					<p><istext key="shopping_cart.email_shopping_cart.email_sent.message" /></p>
+				</isif>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" data-dismiss="modal" type="submit"><istext key="shopping_cart.email_shopping_cart.close_window.link" /></button>
+			</div>
+		
+		<iselse>
+		
+			<isform action="#URL(Action('ViewCartEmail-Dispatch'))#" class="bv-form form-horizontal" method="post" name="EmailShoppingCartForm" data-hijax="true">
+					<input type="hidden" name="ProductUUID" value="<isprint value="#ProductBO:ID#">">
+					<input type="hidden" name="submittype" data-form-action="true"/>
+					
+				<div class="modal-body">
+				
+					<isif condition="#EmailShoppingCartForm:Invalid#" >
+						<div class="alert alert-danger">
+							<div role="alert" class="kor-form-error-message-small">
+								<div class="kor-form-error-message-contents">
+									<istext key="shopping_cart.email_shopping_cart.form_error" />
+								</div>
+							</div>
+						</div>
+					</isif>
+					
+					
+		
+					<div class="indicates-required"><span>*</span> <istext key="shopping_cart.email_shopping_cart.required_field.text" /></div>
+		
+					<fieldset>
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsName_0:Errors)#">server-error</isif> ">
+							<label  class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_name.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" name="<isprint value="#EmailShoppingCartForm:FriendsName_0:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsName_0:Value#">" maxlength="70" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="shopping_cart.email_shopping_cart.friend_name" fieldname="#EmailShoppingCartForm:FriendsName_0#">
+							</div>
+						</div>
+		
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsEmail_0:Errors)#">server-error</isif>">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_email.label" /><span class="required">*</span></label>
+							<div class="col-sm-8">
+								<input class="form-control" 
+								required 
+								type="email"
+								data-bv-emailaddress-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								data-bv-notempty-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								name="<isprint value="#EmailShoppingCartForm:FriendsEmail_0:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsEmail_0:Value#">" maxlength="256" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" error_message_override="shopping_cart.email_shopping_cart.email.invalid.error" fieldname="#EmailShoppingCartForm:FriendsEmail_0#">
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset data-inputindex="1" <isif condition="#(EmailShoppingCartForm:FriendsName_1:Value.EmailShoppingCartForm:FriendsEmail_1:Value) EQ ''#">class="hidden"</isif>>
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsName_1:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_name.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" name="<isprint value="#EmailShoppingCartForm:FriendsName_1:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsName_1:Value#">" maxlength="70" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="shopping_cart.email_shopping_cart.friend_name" fieldname="#EmailShoppingCartForm:FriendsName_1#">
+							</div>
+						</div>
+		
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsEmail_1:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_email.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control"
+								type="email"
+								data-bv-emailaddress-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								data-bv-notempty-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+ 								name="<isprint value="#EmailShoppingCartForm:FriendsEmail_1:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsEmail_1:Value#">" maxlength="256" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" error_message_override="shopping_cart.email_shopping_cart.email.invalid.error" fieldname="#EmailShoppingCartForm:FriendsEmail_1#">
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset data-inputindex="2"  <isif condition="#(EmailShoppingCartForm:FriendsName_2:Value.EmailShoppingCartForm:FriendsEmail_2:Value) EQ ''#">class="hidden"</isif>>
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsName_2:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_name.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" name="<isprint value="#EmailShoppingCartForm:FriendsName_2:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsName_2:Value#">" maxlength="70" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="shopping_cart.email_shopping_cart.friend_name" fieldname="#EmailShoppingCartForm:FriendsName_2#">
+							</div>
+						</div>
+		
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsEmail_2:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_email.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" 
+								type="email"
+								data-bv-emailaddress-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								data-bv-notempty-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								name="<isprint value="#EmailShoppingCartForm:FriendsEmail_2:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsEmail_2:Value#">"  maxlength="256" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" error_message_override="shopping_cart.email_shopping_cart.email.invalid.error" fieldname="#EmailShoppingCartForm:FriendsEmail_2#">
+							</div>
+						</div>
+					</fieldset>
+				
+					<fieldset data-inputindex="3"  <isif condition="#(EmailShoppingCartForm:FriendsName_3:Value.EmailShoppingCartForm:FriendsEmail_3:Value) EQ ''#">class="hidden"</isif>>
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsName_3:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_name.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" name="<isprint value="#EmailShoppingCartForm:FriendsName_3:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsName_3:Value#">" maxlength="70" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="shopping_cart.email_shopping_cart.friend_name" fieldname="#EmailShoppingCartForm:FriendsName_3#">
+							</div>
+						</div>
+		
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsEmail_3:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_email.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" 
+								type="email"
+								data-bv-emailaddress-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								data-bv-notempty-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								 name="<isprint value="#EmailShoppingCartForm:FriendsEmail_3:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsEmail_3:Value#">" maxlength="256" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" error_message_override="shopping_cart.email_shopping_cart.email.invalid.error" fieldname="#EmailShoppingCartForm:FriendsEmail_3#">
+							</div>
+						</div>
+					</fieldset>
+					
+					<fieldset data-inputindex="4"  <isif condition="#(EmailShoppingCartForm:FriendsName_4:Value.EmailShoppingCartForm:FriendsEmail_4:Value) EQ ''#">class="hidden"</isif>>
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsName_4:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_name.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" name="<isprint value="#EmailShoppingCartForm:FriendsName_4:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsName_4:Value#">"  maxlength="70" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="shopping_cart.email_shopping_cart.friend_name" fieldname="#EmailShoppingCartForm:FriendsName_4#">
+							</div>
+						</div>
+		
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:FriendsEmail_4:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.friend_email.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" 
+								type="email"
+								data-bv-emailaddress-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								data-bv-notempty-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+ 								name="<isprint value="#EmailShoppingCartForm:FriendsEmail_4:QualifiedName#">" value="<isprint value="#EmailShoppingCartForm:FriendsEmail_4:Value#">" maxlength="256" />
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" error_message_override="shopping_cart.email_shopping_cart.email.invalid.error" fieldname="#EmailShoppingCartForm:FriendsEmail_4#">
+							</div>
+						</div>
+					</fieldset>
+					
+					<p>
+						<a href="#'#'#" class="kor-input-add" ><istext key="shopping_cart.email_shopping_cart.add_recipient_link" /></a> <small class="help-block"><istext key="shopping_cart.email_shopping_cart.add_recipient_message" /></small>
+					</p>
+					
+				
+					
+					<div class="form-group">
+						<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.personalized_message.text" /></label>
+						<div class="col-sm-8">
+							<textarea class="form-control" maxlength="30000" data-charactercounter="cCounter<isprint value="#EmailShoppingCartForm:EmailMessage:QualifiedName#">" name="<isprint value="#EmailShoppingCartForm:EmailMessage:QualifiedName#">" <isif condition="#hasElements (EmailShoppingCartForm:EmailMessage:Errors)#">class="ish-error"</isif> >
+								<isprint value="#EmailShoppingCartForm:EmailMessage:Value#">
+							</textarea>
+							<isFieldErrorMessagePlaceholder error_message_override="common.field.error.profanitycheck" class="kor-field-error-bottom" fieldname="#EmailShoppingCartForm:EmailMessage#">
+							<small class="help-block "><istext key="checkout.shipping_method.instructions_max_limit.pre.text" /> <span id="cCounter<isprint value="#EmailShoppingCartForm:EmailMessage:QualifiedName#">">30000</span> <istext key="checkout.shipping_method.instructions_max_limit.post.text" /></small>
+						</div>
+					</div>
+		
+					<fieldset>
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:UserName:Errors)#">server-error</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.your_name.label" /></label>
+							<div class="col-sm-8">
+								<input class="form-control" type="text" name="<isprint value="#EmailShoppingCartForm:UserName:QualifiedName#">" maxlength="70" 
+									value="<isif condition="#EmailShoppingCartForm:UserName:Value NE ''#"><isprint value="#EmailShoppingCartForm:UserName:Value#">
+											<iselse><isprint value="#CurrentUser:Profile:DataSheet:FirstName.' '.CurrentUser:Profile:DataSheet:LastName#">
+											</isif>"
+									
+								/>
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="shopping_cart.email_shopping_cart.your_name" fieldname="#EmailShoppingCartForm:UserName#">
+							</div>
+						</div>
+		
+						<div class="form-group <isif condition="#hasElements (EmailShoppingCartForm:UserEmail:Errors)#">server-error"</isif> ">
+							<label class="control-label col-sm-4"><istext key="shopping_cart.email_shopping_cart.your_email.label" /><span class="required">*</span></label>
+							<div class="col-sm-8">
+								<input class="form-control" 
+								required 
+								type="email"
+								data-bv-emailaddress-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								data-bv-notempty-message="<istext key="shopping_cart.email_shopping_cart.email.invalid.error"/>"
+								 name="<isprint value="#EmailShoppingCartForm:UserEmail:QualifiedName#">" maxlength="256" 
+									value="<isif condition="#EmailShoppingCartForm:UserEmail:Value NE ''#"><isprint value="#EmailShoppingCartForm:UserEmail:Value#">
+											<iselse><isprint value="#CurrentUser:Profile:Credentials:Login#">
+											</isif>" 
+									
+								/>
+								<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" error_message_override="shopping_cart.email_shopping_cart.email.invalid.error" fieldname="#EmailShoppingCartForm:UserEmail#">
+							</div>
+						</div>
+					</fieldset>
+					<fieldset>
+						<div class="form-group<isif condition="#EmailShoppingCartForm:recaptcharesponsefield:Invalid#"> server-error</isif>">
+							<div class="col-sm-8 col-sm-offset-4 row">
+								<ISCaptchaFormField fieldname="EmailShoppingCartForm:recaptcharesponsefield" enablepreference="intershop.CaptchaPreferences.EmailShoppingCart" captchaaction="email_shopping_cart">
+							</div>
+						 </div>
+					</fieldset>
+					
+					<small class="help-block"><istext key="shopping_cart.email_shopping_cart.disclaimer.privacy_policy" parameter0="#encodeValue(URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systempage.privacyPolicy.pagelet2-Page')))#" encoding="off"/></small>
+					<small class="help-block"><istext key="shopping_cart.email_shopping_cart.disclaimer.price_policy" /></small>
+					<small class="help-block"><istext key="shopping_cart.email_shopping_cart.disclaimer" parameter0="#CurrentProductRepository:DisplayName#"/></small>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="submit"class="btn btn-primary" name="sendMail"><istext key="shopping_cart.email_shopping_cart.send_mail.button.label" /></button>
+					<button type="submit" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="shopping_cart.email_shopping_cart.cancel.button.label" /></button>
+				</div>
+			</isform>
+			
+		</isif>
+	</div>
+</div>

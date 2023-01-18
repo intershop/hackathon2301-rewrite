@@ -1,0 +1,49 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false">
+<!---
+	This Module prints the taxes, duties and fees contained in basketbo according to the basket-configuration values: "Display Taxes"
+	and "Display Handling Fee". Taxes have a short and a long name.
+
+	Parameters:
+		- useShortNames (required)
+			useShortName is used to decide which of the names is displayed
+		- estimated (optional)
+			print additional label
+		- taxesLabel (required)
+			label, e.g. "checkout.tax.TaxesLabel.SalesTax" (key for localized text included in the checkout_xx.properties)
+		- ihfLabel (required)
+			label, e.g. "checkout.tax.ihfLabel.Long" or "checkout.tax.ihfLabel.Short" (key for localized text included in the checkout_xx.properties)
+		- duLabel
+		  label, e.g. "checkout.tax.duLabel" (key for localized text included in the checkout_xx.properties)
+		- displayIHFMode
+
+		- displayTaxesMode
+
+		- basketbo (required)
+			the basketBO object (the source of the information)
+
+	Example:
+		...
+		<ISTaxesBox
+			basketbo="#CurrentCartBO#"
+			useShortNames="true"
+			taxesLabel="checkout.tax.TaxesLabel.SalesTax"
+			ihfLabel="checkout.tax.ihfLabel.Short"
+			duLabel="checkout.tax.duLabel"
+			displayIHFMode="#BasketDisplayHandlingFee:StringValue#"
+			displayTaxesMode="#BasketDisplayTaxes:StringValue#">
+		...
+ --->
+<ismodule template = "cart/email/modules/TaxesBox.isml"
+	name="TaxesBoxEmail"
+	attribute="useShortNames"
+	attribute="estimated"
+	attribute="taxesLabel"
+	attribute="ihfLabel"
+	attribute="duLabel"
+	attribute="displayIHFMode"
+	attribute="displayTaxesMode"
+	attribute="basketbo"
+	attribute="cssClass"
+	strict="true"
+>
+

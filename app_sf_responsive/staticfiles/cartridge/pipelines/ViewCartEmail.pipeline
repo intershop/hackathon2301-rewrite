@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewCartEmail" overrideMode="Inherit" type="view">
+<!--process email parameter 
+reciepient email
+@Location 3,11-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text1"/>
+<!--system page call parameter friend email
+@Location 3,9-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text2"/>
+<!--system page call parameter friend name
+@Location 3,12-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text3"/>
+<!--NO process parameter reciepient name
+
+@Location 3,13-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text4"/>
+<!--system page call parameter
+SenderName, SenderEmail
+@Location 3,6-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text5"/>
+<!--pagelet entry point for 
+pagletentrypoint.isml 
+
+@Location 1,14-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text7"/>
+<!--process email parameter (rendering)
+template, cardreadonly, dictionary 
+
+@Location 3,15-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text8"/>
+<!--system page call parameter
+EmailMessage
+@Location 3,7-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text9"/>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction0"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewCartEmail-SendMail"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+<!--@BendPoints 3,3 3,4-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode0"/>
+    <parameterBindings name="Key_0" objectPath="sendMail"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="This:Start"/>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" strict="true" name="GetEmailAFriendForm"
+      callMode="Private">
+<!--@BendPoints 1,10-->
+    <nodeSuccessors name="next" next="CreateForm0"/>
+  </nodes>
+<!--@Location 0,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm0">
+    <configurationValues name="FormName" value="EmailShoppingCartForm"/>
+    <configurationValues name="FormResource" value="EmailShoppingCart"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 1,12-->
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="FormAlias" nullBinding="true"/>
+    <parameterBindings name="FormName" nullBinding="true"/>
+    <parameterBindings name="FormResource" nullBinding="true"/>
+    <returnValueBindings name="Form" objectPath="EmailShoppingCartForm"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="EmailShoppingCartForm" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="SendMail">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <startNode referencedName="ViewCart-Prefix"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="ValidateForm0"/>
+    <startNode referencedName="This:GetEmailAFriendForm"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm0">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="GetFormRecord0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="Form" objectPath="EmailShoppingCartForm"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetFormRecord0">
+    <pipelet href="enfinity:/core/pipelets/GetFormRecord.xml"/>
+    <nodeSuccessors name="next" next="GetFormRecord1"/>
+    <parameterBindings name="RecordID" constant="EmailShoppingCartForm_FriendsName"/>
+    <returnValueBindings name="FormRecord" objectPath="FriendsNames"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetFormRecord1">
+    <pipelet href="enfinity:/core/pipelets/GetFormRecord.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <parameterBindings name="RecordID" constant="EmailShoppingCartForm_FriendsEmail"/>
+    <returnValueBindings name="FormRecord" objectPath="FriendEmails"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="LoopNode0"/>
+    <parameterBindings name="InValue_1" objectPath="EmailShoppingCartForm_EmailMessage"/>
+    <parameterBindings name="InValue_2" objectPath="EmailShoppingCartForm_UserEmail"/>
+    <parameterBindings name="InValue_3" objectPath="EmailShoppingCartForm_UserName"/>
+    <parameterBindings name="InValue_4" objectPath="Repository:DisplayName"/>
+    <returnValueBindings name="OutValue_1" objectPath="EmailMessage"/>
+    <returnValueBindings name="OutValue_2" objectPath="SenderEmail"/>
+    <returnValueBindings name="OutValue_3" objectPath="SenderName"/>
+    <returnValueBindings name="OutValue_4" objectPath="ChannelDisplayName"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode0" loop="FriendEmails:KeySet">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <entry key="Key">
+      <nodeSuccessors name="loop_entry_next" next="GetEntryFromMap0"/>
+    </entry>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetEntryFromMap0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetEntryFromMap.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="InMap" objectPath="FriendEmails"/>
+    <parameterBindings name="Key" objectPath="Key"/>
+    <returnValueBindings name="Value" objectPath="FriendsEmail"/>
+  </nodes>
+<!--@Location 2,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="FriendsEmail"
+      operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="JoinNode2"/>
+    <nodeSuccessors name="decision_no" next="AddObjectToCollection11"/>
+  </nodes>
+<!--@Location 0,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="RemoveDictionaryValue0"/>
+  </nodes>
+<!--@Location 0,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="FriendsEmail"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+<!--@BendPoints 1,17 3,17-->
+    <nodeSuccessors name="next" next="LoopNode0_Entry"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToCollection11">
+    <pipelet href="enfinity:/core/pipelets/AddObjectToCollection.xml"/>
+    <nodeSuccessors name="next" next="GetEntryFromMap1"/>
+    <parameterBindings name="InObject" objectPath="FriendsEmail"/>
+    <returnValueBindings name="OutIterator" objectPath="ReceipientEmails"/>
+  </nodes>
+<!--@Location 2,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetEntryFromMap1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetEntryFromMap.xml"/>
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <parameterBindings name="InMap" objectPath="FriendsNames"/>
+    <parameterBindings name="Key" objectPath="Key"/>
+    <returnValueBindings name="Value" objectPath="FriendsName"/>
+  </nodes>
+<!--@Location 2,14-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+    <nodeSuccessors name="ERROR" next="InteractionNode1"/>
+    <parameterBindings name="PageletEntryPointID" constant="systempage.cart.email.pagelet2-Page"/>
+    <parameterBindings name="ResourceSetID" constant="app_sf_responsive"/>
+    <startNode referencedName="ProcessPagelet-LookupPageletEntryPoint"/>
+  </nodes>
+<!--@Location 2,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentRequest:PipelineDictionary"/>
+    <parameterBindings name="InValue_10" constant="true"/>
+    <parameterBindings name="InValue_3" constant="render/PageletEntryPoint"/>
+    <returnValueBindings name="OutValue_1" objectPath="Dictionary"/>
+    <returnValueBindings name="OutValue_10" objectPath="CartReadonly"/>
+    <returnValueBindings name="OutValue_3" objectPath="EmailTemplate"/>
+  </nodes>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="Error" next="SetDictionaryValue0"/>
+<!--@BendPoints 1,31-->
+    <nodeSuccessors name="Success" next="RemoveDictionaryValue2"/>
+    <parameterBindings name="LocaleID" objectPath="CurrentRequest:Locale:LocaleID"/>
+    <startNode referencedName="ProcessEMail-Send"/>
+  </nodes>
+<!--@Location 1,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="ERROR_EMAIL_NOT_SENT"/>
+    <configurationValues name="Value" value="EmailNotSent"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 5,16-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+  </nodes>
+<!--@Location 5,18-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="cart/EmailShoppingCart"/>
+  </nodes>
+<!--@Location 0,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue2">
+    <configurationValues name="Key" value="FriendsName"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue1"/>
+  </nodes>
+<!--@Location 0,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue1">
+    <configurationValues name="Key" value="ReceipientEmails"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 4,14-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="cart/EmailShoppingCart"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+<!--@BendPoints 11,16-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Start">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <startNode referencedName="This:GetEmailAFriendForm"/>
+  </nodes>
+</pipeline:Pipeline>

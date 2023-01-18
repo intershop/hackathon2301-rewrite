@@ -1,0 +1,134 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#(isDefined(PackSlipMessage_Switch) AND (PackSlipMessage_Switch EQ 'true')) AND NOT (Bucket:SelectedBasketShippingMethodBO:DigitalDelivery)#">
+	<isset name="Subform" value="#PackSlipMessageForm:get(Bucket:ID)#" scope="request" />
+
+	<isif condition="#not(Subform:PackSlipTo:ValueMissing)#">
+		<isset name="email_to" value="#Subform:PackSlipTo:Value#" scope="request" />
+	<iselse>
+		<isGetIndirectValue key="#'PackSlipMessageForm_'.Bucket:ID.'_PackSlipTo'#" entry="email_to" print="false">
+		<isif condition="#email_to EQ ''#">
+			<isset name="email_to" value="#Bucket:PackSlipMessage:Message:To#" scope="request" />
+		</isif>
+	</isif>
+
+	<isif condition="#not(Subform:PackSlipFrom:ValueMissing)#">
+		<isset name="email_from" value="#Subform:PackSlipFrom:Value#" scope="request" />
+	<iselse>
+		<isGetIndirectValue key="#'PackSlipMessageForm_'.Bucket:ID.'_PackSlipFrom'#" entry="email_from" print="false">
+		<isif condition="#email_from EQ ''#">
+			<isset name="email_from" value="#Bucket:PackSlipMessage:Message:From#" scope="request" />
+		</isif>	
+	</isif>
+
+	<isif condition="#not(Subform:PackSlipText:ValueMissing)#">
+		<isset name="text" value="#Subform:PackSlipText:Value#" scope="request" />
+	<iselse>
+		<isGetIndirectValue key="#'PackSlipMessageForm_'.Bucket:ID.'_PackSlipText'#" entry="text" print="false">
+		<isif condition="#text EQ ''#">
+			<isset name="text" value="#Bucket:PackSlipMessage:Message:Message#" scope="request" />
+		</isif>	
+	</isif>
+
+	<div class="packslip-message section">
+
+		<!---Add Pack Slip Message Checkbox --->
+		<div class="checkbox <isif condition="#Subform:isInvalid#">has-error<isset name = "errorcheck" value="true" scope = "request"></isif>">
+			<label for="PackSlipMessage_<isprint value="#Bucket:ID#">"> <input
+				type="checkbox" data-toggle="collapse"
+				data-target="#'#'#packageslip_<isprint value="#Bucket:ID#">"
+				name="packingSlipMessage_<isprint value="#Bucket:ID#">"
+				id="PackSlipMessage_<isprint value="#Bucket:ID#">" value="true"
+				<isif condition="#isDefined(email_to) OR isDefined(email_from) OR isDefined(text)#">
+						checked = "checked"
+					</isif> />
+				<istext key="checkout.shipping.packingSlipMessage.checkbox.text" />
+			</label>
+		</div>
+
+		<!---Input Area --->
+		<div class="collapse<isif condition="#isDefined(email_to) OR isDefined(email_from) OR isDefined(text)#"> in</isif>" id="packageslip_<isprint value="#Bucket:ID#">" >
+			<br />
+			
+			<!--- To  --->
+			<isif condition="#Subform:PackSlipTo:isInvalid#">
+				<isif condition="#Subform:PackSlipTo:isError("error.maxlength")#">
+					<div role="alertdialog" class="alert alert-danger col-sm-offset-2">
+						<istext key="checkout.shipping.pack_slip.to.error.maxlength" />
+					</div>
+				<iselseif condition="#Subform:PackSlipTo:isError("error.profanitycheck")#">
+					<div role="alertdialog" class="alert alert-danger col-sm-offset-2">
+						<istext key="checkout.shipping.profanity.error" />
+					</div>
+				</isif>
+			</isif>
+
+			<div class="form-group<isif condition="#(Subform:PackSlipTo:isInvalid) AND (Subform:PackSlipTo:isError("error.profanitycheck"))#"> has-error</isif>">
+				<label for="PackSlipTo" class="control-label col-sm-2">
+					<istext key="checkout.gifting.to" />
+				</label>
+				<div class="col-sm-10">
+					<input type="text" maxlength="256" autocomplete="off" id="PackSlipTo"
+						name="PackSlipMessageForm_<isprint value="#Bucket:ID#">_PackSlipTo"
+						class="form-control" value="<isprint value = "#email_to#">" 
+					/>
+				</div>
+			</div>
+	
+			<!--- From  --->
+			<isif condition="#Subform:PackSlipFrom:isInvalid#">
+				<isif condition="#Subform:PackSlipFrom:isError("error.maxlength")#">
+					<div role="alertdialog" class="alert alert-danger col-sm-offset-2">
+						<istext key="checkout.shipping.pack_slip.from.error.maxlength" />
+					</div>
+				<iselseif condition="#Subform:PackSlipFrom:isError("error.profanitycheck")#">
+					<div role="alertdialog" class="alert alert-danger col-sm-offset-2">
+						<istext key="checkout.shipping.profanity.error" />
+					</div>
+				</isif>
+			</isif>
+		
+			<div class="form-group<isif condition="#(Subform:PackSlipFrom:isInvalid) AND (Subform:PackSlipFrom:isError("error.profanitycheck"))#"> has-error</isif>">
+				<label for="PackSlipFrom" class="control-label col-sm-2">
+					<istext key="checkout.gifting.from" />
+				</label>
+				<div class="col-sm-10">
+					<input type="text" maxlength="256" autocomplete="off" id="PackSlipFrom"
+						name="PackSlipMessageForm_<isprint value="#Bucket:ID#">_PackSlipFrom"
+						class="form-control" value="<isprint value = "#email_from#">" />
+				</div>
+			</div>
+	
+			<!--- Text  --->
+			<isif condition="#Subform:PackSlipText:isInvalid#">
+				<isif condition="#Subform:PackSlipText:isError("error.profanitycheck")#">
+					<div role="alertdialog" class="alert alert-danger col-sm-offset-2">
+						<istext key="checkout.shipping.profanity.error" />
+					</div>
+				</isif>
+			</isif>
+	
+			<div class="form-group<isif condition="#(Subform:PackSlipText:isInvalid) AND (Subform:PackSlipText:isError("error.profanitycheck"))#"> has-error</isif>"> 
+				<label for="PackSlipText" class="control-label col-sm-2">
+					<istext key="checkout.gifting.message" />
+				</label>
+				<div class="col-sm-10">
+					<textarea id="PackSlipText"
+						maxlength="<isprint value="#PackSlipMessage_Form_MessageLength#" formatter="0">"
+						data-charactercounter="cCounterPackingSlipMessage_<isprint value="#Bucket:ID#">"
+						name="PackSlipMessageForm_<isprint value="#Bucket:ID#">_PackSlipText"
+						class="form-control <isif condition="#Subform:PackSlipText:isInvalid#" ><isif condition="#Subform:PackSlipText:isError("error.profanitycheck")#"> has-error</isif></isif>"
+					>
+						<isprint value="#text#">
+					</textarea>
+				</div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<small class="input-help">
+						<istext key="checkout.shipping_method.instructions_max_limit.pre.text" />
+						<span id="cCounterPackingSlipMessage_<isprint value="#Bucket:ID#">"></span> <istext key="checkout.shipping_method.instructions_max_limit.post.text" />
+					</small>
+				</div>
+			</div>
+		</div>
+	</div>
+</isif>

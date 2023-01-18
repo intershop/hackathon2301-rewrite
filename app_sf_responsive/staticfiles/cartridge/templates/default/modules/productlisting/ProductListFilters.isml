@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/Modules">
+<div class="filters-row row">
+	<div class="col-md-7 col-sm-9 col-xs-12 switch-layout">
+		<isif condition="#isDefined(ListNavigationVO)#">
+			<ismappagination
+				pipeline="#ListNavigationVO:HandlerPipeline.'-ProductPaging'#"
+				params="#ListNavigationVO:GenericHandlerPipelineParams#"
+				itemcount="#ListNavigationVO:ElementCount#"
+				currentpage="#ListNavigationVO:CurrentPage#"
+				pagecount="#ListNavigationVO:PageCount#"
+				sortvalue="#ListNavigationVO:SortingAttribute#"
+			>
+		</isif>
+	</div>
+	
+	<!--- List/ Grid View --->
+	<div class="col-md-2 col-sm-3 col-xs-4 switch-layout">
+		<div class="pull-right sort-by">
+			<isif condition="#NOT (isDefined(showViewType) AND (showViewType EQ 'false'))#">
+				<a data-testing-id="list-view-link" href="<ispaginglink
+							pipelinename="#ListNavigationVO:HandlerPipeline.'-ProductPaging'#"
+							params="#ListNavigationVO:GenericHandlerPipelineParams#"
+							pagenumber="#ListNavigationVO:CurrentPage#"
+							pagesize="#ListNavigationVO:PageSize#"
+							sortvalue="#ListNavigationVO:SortingAttribute#"
+							viewtype="2">"
+					class="list-view-link<isif condition="#isDefined(ViewType) AND (ViewType EQ '2') OR (NOT(isDefined(ViewType)))#"> list-active</isif>">
+					<span class="glyphicon glyphicon-list"></span>
+				</a>
+				<a data-testing-id="grid-view-link" href="<ispaginglink
+							pipelinename="#ListNavigationVO:HandlerPipeline.'-ProductPaging'#"
+							params="#ListNavigationVO:GenericHandlerPipelineParams#"
+							pagenumber="#ListNavigationVO:CurrentPage#"
+							pagesize="#ListNavigationVO:PageSize#"
+							sortvalue="#ListNavigationVO:SortingAttribute#"
+							viewtype="1">"
+					class="grid-view-link<isif condition="#isDefined(ViewType) AND (ViewType EQ '1')#"> grid-active</isif>">
+					<span class="glyphicon glyphicon-th"></span>
+				</a>
+			</isif>
+		</div>
+	</div>
+
+	<!--- Select Sorting --->	
+	<div class="col-md-3 col-sm-12 col-xs-8 pull-right sort-by"> 
+		<ISSortBy ListNavigationVO="#ListNavigationVO#"
+				sortings="#sortings#">
+		<!--- <label class="hidden-md hidden-sm hidden-xs"><istext key="product.sorting.label" /></label>--->
+	</div>			
+</div>
+

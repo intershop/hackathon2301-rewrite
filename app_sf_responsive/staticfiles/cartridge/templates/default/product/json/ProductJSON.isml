@@ -1,0 +1,11 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscache type="relative" hour="24" />
+
+{
+	<isinclude template="product/json/BaseProductJSON">,
+	<isinclude template="product/json/AdvancedProductJSON">,
+	"productVariations" : <isinclude template="product/json/ProductVariationsJSON">,
+	"variationAttributes" : <isinclude template="product/json/VariationAttributesJSON">,
+	"relatedItems" : <isinclude template="product/json/RelatedProductsJSON">,
+	"productAttachments" : <isinclude template="product/json/ProductAttachmentsJSON">
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="systempage.search.noResult.pagelet2">
+  <pageEntryPointDefinitions name="Page" systemManaged="true">
+    <callParameterDefinitions optional="true" name="SearchTerm" type="java.lang.Object" />
+    <callParameterDefinitions optional="true" name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO" />
+    <callParameterDefinitions optional="true" name="SearchCategoryUUID" type="java.lang.String" />
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.page.standard.pagelet2-Interface" />
+  </pageEntryPointDefinitions>
+</pagelet:PageletModel>

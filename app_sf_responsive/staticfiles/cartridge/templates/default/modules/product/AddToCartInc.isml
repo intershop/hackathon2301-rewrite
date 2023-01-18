@@ -1,0 +1,143 @@
+<iscontent compact="true" charset="UTF-8">
+
+<div class="add-to-cart">
+	<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request" />
+	<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+	<isGetProductPriceContext CustomerBO="#CustomerBO#"	ProductPriceContext="ProductPriceContext">
+	<isset name="salePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request" />
+	<isset name="ProductInventory" value="#ProductBO:Extension("Inventory")#" scope="request" />
+
+	<isif condition="#ProductInventory:ServiceEnabled#">
+		<isif
+			condition="#isDefined(InventoryStatus) 
+			AND InventoryStatus:InStock
+  			AND salePrice:Price:Available  
+ 			AND NOT(ProductBO:OrderableAsDependentOnly)
+			AND isDefined(ProductBO:TaxClassID) AND (ProductBO:TaxClassID NE '') 
+ 			AND NOT(ProductBO:isLastOrderDate OR ProductBO:isEndOfLife)
+ 			AND NOT(ProductBO:ProductMaster)#">
+ 			
+			<isif condition="#(isDefined(addToCartBehavior))#">
+				<input type="hidden" name="addToCartBehavior"
+					value="<isprint value="#addToCartBehavior#">" />
+			</isif>
+
+			<isif condition="#ProductBO:ServiceType:DigitalGiftCard#">
+				<a class="btn btn-primary <isprint value="#class#">"
+					<isprint value="#DataAttributes#">
+				data-dialog
+				<isif condition="#addToCartBehavior EQ 'expresscart'#">
+					href="#URL(Action('ViewGiftCertificates-ViewGiftCertificateForm'), Parameter('SKU', ProductBO:SKU), Parameter('addToCartBehavior', 'expresscart'))#"
+				<iselse>
+					href="#URL(Action('ViewGiftCertificates-ViewGiftCertificateForm'), Parameter('SKU', ProductBO:SKU))#"
+				</isif>
+				title="<istext key="product.add_to_cart.link" />" data-testing-id="addToCartButton"
+			>
+				<isif condition="#DisplayType EQ 'glyphicon'#">
+					<span class="glyphicon glyphicon-shopping-cart"></span>
+				<iselse>
+					<istext key="product.add_to_cart.link" />
+				</isif>
+			</a>
+		<iselse>
+			<button type="submit" name="addProduct"
+				class="btn <isprint value="#class#"> <isif condition="#DisplayType NE 'glyphicon'#">btn-primary</isif>"
+				<isprint value="#DataAttributes#">
+				<isif condition="#(addToCartBehavior EQ 'expresscart')#">
+					data-expresscart
+					data-expresscart-action="#URL(Action('ViewExpressShop-AddProduct'))#"
+				</isif>
+				title="<istext key="product.add_to_cart.link" />" data-testing-id="addToCartButton"
+			>
+				<isif condition="#DisplayType EQ 'glyphicon'#">
+					<span class="glyphicon glyphicon-shopping-cart"></span>
+				<iselse>
+					<isif condition="#ProductBO:isRetailSet#">
+						<istext key="product.add_to_cart.retailset.link" />
+					<iselse>
+						<istext key="product.add_to_cart.link" />
+					</isif>
+				</isif>
+			</button>
+		</isif>
+ 	</isif>
+ 	<iselse>
+ 			<isif condition="#ProductBO:InventoryStatus:InStock
+  			AND salePrice:Price:Available  
+ 			AND NOT(ProductBO:OrderableAsDependentOnly)
+			AND isDefined(ProductBO:TaxClassID) AND (ProductBO:TaxClassID NE '') 
+ 			AND NOT(ProductBO:isLastOrderDate OR ProductBO:isEndOfLife)
+ 			AND NOT(ProductBO:ProductMaster)#">
+
+			<isif condition="#(isDefined(addToCartBehavior))#">
+				<input type="hidden" name="addToCartBehavior"
+					value="<isprint value="#addToCartBehavior#">" />
+			</isif>
+
+			<isif condition="#ProductBO:ServiceType:DigitalGiftCard#">
+				<a class="btn btn-primary <isprint value="#class#">"
+					<isprint value="#DataAttributes#">
+				data-dialog
+				<isif condition="#addToCartBehavior EQ 'expresscart'#">
+					href="#URL(Action('ViewGiftCertificates-ViewGiftCertificateForm'), Parameter('SKU', ProductBO:SKU), Parameter('addToCartBehavior', 'expresscart'))#"
+				<iselse>
+					href="#URL(Action('ViewGiftCertificates-ViewGiftCertificateForm'), Parameter('SKU', ProductBO:SKU))#"
+				</isif>
+				title="<istext key="product.add_to_cart.link" />" data-testing-id="addToCartButton"
+			>
+				<isif condition="#DisplayType EQ 'glyphicon'#">
+					<span class="glyphicon glyphicon-shopping-cart"></span>
+				<iselse>
+					<istext key="product.add_to_cart.link" />
+				</isif>
+			</a>
+		<iselse>
+		<isif condition="#ProductInventory:ServiceEnabled#">
+			<isif condition="#isDefined(InventoryStatus) AND InventoryStatus:InStock#">
+			<button type="submit" name="addProduct"
+				class="btn <isprint value="#class#"> <isif condition="#DisplayType NE 'glyphicon'#">btn-primary</isif>"
+				<isprint value="#DataAttributes#">
+				<isif condition="#(addToCartBehavior EQ 'expresscart')#">
+					data-expresscart
+					data-expresscart-action="#URL(Action('ViewExpressShop-AddProduct'))#"
+				</isif>
+				title="<istext key="product.add_to_cart.link" />" data-testing-id="addToCartButton"
+			>
+				<isif condition="#DisplayType EQ 'glyphicon'#">
+					<span class="glyphicon glyphicon-shopping-cart"></span>
+				<iselse>
+					<isif condition="#ProductBO:isRetailSet#">
+						<istext key="product.add_to_cart.retailset.link" />
+					<iselse>
+						<istext key="product.add_to_cart.link" />
+					</isif>
+				</isif>
+			</button>
+			</isif>
+			<iselse>
+			<isif condition="#ProductBO:InventoryStatus:InStock#">
+			<button type="submit" name="addProduct"
+				class="btn <isprint value="#class#"> <isif condition="#DisplayType NE 'glyphicon'#">btn-primary</isif>"
+				<isprint value="#DataAttributes#">
+				<isif condition="#(addToCartBehavior EQ 'expresscart')#">
+					data-expresscart
+					data-expresscart-action="#URL(Action('ViewExpressShop-AddProduct'))#"
+				</isif>
+				title="<istext key="product.add_to_cart.link" />" data-testing-id="addToCartButton"
+			>
+						<isif condition="#DisplayType EQ 'glyphicon'#">
+						<span class="glyphicon glyphicon-shopping-cart"></span>
+					<iselse>
+						<isif condition="#ProductBO:isRetailSet#">
+							<istext key="product.add_to_cart.retailset.link" />
+							<iselse>
+								<istext key="product.add_to_cart.link" />
+							</isif>
+						</isif>
+					</button>
+				</isif>
+			</isif>
+		</isif>
+ 	</isif>
+ </isif>
+</div>

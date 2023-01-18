@@ -1,0 +1,53 @@
+<iscontent compact="true" charset="UTF-8">
+<isif condition="#isDefined(ListNavigationVO) AND hasElements(ListNavigationVO:SortableAttributes(sortings))#">
+	<isform name="sortByForm" class="sort-by-filter" method="post" action="#URL(Action(ListNavigationVO:HandlerPipeline.'-Browse'))#">
+		<isloop iterator="ListNavigationVO:GenericHandlerPipelineParams:EntrySet" alias="map">
+			<isif condition="#(map:Key NE 'SortingAttribute') AND (map:Key NE 'PageableID')#">
+				<input type="hidden" name="<isprint value="#map:Key#">" value="<isprint value="#map:Value#">" /> 
+			</isif> 
+		</isloop>
+		
+		<input type="hidden" name="PageSize" value="<isprint value="#ListNavigationVO:PageSize#">" />
+		<input type="hidden" name="PageNumber" value="0" />
+		<select id="SortingAttribute" name="SortingAttribute" data-submit-form-handler="change"  class="form-control" onchange="this.form.submit()">
+			<option value="" <isif condition="#SortingAttribute EQ ''#">selected="selected"</isif>>
+				<istext key="product.sorting_attribute.default.text" />
+			</option>
+			<isif condition="#isDefined(ListNavigationVO:SearchIndex)#">
+				<isif condition="#hasElements(ListNavigationVO:SortableAttributes(sortings))#"> 
+					<isloop iterator="ListNavigationVO:SortableAttributes(sortings)" alias="sortby">
+						<option value="<isprint value="#sortby:Name#">" 
+							<isif condition="#ListNavigationVO:SortingAttribute EQ (sortby:Name)#">selected="selected"</isif>>
+							<isif condition="#isDefined (sortby:DisplayName) AND (sortby:DisplayName NE '')#">
+								<isprint value="#sortby:DisplayName#"/>
+							<iselse>
+								<isif condition="#sortby:Direction EQ 'asc'#">
+									<isprint value="#sortby:AttributeName#"> <istext key="product.sorting.direction.ascending">
+								<iselse>
+									<isprint value="#sortby:AttributeName#"> <istext key="product.sorting.direction.descending">
+								</isif>
+							</isif>
+						</option>
+					</isloop>
+				</isif>
+			<iselse>
+				<!--  manually selected parameters for Oracle Product queries -->
+				<option value="name-asc" <isif condition="#ListNavigationVO:SortingAttribute EQ 'name-asc'#">selected="selected"</isif>>
+					<istext key="product.sorting_attribute.product_name_ascending.text" />
+				</option>
+				<option value="name-desc" <isif condition="#ListNavigationVO:SortingAttribute EQ 'name-desc'#">selected="selected"</isif>>
+					<istext key="product.sorting_attribute.product_name_descending.text" />
+				</option>
+				<option value="value-asc" <isif condition="#ListNavigationVO:SortingAttribute EQ 'value-asc'#">selected="selected"</isif>>
+					<istext key="product.sorting_attribute.product_listprice_ascending.text" />
+				</option>
+				<option value="value-desc" <isif condition="#ListNavigationVO:SortingAttribute EQ 'value-desc'#">selected="selected"</isif>>
+					<istext key="product.sorting_attribute.product_listprice_descending.text" />
+				</option>
+			</isif>
+		</select>
+		<noscript>
+			<button type="submit" name="sort" title="#localizeText('product.sort.button.title')#"><istext key="product.sort.button.label" /></button>
+		</noscript>
+	</isform>
+</isif>

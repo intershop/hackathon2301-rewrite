@@ -1,0 +1,50 @@
+<iscontent type="text/html" session="false" charset="UTF-8" compact="true">
+<isinclude template="email/mailTemplate/Modules">
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+
+<subject><isprint value="#MailSubject#"/></subject>
+
+<isMailHeader ChannelName="#ChannelName#" ShowMyAccountLink="true" ShowCustomerInformation="true">
+
+<p class="header">
+	<istext key="email.cashback.cancel.title" parameter0="#ChannelName#" />
+</p>
+
+<!--- Dear Mr --->
+<p>
+	<isif condition="#isDefined(UserBO) AND isDefined(UserBO:LastName)#">
+		<isif condition="#isDefined(UserBO:Title) AND (UserBO:Title NE '')#">
+			<istext key="email.dear.label.title_firstname_lastname"
+				parameter0="#UserBO:Title#"
+				parameter1="#UserBO:FirstName#"
+				parameter2="#UserBO:LastName#" />
+		<iselse>
+			<istext key="email.dear.label.firstname_lastname"
+				parameter0="#UserBO:FirstName#"
+				parameter1="#UserBO:LastName#" />
+		</isif>
+	<iselse>
+		<istext key="email.dear.label.anonymous" />
+	</isif>
+</p>
+
+<p>
+	<istext key="email.cashback.cancel.text" parameter0="#CashbackInformation:PromotionCode#" parameter1="#CashbackInformation:EarningOrderDocumentNo#" encoding="off"/>
+</p>
+		
+<!--- Question text and thank you --->
+<p>
+	<istext key="email.cashback.cancel.questions" 
+		parameter0="#encodeValue(ChannelName)#" 
+		parameter1="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page'))#" 
+		encoding="off" 
+	/> 
+</p>
+<p>
+	<istext key="email.best_regards.label"/><br />
+	<istext key="email.user_services.label" parameter0="#encodeValue(URL(Action('ViewHomepage-Start')))#" parameter1="#encodeValue(ChannelName)#" encoding="off" />
+</p>
+
+
+<isinclude template="email/mailTemplate/MailFooter"/>

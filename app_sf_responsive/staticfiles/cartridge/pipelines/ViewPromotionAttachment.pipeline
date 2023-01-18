@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Pipeline to view the additional content of a promotion.
+@Group OnlineMarketing-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewPromotionAttachment" type="view">
+<!--Check if DirectoryPath 
+and FileName do 
+contain ".." in them, 
+if so, this seems to 
+be an attempt to browse
+the servers directories upwards.
+Avoid this for security
+reasons.
+@Location 0,6-->
+  <nodes xsi:type="pipeline:Text" nodeID="TextNode1"/>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode14" name="OpenFile">
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameters name="LocaleId" type="java.lang.String" optional="true"/>
+<!--The name of the unit to determine.-->
+    <parameters name="UnitName" type="java.lang.String"/>
+<!--The directory path relative to the location within the units shared content specified by 'UnitDirectory'. It points to the directory that sould be browsed.-->
+    <parameters name="DirectoryPath" type="java.lang.String"/>
+<!--The directory path relative to the location within the units shared content specified by 'UnitDirectory'. It points to the directory that sould be browsed.-->
+    <parameters name="FileName" type="java.lang.Object"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="DirectoryPath">
+<!--@BendPoints 3,6 2,6 2,7-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode3"/>
+<!--@BendPoints 5,5-->
+    <nodeSuccessors name="decision_no" next="JoinNode5"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="DirectoryPath"
+      operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="JoinNode5"/>
+<!--@BendPoints 3,8-->
+    <nodeSuccessors name="decision_no" next="VerifyFileName1"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+<!--@BendPoints 5,11-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 3,12-->
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="FileName">
+    <nodeSuccessors name="decision_yes" next="VerifyFileName2"/>
+    <nodeSuccessors name="decision_no" next="JoinNode3"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyFileName2">
+    <configurationValues name="IsDirectoryName" value="true"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyFileName.xml"/>
+    <nodeSuccessors name="next" next="GetLocale1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode4"/>
+    <parameterBindings name="FileName" objectPath="FileName"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocale1">
+    <configurationValues name="LocaleFallback" value="Session Locale"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetLocale.xml"/>
+<!--@BendPoints 3,18-->
+    <nodeSuccessors name="next" next="DecisionNode7"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="UnitName">
+<!--@BendPoints 3,20-->
+    <nodeSuccessors name="decision_yes" next="DetermineUnit1"/>
+<!--@BendPoints 5,19 5,22-->
+    <nodeSuccessors name="decision_no" next="KeyMapper3"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineUnit1">
+    <pipelet href="enfinity:/core/pipelets/DetermineUnit.xml"/>
+    <nodeSuccessors name="next" next="JoinNode8"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+<!--@BendPoints 3,26-->
+    <nodeSuccessors name="next" next="BrowseDirectory4"/>
+  </nodes>
+<!--@Location 1,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="BrowseDirectory4">
+    <configurationValues name="Recursive" value="true"/>
+    <configurationValues name="IncludeParentDirectories" value="true"/>
+    <configurationValues name="UnitDirectory" value="SECURE_STATIC_DIR"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/BrowseDirectory.xml"/>
+<!--@BendPoints 3,28-->
+    <nodeSuccessors name="next" next="ConcatenateStrings2"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode7"/>
+    <parameterBindings name="OverrideUnitDirectory" constant="promotionattachments"/>
+    <parameterBindings name="UnitDomain" objectPath="Unit"/>
+  </nodes>
+<!--@Location 1,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConcatenateStrings2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/ConcatenateStrings.xml"/>
+<!--@BendPoints 3,30-->
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <parameterBindings name="String0" objectPath="Directory:AbsolutePath"/>
+    <parameterBindings name="String1" constant="/"/>
+    <parameterBindings name="String2" objectPath="FileName"/>
+    <parameterBindings name="String3" nullBinding="true"/>
+    <parameterBindings name="String4" nullBinding="true"/>
+    <parameterBindings name="String5" nullBinding="true"/>
+    <parameterBindings name="String6" nullBinding="true"/>
+    <parameterBindings name="String7" nullBinding="true"/>
+    <parameterBindings name="String8" nullBinding="true"/>
+    <parameterBindings name="String9" nullBinding="true"/>
+    <returnValueBindings name="Concatenated" objectPath="FullPath"/>
+  </nodes>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="marketing/ContentFile"/>
+  </nodes>
+<!--@Location 3,13-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+<!--@BendPoints 7,30-->
+    <nodeSuccessors name="next" next="InteractionNode2"/>
+  </nodes>
+<!--@Location 3,15-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="marketing/ErrorContentFile"/>
+  </nodes>
+<!--@Location 3,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+<!--@displayNearNode@Unit = CurrentOrganization:OwningDomain
+@Location 2,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 5,25-->
+    <nodeSuccessors name="next" next="JoinNode8"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentOrganization:OwningDomain"/>
+    <returnValueBindings name="OutValue_1" objectPath="Unit"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyFileName1">
+    <configurationValues name="IsDirectoryName" value="true"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyFileName.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+<!--@BendPoints 7,9-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="FileName" objectPath="DirectoryPath"/>
+  </nodes>
+</pipeline:Pipeline>

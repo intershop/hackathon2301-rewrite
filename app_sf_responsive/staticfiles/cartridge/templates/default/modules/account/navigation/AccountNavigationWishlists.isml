@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<li class="<isif condition="#selecteditem EQ 'WISHLISTS'#">active</isif>">
+	<a href="#URL(Action('ViewWishlist-ViewAll'))#"><istext key="account.wishlists.link"/></a>
+</li>

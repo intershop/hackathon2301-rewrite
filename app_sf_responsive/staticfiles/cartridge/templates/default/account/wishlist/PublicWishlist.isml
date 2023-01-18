@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="breadcrumbs row">
+	<isWishlistPublicTitle wishlistBO="#WishlistBO#" title="wishlistTitle">
+	<isAccountBreadcrumb
+		link="#URLEX(SecureURL,'',Action('ViewWishlist-ViewAll'))#"
+		text="#localizeText('account.wishlists.link')#"
+		trailtext="#wishlistTitle#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="WISHLISTS">
+		</div>
+
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+
+			<isinclude template="account/wishlist/PublicWishlistHeader"/>
+
+			<isinclude template="account/wishlist/PublicWishlistInclude"/>
+
+			<isinclude template="account/wishlist/WishlistSearchForm"/>
+
+		</div>
+	</div>
+</div>

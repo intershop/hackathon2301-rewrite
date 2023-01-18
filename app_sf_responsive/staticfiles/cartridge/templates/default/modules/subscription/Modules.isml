@@ -1,0 +1,33 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false">
+
+<!---
+	This module displays the subscription information 
+
+	Parameters:
+		recurrenceinformation (required)	: recurrence information object 
+		labelclass	(optional)				: additional css class for the labels
+		dataclass	(optional)				: additional css class for the data div
+ --->
+
+<ismodule template = "modules/subscription/SubscriptionDisplay.isml"
+	name="SubscriptionDisplay"
+	attribute="recurrenceinformation"
+	attribute="labelclass"
+	attribute="dataclass"
+	strict="true"
+>
+
+<!---
+	This module displays the subscription time period information 
+
+	Parameters:
+		period (required)	: period to be displayed (java.time.Period instance)
+
+	Example: 2 week(s)
+ --->
+
+<ismodule template = "modules/subscription/PeriodDisplay.isml"
+	name="PeriodDisplay"
+	attribute="period"
+	strict="true"
+>

@@ -1,0 +1,84 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset scope="request" name="RecurringOrder" value="#OrderBO:Extension("RecurringOrder")#">
+
+<isif condition="#OrderBO:Status NE 'PAYMENTCANCELLED'#">
+	<div class="list-item-row-big list-item-row">
+		<!--- Creation Date --->
+		<div class="col-xs-7 col-sm-2 list-item">
+			<isprint value="#OrderBO:CreationDate#" style="DATE_SHORT"><label class="hidden-lg hidden-md hidden-sm control-label">&nbsp;</label>
+			<!--- provide always an icon space in list --->
+			<isif condition="#RecurringOrder:Recurring#">
+				&nbsp;<span class="glyphicon glyphicon-refresh" title="<istext key="account.subscription.order.tooltip">"></span>
+			</isif>
+		</div>
+		
+		<!--- Order Total --->
+		<div class="col-xs-3 col-sm-2 col-sm-push-7 list-item column-price">
+			<isprint value="#OrderBO:BasketTotalPriceMinusLimitedTenderGross#">
+		</div>
+		
+		<!--- Order item links --->
+		<div class="col-xs-2 col-sm-1 col-sm-push-7 list-item text-right">
+			<a href="#URLEX(SecureURL,'',Action('ViewOrders-Detail'), Parameter('OrderID', OrderBO:ID))#"><istext key="account.order.view_this_order.link" /></a>
+			<!--- The extension might be used to add additional links in the order history list --->
+			<isinclude extensionpoint="OrderHistoryItemLinksExtensions"/>
+		</div>
+		<!---Order Details for smb/b2b --->
+		<isinclude extensionpoint="OrderHistoryItemOrderDetails"/>
+		
+		<!--- Order NO --->
+		<isif condition="#showOrderNumber EQ 'true'#">
+			<div class="clearfix visible-xs-block"></div>
+			<div class="col-sm-<isif condition="#orderNumberColumnWith NE ''#"><isprint value="#orderNumberColumnWith#"><iselse>2</isif> col-sm-pull-3 list-item">
+				<label class="hidden-lg hidden-md hidden-sm control-label"><istext key="account.orderlist.orderDetails.orderNo.label"></label>
+				<a href="#URLEX(SecureURL,'',Action('ViewOrders-Detail'), Parameter('OrderID', OrderBO:ID))#"><isprint value="#OrderBO:DocumentNo#"></a>
+			</div>
+		</isif>
+		<!--- Number of Items --->
+		<isif condition="#showNumberOfItems EQ 'true'#">
+			<div class="clearfix visible-xs-block"></div>
+			<div class="col-sm-<isif condition="#numberOfItemsColumnWith NE ''#"><isprint value="#numberOfItemsColumnWith#"><iselse>1</isif> col-sm-pull-3 list-item">
+				<label class="hidden-lg hidden-md hidden-sm control-label"><istext key="account.orderlist.orderDetails.items.label"></label>
+				<isprint value="#OrderBO:TotalProductQuantity#" style="QUANTITY_SHORT">
+			</div>	
+		</isif>
+		
+		<!--- Purchaser --->
+		<isif condition="#(showPurchaser EQ 'true') AND (showOrderDetails NE 'true')#">
+			<div class="clearfix visible-xs-block"></div>
+			<div class="col-sm-2 col-sm-pull-3 list-item">
+				<label class="hidden-lg hidden-md hidden-sm control-label"><istext key="account.orderlist.orderDetails.purchaser.label"></label>
+				<isprint value="#OrderBO:User:Profile:DataSheet:FirstName#"> <isprint value="#OrderBO:User:Profile:DataSheet:LastName#">
+			</div>
+		</isif>
+		
+		<!--- Order Status --->
+		<isif condition="#showOrderStatus EQ 'true'#">
+			<div class="col-sm-2 col-sm-pull-3 list-item">
+				<label class="hidden-lg hidden-md hidden-sm control-label"><istext key="account.orderlist.orderDetails.status.label"></label>
+				<span class="label label-default"><isprint value="#OrderBO:StatusDisplayName#"></span>
+			</div>
+		</isif>
+		
+		<!--- Destination --->
+		<isif condition="#showDestination EQ 'true'#">
+			<div class="clearfix visible-xs-block"></div>
+			<div class="col-sm-2 col-sm-pull-3 list-item">
+				<isset name="OrderShippingBucketExtension" value="#OrderBO:Extension("ShippingBucket")#" scope="request"/>
+				<isif condition="#OrderShippingBucketExtension:MultipleShipToAddresses#">
+					<p><istext key="account.orderlist.table.multiple_shipping_message"/></p>
+					<!--- show all shipping addresses --->
+					<isloop iterator="OrderShippingBucketExtension:ShippingBucketBOs" alias="Bucket">
+						<isaddress address="#Bucket:ShipToAddressBO#" compact="true" showemail="#bucket:SelectedShippingMethod:DigitalDelivery#">
+					</isloop>
+				<iselseif condition="#isDefined(OrderShippingBucketExtension:SoleShipToAddressBO)#">
+					<isaddress address="#OrderShippingBucketExtension:SoleShipToAddressBO#" compact="true" showemail="#'EmailAddress' EQ OrderShippingBucketExtension:SoleShipToAddressBO:AddressName#">
+				<iselse>
+					<istext key="account.orderlist.table.unavailable_address_message"/>
+				</isif>
+			</div>
+		</isif>
+		
+	</div>
+</isif>

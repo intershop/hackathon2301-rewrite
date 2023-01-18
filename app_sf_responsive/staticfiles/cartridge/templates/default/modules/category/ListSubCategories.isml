@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#categorybo#">
+
+<isCurrentUserBO currentuserbo="UserBO">
+<isset name="SubCategoriesIterator" value="#categorybo:SortedAccessibleSubCatalogCategoryBOs(UserBO)#" scope="request">
+<isif condition="#hasLoopElements(SubCategoriesIterator)#">
+
+	<div class="non-parametric-panel">
+		<div class="filter-group">
+		
+			<ul class="filter-list">
+				<isif condition="#NOT(isDefined(subcategoriesdepth))#">
+					<isset name="subcategoriesdepth" value="20" scope="request">
+				<iselse>
+					<isset name="subcategoriesdepth" value="#val(subcategoriesdepth)-1#" scope="request">
+				</isif>
+				
+				<isloop iterator="SubCategoriesIterator" alias="SubCategoryBO">
+					<iscachekey object="#SubCategoryBO#">
+					<ISUUID name="RenderEntityID">
+					<ISRenderEntityRenderingStart RenderEntityRenderObject="#SubCategoryBO#" RenderEntityID="#RenderEntityID#">
+					<li class="filter-item">
+						<a class="filter-item-name <isif condition="#SubCategoryBO EQ activecategorybo#">filter-selected</isif>" href="#URL(Action('ViewStandardCatalog-Browse'), Parameter('CategoryName',SubCategoryBO:Name), Parameter('CatalogID',SubCategoryBO:CatalogBO:Name))#">
+							<isprint value="#SubCategoryBO:DisplayName#">
+						</a>
+						<isif condition="#isDefined(recursive) AND (lcase(recursive) EQ 'true') AND (val(subcategoriesdepth)>0.00) AND isDefined(categorypath:get(SubCategoryBO:Name))#">
+							<ISListSubCategories
+								categorybo="#SubCategoryBO#"
+								categorypath="#categorypath#"
+								activecategorybo="#activecategorybo#"
+								recursive="#recursive#"
+								subcategoriesdepth="#subcategoriesdepth#"
+							>
+						</isif>
+					</li>
+					<ISRenderEntityRenderingEnd RenderEntityRenderObject="#SubCategoryBO#" RenderEntityID="#RenderEntityID#">
+				</isloop>
+			</ul>
+			
+		</div>
+	</div>
+
+</isif>

@@ -1,0 +1,46 @@
+<iscontent type="text/html" session="false" charset="UTF-8" compact="true">
+<isinclude template="email/mailTemplate/Modules">
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+
+<subject><istext key="email.changeusername.heading" parameter0="#ChannelName#" encoding="off"/></subject>
+
+<isMailHeader ChannelName="#ChannelName#" ShowMyAccountLink="true" ShowCustomerInformation="true">
+
+<p class="header">
+	<istext key="email.changeusername.heading" parameter0="#ChannelName#" />
+</p>
+
+<p>
+	<isif condition="#isDefined(UserBO:Title) and (UserBO:Title NE '')#">
+		<istext key="email.dear.label.title_firstname_lastname" parameter0="#UserBO:Title#" parameter1="#UserBO:FirstName#" parameter2="#UserBO:LastName#" />
+	<iselse> 
+		<istext key="email.dear.label.firstname_lastname" parameter0="#UserBO:FirstName#" parameter1="#UserBO:LastName#" />
+	</isif>
+</p>
+
+<p>
+	<istext key="email.update.username.message" parameter0="#encodeValue(ChannelName)#" parameter1="#encodeValue(UserBO:Login)#" encoding="off" />
+	<br /><br />
+	<istext key="email.newusername" parameter0="#encodeValue(URL(Action('ViewHomepage-Start')))#" parameter1="#encodeValue(ChannelName)#" encoding="off" />
+</p>
+
+<p>
+	<istext key="email.username.notice.text"/>
+</p>
+
+<p>
+	<istext key="email.questions" 
+		parameter0="#encodeValue(URL(Action('ViewHomepage-Start')))#" 
+		parameter1="#encodeValue(ChannelName)#" 
+		parameter2="#encodeValue(URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page')))#" 
+		encoding="off" 
+	/> 
+</p>
+
+<p>
+	<istext key="email.best_regards.label"/><br />
+	<istext key="email.user_services.label" parameter0="#encodeValue(URL(Action('ViewHomepage-Start')))#" parameter1="#encodeValue(ChannelName)#" encoding="off"/>
+</p>
+
+<isinclude template="email/mailTemplate/MailFooter"/>

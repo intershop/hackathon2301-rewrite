@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:webform="http://www.intershop.de/webform/2010" name="AlertForm">
+  <forms name="AlertForm"/>
+</webform:WebForm>

@@ -1,0 +1,12 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isform class="search clearfix suggest" role="search" name="#'SearchBox_'.id#" action="#URL(Action('ViewParametricSearch-SimpleOfferSearch'))#" method="post" secure="false">
+	<input autocomplete="off" type="text" name="SearchTerm"
+			class="form-control searchTerm" 
+			<isif condition="#isDefined(useAutoSuggest) AND (useAutoSuggest EQ 'true')#">data-suggestURL="#URL(Action('ViewSuggestSearch-Suggest'), Parameter('MaxAutoSuggestResults', maxAutoSuggestResults))#"</isif> 
+			placeholder="<isprint value="#instructionalText#" />" />
+	<button class="btn-search btn btn-primary" type="submit" name="search" title="#localizeText('search.searchbox.button.title')#"><isif condition="#isDefined(searchButtonText) AND (searchButtonText NE '')#"><isprint value="#searchButtonText#" /><iselse><span class="glyphicon glyphicon-search"></span></isif></button>
+	<input type="hidden" name="search" value="" />
+	<ul class="search-suggest-results"><!--- add class 'twocolumns' to show two columns --->
+	</ul>
+</isform>

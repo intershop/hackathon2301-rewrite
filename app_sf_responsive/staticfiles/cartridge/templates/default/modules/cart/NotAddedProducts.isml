@@ -1,0 +1,62 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- BEGIN Products not Added --->
+<isif condition="#hasElements(addToBasketResults)#">
+	<div class="alert alert-box" role="alert">
+		<div class="alert-box-header">
+			<istext key="checkout.error.ProductNotAdded" /> 
+		</div>
+		<div class="alert-box-body">
+			<div class="list-header hidden-xs">
+				<div class="col-sm-10 list-header-item"><istext key="checkout.pli.desc.heading" /></div>
+				<div class="col-sm-2 list-header-item column-price"><istext key="checkout.pli.price.heading" /></div>
+			</div>
+			<div class="list-body">	
+				<isloop iterator="addToBasketResults" alias="addToBasketResult">
+					<isset name="ProductBO" value="#addToBasketResult:Product#" scope="request" >
+					<iscachekey object="#ProductBO#">
+					<div class="list-item-row list-item-row-big">
+						<div class="clearfix">
+							<!---Product Image --->
+							<div class="col-xs-2 list-item">
+								<ISProductImage ProductBO="#ProductBO#" ImageType="S">
+							</div>
+							
+							<!---Product Description --->
+							<div class="col-xs-7 col-sm-8 list-item">
+								<div class="product-title"><isprint value="#ProductBO:Name#"></div>
+								<p class="product-id"><istext key="product.itemNumber.label" />&nbsp;<isprint value="#ProductBO:SKU#"></p>
+								
+								<isif condition="#ProductBO:Mastered#">
+									<div>
+										<dl class="dl-horizontal">
+											<isloop iterator="ProductBO:ProductBOMaster:ProductVariationInformationBO:VariationAttributes" alias="VariationAttribute">
+												<dt><isprint value="#VariationAttribute:DisplayName#">:</dt>
+												<dd><isprint value="#ProductBO:ExtensibleObject:String(VariationAttribute:Name)#"></dd>
+											</isloop>
+										</dl>
+									</div>
+								</isif>
+								
+								<p class="text-danger"><istext key="#'checkout.error.'.addToBasketResult:FailureCode#"></p>
+							</div>
+							
+							<!---Product Price --->
+							<div class="col-xs-3 col-sm-2 list-item column-price">
+								<ispipeline pipeline="ViewCart-GetCurrency" alias="CurrencyDict">
+								<ISProductPrice
+									ProductBO="#ProductBO#"
+									Currency="#CurrencyDict:Currency#"
+									ShowInformationalPrice="true">
+							</div>
+						</div>
+						<!---Notification and  AddToWishList Buttons --->
+						<div class="text-right">
+							<isinclude template="cart/inc/InventoryAvailabilityServiceMessageAreaBottom" />
+						</div>
+					</div>
+				</isloop>
+			</div>
+		</div>
+	</div>
+</isif>
+<!--- END Products not Available --->

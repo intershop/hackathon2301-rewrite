@@ -1,0 +1,15 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div class="infobox" data-testing-id='address-slot-ship-to-address'>
+	<a class="pull-right btn-tool" title="<istext key="checkout.address.update.label"/>" href="
+		<isif condition="#CurrentCartBO:Extension("ShippingBucket"):MultipleShipToAddresses#">
+			#URL(Action('ViewCheckoutMultipleAddresses-SelectMultipleShipToAddresses'))#
+		<iselse>
+			#URL(Action('ViewCheckoutAddressBook-EditAddress'),Parameter('AddressID',Bucket:ShipToAddress:URN))#
+		</isif>
+			"><span class="glyphicon glyphicon-pencil"></span>
+	</a>
+	<h3><istext key="checkout.widget.shipping-address.heading" /></h3>
+	
+	<isaddress address="#Bucket:ShipToAddress#" showemail="#Bucket:SelectedShippingMethod:DigitalDelivery#">
+</div>

@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="true">
+
+<!--- BEGIN Dynamic Order Level Promotion --->
+<isset name="DynamicDiscountMessages" value="#CurrentCartBO:Extension("AppliedRebate"):DynamicDiscountMessages(CurrentSession:Locale)#" scope="request">
+
+<isif condition="#hasElements(DynamicDiscountMessages)#">
+	<div class="alert alert-info">
+		<ul class="list-unstyled">
+			<isloop iterator="DynamicDiscountMessages" alias="Message" counter="Counter">
+				<li><isHtmlPrint value="#Message#" mode="storefront"></li>
+			</isloop>
+		</ul>
+	</div>
+</isif>

@@ -1,0 +1,342 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+	<%@page import="com.intershop.beehive.app.capi.AppContext,
+		com.intershop.beehive.core.capi.app.AppContextUtil,
+		com.intershop.beehive.xcs.capi.catalog.CatalogCategory,
+		com.intershop.component.catalog.capi.CatalogBORepository,
+		com.intershop.component.catalog.capi.CatalogBORepositoryExtension,
+		com.intershop.component.catalog.capi.CatalogCategoryBO,
+		com.intershop.component.application.capi.ApplicationBO,
+		com.intershop.component.catalog.capi.CatalogBO, 
+		com.intershop.component.search.capi.FilterUtils" %>
+<%
+String paramsName = (String)getObject("params");
+Object params = getObject(paramsName);
+if(params != null)
+{
+	getPipelineDictionary().put("TmpParams", params);
+}
+getPipelineDictionary().put("SearchIndexFilterUtils", FilterUtils.INSTANCE);
+%>
+<!--- fetch parameters which trigger filter visualization --->
+<isif condition="#NOT isDefined(showcount)#">
+	<isset scope="request" name="showcount" value="true">
+</isif>
+<isif condition="#isDefined(filter:ConfigurationAttribute:FilterOptions:DisplayType)#">
+	<isset scope="request" name="displayType" value="#filter:ConfigurationAttribute:FilterOptions:DisplayType#">
+<iselse>
+	<isset scope="request" name="displayType" value="text">
+</isif>
+<isset scope="request" name="displayClass" value="filter-list">
+
+<isif condition="#isDefined(filter:ConfigurationAttribute:FilterOptions:SelectionType)#">
+	<isset scope="request" name="selectionType" value="#filter:ConfigurationAttribute:FilterOptions:SelectionType#">
+<iselse>
+	<isset scope="request" name="selectionType" value="single">
+</isif>
+<isif condition="#NOT(isDefined(showselected))#">
+	<isset scope="request" name="showselected" value="true" />
+</isif>
+
+<!--- Backup the initial CategoryBO 
+		the dictionary entry CategoryBO is temporarily used for url-rewriting --->
+<isset name="BackupCategoryBO" value="#CategoryBO#" scope="request"/>
+						
+<isif condition="#isDefined(sortvalue)#">
+	<isset scope="request" name="tmp_sortvalue" value="#sortvalue#" />
+</isif>
+<!---  end fetch parameters --->
+
+<isif condition="#isDefined(filter)#">
+	<isif condition="#hasElements(filter:FilterAttributeEntry)#">
+		<!--- determine filter parameters --->
+		<isset scope="request" name="EntrySelected" value="false" />
+		<isset scope="request" name="SelectedLevel" value="#0#" />
+		<isset scope="request" name="HasUnselectedValues" value="false" />
+		<!--- show attribute filter header --->
+		<isif condition="#(page NE 'category')#">
+			<h3 data-toggle="collapse" href="#'#'#<isprint value="#replace(trim(filter:ConfigurationAttribute:Name), '[^A-Za-z0-9]', '_')#">_id">
+				<isif condition="#(filter:ConfigurationAttribute:FilterOptions:DisplayName NE '')#">
+					<isprint value="#filter:ConfigurationAttribute:FilterOptions:DisplayName#"> <span class="glyphicon glyphicon-chevron-down pull-right"></span>
+				<iselse>
+					<isprint value="#filter:ConfigurationAttribute:DisplayName#"> <span class="glyphicon glyphicon-chevron-down pull-right"></span>
+				</isif>
+			</h3>
+		<iselse>
+			<isif condition="#isDefined(categoryObj:RootCatalogCategoryBO:DisplayName)#">
+				<h3 data-toggle="collapse" href="#'#'#<isprint value="#replace(trim(filter:ConfigurationAttribute:Name), '[^A-Za-z0-9]', '_')#">_id">
+					<isprint value="#categoryObj:RootCatalogCategoryBO:DisplayName#"/> <span class="glyphicon glyphicon-chevron-down pull-right"></span>
+				</h3>
+			</isif>
+		</isif>
+		<ul class="filter-list <isif condition="#(page EQ 'category')#">filter-category</isif>">
+		<isloop iterator="filter:FilterAttributeEntry" alias="entry" >
+			<!--- set css class in order to indent (category level) --->
+			<isset scope="request" name="CssParametricClass" value="" />
+			<isif condition="#entry:Level > 0#">
+				<isset scope="request" name="CssParametricClass" value="#'filter-layer'.entry:Level#" />
+			</isif>
+			<isif condition="#entry:isSelected AND (entry:Value NE 'SHOWALL') AND (entry:Value NE 'SHOWLESS')#">
+				<isset scope="request" name="SelectedLevel" value="#entry:Level#" />
+				<isset scope="request" name="EntrySelected" value="true" />
+				
+				<isif condition="#showselected EQ 'true'#">
+					<!--- we show selected entries in the whole category tree if selection type is not taxonomic --->
+					<isif condition="#(entry:Name EQ 'ContextCategoryUUID') AND (selectionType NE 'taxonomic')#">
+					<iselse>
+					<isinclude template="modules/search/index/RemovedSelectionQuery" />
+					<isif condition="#(displayType EQ 'text_clear')
+													  AND ((selectionType NE 'taxonomic') OR (NOT entry:CatalogCategory:RootCategory OR isDefined(ListNavigationVO:SearchTerm)))#">
+					<iselse>
+						<li class="filter-item filter-selected <isif condition="#displayType EQ 'swatch'#">filter-colour</isif> <isprint value="#CssParametricClass#">" >
+							<isif condition="#(displayType EQ 'text_clear')
+										  AND ((selectionType NE 'taxonomic') OR (NOT entry:CatalogCategory:RootCategory OR isDefined(ListNavigationVO:SearchTerm)))#">
+								<a class="ish-pageNavigation-filters-filter-clear" href="<isfilterlink pipelinename="#pipeline#"
+									searchparameter="#tmp_remove_query#"
+									pagesize="#query:PageSize#"
+									params="TmpParams"
+									catalogcategoryid="#tmp_catalogcategory_uuid#"
+									catalogid="#entry:CatalogCategory:UUID#"
+									sortvalue="#tmp_sortvalue#"
+									>"><istext key="search.filter.clear.link" /></a>
+							</isif>
+							<isinclude template="modules/search/index/SelectedFilterValueItem" />
+						</li>
+					</isif>
+					<isif condition="#(displayType EQ 'text_clear')#">
+						<isif condition="#entry:CatalogCategory:RootCategory AND NOT(isDefined(ListNavigationVO:SearchTerm)) OR ((selectionType NE 'taxonomic') AND (entry:Name EQ 'ContextCategoryUUID'))#">
+							<!--- hide the whole category and clear link for top level categories and no search --->
+						<iselse/>
+							<li class="filter-item filter-selected <isprint value="#CssParametricClass#">" >
+								<!--- an extra clear selection link for the value if text_clear --->
+									<a class="filter-clear" href="<isfilterlink pipelinename="#pipeline#"
+										searchparameter="#tmp_remove_query#"
+										pagesize="#query:PageSize#"
+										params="TmpParams"
+											catalogcategoryid="#tmp_catalogcategory_uuid#"
+										catalogid="#entry:CatalogCategory:UUID#"
+										sortvalue="#tmp_sortvalue#"
+										>"><span class="glyphicon glyphicon-minus pull-right"></span></a>
+										<span class="icon-selected"></span><isprint value="#entry:DisplayValue#">
+							</li>
+						</isif>
+					</isif>
+					</isif>
+				</isif>
+			<iselse>
+				<isif condition="#(selectionType EQ 'taxonomic') AND (EntrySelected EQ 'true') AND (entry:Level <= SelectedLevel)#">
+				<iselse>
+					<isset scope="request" name="HasUnselectedValues" value="true" />
+				</isif>
+			</isif>
+		</isloop>
+		</ul>
+		<isif condition="#(showselected EQ 'true') OR (HasUnselectedValues EQ 'true')#" >
+			<!--- attribute filter values --->
+			<ul class="<isprint value="#displayClass#"/> clearfix collapse in" id="<isprint value="#replace(trim(filter:ConfigurationAttribute:Name), '[^A-Za-z0-9]', '_') . '_id'#">">
+				<isif condition="#(displayType EQ 'dropdown') OR (displayType EQ 'checkbox')#">
+					<!--- initialize form --->
+					<isif condition="#(displayType EQ 'dropdown')#">
+						<form name="myForm" data-submit-form-handler="change" method="post" action="#URL(Action(pipeline))#" >
+					<iselse>
+						<form name="myForm" method="post" action="#URL(Action(pipeline))#" >
+					</isif>
+					<isloop iterator="TmpParams:EntrySet" alias="map">
+						<isif condition="#map:Key NE 'SearchParameter'#">
+							<input type="hidden" name="<isprint value="#map:Key#">" value="<isprint value="#map:Value#">" />
+						</isif> 
+					</isloop>
+					<input type="hidden" name="PageSize" value="<isprint value="#query:PageSize#">">
+					<isif condition="#(displayType EQ 'dropdown') AND (HasUnselectedValues EQ 'true')#">
+						<select name="SearchParameter" class="ws-submit-search-param form-control">
+							<option value=""><istext key="search.filter.select_option.text" /></Option>
+					</isif>
+				</isif>
+
+				<isloop iterator="filter:FilterAttributeEntry" alias="entry" >
+					<isif condition="#isDefined(entry:CatalogCategory)#">
+						<isset name="CatalogCategory" value="#entry:CatalogCategory#" scope="request"/>
+						<isset name="CategoryBO" value="#entry:CatalogCategoryBO#" scope="request"/>
+					<iselse/>
+						<isset name="CategoryBO" value="#BackupCategoryBO#" scope="request"/>
+					</isif>
+				
+					<isif condition="#entry:Value EQ 'SHOWALL'#">
+						<li class="filter-item"><a class="filter-item-name keepFilterOpen" href="<isfilterlink pipelinename="#pipeline#"
+										searchparameter="#query:ExtendedFilterGroupSize(filter:ConfigurationAttribute:Name,"(Integer)0")#"
+										pagesize="#query:PageSize#"
+										params="TmpParams"
+										sortvalue="#tmp_sortvalue#"
+										>">
+						<istext key="search.filter.show_all.link" /></a></li>
+					<iselseif condition="#entry:Value EQ 'SHOWLESS'#">
+						<li class="filter-item"><a class="filter-item-name keepFilterOpen" href="<isfilterlink pipelinename="#pipeline#"
+										searchparameter="#query:RemovedFilterGroupSize(filter:ConfigurationAttribute:Name)#"
+										pagesize="#query:PageSize#"
+										params="TmpParams"
+										sortvalue="#tmp_sortvalue#"
+										>">
+						<istext key="search.filter.show_less.link" /></a></li>
+					<iselse>
+						<!--- set css class in order to indent (category level) --->
+						<isset scope="request" name="CssParametricClass" value="" />
+						<isif condition="#entry:Level > 0#">
+							<isset scope="request" name="CssParametricClass" value="#'filter-layer'.entry:Level#" />
+						</isif>
+						 
+						<!--- Selected attribute value --->
+						<isif condition="#entry:isSelected#">
+							<isif condition="#showselected EQ 'true'#">
+								<isinclude template="modules/search/index/RemovedSelectionQuery" />
+								<isif condition="#((selectionType NE 'taxonomic') AND (entry:Name EQ 'ContextCategoryUUID'))#">
+									<isif condition="#(displayType EQ 'text_clear')#">
+										<li class="filter-item filter-selected <isprint value="#CssParametricClass#">" >
+										<isif condition="#entry:CatalogCategory:RootCategory AND NOT(isDefined(ListNavigationVO:SearchTerm))#">
+											<!--- hide the clear link for top level categories and no search --->
+										<iselse/>
+										<!--- an extra clear selection link for the value if text_clear --->
+										<a class="filter-clear" href="<isfilterlink pipelinename="#pipeline#"
+											searchparameter="#tmp_remove_query#"
+											pagesize="#query:PageSize#"
+											params="TmpParams"
+												catalogcategoryid="#tmp_catalogcategory_uuid#"
+											catalogid="#entry:CatalogCategory:UUID#"
+											sortvalue="#tmp_sortvalue#"
+											>"><span class="glyphicon glyphicon-minus pull-right"></span></a>
+										</isif>
+										<span class="icon-selected"></span><isprint value="#entry:DisplayValue#">
+										</li>
+									<iselse>
+									<li class="filter-item filter-selected <isprint value="#CssParametricClass#">" >
+										<isinclude template="modules/search/index/SelectedFilterValueItem" />
+									</li>
+									</isif>
+								</isif>
+								<isif condition="#(displayType EQ 'text_clear') AND ((selectionType NE 'taxonomic') OR (NOT entry:CatalogCategory:RootCategory OR isDefined(ListNavigationVO:SearchTerm)))#">
+								<iselse>
+									<isif condition="#displayType EQ 'swatch'#">
+										<li class="filter-item filter-selected <isif condition="#displayType EQ 'swatch'#">filter-colour</isif> <isprint value="#CssParametricClass#">" >
+												<a data-testing-id="filter-swatch-<isprint value="#entry:getDisplayValue#" >" 
+													class="filter-swatch" title="<isprint value="#entry:getDisplayValue#" ><isif condition="#(showcount EQ 'true') AND (entry:Count != 0)#"> (<isprint value="#entry:Count#">)</isif>" href="<isfilterlink pipelinename="#pipeline#"
+													searchparameter="#tmp_remove_query#"
+													pagesize="#query:PageSize#"
+													params="TmpParams"
+													sortvalue="#tmp_sortvalue#"
+													>">
+													<isif condition="#isDefined(entry:getImageRef)#">
+														<img src="#ContentURL(entry:getImageRef, CurrentRequest:Locale:LocaleID)#" 	alt="<isprint value="#entry:DisplayValue#">" />
+													<iselseif condition="#isDefined(entry:ColorCode)#">
+														<span style="background-color:<isprint value="#entry:ColorCode#" />"></span>
+													<iselse>
+														<div class="filter-swatch-text" ><isprint value="#entry:DisplayValue#"></div>
+													</isif>
+												</a>
+										</li>
+									</isif>
+								</isif>
+							</isif>
+						<!--- not selected attribute value --->
+						<iselse>
+							<isif condition="#(selectionType EQ 'taxonomic') AND (EntrySelected EQ 'true') AND (entry:Level <= SelectedLevel)#">
+								<!--- omit lower levels than selected ones --->
+							<iselse>
+								<isif condition="#NOT(isDefined(entry:CatalogCategory)) OR SearchIndexFilterUtils:CategoryFilterItemVisibleForSelectedFilters(query,ListNavigationVO:SearchIndex:Configuration,entry:CatalogCategory)#">
+								<li  class="filter-item <isif condition="#(displayType EQ 'swatch')#">filter-colour</isif> <isprint value="#CssParametricClass#">">
+									<isif condition="#(displayType EQ 'checkbox')#">
+									<label class="filter-checkbox-label" for="<isprint value="#trim(entry:DisplayValue)#">_id"><isprint value="#entry:DisplayValue#"></label>
+									<input type="checkbox"  name="SearchParameter" id="<isprint value="#trim(entry:DisplayValue)#">_id" class="filter-checkbox" data-document-location="<isfilterlink pipelinename="#pipeline#"
+											searchparameter="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#"
+											pagesize="#query:PageSize#"
+											params="TmpParams"
+											sortvalue="#tmp_sortvalue#"
+											>">
+										<isprint value="#entry:DisplayValue#">
+									<iselseif condition="#(displayType EQ 'dropdown')#">
+										<option value="<isprint value="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#">"><isprint value="#entry:DisplayValue#"></option>
+									<iselseif condition="#(displayType EQ 'swatch')#">
+									<a class="filter-swatch" 
+												data-testing-id="filter-swatch-<isprint value="#entry:getDisplayValue#" >"
+												title="<isprint value="#entry:getDisplayValue#" ><isif condition="#(showcount EQ 'true') AND (entry:Count != 0)#"> (<isprint value="#entry:Count#">)</isif>" href="<isfilterlink pipelinename="#pipeline#"
+												searchparameter="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#"
+												pagesize="#query:PageSize#"
+												params="TmpParams"
+												sortvalue="#tmp_sortvalue#"
+												>">
+											<isif condition="#isDefined(entry:getImageRef)#">
+												<img src="#ContentURL(entry:getImageRef, CurrentRequest:Locale:LocaleID)#" 	alt="<isprint value="#entry:DisplayValue#">" />
+											<iselseif condition="#isDefined(entry:ColorCode)#">
+												<span style="background-color:<isprint value="#entry:ColorCode#" />;"></span>
+											<iselse>
+											<div class="filter-swatch-text" ><isprint value="#entry:DisplayValue#"></div>
+											</isif>
+										</a>
+									<iselse>
+										<isif condition="#isDefined(entry:CatalogCategory) AND (noncategoryfilterselected NE 'true')#">
+											<ispipeline pipeline="ViewStandardCatalog-GetCatalogCategoryBO" alias="Result" params="#ParamMap(ParamEntry('CatalogID', entry:CatalogCategory:Parent:Name), ParamEntry('CatalogCategoryID', entry:CatalogCategory:UUID))#"/>
+											<isif condition="#isDefined(Result:CategoryBO)#">
+												<isif condition="#Result:CategoryBO:Accessible#">
+													<a class="filter-item-name" href="<isfilterlink pipelinename="#pipeline#"
+														searchparameter="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#"
+														pagesize="#query:PageSize#"
+														catalogcategoryid="#entry:Value#"
+														params="TmpParams"
+														sortvalue="#tmp_sortvalue#"
+														>"><span class="icon-notselected"></span><isprint value="#entry:DisplayValue#"></a>
+												</isif>
+											<iselse/>
+												<a class="filter-item-name" href="<isfilterlink pipelinename="#pipeline#"
+													searchparameter="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#"
+													pagesize="#query:PageSize#"
+													catalogcategoryid="#entry:Value#"
+													params="TmpParams"
+													sortvalue="#tmp_sortvalue#"
+													>"><span class="icon-notselected"></span><isprint value="#entry:DisplayValue#"></a>
+											</isif>
+										<iselse>
+											<a class="filter-item-name" 
+												data-testing-id="filter-link-<isprint value="#entry:Value#">"
+												href="<isfilterlink pipelinename="#pipeline#"												
+												searchparameter="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#"
+												pagesize="#query:PageSize#"
+												params="TmpParams"
+												sortvalue="#tmp_sortvalue#"
+												>"><span class="icon-notselected"></span><isprint value="#entry:DisplayValue#"></a>
+										</isif>
+									</isif>
+									<isif condition="#(showcount EQ 'true') AND (entry:Count != 0) AND NOT (displayType EQ 'swatch')#">
+										<isif condition="#isDefined(entry:CatalogCategory) AND (noncategoryfilterselected NE 'true')#">
+											<isif condition="#isDefined(Result:CategoryBO)#">
+												<isif condition="#Result:CategoryBO:Accessible#">
+													<span class="filter-count">(<isprint value="#entry:Count#">)</span>
+												</isif>
+											<iselse/>
+												<span class="filter-count">(<isprint value="#entry:Count#">)</span>
+											</isif>
+										<iselse/>
+											<span class="filter-count">(<isprint value="#entry:Count#">)</span>
+										</isif>
+									</isif>
+								</li>
+							</isif>
+						</isif>
+					</isif>
+					</isif>
+				</isloop>
+
+				<isif condition="#(displayType EQ 'dropdown') OR (displayType EQ 'checkbox')#">
+					<isif condition="#(displayType EQ 'dropdown') AND (HasUnselectedValues EQ 'true')#">
+						</select>
+						<noscript>
+							<button type="submit"><istext key="search.filter.filter.button" /></button>
+						</noscript>
+					</isif>
+					</form>
+				</isif>
+			</ul>
+		</isif>
+	</isif>
+</isif>
+
+
+<!--- Restore the initial CategoryBO (just in case it has gotten overwritten) --->
+<isset name="CategoryBO" value="#BackupCategoryBO#" scope="request"/>

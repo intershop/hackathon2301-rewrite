@@ -1,0 +1,141 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+<isinclude template="modules/account/Modules">
+<isGetLoginPreferenceReader>
+<div class="edit-profile-page">
+	<isform action="#URLEX(SecureURL,'',Action('ViewProfileSettings-UpdateProfile'))#" method="post" name="UpdateProfileForm" class="form-horizontal bv-form">
+	<p class="indicates-required"><span class="required">*</span><istext key="account.required_field.message" /></p>	
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:Title:QualifiedName#">" class="col-sm-3 col-md-3 control-label">
+				<istext key="account.update_profile.salutation.label"/>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<isSalutationSelectBox formparameter="#CurrentForm:Title:QualifiedName#"
+					salutation="#CurrentUser:Profile:Title#"
+					salutation_enumeration_provider="#SalutationEnumerationKeyProvider#">
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:FirstName:QualifiedName#">" class="col-sm-3 col-md-3 control-label">
+				<istext key="account.update_profile.firstname.label"/><span class="required">*</span>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<input class="form-control" maxlength="35" type="text" required
+					id="<isprint value="#CurrentForm:FirstName:QualifiedName#">"
+					name="<isprint value="#CurrentForm:FirstName:QualifiedName#">"
+					value="<isif condition="#CurrentForm:Submitted#"><isprint value="#CurrentForm:FirstName:Value#"><iselse><isprint value="#UserBO:FirstName#"></isif>"
+					data-bv-notempty-message="<istext key="account.firstname.error.required"/>"
+					forbiddensymbols=""
+					data-bv-forbiddensymbols-message="<istext key="error.forbiddensymbols"/>"
+					data-bv-field="UpdateProfileForm_FirstName"
+					/>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:LastName:QualifiedName#">" class="col-sm-3 col-md-3 control-label">
+				<istext key="account.update_profile.lastname.label"/><span class="required">*</span>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<input class="form-control" maxlength="35" type="text" required
+					id="<isprint value="#CurrentForm:LastName:QualifiedName#">"
+					name="<isprint value="#CurrentForm:LastName:QualifiedName#">"
+					value="<isif condition="#CurrentForm:Submitted#"><isprint value="#CurrentForm:LastName:Value#"><iselse><isprint value="#UserBO:LastName#"></isif>"
+					data-bv-notempty-message="<istext key="account.lastname.error.required"/>"
+					forbiddensymbols=""
+					data-bv-forbiddensymbols-message="<istext key="error.forbiddensymbols"/>"
+					data-bv-field="UpdateProfileForm_LastName"
+					/>
+			</div>
+		</div>
+		<isif condition="#UserLoginType EQ 'username'#">
+		<div class="form-group<isif condition="#CurrentForm:Email:isInvalid#"> has-error</isif>">
+			<label class="col-sm-3 col-md-3 control-label" for="<isprint value="#CurrentForm:Email:QualifiedName#">"><istext key="account.profile.email.label"/><span class="required">*</span></label>
+			<div class="col-md-4 col-sm-6">
+				<input maxlength="256"
+						type="email"
+						class="form-control<isif condition="#CurrentForm:Email:Invalid#"> error</isif>"
+						name="<isprint value="#CurrentForm:Email:QualifiedName#">"
+						id="<isprint value="#CurrentForm:Email:QualifiedName#">"
+						data-error-position="placeholder"
+						value="<isif condition="#CurrentForm:Submitted#"><isprint value="#CurrentForm:Email:Value#"><iselse><isprint value="#UserBO:Email#"></isif>" data-bv-notempty="true"
+						data-bv-notempty-message="<istext key="account.email.error.required"/>" data-bv-emailaddress="true" data-bv-emailaddress-message="<istext key="account.email.error.required"/>" data-bv-emailaddress="true"
+						/>
+			</div>
+		</div>
+		</isif>
+		<isinclude extensionpoint="AccountProfileDepartmentExtensions">
+		
+		<isinclude template="account/profile/PhoneEdit">
+		
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:Fax:QualifiedName#">" class="col-sm-3 col-md-3 control-label">
+				<istext key="account.update_profile.fax.label"/>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<input class="form-control" maxlength="20" type="text"
+					id="<isprint value="#CurrentForm:Fax:QualifiedName#">"
+					name="<isprint value="#CurrentForm:Fax:QualifiedName#">"
+					value="<isif condition="#CurrentForm:Submitted#"><isprint value="#CurrentForm:Fax:Value#"><iselse><isprint value="#UserBO:Fax#"></isif>"/>
+			</div>
+		</div>
+		
+		
+		
+		<div class="form-group<isif condition="#CurrentForm:Birthday:Month:isInvalid OR 
+												CurrentForm:Birthday:Day:isInvalid OR 
+												CurrentForm:Birthday:Year:isInvalid OR 
+												CurrentForm:Birthday:isInvalid#"> has-error</isif>"
+		>
+			<label for="<isprint value="#CurrentForm:Birthday:QualifiedName#">" class="col-sm-3 col-md-3 control-label" >
+				<istext key="account.update_profile.birthday.label" />
+			</label>
+			<div class="col-md-5 col-sm-6">
+				<isBirthdayInput 
+					formparameter="#CurrentForm:Birthday#" 
+					type="select"
+					required="false"
+					birthday="#UserBO:BirthdayDate#"
+				>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:LocaleID:QualifiedName#">" class="col-sm-3 col-md-3 control-label">
+				<istext key="account.update_profile.preferred_language.label"/><span class="required">*</span>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<isPreferredLocaleSelectBox
+					parametername="#CurrentForm:LocaleID:QualifiedName#"
+					selected="#UserBO:Extension("UserBOPreferencesExtension"):PreferredLocale:LocaleID#"
+					currentlocale="#CurrentSession:Locale#">
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<div class="checkbox col-sm-offset-3 col-sm-8">		
+				<label for="<isprint value="#CurrentForm:Newsletter:QualifiedName#">">
+					<input
+					type="checkbox"
+					id="<isprint value="#CurrentForm:Newsletter:QualifiedName#">"
+					name="<isprint value="#CurrentForm:Newsletter:QualifiedName#">"
+					value = "<isprint value="#isDefined(ReceiveNewsletters) AND ReceiveNewsletters#">"
+					<isif condition="#isDefined(ReceiveNewsletters) AND ReceiveNewsletters#">checked="checked"</isif>/>	
+					<istext key="account.register.newsletter.checkbox.text"/>
+					<br>
+					<small class="input-help">
+						<istext key="account.notification.note.text" parameter0="#URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systeminclude.dialog.privacyPolicy.pagelet2-Include'))#" encoding="off"/>
+					</small>
+				</label>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<div class="col-sm-offset-3 col-sm-8">
+				<button class="btn btn-primary" type="submit" value="UpdateProfile" name="UpdateProfile" ><istext key="account.update.button.label"/></button>
+				<a class="btn btn-default" href="<isprint value="#URLEX(SecureURL,'',Action('ViewProfileSettings-ViewProfile'))#">"><istext key="account.cancel.link"/></a>
+			</div>
+		</div>
+	</isform>
+</div>

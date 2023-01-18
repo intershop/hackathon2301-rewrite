@@ -1,0 +1,37 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isset name="PLIAppliedRebate" value="#PLI:Extension("AppliedRebate")#" scope="request"/>
+
+<!--- PLI Promotion Messages --->
+<isloop iterator="PLIAppliedRebate:AppliedRebates" alias="AppliedRebate">
+	<isif condition="#(NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)) OR (isDefined(PLI:FreeGift))#">
+		<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+			<div class="list-item-promo"> 
+				<isset name="PromoTitle" value="#AppliedRebate:RebateBO:PromotionBO:Title(CurrentSession:Locale)#" scope="request"/>
+				<isif condition="#isDefined(PromoTitle)#">
+					<isHtmlPrint value="#PromoTitle#" mode="storefront">
+				<iselse>
+					<isHtmlPrint value="#AppliedRebate:RebateBO:PromotionBO:DisplayName(CurrentSession:Locale)#" mode="storefront">
+				</isif>
+				<span style="white-space: nowrap;" class="details-link">				
+					<a href="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs',AppliedRebate:RebateBO:PromotionBO:PromotionID),Parameter('DisplayType','dialog'))#"
+						data-dialog
+						alt="<istext key="promotion.detailslink.label"/>"><istext key="checkout.widget.promotion.details">
+					</a>
+					<!--- Promotion code can be removed only for Baskets in status OPEN --->
+					<isif condition="#isDefined(AppliedRebate:Code) AND NOT isDefined(OrderBO) AND isDefined(CurrentCartBO) AND (CurrentCartBO:Status EQ 'OPEN')#">
+						<istext key="promotion.remove.label.space" encoding="off"/><a href="#URL(Action('ViewCart-DeletePromotion'),Parameter('PromotionCode',AppliedRebate:Code),Parameter('JumpTarget',JumpTarget))#"><istext key="promotion.remove.label"/></a>
+					</isif>
+				</span>
+			</div>
+		</isif>
+	</isif>
+</isloop>
+
+<!---Free Gift --->
+<isif condition="#PLI:FreeGift#">
+	<div class="list-item-promo"> 
+		<span class="-promoInfo"><istext key="checkout.pli.freegift.text" /></span>
+	</div>
+</isif>

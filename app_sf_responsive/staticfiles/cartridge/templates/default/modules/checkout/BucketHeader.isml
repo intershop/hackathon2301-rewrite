@@ -1,0 +1,54 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<!---Bucket Header line if there are multiple buckets --->
+<isif condition="#bucketnumber > 1#">
+	<h2>
+		<isloop iterator="bucket:ProductLineItemBOs" alias="PLI">
+			<isset name="DigitalGiftCard" value="#PLI:ProductBO:ServiceTypeBO:DigitalGiftCard#" scope="request">
+			<isbreak>
+		</isloop>
+		<istext key="checkout.order.items_shipping_to.text" />
+		<isif condition="#DigitalGiftCard#">
+			<isif condition="# isDefined(bucket:ShipToAddressBO:FirstName) AND (bucket:ShipToAddressBO:FirstName NE '')#"> <isprint value="#bucket:ShipToAddressBO:FirstName#"> - </isif> <isprint value="#bucket:ShipToAddressBO:EMail#">
+		<iselse> 
+			<isif condition="#(bucket:ShipToAddressBO:CompanyName1 NE '') AND (bucket:ShipToAddressBO:CompanyName1 NE 'none')#"><isprint value="#bucket:ShipToAddressBO:CompanyName1#">, </isif>
+			<isif condition="#(bucket:ShipToAddressBO:CompanyName2 NE '') AND (bucket:ShipToAddressBO:CompanyName2 NE 'none')#"><isprint value="#bucket:ShipToAddressBO:CompanyName2#">, </isif>
+			<isif condition="#(bucket:ShipToAddressBO:AddressName NE '') AND (isDefined (bucket:ShipToAddress:Extension("Store")))#"><isprint value="#bucket:ShipToAddressBO:AddressName#"></isif>
+			<isif condition="#(bucket:ShipToAddressBO:FirstName NE '')#"><isprint value="#bucket:ShipToAddressBO:FirstName#"> </isif>
+			<isif condition="#(bucket:ShipToAddressBO:LastName NE '')#"><isprint value="#bucket:ShipToAddressBO:LastName#"></isif>
+			<isif condition="#(bucket:ShipToAddressBO:AddressLine1 NE '')#">, <isprint value="#bucket:ShipToAddressBO:AddressLine1#"></isif>
+		</isif>
+	</h2>
+</isif>	
+
+<!--- Expected Delivery Time --->
+<isif condition="#NOT (isDefined(displaydeliverytime)) OR (displaydeliverytime EQ '')#">
+	<isif condition="#isDefined(bucket:DeliveryTimeMin) AND isDefined(bucket:DeliveryTimeMax)#">
+		<isif condition="#bucketnumber > 1#">
+			<h5>
+		<iselse>
+			<h3>
+		</isif>	
+			<istext key="checkout.receipt.delivery_time.description" /> 
+			<isif condition="#bucket:DeliveryTimeMin EQ '0'#">
+				<isif condition="#bucket:DeliveryTimeMax EQ '1'#">
+					<istext key="checkout.receipt.shipping_time.within24" />
+				<iselse>
+					<istext key="checkout.receipt.shipping_time.within" parameter0="#bucket:DeliveryTimeMax#" />
+				</isif>
+			<iselse>
+				<istext key="checkout.receipt.delivery_time" parameter0="#bucket:DeliveryTimeMin#" parameter1="#bucket:DeliveryTimeMax#" />
+			</isif>
+			
+			<!--- Expected Delivery Time - Subscription Description Extension --->
+			<isif condition="#isDefined(recurringbasketextension) AND recurringbasketextension:isRecurring#">
+				<span>&nbsp;<istext key="checkout.receipt.delivery_time.description.extension.recurrence" /></span>
+			</isif>
+			
+		<isif condition="#bucketnumber > 1#">
+			</h5>
+		<iselse>
+			</h3>
+		</isif>
+	</isif>
+</isif>

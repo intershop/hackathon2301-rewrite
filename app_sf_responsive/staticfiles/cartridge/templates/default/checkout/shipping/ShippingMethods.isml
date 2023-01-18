@@ -1,0 +1,115 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<div class="shipping-methods">
+	
+	<istext key="checkout.shipping_method.selection.heading" />
+	
+	<isset name="BucketEligibleShippingMethods" value="#Bucket:EligibleShippingMethods#" scope="request"/>
+	<isif condition="#isDefined(BucketEligibleShippingMethods) AND hasLoopElements(BucketEligibleShippingMethods)#">
+		<isset name="ShowSpecialShippingInstruction" value="false" scope="request">
+		
+		<isloop iterator="BucketEligibleShippingMethods" alias="ShippingMethod">
+			<div class="radio">
+					
+				<label for="ShippingMethod_<isprint value="#Bucket:ID#">_<isprint value="#ShippingMethod:Id#">">
+					<input id="ShippingMethod_<isprint value="#Bucket:ID#">_<isprint value="#ShippingMethod:Id#">" name="ShippingMethodUUID_<isprint value="#Bucket:ID#">" value="<isprint value="#ShippingMethod:Id#">" type="radio"
+						<isif condition="#isDefined(Bucket:SelectedShippingMethod) AND (Bucket:SelectedShippingMethod:Id EQ ShippingMethod:Id)#">checked="checked"
+							<isif condition="#ShippingMethod:InstructionSupported EQ 'true'#">
+								<isset name="ShowSpecialShippingInstruction" value="true" scope="request">
+							</isif>
+						</isif>
+					/>
+					
+					<span><isprint value="#ShippingMethod:DisplayName#"/>:</span>&nbsp;
+					<strong><isif condition="#PriceDisplayType EQ 'net'#"><isprint value="#ShippingMethod:ShippingMethodCostNet#"><iselse><isprint value="#ShippingMethod:ShippingMethodCostGross#"></isif></strong>&nbsp;
+
+					<isif condition="#CurrentCartBO:PriceDisplayAdditionalText NE ''#">
+						<span class="help-block help-block-inline"><isprint value="#CurrentCartBO:PriceDisplayAdditionalText#"/>&nbsp;</span>
+					</isif>
+					
+					<isset name="BucketDeliveryTimeMin" value="#Bucket:DeliveryTimeMin(ShippingMethod)#" scope="request"/>
+					<isset name="BucketDeliveryTimeMax" value="#Bucket:DeliveryTimeMax(ShippingMethod)#" scope="request"/>
+					
+					<isif condition="#isDefined(BucketDeliveryTimeMin) AND isDefined(BucketDeliveryTimeMax)#">
+						<span class="help-block help-block-inline">
+							<istext key="checkout.shipping.delivery_time.description" /> 
+							<isif condition="#BucketDeliveryTimeMin EQ '0'#">
+								<isif condition="#BucketDeliveryTimeMax EQ '1'#">
+									<istext key="checkout.shipping.delivery_time.within24" />
+								<iselse>
+									<istext key="checkout.shipping.delivery_time.within" parameter0="#BucketDeliveryTimeMax#" />
+								</isif>
+							<iselse>
+								<istext key="checkout.shipping.delivery_time" parameter0="#BucketDeliveryTimeMin#" parameter1="#BucketDeliveryTimeMax#" />
+							</isif>
+						</span>
+					</isif>
+					<isTooltip linktextkey="checkout.detail.text" content="#ShippingMethod:Description#" linkclass="details-tooltip">
+				</label>
+			</div>
+		</isloop>
+	</isif>
+</div>
+
+<isif condition="#isDefined(BucketEligibleShippingMethods) AND hasLoopElements(BucketEligibleShippingMethods)#">
+	<isif condition="#ShowSpecialShippingInstruction EQ 'true'#">
+		<isGetIndirectValue key="#'ShippingForm:getParameter("ShippingInstruction_'.Bucket:ID.'")'#" entry="ShippingInstructionParameter" print="false">
+		<div class="shipping-instruction<isif condition="#ShippingInstructionParameter:isInvalid#"> has-error</isif><isif condition="#(isDefined(PackSlipMessage_Switch) AND (PackSlipMessage_Switch NE 'true'))#"> section</isif>">
+			<isif condition="#isDefined(ShippingInstructionParameter:Value)#"><!--- form has been sent: after form error or changing shipping method --->
+				<isset name="ShippingInstructions" value="#ShippingInstructionParameter:Value#" scope="request"/>
+			<iselse>
+				<isset name="ShippingInstructions" value="#Bucket:ShippingInstructions#" scope="request"/>
+			</isif>
+			
+			<div class="checkbox">
+				<label for="ShippingInstruction_Flag_<isprint value="#Bucket:ID#">">
+					<input type="checkbox" 
+						data-toggle="collapse" 
+						data-target="#'#'#shippingInstruction_<isprint value="#Bucket:ID#">" 
+						name="ShippingInstruction_Flag_<isprint value="#Bucket:ID#">" 
+						id="ShippingInstruction_Flag_<isprint value="#Bucket:ID#">" 
+						value="true"
+						<isif condition="#isDefined(ShippingInstructions) AND (ShippingInstructions NE '')#">
+							checked = "checked"
+						</isif>
+					/>
+					<istext key="checkout.shipping.shippingInstructions.checkbox.text" />&nbsp;<span class="help-block help-block-inline"><istext key="checkout.shipping.shippingInstructions.checkbox.text1" /></span>
+				</label>
+			</div>
+			
+			<div class="collapse <isif condition="#isDefined(ShippingInstructions) AND (ShippingInstructions NE '')#"> in</isif>" id="shippingInstruction_<isprint value="#Bucket:ID#">">
+				<br/>
+				<isif condition="#ShippingForm:isSubmitted AND ShippingInstructionParameter:isInvalid#">
+					<isloop iterator="ShippingInstructionParameter:Errors" alias="Error">
+						<isif condition="#Error EQ 'error.profanitycheck'#">
+							<div class="alert alert-danger">
+								<istext key="checkout.shipping.profanity.error" />
+							</div>
+						<iselseif condition="#(Error EQ 'error.regexp') OR (Error EQ 'error.maxlength')#">
+							<div class="alert alert-danger">
+								<istext key="checkout.shipping.shippingInstructions.maxNoOfCharacters.error" parameter0="180"/>
+							</div>
+						</isif>
+					</isloop>
+				</isif>
+				
+				<textarea 
+					maxlength="180" 
+					data-charactercounter="cCounterShippingInstruction_<isprint value="#Bucket:ID#">" 
+					name="ShippingForm_ShippingInstruction_<isprint value="#Bucket:ID#">" 
+					class="form-control<isif condition="#ShippingForm:isSubmitted AND ShippingInstructionParameter:isInvalid#"> has-error</isif>"
+				>
+					<isprint value="#ShippingInstructions#">
+				</textarea>
+				
+				<small class="input-help">
+					<istext key="checkout.shipping_method.instructions_max_limit.pre.text" /> <span id="cCounterShippingInstruction_<isprint value="#Bucket:ID#">"></span> <istext key="checkout.shipping_method.instructions_max_limit.post.text" />
+				</small>				
+			</div>
+		</div>
+	</isif>
+</isif>

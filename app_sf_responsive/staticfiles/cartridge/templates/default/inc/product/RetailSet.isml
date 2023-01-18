@@ -1,0 +1,38 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isif condition="#ProductBO:isRetailSet#">
+	<isset name="BundledProductBOs" value="#ProductBO:BundleInformationBO:BundledProductBOs#" scope="request" />
+	
+	<isform class="product-form bv-form form-horizontal" 
+		id="#'retailSetForm_' . replace(ProductBO:SKU, '\\s', '---')#"
+		name="#'retailSetForm_' . ProductBO:SKU#" 
+		action="#URLEX(SecureURL,'',Action('ViewCart-Dispatch'))#" 
+		method="post"
+	>
+		<div class="col-xs-12 bundled-product-list">
+			<h3><istext key="product.retailSet.products.heading" /></h3>
+			
+			<ul class="product-list row">
+				<isloop iterator="BundledProductBOs" alias="BundledProductBO">
+					<isif condition="#BundledProductBO:Online#">
+						<iscachekey object="#BundledProductBO#">
+						<li class="col-md-12 list-view retail-product-list-item">
+							<isinclude template="inc/product/RetailSetProduct">
+						</li>
+					</isif>
+				</isloop>
+			</ul>
+		</div>
+		
+		<isif condition="#isDefined(ExpressShop) AND ExpressShop#">
+			<ISAddToCart class="hidden" ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" addToCartBehavior="expresscart" DataAttributes="data-click-target=RetailSetAddToCart">
+		<iselse>
+			<div class="col-xs-12 bundled-product-list-actions">
+				<ISAddToCart ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" DataAttributes="data-click-target=RetailSetAddToCart">
+				
+				<ISAddToWishlist ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#">
+			</div>
+		</isif>
+	</isform>
+</isif>

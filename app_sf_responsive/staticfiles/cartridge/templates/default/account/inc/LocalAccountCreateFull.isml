@@ -1,0 +1,96 @@
+<iscontent charset="UTF-8" compact="false" templatemarker="true">
+
+<h1><istext key="account.register.heading" /></h1>
+
+<p><istext key="account.register.message" /></p>
+
+<div class="section" data-testing-id="account-create-full-page">
+<isGetLoginPreferenceReader>
+
+	<isform class="form-horizontal bv-form"
+		action="#URLEX('https','',Action('ViewUserAccount-Dispatch'))#"
+		method="post"
+		name="RegisterUser">
+		
+		<isif condition="#isDefined(Dictionary:TargetPipeline)#">
+			<input type="hidden" name="TargetPipeline" value="<isprint value="#Dictionary:TargetPipeline#">">
+			
+			<isif condition="#isDefined(Dictionary:Parameter1_Name)#">
+				<input type="hidden" name="Parameter1_Name" value="<isprint value="#Dictionary:Parameter1_Name#">">
+				<input type="hidden" name="Parameter1_Value" value="<isprint value="#Dictionary:Parameter1_Value#">">
+			</isif>
+			
+			<isif condition="#isDefined(Dictionary:Parameter2_Name)#">
+				<input type="hidden" name="Parameter2_Name" value="<isprint value="#Dictionary:Parameter2_Name#">">
+				<input type="hidden" name="Parameter2_Value" value="<isprint value="#Dictionary:Parameter2_Value#">">
+			</isif>
+			
+			<isif condition="#isDefined(Dictionary:Parameter3_Name)#">
+				<input type="hidden" name="Parameter3_Name" value="<isprint value="#Dictionary:Parameter3_Name#">">
+				<input type="hidden" name="Parameter3_Value" value="<isprint value="#Dictionary:Parameter3_Value#">">
+			</isif>
+			
+			<isif condition="#isDefined(Dictionary:Parameter4_Name)#">
+				<input type="hidden" name="Parameter4_Name" value="<isprint value="#Dictionary:Parameter4_Name#">">
+				<input type="hidden" name="Parameter4_Value" value="<isprint value="#Dictionary:Parameter4_Value#">">
+			</isif>
+			
+			<isif condition="#isDefined(Dictionary:Parameter5_Name)#">
+				<input type="hidden" name="Parameter5_Name" value="<isprint value="#Dictionary:Parameter5_Name#">">
+				<input type="hidden" name="Parameter5_Value" value="<isprint value="#Dictionary:Parameter5_Value#">">
+			</isif>
+		</isif>
+		
+		<isif condition="#NOT (CommingFromSuggestedAddresses EQ 'true')#">
+			<h2><istext key="#'account.register.'.UserLoginType.'_password.heading'#"/></h2>
+	
+			<p><istext key="#'account.register.'.UserLoginType.'_password.message'#"/></p>
+	
+			<div class="section">
+				<isinclude template="account/CreateFullLogin">
+			</div>
+		</isif>
+		
+		<div class="row">
+			<div class="col-md-6 col-sm-8">
+				<isinclude extensionpoint="ContactInformationExtension">
+			</div>
+		</div>
+		
+		<h2><istext key="account.register.address.headding" /></h2>
+		
+		<div class="section">
+			<p><istext key="account.register.address.message" /></p>
+			
+			<div class="row">
+				<div class="col-lg-6 col-md-8 col-sm-10">
+					<isaddressform 
+						webform="#AddressForm#" 
+						countrylist="#ShippingCountries#" 
+						addresstemplate="#'modules/address/forms/'.AddressFormTemplate#" 
+						locale="#CurrentSession:Locale#"
+						salutation_enumeration_provider="#SalutationEnumerationKeyProvider#"
+						isRegistration="#IsRegistration#"
+					>
+					
+					<div class="form-group<isif condition="#LoginForm:recaptcharesponsefield:Invalid#"> server-error</isif>">
+						<div class="col-sm-offset-4 col-sm-8">
+							<ISCaptchaFormField fieldname="LoginForm:recaptcharesponsefield" enablepreference="intershop.CaptchaPreferences.Register" captchaaction="create_account">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<div class="col-sm-offset-4 col-sm-8">
+							<isif condition="#NOT (CommingFromSuggestedAddresses EQ 'true')#">
+								<button class="btn btn-primary" type="submit" value="CreateAccount" name="CreateAccount"><istext key="account.create.button.label"/></button>
+							<iselse>
+								<button class="btn btn-primary" type="submit" value="EditSuggestedAddress" name="EditSuggestedAddress"><istext key="account.create.button.label"/></button>
+							</isif>
+							<a class="btn btn-default" href="<isprint value="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#">"><istext key="account.cancel.link"/></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</isform>
+</div>

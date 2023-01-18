@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Process pipeline for Locale Switching
+@Group Common-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessSwitchLocale" type="process">
+<!--For country toggle, 
+not only simple language switch.
+@Location 2,1-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text0"/>
+<!--For simple language switch.
+@Location 5,1-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text1"/>
+<!--@TODO: Pipeline Rework
+\- still retrieves Request
+\- AppContext must be 
+replaced by ApplicationBO
+@Location 3,4-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text2"/>
+<!--@TODO: Pipeline Rework
+\- still retrieves Request
+@Location 3,3-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text3"/>
+<!--@TODO: Pipeline Rework
+Pipelets (GetLocale and SwitchLocale)
+\- still retrieve Request
+\- AppContext must be 
+replaced by ApplicationBO
+@Location 4,0-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text4"/>
+<!--Deprecated since 7.10.10
+@Location 0,1-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text_rTRJUHZaEemGa5WZXc4aDQ"/>
+<!--Switches only the language.
+@Location 4,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="Language"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode3"/>
+<!--The ID of the locale to switch to.-->
+    <parameters name="LocaleID" type="java.lang.String" optional="true"/>
+<!--The request object.-->
+    <parameters name="Request" type="com.intershop.beehive.core.capi.request.Request"/>
+<!--The current ApplicationBO.-->
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+<!--@BendPoints 11,5-->
+    <nodeSuccessors name="ERROR" next="JoinNode6"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <startNode referencedName="ProcessPrefix-ValidateLocale"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="LocaleID">
+    <nodeSuccessors name="decision_yes" next="GetLocale1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode6"/>
+  </nodes>
+<!--@Location 4,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocale1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetLocale.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+    <parameterBindings name="LocaleId" objectPath="LocaleID"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="ApplicationBO:isLocaleAllowed(Locale)"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="SwitchLocale1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode7"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SwitchLocale1">
+    <pipelet href="enfinity:/core/pipelets/SwitchLocale.xml"/>
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <parameterBindings name="LocaleID" objectPath="Locale:LocaleID"/>
+  </nodes>
+<!--@Location 4,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="EndNode1"/>
+  </nodes>
+<!--@Location 4,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true"/>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+<!--@BendPoints 11,15-->
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="Start"
+      callMode="Private">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+<!--ID of the Locale-->
+    <parameters name="LocaleID" type="java.lang.String"/>
+<!--The domain-->
+    <parameters name="Domain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+<!--The current user-->
+    <parameters name="User" type="com.intershop.beehive.core.capi.user.User"/>
+<!--The current app context-->
+    <parameters name="AppContext" type="com.intershop.beehive.app.capi.AppContext"/>
+<!--The application BO business object-->
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="LocaleID">
+    <nodeSuccessors name="decision_yes" next="GetLocale0"/>
+<!--@BendPoints 5,5-->
+    <nodeSuccessors name="decision_no" next="JoinNode0"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocale0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetLocale.xml"/>
+    <nodeSuccessors name="next" next="SwitchLocale0"/>
+    <parameterBindings name="LocaleId" objectPath="LocaleID"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SwitchLocale0">
+    <pipelet href="enfinity:/core/pipelets/SwitchLocale.xml"/>
+    <nodeSuccessors name="next" next="SetSessionCurrency0"/>
+    <parameterBindings name="LocaleID" objectPath="Locale:LocaleID"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetSessionCurrency0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetSessionCurrency.xml"/>
+    <nodeSuccessors name="next" next="GetBasket0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="CurrencyMnemonic" objectPath="Locale:CurrencyCode"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasket0">
+    <configurationValues name="BasketType" value="REQUISITION"/>
+    <pipelet href="enfinity:/bts/pipelets/GetBasket.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="CurrentDomain" objectPath="Domain"/>
+    <parameterBindings name="CurrentUser" objectPath="User"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="Basket">
+    <nodeSuccessors name="decision_yes" next="GetDomainPreference0"/>
+    <nodeSuccessors name="decision_no" next="JoinNode4"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference0">
+    <configurationValues name="DefaultPreferenceKey" value="PriceType"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper_OT5tYGEZEemKm6KjzmVRxw"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="PreferenceDomain" objectPath="Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="PriceType"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_OT5tYGEZEemKm6KjzmVRxw">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetBasketBO_LPv_4GEZEemKm6KjzmVRxw"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Basket&quot;):getBasketBORepository(CurrentDomain)"/>
+    <returnValueBindings name="OutValue_1" objectPath="BasketBORepository"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketBO_LPv_4GEZEemKm6KjzmVRxw">
+    <pipelet href="enfinity:/bc_basket/pipelets/GetBasketBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <parameterBindings name="Basket" objectPath="BasketBO"/>
+    <startNode referencedName="ProcessBasket-Calculate"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <startNode referencedName="ProcessCart-RemoveWarrantiesWithoutPrice"/>
+  </nodes>
+<!--@Location 1,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <parameterBindings name="Basket" objectPath="BasketBO"/>
+    <startNode referencedName="ProcessBasket-Calculate"/>
+  </nodes>
+<!--@Location 1,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="EndNode0"/>
+  </nodes>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0"/>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 5,29-->
+    <nodeSuccessors name="next" next="JoinNode3"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+</pipeline:Pipeline>

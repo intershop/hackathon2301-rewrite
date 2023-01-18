@@ -1,0 +1,203 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset name="ProductBO" value="#WishlistItem:ProductBO#" scope="request"/>
+<isset name="ColorAttributeName" value="Miscellaneous / Color" scope="request"/>
+
+<div class="col-sm-2 col-xs-3 list-item">
+	<!--- Product Image --->
+	<isif condition="#showImage EQ 'true'#">
+		<isif condition="#ProductBO:Online#">
+			<a href="#URL(Action('ViewProduct-Start'),Parameter('SKU',ProductBO:SKU))#">
+				<ISProductImage ProductBO="#ProductBO#" ImageType="S" Class="img-responsive">
+			</a>
+		<iselse>
+			<!---Product is offline -> show image without link --->
+			<ISProductImage ProductBO="#ProductBO#" ImageType="S" Class="img-responsive">
+		</isif>	
+	</isif>
+</div>
+
+<div class="col-sm-10 col-xs-9 list-item">
+	<div class="row">
+	
+		<!--- Product Title and Details --->
+		<div class="col-sm-4"> 
+			<div class="pli-description">
+				<isif condition="#ProductBO:Online#">
+					<a class="product-title" href="#URL(Action('ViewProduct-Start'),Parameter('SKU',ProductBO:SKU))#">
+						<isprint value="#ProductBO:Name#">
+					</a>
+				<iselse>
+					<div class="product-title">
+						<isprint value="#ProductBO:Name#">
+					</div>	
+				</isif>
+			
+				<p class="product-id"><istext key="account.wishlist.table.item.item"/> <isprint value="#ProductBO:SKU#"/></p>
+				<isif condition="#isDefined(ProductBO:String(ColorAttributeName))#">
+					<p><istext key="account.wishlist.table.item.color"/> <isprint value="#ProductBO:String(ColorAttributeName)#" formatter="#"/></p>
+				</isif>
+				
+				<!--- Product Bundle Items --->
+				<isif condition="#ProductBO:BundleInformationBO:BundledProductBOs:Size > 0#">
+					<ul>
+						<isloop iterator="ProductBO:BundleInformationBO:BundledProductBOs" alias="BundledProductBO">
+							<li><isprint value="#BundledProductBO:Name#"></li>
+						</isloop>
+					</ul>
+				</isif>
+			
+				<isset name="VariationInfo" value="#ProductBO:ProductVariationInformationBO#" scope="request"/>
+				<isif condition="#hasElements(VariationInfo:VariationAttributes)#">
+					<dl class="dl-horizontal">
+						<isloop iterator="VariationInfo:VariationAttributes" alias="VariationAttribute">
+							<dt><isprint value="#VariationAttribute:DisplayName#"/>:</dt>
+							<dd><isprint value="#VariationInfo:SelectedVariationValue(VariationAttribute)#"/></dd>
+						</isloop>
+					</dl>
+				</isif>
+				
+				<!--- Date Added --->
+				<isif condition="#showDateAdded EQ 'true'#">
+					<p class="hidden-xs">
+						<label><istext key="account.wishlist.table.added_on"></label>&nbsp;
+						<isprint value="#WishlistItem:CreationDate#" style="DATE_LONG">
+					</p>
+				</isif>
+			</div>
+			
+			<!--- Buttons --->
+			<isif condition="#(showAddToCartButton EQ 'true') OR (showEditItemButtons EQ 'true')#">
+				<isif condition="#showEditItemButtons EQ 'true'#">
+					<!-- Show/Hide checkbox -->
+					 <div class="checkbox clearfix">
+						<label><input type="checkbox"  name="Private_<isprint value = "#WishlistItem:ID#">" id="private_<isprint value="#WishlistItem:ID#">"
+						<isif condition="#NOT(WishlistItem:Public EQ 'true')#">checked="checked"</isif> /><istext key="account.wishlist.table.options.do_not_share"/></label>
+					</div>
+					<p>
+						<!--- Move to another wish list --->
+						<a class="btn-tool"
+							data-dialog
+							title="<istext key="account.wishlist.table.options.move_to_another_wishlist"/>"
+							href="#URL(Action('ViewWishlist-ShowMoveItemDialog'),
+							Parameter('AjaxRequestMarker', 'true'),
+							Parameter('SourceWishlistID', WishlistItem:WishlistBO:ID),
+							Parameter('SourceWishlistItemID', WishlistItem:ID))#"
+						>
+							<span class="glyphicon glyphicon-move"></span>
+						</a>
+						
+						<!--- Remove --->
+						<isinclude template="inc/CSRFGuardJSToken"/>
+						<a href="#URL(Action('ViewWishlist-RemoveItem'), Parameter('WishlistID', WishlistItem:WishlistBO:ID), Parameter('WishlistItemID', WishlistItem:ID))#" 
+							class="btn-tool" 
+							data-csrf-guarded
+							title="<istext key="account.wishlist.table.options.remove"/>"
+						>
+							<span class="glyphicon glyphicon-trash"></span>
+						</a>
+					</p>
+				</isif>
+			</isif>
+		</div>
+		
+		<div class="<isif condition="#showWishlistLink EQ 'true'#">col-sm-4<iselse>col-sm-3</isif>"> 
+			<isif condition="#showWishlistLink EQ 'true'#">
+				<a href="#URL(Action('ViewWishlist-View'), Parameter('WishlistID', WishlistItem:WishlistBO:ID))#">
+					<istext key="account.wishlist.table.wishlist_link" parameter0="#WishlistItem:WishlistBO:Name#">
+				</a>
+			</isif>
+			
+			<!--- Quantities read only --->
+			<isif condition="#showQuantitiesText EQ 'true'#">
+			
+				<div class="form-horizontal">
+					<div class="form-group ">
+						<label class="col-xs-12 col-sm-12 control-label"><istext key="account.wishlist.table.desired_quantity"></label>
+						<div class="col-xs-6 col-sm-12">
+							<isif condition="#showQuantityControls EQ 'true'#">
+								<input class="form-control quantity" type="number" step="1" min="1"  data-validate="qty_required numbers" value="<isprint value="#WishlistItem:DesiredQuantity#" formatter="0">" name="DesiredQuantity_<isprint value = "#WishlistItem:ID#">" id="DesiredQuantity_<isprint value="#WishlistItem:ID#">" class="form-control"/>
+							<iselse>
+								&nbsp;<isprint value="#WishlistItem:DesiredQuantity#">
+							</isif>
+						</div>
+					</div>
+				</div>
+				
+				
+				<p><istext key="account.wishlist.table.purchased_quantity"><br />
+				<isif condition="#WishlistItem:PurchasedQuantity:Value > 0#">
+					<isprint value="#WishlistItem:PurchasedQuantity#" formatter="0"/>
+				<iselse>
+					<istext key="account.wishlist.table.not_yet_purchased"/>
+				</isif>
+				</p>
+			</isif>
+		</div>
+		
+		<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+		<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+		<isCurrentUserBO currentuserbo="UserBO">
+		<isGetProductPriceContext CustomerBO="#CustomerBO#" UserBO="#UserBO#" AddressSpecificPrice="true" ProductPriceContext="ProductPriceContext">
+		
+		<isset name="salePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request"/>
+		
+		<div class="<isif condition="#showWishlistLink EQ 'true'#">col-sm-4<iselse>col-sm-5</isif> column-price">
+			<!--- Price --->
+			<isif condition="#showPrice EQ 'true'#">
+				<!-- TODO: maybe multiply by the desired quantity? -->
+				<isif condition="#salePrice:Range#">
+					<isprint value="#getValue(salePrice:PriceRange:MinimumPrice)#"/>
+				<iselseif condition="#salePrice:Price:Available#">
+					<isprint value="#getValue(salePrice:Price)#"/>
+				<iselse>
+					<isprint value="#getValue(ProductBO:Price)#"/>
+				</isif>
+				<p><ISProductPriceAdditionalText ProductBO="#ProductBO#"></p>
+			</isif>
+			
+			<!--- Buttons --->
+			<isif condition="#(showAddToCartButton EQ 'true') OR (showEditItemButtons EQ 'true')#">
+				<p class="availability">
+					<isif condition="#NOT (ProductBO:Accessible)#">
+						<span class="product-out-of-stock"><istext key="account.wishlist.table.not_accessible" /></span>
+					<iselseif condition="#ProductBO:InventoryStatus:InStock#">
+						<span class="product-in-stock"><istext key="account.wishlist.table.in_stock"/></span>
+					<iselse>
+						<span class="product-out-of-stock"><istext key="account.wishlist.table.out_of_stock"/></span>
+					</isif>
+				</p>
+						
+				<!--- Add to cart --->
+				<isif condition="#showAddToCartButton EQ 'true'#">
+					<isif condition="#ProductBO:InventoryStatus:InStock AND ProductBO:Accessible AND NOT(ProductBO:isLastOrderDate OR ProductBO:isEndOfLife)
+							AND salePrice:Price:Available AND isDefined(ProductBO:TaxClassID) AND (ProductBO:TaxClassID NE '')#">
+						<isset name="initialQuantityToAdd" value="#WishlistItem:DesiredQuantity:Value - WishlistItem:PurchasedQuantity:Value#" scope="request">
+						<isif condition="#initialQuantityToAdd < 1#">
+							<isset name="initialQuantityToAdd" value="#1#" scope="request">
+						</isif>
+						
+						<div class="form-horizontal">
+							<div class="form-group ">
+								<label class="col-xs-6 control-label control-label-right" for="inputType"><istext key="account.wishlist.table.options.add_to_cart_quantity_label"></label>
+								<div class="col-xs-6">
+									<input class="form-control quantity" type="number" step="1" min="1" data-validate="required" value="<isprint value="#initialQuantityToAdd#" formatter="0">" formatter="0"  name="Quantity_<isprint value = "#WishlistItem:ProductBO:SKU#">" id="Quantity_<isprint value="#WishlistItem:ProductBO:SKU#">" />
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<button class="btn btn-primary" type="submit" name="AddToBasket" onclick="setWishlistItemID('<isprint value="#WishlistItem:ID#">');">
+								<istext key="account.wishlist.table.options.add_to_cart"/>
+							</button>
+						</div>
+					<iselse>
+						<istext key="account.wishlist.table.not_availableMessage"/>
+					</isif>
+				</isif>
+				
+			</isif>
+		</div>
+		
+	</div>
+</div>

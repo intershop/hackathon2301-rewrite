@@ -1,0 +1,6 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+<isinclude template="modules/common/Modules">
+<div class="form-group">
+	<label class="control-label col-sm-4" for="<isprint value="#webform:LocaleID:QualifiedName#">"><istext key="account.default_address.preferred_language.label" /><isif condition="#NOT webform:LocaleID:Optional#"><span class="required">*</span></isif></label>
+	<div class="col-sm-8"><isPreferredLocaleSelectBox parametername="#webform:LocaleID:QualifiedName#" selected="#webform:LocaleID:Value#" currentlocale="#locale#"></div>
+</div>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pagelet="http://www.intershop.de/pagelet/2010"
+    name="viewcontext.page.product.pagelet2">
+  <contextObjectRelations name="ViewContext" systemManaged="true" page="true" objectType="Product">
+    <callParameterDefinitions name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+    <callParameterDefinitions name="ProductBOs" type="java.util.Iterator" optional="true"/>
+    <callParameterDefinitions name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO"
+        optional="true"/>
+    <callParameterDefinitions name="PageNumber" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="PageSize" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"
+        optional="true"/>
+    <callParameterDefinitions name="ActiveProductTab" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="Locale" type="com.intershop.beehive.core.capi.localization.LocaleInformation"
+        optional="true"/>
+    <callParameterDefinitions name="OwningDomain" type="com.intershop.beehive.core.capi.domain.Domain"
+        optional="true"/>
+    <callParameterDefinitions name="UserBO" type="com.intershop.component.user.capi.UserBO"
+        optional="true"/>
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.page.standard.pagelet2-Interface"/>
+    <pageletEntryPointPipeline referencedName="ProcessPageViewContextProduct-GetPageletEntryPoint"/>
+    <contextType>Product</contextType>
+    <contextType>Category</contextType>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion"
+        name="PageProduct">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.product.pagelet2-Page"/>
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion"
+        name="PageMaster">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.product.pagelet2-Page"/>
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion"
+        name="PageBundle">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.product.pagelet2-Page"/>
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion"
+        name="PageRetailSet">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.product.pagelet2-Page"/>
+    </contentEntryPointDefinitionInclusions>
+  </contextObjectRelations>
+</pagelet:PageletModel>

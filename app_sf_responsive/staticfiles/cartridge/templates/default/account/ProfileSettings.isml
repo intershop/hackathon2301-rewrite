@@ -1,0 +1,46 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+<isGetLoginPreferenceReader>
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.profile.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="profile-settings-page">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="PROFILE">
+		</div>
+		
+		<div class="col-md-9 user-profile">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<h1><istext key="account.profile.heading"/></h1>
+			
+			<isinclude template="account/profile/SuccessMessage">
+			<isif condition="#UserLoginType EQ 'email'#">
+				<isinclude template="account/profile/Email">
+			</isif>
+			<isif condition="#UserLoginType EQ 'username'#">
+				<isinclude template="account/profile/Username">
+			</isif>
+			<isinclude template="account/profile/Password">
+			
+			<isinclude extensionpoint="AccountProfileDepartmentExtensions">
+			
+			<isinclude template="account/profile/Profile">
+
+			<isinclude extensionpoint="AccountProfilePersonalDataExtensions">
+			
+			<!--- Note --->
+			<isinclude template="account/inc/PrivacyPolicyNote">
+		</div>
+	</div>
+</div>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--pipeline used to switch locale
+@Group Common-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="SwitchLocale" type="view">
+<!--For country toggle, 
+not only simple language switch.
+@Location 0,1-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text0"/>
+<!--For simple language switch.
+@Location 4,0-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text1"/>
+<!--@TODO: Pipeline Rework
+\- still retrieves Request
+\- internal use of AppContext must be 
+replaced by ApplicationBO
+@Location 4,2-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text2"/>
+<!--Deprecated since 7.10.10
+@Location 0,0-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text_g1qiAHZaEemGa5WZXc4aDQ"/>
+<!--Switches only the language.
+@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Language">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+<!--ID of the Locale to switch to.-->
+    <parameters name="LocaleID" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JumpNode2"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <startNode referencedName="ProcessSwitchLocale-Language"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewHomepage-Start"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+    <nodeSuccessors name="next" next="GetApplicationBO1"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO1">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="JumpNode3"/>
+    <parameterBindings name="AppContext" objectPath="CurrentAppContext"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:Domain"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessSwitchLocale-Start"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <parameterBindings name="TargetPipeline" constant="ViewHomepage-Start"/>
+    <parameterBindings name="TargetURL" nullBinding="true"/>
+    <startNode referencedName="Redirect-Start"/>
+  </nodes>
+</pipeline:Pipeline>

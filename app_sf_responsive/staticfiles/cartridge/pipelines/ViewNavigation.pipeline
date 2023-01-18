@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline render the SimpleNavigation-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewNavigation" overrideMode="Inherit" type="">
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="GetRootCategories"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Catalog&quot;):CatalogBORepository"/>
+    <parameterBindings name="InValue_2" objectPath="CurrentRequest:Locale"/>
+    <returnValueBindings name="OutValue_1" objectPath="CatalogBORepository"/>
+    <returnValueBindings name="OutValue_2" objectPath="LocaleInformation"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <startNode referencedName="DetermineOrganizations-Current"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <startNode referencedName="DetermineRepositories-Channel"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CallNode5"/>
+    <startNode referencedName="ProcessCatalog-GetStandardCatalogBOs"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+<!--@BendPoints 3,14-->
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <parameterBindings name="CatalogFilterDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="EveryoneDomain" objectPath="CurrentOrganization:OrganizationDomain"/>
+    <parameterBindings name="UseFallbackToEveryoneDomain" constant="true"/>
+    <startNode referencedName="GetCatalogFilters-GetFiltersByUser"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="CatalogBOs" objectPath="StandardCatalogBOs"/>
+    <startNode referencedName="GetCatalogBOFilters-GetFilteredCatalogs"/>
+    <returnValueBindings name="AccessibleCatalogBOs" objectPath="RootCategoryBOs"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="RootCategoryBOs" type="java.util.Collection"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="MainNavigation">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+    <startNode referencedName="ViewNavigation-GetRootCategories"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="inc/navigation/SimpleNavigationBar"/>
+  </nodes>
+</pipeline:Pipeline>

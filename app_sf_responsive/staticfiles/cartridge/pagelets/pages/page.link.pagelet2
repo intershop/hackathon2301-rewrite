@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="page.link.pagelet2">
+  <pageEntryPointDefinitions name="Page">
+    <configurationParameterDefinitions name="Link" typeReference="sld_mcm:parametertype.link.pagelet2-Link" />
+  </pageEntryPointDefinitions>
+</pagelet:PageletModel>

@@ -1,0 +1,23 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<div class="col-md-2 hidden-xs hidden-sm">
+	<ISProductAlternateImages 
+		ProductBO="#ProductBO#"
+		ImageType="S"
+		RichSnippetsEnabled="#RichSnippetsEnabled#"
+	>
+</div>
+	
+<div class="col-sm-6 col-xs-12 product-detail-img clearfix">
+	<div class="product-image-container">
+		<ISProductImagesCarousel
+			ProductBO="#ProductBO#"
+			ImageType="L"
+			RichSnippetsEnabled="#RichSnippetsEnabled#"
+			UseSourceSet="true">
+		<ISProductLabel ProductBO="#ProductBO#">
+	</div>
+</div>

@@ -1,0 +1,114 @@
+<iscontent type="text/html" session="false" charset="UTF-8" compact="true">
+<isinclude template="email/mailTemplate/Modules">
+
+<isset name="Currency" value="#CurrencyCode#" scope="request" />
+<isif condition="#isDefined(TargetApplicationBO)#">
+	<isset name="AppID" value="#TargetApplicationBO:UrlIdentifier#" scope="request" />
+	<isif condition="#NOT(isDefined(Currency)) OR (Currency EQ '')#">
+		<isset name="Currency" value="#TargetApplicationBO:DefaultCurrencyCode#" scope="request" />
+	</isif>
+<iselse>
+	<isset name="AppID" value="-" scope="request" />
+	<isif condition="#NOT(isDefined(Currency)) OR (Currency EQ '')#">
+		<isset name="Currency" value="-" scope="request" />
+	</isif>
+</isif>
+
+<isif condition="#isDefined(UserBO)#">
+	<isset name="UserBORepository" value="#UserBO:Repository#" scope="request" />
+	<isset name="CustomerBO" value="#UserBORepository:ExtendedObject#" scope="request" />
+
+	<isset name="UserID" value="#UserBO:ID#" scope="request" />
+	<isset name="UserTitle" value="#UserBO:Title#" scope="request" />
+	<isset name="UserFirstName" value="#UserBO:FirstName#" scope="request" />
+	<isset name="UserLastName" value="#UserBO:LastName#" scope="request" />
+	<isset name="UserLogin" value="#UserBO:Login#" scope="request" />
+	<isset name="UserIsDisabled" value="#UserBO:isDisabled#" scope="request" />
+<iselse />
+	<!--- No UserBO in Dictionary so the following parameters:
+		UserBORepository
+		CustomerBO
+		UserID
+		UserTitle
+		UserFirstName
+		UserLastName
+		UserLogin
+		UserIsDisabled
+			are expected in Dictionary.
+	 --->
+	
+</isif>
+
+<isset name="CustomerDetails" value="#CustomerBO:Extension("CompanyCustomer")#" scope="request"/>
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+
+<subject><istext key="email.registration.heading" parameter0="#ChannelName#" encoding="off"/></subject>
+
+<isMailHeader ChannelName="#ChannelName#" ShowMyAccountLink="true" ShowCustomerInformation="true">
+
+<p class="header"><istext key="email.registration.heading" parameter0="#ChannelName#" /><br />
+	<isif condition="#isDefined(UserTitle) AND (UserTitle NE '')#">
+		<istext key="email.label.title_firstname_lastname" parameter0="#UserTitle#" parameter1="#UserFirstName#" parameter2="#UserLastName#" /></span>
+	<iselse> 
+		<span class="name"><istext key="email.label.firstname_lastname" parameter0="#UserFirstName#" parameter1="#UserLastName#" /></span>
+	</isif>
+</p>
+
+<p>
+	<isif condition="#isDefined(UserBORepository:ExtensionID) AND (UserBORepository:ExtensionID EQ 'GroupCustomer')#">
+		<istext key="email.b2b.user.created" parameter0="#CustomerDetails:Name#"/>
+	<iselse>
+		<istext key="email.b2c.user.created"/>
+	</isif>
+</p>
+
+<isif condition="#(NOT CustomerDetails:isActive) OR UserIsDisabled#">
+	<p>
+		<istext key="email.user.inactive"/>
+	</p>
+<iselse>
+	<p>
+		<istext key="email.password.link" encoding="off"/>
+	</p>
+	
+	<table cellpadding="0" cellspacing="0" class="mobileButtonPattern" bgcolor="#'#'#1db5b5">
+		<tr>
+			<td>
+				<table cellpadding="0" cellspacing="10" width="100%">
+					<tr>
+						<td class="button">
+							<istext key="email.create_password.button" 
+								parameter0="#SessionlessURLEX('https','',Action('ViewForgotLoginData-NewPassword', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID), Parameter('uid', UserID), Parameter('Hash', SecureHash))#"
+								encoding="off" 
+							/>
+						</td>
+	
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	
+	<p>
+		<istext key="email.password.link.expiry" parameter0="#encodeValue(PasswordRelatedLinkLifeTime)#" parameter1="#encodeValue(SessionlessURLEX('https','',Action('ViewForgotLoginData-NewPassword', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID), Parameter('uid', UserID), Parameter('Hash', SecureHash)))#"  encoding="off" />
+	</p>
+</isif>
+
+<p><istext key="email.password.definition" parameter0="#encodeValue(URLEX('https','',Action('ViewUserAccount-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID)))#" parameter1="#encodeValue(UserLogin)#" encoding="off" /></p>
+
+<p>
+	<istext key="email.questions" 
+		parameter0="#URL(Action('ViewHomepage-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID))#" 
+		parameter1="#encodeValue(ChannelName)#" 
+		parameter2="#URL(Action('ViewContent-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID), Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page'))#" 
+		encoding="off" 
+	/>
+</p>
+
+<p>
+	<istext key="email.best_regards.label"/><br />
+	<istext key="email.user_services.label" parameter0="#encodeValue(URL(Action('ViewHomepage-Start', '', UnitDomain:DomainName, Locale:LocaleID, Currency, AppID)))#" parameter1="#encodeValue(ChannelName)#" encoding="off"/>
+</p>
+
+<isinclude template="email/mailTemplate/MailFooter"/>

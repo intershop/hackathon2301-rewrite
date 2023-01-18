@@ -1,0 +1,73 @@
+<!--- TEMPLATENAME: GiftCardListMyAccount.isml --->
+<iscontent charset="UTF-8">
+<isset name="GiftCards" value="#GiftCardsResult:get("GiftCardDTOs")#" scope="request" />
+<isif condition="#hasLoopElements(GiftCards)#">
+	<div class="list-header">
+		<div class="list-header-item col-sm-2"><istext key="account.gift_certificate.giftcards.txt"/></div>
+		<div class="list-header-item col-sm-3"><istext key="account.gift_certificate.giftcards.receivedon"/></div>
+		<div class="list-header-item col-sm-2 text-right"><istext key="account.gift_certificate.giftcards.amount"/></div>
+		<div class="list-header-item col-sm-3 text-center"><istext key="account.gift_certificate.giftcards.amountremaining"/></div>
+		<div class="list-header-item col-sm-2"><istext key="account.gift_certificate.giftcards.status.txt"/></div>
+	</div>
+	<div class="list-body">
+		<!--- GIFT CARDS and Certificates--->
+		<isloop iterator="GiftCards" alias="GiftCard">
+			<div class="list-item-row">
+				<!--- Gift Card Number --->
+				<div class="col-xs-6 col-sm-2 list-item">
+					<isif condition="#GiftCard:Type EQ 'DIGITAL'#">
+						<istext key = "account.gift_certificate.type.digital"/><br />
+					<iselseif condition="#GiftCard:Type EQ 'PHYSICAL'#">
+						<istext key = "account.gift_certificate.type.physical"/><br />
+					<iselse>
+						<istext key = "account.gift_certificate.type.unknown"/><br />
+					</isif>	
+					<isprint value="#GiftCard:Number#">
+				</div>
+				
+				<!--- Amount --->
+				<div class="col-xs-3 col-sm-2 text-right col-sm-push-3 list-item">
+					<isprint value="#GiftCard:StartAmount#" style="MONEY_LONG">
+				</div>
+				
+				<!--- Status --->
+				<div class="col-xs-3 col-sm-2 col-sm-push-6 list-item">
+					<isif condition="#GiftCard:Status EQ 'REDEEMED'#">
+						<istext key = "account.gift_certificate.status.redeemed"/>
+					<iselseif condition="#GiftCard:Status EQ 'PENDING'#">
+						<istext key = "account.gift_certificate.status.pending"/>
+					<iselse>
+						<istext key = "account.gift_certificate.status.partially_redeemed"/>
+					</isif>
+					<isif condition="#GiftCard:Enabled NE 'true'#">
+						<br/>
+					<istext key="account.gift_certificate.disabled"/>
+					</isif>
+				</div>
+				
+				<!--- Received --->
+				<div class="clearfix visible-xs-block"></div>
+				<div class="col-sm-3 col-sm-pull-4 list-item">
+					<isif condition="#GiftCard:Type EQ 'DIGITAL'#">
+						<istext key = "account.gift_certificate.giftcards.from.label"/> 
+						<isprint value="#GiftCard:SenderName#"> <isprint value="#GiftCard:SenderEmail#"><br />
+					</isif>
+					<istext key = "account.gift_certificate.giftcards.on.label"/> <isprint value="#GiftCard:CreationDate#" style="DATE_SHORT">
+				</div>
+				
+				<!--- Amount Remaining --->
+				<div class="col-sm-3 col-sm-pull-2 text-center list-item">
+					<div class="text-left visible-xs">
+						<label><istext key="account.gift_certificate.giftcards.amountremaining"/>:</label>
+						<span class="label label-info"><isprint value="#GiftCard:Amount#" style="MONEY_LONG"></span>
+					</div>
+					<div class="hidden-xs label label-info"><isprint value="#GiftCard:Amount#" style="MONEY_LONG"></div>
+				</div>
+				
+				<div class="list-item"></div><!--- empty item to prevent removing padding right from remaining received price --->
+			</div>
+		</isloop>
+	</div>
+<iselse>
+	<p><istext key = "account.gift_certificate.notused"/></p>
+</isif>

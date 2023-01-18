@@ -1,0 +1,12 @@
+<!---This template should be included in pages where page caching must respect promotion activation times.--->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#isDefined(ProductUUID)#">
+	<ispipeline 
+		pipeline="ProcessPromotion-GetNextPromotionCacheEvent" 
+		alias="PromotionDict" 
+		params="#ParamMap(ParamEntry('ProductUUID', ProductUUID))#"
+	/>
+</isif>
+<isif condition="#isDefined(PromotionDict:CacheHour)#">
+	<iscache type="relative" hour="#PromotionDict:CacheHour#" minute="#PromotionDict:CacheMinute#">	
+</isif>

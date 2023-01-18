@@ -1,0 +1,25 @@
+<iscontent compact="true" charset="UTF-8" type="text/html">
+
+<a data-toggle="collapse" href="#'#'#miniCart">
+	<isif condition="#isDefined(CurrentCartBO) AND (CurrentCartBO:TotalProductQuantity > 0)#">
+		<isset name="TotalProductQuantity" value="#CurrentCartBO:TotalProductQuantity#" scope="request"/>
+	<iselse>
+		<isset name="TotalProductQuantity" value="#0#" scope="request"/>
+	</isif>
+	<span class="glyphicon glyphicon-shopping-cart"></span>
+	
+	<!--- sets the product count for the mobile cart counter of the header --->
+	<script>$('.mobile-cart-counter').html('<isprint value="#TotalProductQuantity#" style="INTEGER"/>');</script>
+	
+	<span><istext key="shopping_cart.ministatus.items.text" parameter0="#TotalProductQuantity#"/></span>
+	<isif condition="#TotalProductQuantity > 0#">
+		<span> / </span>
+		<span class="mini-cart-price">
+			<isif condition="#PriceDisplayType EQ 'net'#">
+				<isprint value="#CurrentCartBO:DiscountedItemSubtotalNet#">
+			<iselse>
+				<isprint value="#CurrentCartBO:DiscountedItemSubtotalGross#">
+			</isif>
+		</span>
+	</isif>
+</a>

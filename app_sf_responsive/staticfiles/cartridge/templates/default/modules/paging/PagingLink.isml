@@ -1,0 +1,47 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false"><!---  
+ATTENTION: 
+The opening jsp-tags at the end of the lines and closing jsp-tags at
+the start of the lines were added to remove all linebreaks when this module
+will be rendered as markup.
+
+This module generally outputs a link for the paging (usually the value of the href-attribute of an anchor-tag).
+For more documenation see: 
+/modules/paging/Modules.isml
+---><%
+	URLParameterSet parameterSet = new URLParameterSet();
+	
+	String pageNumber = context.getFormattedValue(getObject("pagenumber"),null);
+	if (pageNumber != null) {
+	    parameterSet.addURLParameter("PageNumber", pageNumber);
+	}
+	
+	String pageSize = context.getFormattedValue(getObject("pagesize"),null);
+	if (pageSize != null) {
+		parameterSet.addURLParameter("PageSize", pageSize);
+	}
+	
+	String sortingAttribute = context.getFormattedValue(getObject("sortvalue"),null);
+	if ((sortingAttribute != null) && (!sortingAttribute.isEmpty())) {
+	    parameterSet.addURLParameter("SortingAttribute", sortingAttribute);
+	}
+	
+	String viewType = context.getFormattedValue(getObject("viewtype"),null);
+	if (viewType != null) {
+		parameterSet.addURLParameter("ViewType", viewType);
+	}
+	
+	// add params
+	%><isif condition="#isDefined(params)#"><isloop iterator="params:EntrySet" alias="map"><%
+        String key = (String)getObject("map:Key");
+		String value = context.getFormattedValue(getObject("map:Value"), null);
+		if (key == null || value == null) {
+			// skip
+		} else {
+			parameterSet.addURLParameter(key, value);
+		}
+	%></isloop></isif><%
+	String url = this.url(true, new URLPipelineAction(context.getFormattedValue(getObject("pipelinename"),null)), parameterSet);
+	
+	// the output URL is not encoded (RewriteHandler does this for us)
+	out.write(url);
+%>

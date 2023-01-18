@@ -1,0 +1,23 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#errorCode EQ 'already_used_in_cart'#">
+	<istext key="#'shopping_cart.promotion.' . errorCode . '.error'#"
+		parameter0="#promotionCode#" />
+<iselseif condition="#errorCode EQ 'max_code_redemption'#">
+	<isif condition="#maxCodeRedemption == 1#">
+		<istext key="#'shopping_cart.promotion.' . errorCode . '.error1'#"
+			parameter0="#maxCodeRedemption#" />
+		<iselse>
+		<istext key="#'shopping_cart.promotion.' . errorCode . '.error2'#"
+			parameter0="#maxCodeRedemption#" />
+	</isif>
+<iselseif condition="#errorCode EQ 'unqualified_promo'#">
+	<istext key="#'shopping_cart.promotion.' . errorCode . '.error_line1'#"
+		encoding="off"
+		parameter0="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs',promotionIDs),Parameter('DisplayType','dialog'))#" />
+<iselseif condition="#errorCode EQ 'PromotionCodeCashbackNotEnabled'#">
+	<istext key="#'shopping_cart.promotion.' . errorCode . '.error'#"
+		encoding="off"
+		parameter0="#URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID', 'systempage.helpdesk.contactUs.pagelet2-Page'))#" />
+<iselse>
+	<istext key="#'shopping_cart.promotion.' . errorCode . '.error'#" />
+</isif>

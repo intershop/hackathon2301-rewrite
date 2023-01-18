@@ -1,0 +1,223 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<!--- 
+	This module creates a paging link for a map with parameter key value pairs 
+	
+	Parameters:
+		- pipeline: 
+			the pipeline
+		- pagenumber
+			the parameter PageNumber
+		- params
+			the map with parameter key value pairs
+		
+	Example:
+	<ispaginglink 
+		pipelinename="#ListNavigationVO:HandlerPipeline.'-ProductPaging'#"
+		pagenumber="#PageNumber#" 
+		params="ListNavigationVO:GenericHandlerPipelineParams"
+	> 
+--->
+<ismodule template = "modules/paging/PagingLink.isml"
+	name="PagingLink"
+	attribute="pipelinename"
+	attribute="pagenumber"
+	attribute="params"
+	attribute="pagesize"
+	attribute="viewtype"
+	attribute="sortvalue"
+	attribute="CategoryBO"
+	strict="true"
+>
+
+<!--- 
+	This module creates a paging link for a map with parameter key value pairs 
+	
+	Parameters:
+		- pipeline: 
+			the pipeline
+		- pagenumber
+			the parameter PageNumber
+		- params
+			the map with parameter key value pairs
+		
+	Example:
+	<iscreatepaginglink 
+		pipelinename="#ListNavigationVO:HandlerPipeline.'-ProductPaging'#"
+		pagenumber="#PageNumber#" 
+		params="ListNavigationVO:GenericHandlerPipelineParams"
+		result="paginglink"
+	>
+--->
+<ismodule template = "modules/paging/CreatePagingLink.isml"
+	name="CreatePagingLink"
+	attribute="pipelinename"
+	attribute="pagenumber"
+	attribute="params"
+	attribute="pagesize"
+	attribute="viewtype"
+	attribute="sortvalue"
+	attribute="CategoryBO"
+	strict="true"
+	returnattribute="result"
+>
+
+<!--- 
+	This module creates navigation / paging bar with aggregated pages for a certain interval
+	(i.e.: < | 1 | 2 | 3 | 4 | 5 | 7 | 8 | 9 | 10 | 11 - 20 | 21 - 30 | 31 - 35 | >)
+	
+	Parameters:
+		- pipeline:
+			the paging pipeline
+		- itemcount
+		    total element count
+		- currentpage
+			current page number
+		- pagecount
+			total page count
+		- params
+			map with parameter key value pairs added to the links
+		- hijax
+			boolean: if true, the links result in the current dialog	
+
+		<isMapPagination pipeline="ViewStandardCatalog-ProductPaging" 
+		itemcount="#ListNavigationVO:ElementCount#"
+		currentpage="#ListNavigationVO:CurrentPage#"
+		pagecount="#ListNavigationVO:PageCount#"
+		params="ListNavigationVO:GenericHandlerPipelineParams"
+		hijax=true
+		>			
+--->
+
+<ismodule template = "modules/paging/MapPagination.isml"
+	name="MapPagination"
+	attribute="pipeline"
+	attribute="currentpage"
+	attribute="pagecount"
+	attribute="itemcount"
+	attribute="sortvalue"
+	attribute="pagesize"
+	attribute="params"
+	attribute="hijax"
+>
+
+<!--- 
+	This module creates navigation / paging bar with aggregated pages for a certain interval with extended
+	next and previous buttons 
+	(i.e.: < Previous | 1 | 2 | 3 | 4 | 5 | 7 | 8 | 9 | 10 | 11 - 20 | 21 - 30 | 31 - 35 | Next >)
+
+	Parameters:
+		- pipeline: 
+			the paging pipeline
+		- itemcount
+		    total element count
+		- currentpage
+			current page number
+		- pagecount
+			total page count
+		- params
+			map with parameter key value pairs added to the links 
+			
+	Example:
+		@see MapPagination
+--->
+
+<ismodule template = "modules/paging/MapPaginationExtended.isml"
+	name="MapPaginationExtended"
+	attribute="pipeline"
+	attribute="currentpage"
+	attribute="pagecount"
+	attribute="itemcount"
+	attribute="params"
+>
+
+<!--- 
+	This module creates navigation / paging bar with viewing the current page and the maximum page
+	(i.e.: < Prev 3 of 15 Next >)
+	
+	Parameters:
+		- pipeline: 
+			the paging pipeline
+		- itemcount
+		    total element count
+		- currentpage
+			current page number
+		- pagecount
+			total page count
+		- params
+			map with parameter key value pairs added to the links 
+			
+	Example:
+		@see MapPagination
+--->
+
+<ismodule template = "modules/paging/MapPaginationSimple.isml"
+	name="MapPaginationSimple"
+	attribute="pipeline"
+	attribute="currentpage"
+	attribute="pagecount"
+	attribute="itemcount"
+	attribute="params"
+>
+
+
+<!--- 
+	This module creates navigation / paging bar with cropped pages if a certain number of pages is provided
+	
+	(i.e.: < Previous | 1 | 2 | 3 | 4 | 5 | Next >  or 
+		< Previous | 5 | 6 | 7 | 8 | 9 | Next >) 
+	
+	
+	Parameters:
+		- pipeline: 
+			the paging pipeline
+		- itemcount
+		    total element count
+		- currentpage
+			current page number
+		- pagecount
+			total page count
+		- params
+			map with parameter key value pairs added to the links 
+			
+	Example:
+		@see MapPagination
+--->
+
+<ismodule template = "modules/paging/MapPaginationCropped"
+	name="MapPaginationCropped"
+	attribute="pipeline"
+	attribute="currentpage"
+	attribute="pagecount"
+	attribute="itemcount"
+	attribute="params"
+>
+
+
+<!--- 
+	This module creates navigation / paging bar with truncated pages if a certain number of pages is provided
+	(i.e.: < Previous | 1 | 2 | 3 | 4 | ... | 13 | Next >) 
+	
+	Parameters:
+		- pipeline: 
+			the paging pipeline
+		- itemcount
+		    total element count
+		- currentpage
+			current page number
+		- pagecount
+			total page count
+		- params
+			map with parameter key value pairs added to the links 
+			
+	Example:
+		@see MapPagination
+--->
+
+<ismodule template = "modules/paging/MapPaginationTruncated.isml"
+	name="MapPaginationTruncated"
+	attribute="pipeline"
+	attribute="currentpage"
+	attribute="pagecount"
+	attribute="itemcount"
+	attribute="params"
+>

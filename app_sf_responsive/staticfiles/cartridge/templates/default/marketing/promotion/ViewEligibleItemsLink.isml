@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import="java.util.Map,java.util.Iterator,java.util.Map.Entry"%>
+
+<ispipeline pipeline="ProcessActivePromotionProducts-GetActivePromoProducts" alias="Result" params="#ParamMap(ParamEntry('PromotionUUID', Promotion:Extension("PersistentObjectBOExtension"):PersistentObject:UUID))#" />
+<%
+    Map<String, Object> map = (Map<String, Object>)getObject("Result");
+    if (map != null)
+    {
+        for(Entry<String, Object> entry : map.entrySet())
+        {
+            getPipelineDictionary().put(entry.getKey(), entry.getValue());
+        }
+    }
+%>
+<isif condition="#hasElements(ActivePromoProducts)#">
+	<a href="#URL(Action('ViewParametricSearch-SimpleOfferSearch'),Parameter('SearchTerm', 'Promotion'), Parameter('SearchParameter', '&@QueryTerm="'.Promotion:Extension("PersistentObjectBOExtension"):PersistentObject:UUID.'"&@QueryAttribute=PromotionUUID'))#"><istext key="promotion.viewEligibleItemsLink" /></a>
+</isif>

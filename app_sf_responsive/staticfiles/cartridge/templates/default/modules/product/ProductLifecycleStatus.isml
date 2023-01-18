@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#ProductBO:InventoryStatus:InStock#">
+	<isif condition="#ProductBO:isEndOfLife#">
+		<div class="product-lifecycle-status">
+			<span class="product-lifecycle-status-title"><istext key="product.lifecycle.endOfLifeTitle" /></span>
+			<span><istext key="product.lifecycle.endOfLifeMessage" /></span>
+		</div>
+	<iselse>
+		<isif condition="#isDefined(ProductBO:getLastOrderDate)#">
+			<isif condition="#ProductBO:isLastOrderDate#">
+				<div class="product-lifecycle-status">
+					<span class="product-lifecycle-status-title"><istext key="product.lifecycle.afterLastOrderDateTitle" /></span>
+					<span><istext key="product.lifecycle.afterLastOrderDateMessage" /></span>
+				</div>
+			<iselse>
+				<div class="product-lifecycle-status">
+					<span class="product-lifecycle-status-title"><istext key="product.lifecycle.lastOrderDateTitle" /></span>
+					<span><istext key="product.lifecycle.lastOrderDateMessage" parameter0="#ProductBO:getLastOrderDate#" /></span>
+				</div>
+			</isif>
+			<isif condition="#isDefined(ProductBO:getEndOfLife)#">
+					<div class="product-end-of-live-status">
+						<span><istext key="product.lifecycle.afterLastOrderDateEndOfSupportMessage" parameter0="#ProductBO:getEndOfLife#" /></span>
+					</div>
+				</isif>
+		<iselse>
+			<isif condition="#isDefined(ProductBO:getEndOfLife)#">
+				<div class="product-end-of-live-status">
+					<span><istext key="product.lifecycle.afterLastOrderDateEndOfSupportMessage" parameter0="#ProductBO:getEndOfLife#" /></span>
+				</div>
+			</isif>
+		</isif>
+	</isif>
+</isif>

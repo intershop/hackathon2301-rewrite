@@ -1,0 +1,49 @@
+<iscontent charset="UTF-8"  compact="true" templatemarker="false">
+<!--- TEMPLATENAME: UpdateAddress.isml --->
+<isinclude template="modules/Modules">
+<isif condition="#isDefined(AddressBO)#">
+	<isset name = "addressTargetAddressID" value="#AddressBO:ID#" scope="request">
+</isif>
+<isif condition="#isDefined(AddressForm)#"><!--- edit existing address --->
+	<isform class="form-horizontal bv-form" action="#URLEX(SecureURL,'',Action('ViewUserAddressList-Dispatch'))#" method="post"
+			data-bv-feedbackicons-valid="glyphicon glyphicon-ok"
+			data-bv-feedbackicons-invalid="glyphicon glyphicon-remove"
+			data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+		<input type="hidden" name="AjaxRequestMarker" value="true" />	
+		<isaddressform
+			webform="#AddressForm#"
+			addresstemplate="#'modules/address/forms/'.AddressFormTemplate#"
+			countrylist="#ShippingCountries#" 
+			locale="#CurrentSession:Locale#"
+			salutation_enumeration_provider="#SalutationEnumerationKeyProvider#">
+
+		<isaddressusageinput
+			webform="#AddressForm#"
+			customerBO="#CustomerBO#"
+			userBO="#UserBO#"
+			addressBO="#AddressBO#"
+		>
+			
+		<div class="form-group">
+			<div class="col-sm-offset-4 col-sm-8">
+				<isif condition="#not isDefined(addressTargetAddressID) OR (addressTargetAddressID EQ '')#">
+					<button class="btn btn-primary save-address" type="submit" name="createAddress">
+				<iselse>
+					<button class="btn btn-primary save-address" type="submit" name="update">
+				</isif>
+				<istext key="account.addresses.update_address.button.label" /></button>
+				<a class="btn btn-default cancel" href="#'#'#"><istext key="account.addresses.cancel_address_update.button.label" /></a>
+			</div>
+		</div>
+		
+		<!--- hidden fields --->
+		<input type= 'hidden' name="PreferredBilling" value ="<isprint value="#AddressForm:PreferredBillingAddress:Value#">"/>
+		<input type= 'hidden' name="PreferredShipping" value ="<isprint value="#AddressForm:PreferredShippingAddress:Value#">"/>
+		<isif condition="#isDefined(addressTargetAddressID) AND (addressTargetAddressID NE '')#">
+			<input type= 'hidden' name="addressTargetAddressID" value ="<isprint value="#addressTargetAddressID#">" />
+			<input type= 'hidden' name="AddressID" value ="<isprint value="#addressTargetAddressID#">" />
+		<else>
+			<input type= 'hidden' name="AddressID" value ="<isprint value="#AddressBO:ID#">" />
+		</isif>
+	</isform>
+</isif>

@@ -1,0 +1,3 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+ProductJSON['<isprint value="#ProductBO:ID#">'] = <isinclude template="product/json/ProductJSON">;

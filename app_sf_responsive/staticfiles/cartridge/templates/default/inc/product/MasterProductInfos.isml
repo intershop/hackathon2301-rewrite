@@ -1,0 +1,92 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<h1><isif condition="#RichSnippetsEnabled EQ 'true'#"><span itemprop="name"><isprint value="#ProductBO:Name#"></span><iselse><isprint value="#ProductBO:Name#"></isif></h1>
+
+<div class="product-info">
+
+	<!--- Brand --->
+	<isif condition="#isDefined(ProductBO:ManufacturerName) AND (len(ProductBO:ManufacturerName) > 0)#">
+		<div class="product-brand">
+			<a href="#URL(Action('ViewParametricSearch-SimpleOfferSearch'), Parameter('SearchTerm', ProductBO:ManufacturerName), Parameter('SearchParameter', '&@QueryTerm="' . ProductBO:ManufacturerName . '"&@QueryAttribute=ManufacturerName'))#"><isif condition="#RichSnippetsEnabled EQ 'true'#"><span itemprop="brand"><isprint value="#ProductBO:ManufacturerName#"></span><iselse/><isprint value="#ProductBO:ManufacturerName#"></isif></a>
+		</div>
+	</isif>
+	
+	<!--- SKU --->
+	<div class="product-number">
+		<label><istext key="product.itemNumber.label"/></label>
+		<span <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="sku"</isif>><isprint value="#ProductBO:SKU#"></span>
+	</div>
+	
+	<ISProductGiftStatus ProductBO="#ProductBO#">
+	
+	<ISPromotionList ProductBO="#ProductBO#" MaxNumber="5" Locale="#Locale#">
+	
+	<div class="price-container" <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="offers" itemscope itemtype="http://schema.org/Offer"</isif>>
+		<ISProductPrice 
+			ProductBO="#ProductBO#"
+			Currency="#CurrentRequest:Currency#"
+			ShowInformationalPrice="true"
+			RichSnippetsEnabled="#RichSnippetsEnabled#"
+		>
+
+        <isif condition="#NOT(ProductBO:ProductMaster)#">
+		<ISProductAvailability ProductBO="#ProductBO#" RichSnippetsEnabled="#RichSnippetsEnabled#">
+        </isif>
+	</div>
+	
+        <iscomment>TODO this check must use a permission (not a role) when ready</iscomment>
+	<isif condition="#NOT(isDefined(USER_HAS_ROLE_APP_B2B_OCI_USER)) OR (USER_HAS_ROLE_APP_B2B_OCI_USER EQ 'false')#">
+	     <ISProductShipping ProductBO="#ProductBO#">
+        </isif>
+	
+	<isform class="product-form bv-form form-horizontal"
+		id="#'productDetailForm_' . replace(ProductBO:SKU, '\\s', '---')#"
+		name="#'productDetailForm_' . ProductBO:SKU#"
+		action="#URLEX(SecureURL,'',Action('ViewCart-Dispatch'))#"
+		method="post"
+	>
+		<isif condition="#NOT(ProductBO:isRetailSet)#">
+			<input type="hidden" name="SKU" value="<isprint value="#ProductBO:SKU#">"/>
+		<iselse>
+			<isloop iterator="ProductBO:BundleInformation:BundledProductBOs" alias="RetailSetProduct">
+				<isif condition="#RetailSetProduct:Online#">
+					<input type="hidden" name="SKU" value="<isprint value="#RetailSetProduct:SKU#">"/>
+				</isif>
+			</isloop>
+		</isif>
+		
+		<isif condition="#NOT(ProductBO:ProductMaster)#">
+			<div class="product-variation-container">
+				<isinclude template="component/product/ProductVariationTextSelection"/>
+			</div>
+		</isif>
+		
+		<ISProductLifecycleStatus ProductBO="#ProductBO#">
+		
+		<isif condition="#NOT(ProductBO:ProductMaster)#">
+			<ISProductQuantity ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#">
+		</isif>
+		<isif condition="#NOT(ProductBO:ProductMaster)#">
+			
+			<isif condition="#(ProductBO:isRetailSet)#">
+				<ISAddToCart ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" class="btn-lg btn-block" DataAttributes="data-click-source=RetailSetAddToCart">
+			<iselseif condition="#(ProductBO:isProductBundle)#">
+				<ISAddToCart ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" class="btn-lg btn-block" DataAttributes="data-click-target=ProductBundleAddToCart">
+			<iselse>
+				<ISAddToCart ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" class="btn-lg btn-block">
+			</isif>
+			
+			<ISAddToWishlist ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" class="btn-default btn-block">
+			
+			<iscomment>TODO this check must use a permission (not a role) when ready</iscomment>
+			<isif condition="#NOT(isDefined(USER_HAS_ROLE_APP_B2B_OCI_USER)) OR (USER_HAS_ROLE_APP_B2B_OCI_USER EQ 'false')#">
+				<ISAddToProductNotification ProductBO="#ProductBO#" CurrentSession="#CurrentSession#" class="btn-default btn-block">
+			</isif>
+			
+			<ISProductWarranty ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#">
+		</isif>
+	</isform>
+</div>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="interface.page.email.pagelet2">
+  <callParameterInterfaces name="Interface">
+    <callParameterDefinitions name="Dictionary" type="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"/>
+    <callParameterDefinitions name="FriendsName" type="java.lang.String"/>
+    <callParameterDefinitions name="FriendsEmail" type="java.lang.String"/>
+    <callParameterDefinitions name="SenderName" type="java.lang.String"/>
+    <callParameterDefinitions name="SenderEmail" type="java.lang.String"/>
+    <callParameterDefinitions name="EmailMessage" type="java.lang.String"/>
+    <callParameterDefinitions name="ChannelDisplayName" type="java.lang.String"/>
+  </callParameterInterfaces>
+</pagelet:PageletModel>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="CreateReview">
+  <forms name="CreateProductReview">
+   	<parameters xsi:type="webform:FormParameter" optional="true" name="AuthorName" type="java.lang.String">
+   	  <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentOrganization:OwningDomain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="RegExToSplitInputstringIntoWords" value="[ .,!?;:]"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="70"/>
+      </validatorBindings>
+   	</parameters>
+   	<parameters xsi:type="webform:FormParameter" optional="true" name="ShowAuthorName" type="java.lang.Boolean"/>
+    <parameters xsi:type="webform:FormParameter" name="Rating" type="java.lang.Integer">
+      <validatorBindings validator="GlobalValidators-intrange">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="min" value="1"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="max" value="5"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="ReviewTitle" type="java.lang.String">
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentOrganization:OwningDomain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="RegExToSplitInputstringIntoWords" value="[ .,!?;:]"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="60"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="ReviewContent" type="java.lang.String">
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentOrganization:OwningDomain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="RegExToSplitInputstringIntoWords" value="[ .,!?;:]"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="4000"/>
+      </validatorBindings>
+    </parameters>
+  </forms>
+</webform:WebForm>

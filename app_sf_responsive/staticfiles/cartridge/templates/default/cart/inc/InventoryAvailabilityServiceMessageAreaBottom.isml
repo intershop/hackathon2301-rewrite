@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<div>
+	<!---ToDo --->
+	<!--- <a data-dialog class="btn btn-default" href="#URL(Action('ViewAjax-Start'), Parameter('TargetPipeline', 'ViewProductNotification-ViewAlertForm'), Parameter('SKU', ProductBO:SKU), Parameter('Type', 'stock'))#">
+		<istext key="account.productnotification.add_notif_list.notify_when_available">
+	</a>--->
+	
+	<!---ViewAjax-Start ?? ToDo: User Login Check--->
+	<a data-dialog class="btn btn-default" href="#URLEX(SecureURL,'',Action('ViewCart-Dispatch'), Parameter('SKU', ProductBO:SKU), Parameter('ProductSKU', ProductBO:SKU), Parameter(TargetPipeline,'ViewCart-Dispatch'), Parameter('addToWishlistProduct', 'true'))#"><istext key="product.add_to_wishlist.link" /></a>
+
+</div>

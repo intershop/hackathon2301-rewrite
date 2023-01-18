@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensionpoint:ExtensionPointModel xmlns:extensionpoint="http://www.intershop.de/extensionpoint/2011" name="CartNavigationBackToShopping">
+  <extensionBindings type="isml" extensionPoint="cart/ShoppingCart-CartNavigationLinksExtensions" extension="cart/navigationlinks/05_BackToShopping.isml" priority="50"/>
+</extensionpoint:ExtensionPointModel>

@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isform class="form-horizontal bv-form" action="#URLEX(SecureURL,'',Action('ViewUserAddressList-Dispatch'))#" method="post">
+	<input type="hidden" name="AjaxRequestMarker" value="true" />
+
+	<isaddressform
+		webform="#AddressForm#"
+		addresstemplate="#'modules/address/forms/'.AddressFormTemplate#"
+		countrylist="#ShippingCountries#"
+		locale="#CurrentSession:Locale#"
+		salutation_enumeration_provider="#SalutationEnumerationKeyProvider#"
+	>
+
+	<isaddressusageinput
+		webform="#AddressForm#"
+		customerBO="#CustomerBO#"
+		userBO="#UserBO#"
+	>
+		
+	<div class="form-group">
+		<div class="col-sm-offset-4 col-sm-8">
+			<button type="submit" name="createAddress" class="btn btn-primary"><istext key="account.addresses.create_address.button.label" /></button>
+			<a class="btn btn-default cancel" href="#'#'#"><istext key="account.cancel.link" /></a>
+		</div>
+	</div>
+</isform>

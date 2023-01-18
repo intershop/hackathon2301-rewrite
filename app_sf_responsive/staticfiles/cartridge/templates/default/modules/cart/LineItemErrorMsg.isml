@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- BEGIN Line Item specific error --->
+<isif condition="#isDefined(adjustedItems:get(pli:ID))#">
+	<!--AdjustedItems found-->
+	<isset name="AdjustReasons" value="#adjustedItems:get(pli:ID)#" scope="request">
+
+	<isif condition="#hasLoopElements(AdjustReasons)#">
+		<isloop iterator="AdjustReasons" alias="AdjustReason">
+			<isif condition="#AdjustReason EQ 'InsufficientStock'#">
+				<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.insufficient_stock.error" />
+				</div>
+			</isif>
+			<isif condition="#AdjustReason EQ 'InsufficientStockMinOrderQuantity'#">
+				<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.insufficient_stock.error" />
+				</div>
+			</isif>
+			<isif condition="#AdjustReason EQ 'MaxOrderQuantity'#">
+				<div class="alert alert-danger <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.max_order_qty.error" />
+				</div>	
+			</isif>
+			<isif condition="#AdjustReason EQ 'MinOrderQuantity'#">
+				<div class="alert alert-danger <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.min_order_qty.error" />
+				</div>	
+			</isif>
+			<isif condition="#AdjustReason EQ 'ComplyStep'#">
+				<div class="alert alert-danger <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.comply_step.error" />
+				</div>
+			</isif>
+			<isif condition="#AdjustReason EQ 'InvalidQuantity'#">
+				<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.quantity.invalid.error.w.correction" />
+				</div>
+			</isif>
+			<isif condition="#AdjustReason EQ 'ProductNotAvailable'#">
+				<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.product.not_available" />
+				</div>
+			</isif>
+			<isif condition="#AdjustReason EQ 'WarrantyNotAvailable'#">
+				<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+					<istext key="shopping_cart.warranty.not_available" />
+				</div>
+			</isif>
+		</isloop>
+	</isif>
+</isif>
+<!--- END Line Item specific error --->

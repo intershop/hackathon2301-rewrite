@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Handles orders in user my account-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewOrders" type="view">
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="CancelOrder">
+    <nodeSuccessors name="next" next="CallNode9"/>
+  </nodes>
+<!--@Location 11,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="GetOrderBO1"/>
+    <startNode referencedName="ViewOrders-Prefix"/>
+  </nodes>
+<!--@Location 11,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetOrderBO1">
+    <pipelet href="enfinity:/bc_order/pipelets/GetOrderBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="OrderBORepository" objectPath="ApplicationBO:Repository(&quot;OrderBORepository&quot;)"/>
+  </nodes>
+<!--@Location 11,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="No" next="JumpNode5"/>
+    <nodeSuccessors name="Yes" next="DecisionNode1"/>
+    <startNode referencedName="ProcessOrders-CheckOrderBelongsToCurrentUser"/>
+  </nodes>
+<!--@Location 12,5-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode5">
+    <startNode referencedName="Error-Page"/>
+  </nodes>
+<!--@Location 11,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="OrderBO:Status"
+      operator="str_eq" conditionValue="NEW">
+    <nodeSuccessors name="decision_yes" next="CallNode12"/>
+    <nodeSuccessors name="decision_no" next="JoinNode5"/>
+  </nodes>
+<!--@Location 11,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <startNode referencedName="ProcessGiftCard-OrderCanBeCanceled"/>
+    <returnValueBindings name="Result" objectPath="OrderCanBeCancelled"/>
+  </nodes>
+<!--@Location 11,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="OrderCanBeCancelled"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode5"/>
+    <nodeSuccessors name="decision_no" next="JoinNode5"/>
+  </nodes>
+<!--@Location 11,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="SetDictionaryValue2"/>
+    <nodeSuccessors name="ERROR" next="JoinNode4"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessOrders-CancelOrder"/>
+  </nodes>
+<!--@Location 11,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="CancellationStatus"/>
+    <configurationValues name="Value" value="cancellationSuccessful"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 11,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JumpNode2"/>
+  </nodes>
+<!--@Location 11,11-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewOrders-Detail"/>
+  </nodes>
+<!--@Location 12,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="SetDictionaryValue1"/>
+  </nodes>
+<!--@Location 12,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="CancellationStatus"/>
+    <configurationValues name="Value" value="cancellationImpossible"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 25,21-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 12,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 14,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="ConfirmCancel">
+    <nodeSuccessors name="next" next="CallNode10"/>
+  </nodes>
+<!--@Location 14,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="SetDictionaryValue5"/>
+    <startNode referencedName="ViewOrders-Prefix"/>
+  </nodes>
+<!--@Location 14,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue5">
+    <configurationValues name="Name" value="CancellationStatus"/>
+    <configurationValues name="Value" value="confirmCancel"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JumpNode4"/>
+  </nodes>
+<!--@Location 14,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode4">
+    <startNode referencedName="ViewOrders-Detail"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Detail">
+    <nodeSuccessors name="next" next="CallNode8"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode_KBQz8D4YEeiFProeDZr4HQ"/>
+    <startNode referencedName="ViewOrders-Prefix"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_KBQz8D4YEeiFProeDZr4HQ">
+    <nodeSuccessors name="next" next="KeyMapper2"/>
+    <parameterBindings name="PageName" constant="order-detail"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 8,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <parameterBindings name="InValue_1" constant="ViewOrders-Detail"/>
+    <parameterBindings name="InValue_2" constant="OrderID"/>
+    <parameterBindings name="InValue_3" objectPath="OrderID"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterName1"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="DecisionNode_BTaDwB0uEeiRQcysCzc8dw"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_BTaDwB0uEeiRQcysCzc8dw"
+      conditionKey="CustomerBO:Extension(&quot;Order&quot;)">
+    <nodeSuccessors name="decision_yes" next="GetOrderBO_JR49QB0uEeiRQcysCzc8dw"/>
+<!--@BendPoints 19,13-->
+    <nodeSuccessors name="decision_no" next="GetOrderBO0"/>
+  </nodes>
+<!--@Location 8,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetOrderBO_JR49QB0uEeiRQcysCzc8dw">
+    <pipelet href="enfinity:/bc_order/pipelets/GetOrderBO.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode_DPzy8PvzEeqXFPl0LoFitQ"/>
+    <parameterBindings name="OrderBORepository" objectPath="CustomerBO:Extension(&quot;Order&quot;)"/>
+  </nodes>
+<!--@Location 8,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_DPzy8PvzEeqXFPl0LoFitQ"
+      conditionKey="CurrentUser:ID" operator="str_eq" conditionItem="OrderBO:User:ID">
+    <nodeSuccessors name="decision_yes" next="GetMultipleShippingConfigProvider0"/>
+    <nodeSuccessors name="decision_no" next="JoinNode_K3k1kPvzEeqXFPl0LoFitQ"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetMultipleShippingConfigProvider0">
+    <pipelet href="enfinity:/bts/pipelets/GetMultipleShippingConfigProvider.xml"/>
+    <nodeSuccessors name="next" next="GetRunnableServiceConfigurations_roXxQOIMEeqFS41DtkB_3w"/>
+  </nodes>
+<!--@Location 8,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRunnableServiceConfigurations_roXxQOIMEeqFS41DtkB_3w">
+    <configurationValues name="ServiceInterface" value="com.intershop.component.rma.capi.service.RmaService"/>
+    <pipelet href="enfinity:/bc_service/pipelets/GetRunnableServiceConfigurations.xml"/>
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate1_Input"/>
+    <returnValueBindings name="ServiceConfigurations" objectPath="RmaServices"/>
+  </nodes>
+<!--@Location 8,11-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate1">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.orderDetails.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/OrderDetails.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 9,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_K3k1kPvzEeqXFPl0LoFitQ">
+    <nodeSuccessors name="next" next="DecisionNode6"/>
+  </nodes>
+<!--@Location 9,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="CustomerBO:ID"
+      operator="str_eq" conditionItem="OrderBO:CustomerBO:ID">
+    <nodeSuccessors name="decision_yes" next="GetMultipleShippingConfigProvider0"/>
+    <nodeSuccessors name="decision_no" next="JumpNode1"/>
+  </nodes>
+<!--@Location 9,11-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewUserAccount-Start"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetOrderBO0">
+    <pipelet href="enfinity:/bc_order/pipelets/GetOrderBO.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_K3k1kPvzEeqXFPl0LoFitQ"/>
+    <parameterBindings name="OrderBORepository" objectPath="ApplicationBO:Repository(&quot;OrderBORepository&quot;)"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start13" name="Dispatch">
+    <nodeSuccessors name="next" next="DispatchFormAction2"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction2">
+    <configurationValues name="OutValue_0" value="ViewOrders-ConfirmCancel"/>
+    <configurationValues name="OutValue_1" value="ViewOrders-CancelOrder"/>
+    <configurationValues name="OutValue_2" value="ViewOrders-Detail"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+    <nodeSuccessors name="next" next="Jump1"/>
+    <parameterBindings name="Key_0" objectPath="confirmCancel"/>
+    <parameterBindings name="Key_1" objectPath="cancelOrder"/>
+    <parameterBindings name="Key_2" objectPath="cancelCancellation"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 16,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="MyOrderSearch" secure="true">
+    <nodeSuccessors name="next" next="SetDictionaryValue0"/>
+  </nodes>
+<!--@Location 16,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="MyOrderSearch"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JumpNode0"/>
+  </nodes>
+<!--@Location 16,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="This:SimpleOrderSearch"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start5" name="Paging">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <startNode referencedName="ViewOrders-Prefix"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="DecisionNode8"/>
+    <nodeSuccessors name="ERROR" next="JoinNode2"/>
+    <startNode referencedName="Paging-GetPageableByID"/>
+    <returnValueBindings name="Pageable" objectPath="SortedOrders"/>
+  </nodes>
+<!--@Location 4,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode8" conditionKey="SortingAttribute"
+      operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="JoinNode12"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode12">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+  </nodes>
+<!--@Location 4,19-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="CallNode6"/>
+  </nodes>
+<!--@Location 4,20-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="KeyMapper4"/>
+    <parameterBindings name="Pageable" objectPath="SortedOrders"/>
+    <startNode referencedName="Paging-SetPageNumber"/>
+  </nodes>
+<!--@Location 4,21-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CreateNavigationList1"/>
+    <parameterBindings name="InValue_1" constant="ViewOrders"/>
+    <returnValueBindings name="OutValue_1" objectPath="HandlerPipeline"/>
+  </nodes>
+<!--@Location 4,22-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateNavigationList1">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateNavigationList.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_me6UUBxuEeiJF6aEWkDKIA"/>
+    <parameterBindings name="CurrentPage" objectPath="SortedOrders:Page"/>
+    <parameterBindings name="ElementCount" objectPath="SortedOrders:ElementCount"/>
+    <parameterBindings name="Iterator" objectPath="SortedOrders"/>
+    <parameterBindings name="PageCount" objectPath="SortedOrders:PageCount"/>
+    <parameterBindings name="PageSize" objectPath="SortedOrders:PageSize"/>
+    <parameterBindings name="PageableID" objectPath="SortedOrders:ID"/>
+  </nodes>
+<!--@Location 4,22-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_me6UUBxuEeiJF6aEWkDKIA">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+  </nodes>
+<!--@Location 4,24-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.orders.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/Orders.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode12"/>
+    <parameterBindings name="InValue_1" constant="SortOrdersBy"/>
+    <returnValueBindings name="OutValue_1" objectPath="SortingAttribute"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode_xJaJkD4XEeiFProeDZr4HQ"/>
+  </nodes>
+<!--@Location 6,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_xJaJkD4XEeiFProeDZr4HQ">
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="PageName" constant="order-list"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="SortingAttribute">
+<!--@BendPoints 12,11 11,11-->
+    <nodeSuccessors name="decision_yes" next="CreateStringSplitter0"/>
+    <nodeSuccessors name="decision_no" next="AddMultipleEntriesToMap0"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateStringSplitter0">
+    <configurationValues name="Mode" value="First Occurrence"/>
+    <configurationValues name="Separator" value="_"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/CreateStringSplitter.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <returnValueBindings name="Splitter" objectPath="CompleteSplitter"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap5"/>
+    <parameterBindings name="InValue_1" objectPath="CompleteSplitter:Begin(SortingAttribute)"/>
+    <parameterBindings name="InValue_2" objectPath="CompleteSplitter:End(SortingAttribute)"/>
+    <returnValueBindings name="OutValue_1" objectPath="SortAttribute"/>
+    <returnValueBindings name="OutValue_2" objectPath="SortDirection"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap5">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="InMap" objectPath="GenericHandlerPipelineParams"/>
+    <parameterBindings name="Key" constant="SortingAttribute"/>
+    <parameterBindings name="Value" objectPath="SortingAttribute"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 6,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+  </nodes>
+<!--@Location 6,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="SearchTerm"
+      operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="JoinNode7"/>
+<!--@BendPoints 11,19-->
+    <nodeSuccessors name="decision_no" next="VerifySearchTerm0"/>
+  </nodes>
+<!--@Location 6,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 6,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="CallNode_woI5QNcYEeaT4Jq1OZMMUw"/>
+  </nodes>
+<!--@Location 6,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_woI5QNcYEeaT4Jq1OZMMUw">
+    <nodeSuccessors name="next" next="AddObjectToCollection1"/>
+    <startNode referencedName="ViewOrders-SetSecurityRestriction"/>
+  </nodes>
+<!--@Location 6,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToCollection1">
+    <pipelet href="enfinity:/core/pipelets/AddObjectToCollection.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode_zNLwABxpEeiJF6aEWkDKIA"/>
+    <parameterBindings name="InCollection" objectPath="ExcludedStatusCodesMap"/>
+    <parameterBindings name="InObject" constant="(Integer)15"/>
+    <returnValueBindings name="OutCollection" objectPath="ExcludedStatusCodesMap"/>
+    <returnValueBindings name="OutIterator" objectPath="ExcludedStatusCodesIterator"/>
+  </nodes>
+<!--@Location 6,15-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_zNLwABxpEeiJF6aEWkDKIA"
+      conditionKey="CustomerBO:Extension(&quot;Order&quot;)">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_HGlcABxtEeiJF6aEWkDKIA"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode4"/>
+  </nodes>
+<!--@Location 7,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_HGlcABxtEeiJF6aEWkDKIA">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode_XGOLsBxxEeiJF6aEWkDKIA"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBO:Extension(&quot;Order&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CustomerBOOrderExtension"/>
+  </nodes>
+<!--@Location 7,16-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_XGOLsBxxEeiJF6aEWkDKIA"
+      conditionKey="PageSize">
+    <nodeSuccessors name="decision_yes" next="VerifyInteger_7CCOwBydEeiJF6aEWkDKIA"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper_ZZOwIBxxEeiJF6aEWkDKIA"/>
+  </nodes>
+<!--@Location 8,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger_7CCOwBydEeiJF6aEWkDKIA">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+    <nodeSuccessors name="next" next="VerifyInteger_DNplUByeEeiJF6aEWkDKIA"/>
+    <parameterBindings name="LocalizedString" objectPath="PageSize"/>
+    <returnValueBindings name="IntegerObject" objectPath="PageSize"/>
+  </nodes>
+<!--@Location 8,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger_DNplUByeEeiJF6aEWkDKIA">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+<!--@BendPoints 17,37-->
+    <nodeSuccessors name="next" next="CalculateInteger_G0qJEBxuEeiJF6aEWkDKIA"/>
+    <parameterBindings name="LocalizedString" objectPath="PageNumber"/>
+    <returnValueBindings name="IntegerObject" objectPath="PageNumber"/>
+  </nodes>
+<!--@Location 7,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CalculateInteger_G0qJEBxuEeiJF6aEWkDKIA">
+    <configurationValues name="Operation" value="*"/>
+    <pipelet href="enfinity:/core/pipelets/CalculateInteger.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode_5U5U4CHqEeiCu5c6VwE1qw"/>
+    <parameterBindings name="Operand1" objectPath="PageNumber"/>
+    <parameterBindings name="Operand2" objectPath="PageSize"/>
+    <returnValueBindings name="Result" objectPath="Offset"/>
+  </nodes>
+<!--@Location 7,19-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_5U5U4CHqEeiCu5c6VwE1qw"
+      conditionKey="Parameters:Buyer">
+    <nodeSuccessors name="decision_yes" next="GetUserBO_-cp44CHqEeiCu5c6VwE1qw"/>
+<!--@BendPoints 17,39-->
+    <nodeSuccessors name="decision_no" next="KeyMapper_0QeUwCIWEeiCu5c6VwE1qw"/>
+  </nodes>
+<!--@Location 7,20-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO_-cp44CHqEeiCu5c6VwE1qw">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="CreateOrderSearchContext_0BwDsBxtEeiJF6aEWkDKIA"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <parameterBindings name="UserID" objectPath="Parameters:Buyer:ID"/>
+    <returnValueBindings name="UserBO" objectPath="SearchUserBO"/>
+  </nodes>
+<!--@Location 7,21-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateOrderSearchContext_0BwDsBxtEeiJF6aEWkDKIA">
+    <pipelet href="enfinity:/bc_order/pipelets/CreateOrderSearchContext.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper_Y9eIkBxuEeiJF6aEWkDKIA"/>
+    <parameterBindings name="CustomerBO" objectPath="SearchCustomerBO"/>
+    <parameterBindings name="ExcludedStatuses" objectPath="ExcludedStatusCodesMap"/>
+    <parameterBindings name="Limit" objectPath="PageSize"/>
+    <parameterBindings name="OrderSearchTerm" objectPath="SearchTermExpression"/>
+    <parameterBindings name="UserBO" objectPath="SearchUserBO"/>
+  </nodes>
+<!--@Location 7,22-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_Y9eIkBxuEeiJF6aEWkDKIA">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetRunnableServiceConfigurations_ZBMLUCjtEeiIX6t4bYNAfw"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBOOrderExtension:OrderBOs(OrderSearchContext)"/>
+    <parameterBindings name="InValue_2" constant="ViewOrders"/>
+    <returnValueBindings name="OutValue_1" objectPath="SortedOrders"/>
+    <returnValueBindings name="OutValue_2" objectPath="HandlerPipeline"/>
+  </nodes>
+<!--@Location 6,22-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRunnableServiceConfigurations_ZBMLUCjtEeiIX6t4bYNAfw">
+    <configurationValues name="ServiceInterface" value="com.intershop.adapter.orderhistory.service.capi.historyimport.OrderHistoryService"/>
+    <pipelet href="enfinity:/bc_service/pipelets/GetRunnableServiceConfigurations.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_me6UUBxuEeiJF6aEWkDKIA"/>
+    <returnValueBindings name="ServiceConfigurations" objectPath="OrderHistoryServices"/>
+  </nodes>
+<!--@Location 8,20-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_0QeUwCIWEeiCu5c6VwE1qw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 17,43-->
+    <nodeSuccessors name="next" next="CreateOrderSearchContext_0BwDsBxtEeiJF6aEWkDKIA"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="SearchCustomerBO"/>
+  </nodes>
+<!--@Location 7,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_ZZOwIBxxEeiJF6aEWkDKIA">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CalculateInteger_G0qJEBxuEeiJF6aEWkDKIA"/>
+    <parameterBindings name="InValue_1" constant="(Integer)5"/>
+    <parameterBindings name="InValue_2" constant="(Integer)0"/>
+    <returnValueBindings name="OutValue_1" objectPath="PageSize"/>
+    <returnValueBindings name="OutValue_2" objectPath="PageNumber"/>
+  </nodes>
+<!--@Location 6,16-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="MyOrderSearch">
+    <nodeSuccessors name="decision_yes" next="AddEntryToMap7"/>
+<!--@BendPoints 14,33 14,37-->
+    <nodeSuccessors name="decision_no" next="JoinNode8"/>
+  </nodes>
+<!--@Location 6,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap7">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode8"/>
+    <parameterBindings name="InMap" objectPath="GenericHandlerPipelineParams"/>
+    <parameterBindings name="Key" constant="MyOrderSearch"/>
+    <parameterBindings name="Value" objectPath="MyOrderSearch"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 6,18-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="AddEntryToMap0"/>
+  </nodes>
+<!--@Location 6,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap0">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="ExecutePageableQuery1"/>
+    <parameterBindings name="InMap" objectPath="Parameters"/>
+    <parameterBindings name="Key" constant="ExcludedStatusCodes"/>
+    <parameterBindings name="Value" objectPath="ExcludedStatusCodesMap"/>
+    <returnValueBindings name="OutMap" objectPath="Parameters"/>
+  </nodes>
+<!--@Location 5,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExecutePageableQuery1">
+    <configurationValues name="Datasource" value="default"/>
+    <configurationValues name="DefaultPageSize" value="5"/>
+    <configurationValues name="ParameterName_02" value="OrderDomain"/>
+    <configurationValues name="ParameterName_03" value="SearchForAuctionOrders"/>
+    <configurationValues name="ParameterName_04" value="SortAttribute"/>
+    <configurationValues name="ParameterName_05" value="SortDirection"/>
+    <configurationValues name="QueryName" value="order/OrderSearch"/>
+    <pipelet href="enfinity:/core/pipelets/ExecutePageableQuery.xml"/>
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <parameterBindings name="Connection" nullBinding="true"/>
+    <parameterBindings name="PageSize" nullBinding="true"/>
+    <parameterBindings name="ParameterValue_02" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="ParameterValue_03" constant="(Boolean)false"/>
+    <parameterBindings name="ParameterValue_04" objectPath="SortAttribute"/>
+    <parameterBindings name="ParameterValue_05" objectPath="SortDirection"/>
+    <parameterBindings name="Parameters"/>
+    <parameterBindings name="Query" nullBinding="true"/>
+    <returnValueBindings name="SearchResult" objectPath="SortedOrders"/>
+  </nodes>
+<!--@Location 5,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifySearchTerm0">
+    <configurationValues name="AllowFuzzySearch" value="true"/>
+    <configurationValues name="DefaultOperator" value="OR"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifySearchTerm.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode7"/>
+    <parameterBindings name="UserSearchTerm" objectPath="SearchTerm"/>
+    <returnValueBindings name="SearchExpression" objectPath="SearchTermExpression"/>
+  </nodes>
+<!--@Location 5,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap1">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap6"/>
+    <parameterBindings name="InMap" objectPath="Parameters"/>
+    <parameterBindings name="Key" constant="SearchTerm"/>
+    <parameterBindings name="Value" objectPath="SearchTermExpression"/>
+    <returnValueBindings name="OutMap" objectPath="Parameters"/>
+  </nodes>
+<!--@Location 5,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap6">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <parameterBindings name="InMap" objectPath="GenericHandlerPipelineParams"/>
+    <parameterBindings name="Key" constant="SearchTerm"/>
+    <parameterBindings name="Value" objectPath="SearchTerm"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 6,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap0">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Prefix" callMode="Private">
+    <nodeSuccessors name="next" next="CheckUserLoggedIn0"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn0">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+    <nodeSuccessors name="pipelet_error" next="RemoveDictionaryValue0"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO0"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO0">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="PipeletNode0"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <parameterBindings name="UserID" objectPath="CurrentUser:ID"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="PipeletNode0">
+    <pipelet href="enfinity:/bc_customer/pipelets/GetCustomerBO.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="CustomerBORepository" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0"/>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="TargetURL"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper3"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+    <parameterBindings name="InValue_1" constant="ViewUserAccount-ShowLogin"/>
+    <parameterBindings name="InValue_2" constant="https"/>
+    <parameterBindings name="InValue_4" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_5" constant="ViewOrders-SimpleOrderSearch"/>
+    <parameterBindings name="InValue_6" constant="LoginToUse"/>
+    <parameterBindings name="InValue_7" constant="orders"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Protocol"/>
+    <returnValueBindings name="OutValue_3" objectPath="TargetSite"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter1_Value"/>
+    <returnValueBindings name="OutValue_6" objectPath="Parameter2_Name"/>
+    <returnValueBindings name="OutValue_7" objectPath="Parameter2_Value"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+<!--Restrict the orders to be returned based on the permissions of currently logged user.
+@Location 17,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_yN4WwNcSEeaT4Jq1OZMMUw" strict="true"
+      name="SetSecurityRestriction" callMode="Private">
+    <nodeSuccessors name="next" next="AddEntryToMap_jEW2ENcWEeaT4Jq1OZMMUw"/>
+    <parameters name="UserBO" type="com.intershop.component.user.capi.UserBO"/>
+    <parameters name="CustomerBO" type="com.intershop.component.customer.capi.CustomerBO"/>
+    <parameters name="MyOrderSearch" type="java.lang.String" optional="true"/>
+<!--The parameters for orders search query.-->
+    <parameters name="Parameters" type="java.util.Map&lt;K,V>" optional="true"/>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap_jEW2ENcWEeaT4Jq1OZMMUw">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="EndNode_M7awYNcTEeaT4Jq1OZMMUw"/>
+    <parameterBindings name="InMap" objectPath="Parameters"/>
+    <parameterBindings name="Key" constant="Buyer"/>
+    <parameterBindings name="Value" objectPath="CurrentUser"/>
+    <returnValueBindings name="OutMap" objectPath="Parameters"/>
+  </nodes>
+<!--@Location 17,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_M7awYNcTEeaT4Jq1OZMMUw" strict="true">
+    <returnValues name="Parameters" type="java.util.Map&lt;K,V>" optional="true"/>
+    <returnValues name="Keys" type="java.util.Iterator&lt;E>" optional="true"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start8" name="SimpleOrderSearch">
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <startNode referencedName="ViewOrders-Prefix"/>
+  </nodes>
+</pipeline:Pipeline>

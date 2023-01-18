@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<components xmlns="http://www.intershop.de/component/2010">
+
+	<fulfill requirement="extensionFactory"
+		of="com.intershop.beehive.core.capi.businessobject.BusinessObjectExtensionFactories">
+		
+		<!-- extension factories for time zones -->
+		<instance with="TimeZoneBORepositoryExtensionFactory" />
+		
+		<!-- extension factory for customer approval -->
+		<instance with="b2c.ApplicationBOCustomerApprovalExtensionFactory" />
+		<instance with="ApplicationBOPasswordReminderPreferencesExtensionFactory" />	
+	</fulfill>
+	
+	<instance name="CategoryPageletEntryPointLookupStrategy" with="CategoryPageletEntryPointLookupStrategy" />
+	<instance name="ProductPageletEntryPointLookupStrategy" with="ProductPageletEntryPointLookupStrategy" />
+	
+	<instance name="pageletABTestGroupVisibilityFilter" with="PageletABTestGroupVisibilityFilter" />
+	<fulfill requirement="pageletVisibilityFilter" of="pageletVisibilityFilterCtnr" with="pageletABTestGroupVisibilityFilter" />
+	
+	<instance name="pageletPromotionVisibilityFilter" with="PageletPromotionVisibilityFilter" />
+	<fulfill requirement="pageletVisibilityFilter" of="pageletVisibilityFilterCtnr" with="pageletPromotionVisibilityFilter" />
+
+    <!-- Security question keys -->
+    <instance name="securityQuestionEnumerationKeyProvider" with="EnumerationKeyProvider">
+		<fulfill requirement="key" value="account.security_question.maiden_name.text"/>
+		<fulfill requirement="key" value="account.security_question.pet_name.text"/>
+		<fulfill requirement="key" value="account.security_question.street_name.text"/>
+		<fulfill requirement="key" value="account.security_question.elementary_school.text"/>
+		<fulfill requirement="key" value="account.security_question.first_employer.text"/>
+	</instance>	
+
+	<!-- Salutation enumeration key provider -->
+	<instance name="salutationEnumerationKeyProviderGBUS" with="LocalizedEnumerationKeyProvider">
+		<fulfill requirement="key" value="account.salutation.ms.text"/>
+		<fulfill requirement="key" value="account.salutation.miss.text"/>
+		<fulfill requirement="key" value="account.salutation.mrs.text"/>
+		<fulfill requirement="key" value="account.salutation.mr.text"/>
+		<fulfill requirement="key" value="account.salutation.dr.text"/>
+		<fulfill requirement="countryCode" value="GB"/>
+		<fulfill requirement="countryCode" value="US"/>	
+	</instance>
+	<fulfill requirement="salutationEnumerationKeyProvider" of="salutationEnumerationKeyProviderCtnr" with="salutationEnumerationKeyProviderGBUS" />
+
+	<!-- StorefrontLinkParser -->
+	<instance name="StorefrontLinkParser" scope="app" with="StorefrontLinkParserImpl">
+		<fulfill requirement="linkRenderer">
+			<!-- List of currently active link renderer -->
+			<instance with="StorefrontLinkRendererPageImpl">
+			    <fulfill requirement="action" value="ViewContent-Start"/>
+			    <fulfill requirement="prefix" value="page"/>
+			    <fulfill requirement="defaultResourceSetId" value="app_sf_responsive"/>
+			</instance>
+			<instance with="StorefrontLinkRendererProductImpl">
+			    <fulfill requirement="action" value="ViewProduct-Start"/>
+			    <fulfill requirement="prefix" value="product"/>
+			</instance>
+			<instance with="StorefrontLinkRendererPipelineImpl">
+			    <fulfill requirement="prefix" value="pipeline"/>
+			</instance>
+			<instance with="StorefrontLinkRendererCategoryImpl">
+			    <fulfill requirement="action" value="ViewStandardCatalog-Browse"/>
+			    <fulfill requirement="prefix" value="category"/>
+			</instance>
+			<instance with="b2cresponsive.ImageLinkRenderer">
+			</instance>
+		</fulfill>
+	</instance>
+	
+	<instance name="ManagementLocalizationKeyFilter" with="LocalizationKeyFilterExpression" scope="app">
+		<fulfill requirement="operator" value="or"/> 
+		<fulfill requirement="condition">
+			<instance name="LocalizationKeyFilter.DeniedCartridgesCondition" with="LocalizationKeyCartridgeNameCondition">
+				<fulfill requirement="equals" value="core"/>
+				<fulfill requirement="equals" value="xcs"/>
+				<fulfill requirement="equals" value="bts"/>
+				<fulfill requirement="equals" value="btc"/>
+				<fulfill requirement="startsWith" value="pf_"/>
+				<fulfill requirement="startsWith" value="bc_"/>
+				<fulfill requirement="exception">
+					<instance name="LocalizationKeyFilter.DeniedCartridges.Exceptions" with="LocalizationKeyFilterExpression">
+						<fulfill requirement="operator" value="or"/> 
+					</instance>
+				</fulfill>
+			</instance>
+		</fulfill>
+	</instance>
+	
+    <!-- Contact us subject keys -->
+    <instance name="contactUsEnumerationKeyProvider" with="EnumerationKeyProvider">
+		<fulfill requirement="key" value="orderinquiries"/>
+		<fulfill requirement="key" value="returns"/>
+		<fulfill requirement="key" value="myaccount"/>
+		<fulfill requirement="key" value="orderplacing"/>
+		<fulfill requirement="key" value="giftcertificates"/>
+		<fulfill requirement="key" value="productquestion"/>
+	</instance>	
+	
+	<!-- Basket Validation Dispatching -->	
+	<instance name="CheckoutDispatcher" with="CheckoutDispatcherImpl" scope="app"/>
+	
+	<fulfill requirement="dispatchEntry" of="CheckoutDispatcher">
+
+		<instance with="DispatchEntry">
+			<fulfill requirement="target" value="ViewCart-View"/>
+			<fulfill requirement="position" value="10"/>
+			<!-- Basket Validation, Scope "Products" -->
+			<fulfill requirement="failureCode" value="MaxItemQuantityExceeded"/>
+			<fulfill requirement="failureCode" value="TotalQuantityExceeded"/>
+			<fulfill requirement="failureCode" value="MaxItemSizeExceeded"/>
+			<fulfill requirement="failureCode" value="ProductNotAccessible"/>
+			<fulfill requirement="failureCode" value="ProductNoPrice"/>
+			<fulfill requirement="failureCode" value="ProductIsARetailSet"/>
+			<fulfill requirement="failureCode" value="ProductIsDependent"/>
+			<fulfill requirement="failureCode" value="ProductWithMissingInventory"/>
+			<fulfill requirement="failureCode" value="ProductOutOfLifeCycle"/>
+			<fulfill requirement="failureCode" value="WarrantyInvalid"/>
+			<!-- Basket Validation, Scope "Value" -->
+			<fulfill requirement="failureCode" value="MaxValueExceeded"/>
+			<fulfill requirement="failureCode" value="MinValueExceeded"/>
+			<!-- Basket Validation, Scope "Subscription" -->
+			<fulfill requirement="failureCode" value="RecurringBasketStartDateInThePast"/>
+			<fulfill requirement="failureCode" value="RecurringBasketEndDateBeforeStartDate"/>
+			<!-- Basket Validation, Scope "" -->
+			<fulfill requirement="failureCode" value="WrongBasketStatus"/>
+			<fulfill requirement="failureCode" value="EmptyBasket"/>
+			<!-- Order Creation -->
+			<fulfill requirement="failureCode" value="InventoryNotBooked"/>
+		</instance>
+
+		<instance with="DispatchEntry">
+			<fulfill requirement="target" value="ViewCheckoutAddresses-Review"/>
+			<fulfill requirement="position" value="20"/>
+			<!-- Basket Validation, Scope "Addresses" -->
+			<fulfill requirement="failureCode" value="LineItemShipToAddressMissing"/>
+			<fulfill requirement="failureCode" value="CommonShipToAddressMissing"/>
+			<fulfill requirement="failureCode" value="InvoiceToAddressMissing"/>
+			<fulfill requirement="failureCode" value="NoEligibleShippingMethods"/>
+			<fulfill requirement="failureCode" value="ShippingRestrictions"/>
+			<fulfill requirement="failureCode" value="LineItemShippingRestrictions"/>
+		</instance>
+
+		<instance with="DispatchEntry">
+			<fulfill requirement="target" value="ViewCheckoutShipping-Review"/>
+			<fulfill requirement="position" value="30"/>
+			<!-- Basket Validation, Scope "Shipping" -->
+			<fulfill requirement="failureCode" value="LineItemShippingMethodMissing"/>
+			<fulfill requirement="failureCode" value="CommonShippingMethodMissing"/>
+			<fulfill requirement="failureCode" value="InvalidDesiredDeliveryDate"/>
+			<fulfill requirement="failureCode" value="LineItemShippingMethodInvalid"/>
+			<fulfill requirement="failureCode" value="CommonShippingMethodInvalid"/>
+		</instance>
+
+		<instance with="DispatchEntry">
+			<fulfill requirement="target" value="ViewCheckoutPayment-Review"/>
+			<fulfill requirement="position" value="40"/>
+			<!-- Basket Validation, Scope "Payment" -->
+			<fulfill requirement="failureCode" value="PaymentNotApplicable"/>
+			<fulfill requirement="failureCode" value="TooMuchCovered"/>
+			<fulfill requirement="failureCode" value="BasketNotCovered"/>
+			<fulfill requirement="failureCode" value="PaymentMissing"/>
+			<!-- Basket Validation, Scope "Promotion" -->
+			<fulfill requirement="failureCode" value="PromotionCodeInvalid"/>
+			<!-- Order Creation -->
+			<fulfill requirement="failureCode" value="ErrorOnCopyPaymentData"/>
+			<fulfill requirement="failureCode" value="MalformedRedirectURL"/>
+			<fulfill requirement="failureCode" value="MissingRedirectURL"/>
+			<fulfill requirement="failureCode" value="AuthorizationFailed"/>
+			<fulfill requirement="failureCode" value="AuthorizationCancelled"/>
+		</instance>
+
+		<instance with="DispatchEntry">
+			<fulfill requirement="target" value="ViewCheckoutReview-Start"/>
+			<fulfill requirement="position" value="50"/>
+			<!-- Basket Validation, Scope "Order" -->
+			<fulfill requirement="failureCode" value="NoTaxationServiceAvailable"/>
+			<fulfill requirement="failureCode" value="TermsAndConditionsError"/>
+			<!-- Order Creation -->
+			<fulfill requirement="failureCode" value="BasketOnHold"/>
+			<fulfill requirement="failureCode" value="OrderAlreadyExists"/>
+			<fulfill requirement="failureCode" value="DocumentNumberNotGenerated"/>
+			<fulfill requirement="failureCode" value="ErrorOnLineItemDependencyResolution"/>
+		</instance>
+
+	</fulfill>
+	
+</components>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Pagelet-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewContent" type="view">
+<!--Determines a resource\-set\-id value based on two optional values a) PageletEntryPointID as convenience and b) a given ResourceSet in case the caller already knows it. It falls back to return app_sf_responsive in case no value has been given.
+@Location 4,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="GetResourceSetID"
+      callMode="Private">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameters name="PageletEntryPointID" type="java.lang.String" optional="true"/>
+    <parameters name="ParamResourceSetID" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="ParamResourceSetID"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="EndNode0"/>
+    <nodeSuccessors name="decision_no" next="EndNode1"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="ResourceSetID" constant="app_sf_responsive" type="java.lang.String"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="ResourceSetID" objectPath="ParamResourceSetID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameters name="PageletEntryPointID" type="java.lang.String" optional="true"/>
+    <parameters name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"
+        optional="true"/>
+    <parameters name="ResourceSetID" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="PageletEntryPoint"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="CallNode3"/>
+<!--@BendPoints 4,3 5,3-->
+    <nodeSuccessors name="decision_no" next="JoinNode0"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameterBindings name="ParamResourceSetID" objectPath="ResourceSetID"/>
+    <startNode referencedName="ViewContent-GetResourceSetID"/>
+    <returnValueBindings name="ResourceSetID" objectPath="DeterminedResourceSetID"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <nodeSuccessors name="ERROR" next="JoinNode0"/>
+    <parameterBindings name="ResourceSetID" objectPath="DeterminedResourceSetID"/>
+    <startNode referencedName="ProcessPagelet-LookupPageletEntryPoint"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+<!--@BendPoints 7,13-->
+    <nodeSuccessors name="NOT_PUBLIC" next="RemoveDictionaryValue1"/>
+    <nodeSuccessors name="PUBLIC" next="CallNode2"/>
+    <startNode referencedName="ProcessPageletACL-CheckPageletEntryPointIsPublic"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue1">
+    <configurationValues name="Key" value="PageletEntryPoint"/>
+    <configurationValues name="RemoveFormValues" value="false"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue2"/>
+  </nodes>
+<!--@Location 3,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue2">
+    <configurationValues name="Key" value="PageletEntryPoint"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue5"/>
+  </nodes>
+<!--@Location 3,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue5">
+    <configurationValues name="Name" value="ErrorCode"/>
+    <configurationValues name="Value" value="UserHasNotPermission"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 7,22-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="Error-Page"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="GetDomainPreference0"/>
+    <parameterBindings name="PageName" constant="content"/>
+    <parameterBindings name="PageType" constant="general"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference0">
+    <configurationValues name="DefaultPreferenceKey" value="HRefLangEnabled"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+<!--@BendPoints 4,17 4,19-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="PreferenceKey" nullBinding="true"/>
+    <returnValueBindings name="Preference" objectPath="PreferenceHRefLangEnabled"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="HRefLangEnabled"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CreatePageHRefLangList0"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePageHRefLangList0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreatePageHRefLangList.xml"/>
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <parameterBindings name="Locales" objectPath="ApplicationBO:Locales"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <startNode referencedName="ProcessSearchEngineAttributes-CreateRobotsIndexFollowMetaTag"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="render/PageletEntryPoint"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+<!--@BendPoints 5,9-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+</pipeline:Pipeline>

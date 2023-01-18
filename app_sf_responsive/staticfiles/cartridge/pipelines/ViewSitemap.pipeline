@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Displays a browsable sitemap.
+@Group SiteMap-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewSitemap" overrideMode="Inherit" type="view">
+<!--Shows the sitemap for the particular category.
+@Location 3,\-1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="BrowseCategory">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+<!--ID of the CatalogCategoryBO Root element-->
+    <parameters name="CatalogCategoryBOName" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode5"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <startNode referencedName="ProcessOrganization-GetOrganization"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="CallNode6"/>
+<!--@BendPoints 9,5-->
+    <nodeSuccessors name="Error" next="JumpNode2"/>
+    <parameterBindings name="RootCatalogCategoryBOName" objectPath="CatalogCategoryBOName"/>
+    <startNode referencedName="ProcessSitemap-GetRootCatalogCategoryByName"/>
+    <returnValueBindings name="CategoryBO" objectPath="SelectedCategoryBO"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="PageName" constant="sitemap"/>
+    <parameterBindings name="PageType" constant="general"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.sitemap.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="sitemap/Sitemap.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="Error-NotFound"/>
+  </nodes>
+<!--Shows the sitemap for the given category range.
+@Location 6,\-1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="BrowseCategoryRange">
+    <nodeSuccessors name="next" next="CallNode0"/>
+<!--The Range of the Categories.-->
+    <parameters name="Range" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="RemoveDictionaryValue0"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <parameterBindings name="Session" objectPath="CurrentSession"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessSitemap-PrepareBrowseCategoryRange"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="CategoryBO"/>
+    <configurationValues name="RemoveFormValues" value="false"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+<!--@BendPoints 13,9-->
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--Shows the products of a category by various input parameters.
+Those are either:
+1. via CategoryName + CatalogID
+2. via CategoryID + CatalogID
+@Location 8,\-1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="ProductList">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+<!--The UUID of the Category.
+Needs no further optional inputs.-->
+    <parameters name="CategoryUUID" type="java.lang.String" optional="true"/>
+<!--The CategoryID, that is given in the backoffice. e.g. "1307"
+Used in in conjuntion with either CategoryDomainName or CategoryDomain.-->
+    <parameters name="CategoryName" type="java.lang.String" optional="true"/>
+<!--The Domain name of the Category. e.g. "PrimeTech\-Computers"
+Used in conjunction with CategoryName.-->
+    <parameters name="CategoryDomainName" type="java.lang.String" optional="true"/>
+<!--The Domain of the Category. e.g. "Computers"
+Used in conjunction with CategoryName.-->
+    <parameters name="CategoryDomain" type="java.lang.String" optional="true"/>
+<!--The ID of a Pageable Object. e.g. a ListNavigationVO-->
+    <parameters name="PageableID" type="java.lang.String" optional="true"/>
+<!--The Page number to use.-->
+    <parameters name="PageNumber" type="java.lang.String" optional="true"/>
+<!--The Sorting attribute for the Products.-->
+    <parameters name="SortingAttribute" type="java.lang.String" optional="true"/>
+<!--Search parameters for the product search.-->
+    <parameters name="SearchParameter" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 8,0-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="KeyMapper4"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentOrganization"/>
+    <returnValueBindings name="OutValue_1" objectPath="Organization"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="CatalogID"
+      operator="str_empty">
+<!--@BendPoints 19,5-->
+    <nodeSuccessors name="decision_yes" next="JoinNode1"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper6"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="KeyMapper2"/>
+  </nodes>
+<!--@Location 9,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JumpNode3"/>
+    <parameterBindings name="InValue_1" constant="CategoryNotFound"/>
+    <returnValueBindings name="OutValue_1" objectPath="ErrorCode"/>
+  </nodes>
+<!--@Location 9,12-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="Error-NotFound"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper6">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;CatalogBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CatalogBORepository"/>
+  </nodes>
+<!--@Location 8,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <parameterBindings name="CatalogName" objectPath="CatalogID"/>
+    <startNode referencedName="ProcessCatalog-GetCatalogBOByName"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="CatalogBO">
+    <nodeSuccessors name="decision_yes" next="CallNode8"/>
+<!--@BendPoints 19,11-->
+    <nodeSuccessors name="decision_no" next="JoinNode1"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameterBindings name="CatalogBO" objectPath="CatalogBO"/>
+    <parameterBindings name="CatalogCategoryID" objectPath="CategoryID"/>
+    <parameterBindings name="CatalogCategoryName" objectPath="CategoryName"/>
+    <startNode referencedName="ProcessCatalog-GetCatalogCategoryBO"/>
+    <returnValueBindings name="CatalogCategoryBO" objectPath="CategoryBO"/>
+  </nodes>
+<!--@Location 8,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="CategoryBO">
+    <nodeSuccessors name="decision_yes" next="CallNode3"/>
+    <nodeSuccessors name="decision_no" next="JoinNode1"/>
+  </nodes>
+<!--@Location 8,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <startNode referencedName="ViewStandardCatalog-GetCategoryProducts"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+<!--@BendPoints 17,20-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+<!--@BendPoints 18,19 18,21-->
+    <nodeSuccessors name="ERROR" next="JoinNode2"/>
+    <startNode referencedName="ProcessStandardCatalog-ProcessProductsPageable"/>
+  </nodes>
+<!--@Location 8,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate1_Input"/>
+  </nodes>
+<!--@Location 8,13-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate1">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.sitemap.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="sitemap/ProductList.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--Shows the product pages of a category by various input parameters.
+Those are either:
+1. via CategoryName + CatalogID
+2. via CategoryID + CatalogID
+@Location 9,\-1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="ProductPaging">
+<!--@BendPoints 19,1-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+<!--The UUID of the Category.
+Needs no further optional inputs.-->
+    <parameters name="CategoryID" type="java.lang.String" optional="true"/>
+<!--The CategoryID, that is given in the backoffice. e.g. "1307"
+Used in in conjuntion with either CategoryDomainName or CategoryDomain.-->
+    <parameters name="CategoryName" type="java.lang.String" optional="true"/>
+<!--The Domain name of the Category. e.g. "PrimeTech\-Computers"
+Used in conjunction with CategoryID.-->
+    <parameters name="CategoryDomainName" type="java.lang.String" optional="true"/>
+<!--The Domain of the Category. e.g. "Computers"
+Used in conjunction with CategoryID.-->
+    <parameters name="CategoryDomain" type="java.lang.String" optional="true"/>
+<!--The ID of a Pageable Object. e.g. a ListNavigationVO-->
+    <parameters name="PageableID" type="java.lang.String" optional="true"/>
+<!--The Page number to use.-->
+    <parameters name="PageNumber" type="java.lang.String" optional="true"/>
+<!--The Sorting attribute for the Products.-->
+    <parameters name="SortingAttribute" type="java.lang.String" optional="true"/>
+<!--Search parameters for the product search.-->
+    <parameters name="SearchParameter" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 1,\-1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="Start">
+<!--@BendPoints 3,9-->
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+</pipeline:Pipeline>

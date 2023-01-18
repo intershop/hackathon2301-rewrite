@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Review-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessProductReview" type="process">
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="GetReviews"
+      callMode="Private">
+    <nodeSuccessors name="next" next="AddObjectToVector2"/>
+    <parameters name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+    <parameters name="ExcludedUserBO" type="com.intershop.component.user.capi.UserBO"
+        optional="true"/>
+    <parameters name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"
+        optional="true"/>
+    <parameters name="CategoryName" type="java.lang.String" optional="true"/>
+    <parameters name="CatalogID" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector2">
+    <pipelet href="enfinity:/core/pipelets/AddObjectToVector.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <parameterBindings name="InVector" nullBinding="true"/>
+    <parameterBindings name="Object" constant="APPROVED"/>
+    <returnValueBindings name="OutVector" objectPath="StatusNames"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="ListNavigationVO">
+    <nodeSuccessors name="decision_yes" next="KeyMapper1"/>
+<!--@BendPoints 5,7 5,8-->
+    <nodeSuccessors name="decision_no" next="GetBusinessObjectReviewsExceptForUser1"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="InValue_1" objectPath="ListNavigationVO:ListObjects"/>
+    <parameterBindings name="InValue_2" objectPath="ListNavigationVO:ElementCount"/>
+    <returnValueBindings name="OutValue_1" objectPath="Reviews"/>
+    <returnValueBindings name="OutValue_2" objectPath="ReviewCount"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 3,18-->
+    <nodeSuccessors name="next" next="EndNode3"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode3" strict="true">
+    <returnValues name="Reviews" type="java.util.Iterator&lt;com.intershop.component.rating.capi.ReviewBO>"/>
+    <returnValues name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBusinessObjectReviewsExceptForUser1">
+    <pipelet href="enfinity:/bc_rating/pipelets/GetBusinessObjectReviewsExceptForUser.xml"/>
+<!--@BendPoints 5,10-->
+    <nodeSuccessors name="next" next="CreatePageableFromCollection1"/>
+    <parameterBindings name="BusinessObjectApprovedReviewBORepository" objectPath="ProductBO:Extension(&quot;Review&quot;)"/>
+    <parameterBindings name="ExcludedUser" objectPath="ExcludedUserBO"/>
+    <returnValueBindings name="Reviews" objectPath="ReviewList"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePageableFromCollection1">
+    <configurationValues name="Pagesize" value="3"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/CreatePageableFromCollection.xml"/>
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap1"/>
+    <parameterBindings name="Collection" objectPath="ReviewList"/>
+    <returnValueBindings name="Pageable" objectPath="Reviews"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap1">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="CreateNavigationList1"/>
+    <parameterBindings name="InMap" nullBinding="true"/>
+    <parameterBindings name="Key1" constant="SKU"/>
+    <parameterBindings name="Key2" constant="CatalogID"/>
+    <parameterBindings name="Key3" constant="CategoryName"/>
+    <parameterBindings name="Value1" objectPath="ProductBO:SKU"/>
+    <parameterBindings name="Value2" objectPath="CatalogID"/>
+    <parameterBindings name="Value3" objectPath="CategoryName"/>
+    <returnValueBindings name="OutMap" objectPath="ReviewPagingHandlerParametersMap"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateNavigationList1">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateNavigationList.xml"/>
+<!--@BendPoints 5,17-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="CurrentPage" objectPath="Reviews:Page"/>
+    <parameterBindings name="ElementCount" objectPath="Reviews:ElementCount"/>
+    <parameterBindings name="GenericHandlerPipelineParams" objectPath="ReviewPagingHandlerParametersMap"/>
+    <parameterBindings name="HandlerPipeline" constant="ViewProductReview"/>
+    <parameterBindings name="Iterator" objectPath="Reviews"/>
+    <parameterBindings name="PageCount" objectPath="Reviews:PageCount"/>
+    <parameterBindings name="PageSize" objectPath="Reviews:PageSize"/>
+    <parameterBindings name="PageableID" objectPath="Reviews:ID"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,70 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<address>
+	<isinclude extensionpoint="AddressBeginningExtensions"/>
+	<isif condition="#(address:AddressName NE '') AND (isDefined (address:Extension("Store")))#">
+		<isprint value="#address:AddressName#"><br/>
+	</isif>
+	<isif condition="#(address:FirstName NE '') OR (address:LastName NE '')#">
+		<isif condition="#(address:Title NE '')#"><isprint value="#address:Title#"> </isif>
+		<isprint value="#address:FirstName#"> <isprint value="#address:LastName#"><br/>
+	</isif>	
+	
+	<isif condition="#(address:AddressLine1 NE '')#">
+		<isprint value="#address:AddressLine1#"><br/>
+	</isif>	
+	<isif condition="#isDefined(address:AddressLine2) AND (address:AddressLine2 NE '')#">
+		<isprint value="#address:AddressLine2#"><br/>
+	</isif>
+	<isif condition="#isDefined(address:AddressLine3) AND (address:AddressLine3 NE '')#">
+		<isprint value="#address:AddressLine3#"><br/>
+	</isif>
+	
+	<isif condition="#(address:CountryCode EQ 'FR') OR (address:CountryCode EQ 'DE')#">
+		<isif condition="#isDefined(address:PostalCode) AND (address:PostalCode NE '')#">
+			<isprint value="#address:PostalCode#">&nbsp;
+		</isif>
+		<isif condition="#(address:City NE '')#">
+			<isprint value="#address:City#">
+		</isif><br/>
+	<iselse>
+		<isif condition="#isDefined(address:City) AND (address:City NE '')#">
+			<isprint value="#address:City#">
+			<isif condition="#address:CountryCode EQ 'US'#">,</isif>&nbsp;
+			<isif condition="#address:CountryCode EQ 'GB'#"><br /></isif>
+		</isif>
+		<isif condition="#isDefined(address:MainDivision) AND (address:MainDivision NE '') AND (address:CountryCode EQ 'US')#">
+			<isprint value="#address:MainDivision#">&nbsp;
+		</isif>
+		<isif condition="#(address:PostalCode NE '')#">
+			<isprint value="#address:PostalCode#">
+		</isif><br/>
+	</isif>
+	<isif condition="#NOT (isDefined(compact)) OR (compact NE 'true')#">	
+		<isif condition="#isDefined(address:MainDivision) AND (address:MainDivision NE '') AND (address:CountryCode NE 'US')#">
+			<ispipeline pipeline="ProcessRegion-GetState" alias="Result" 
+				params="#ParamMap(ParamEntry('CountryCode', address:CountryCode),ParamEntry('StateID',address:MainDivision))#">
+			<isif condition="#Result:StateProvince:DisplayName NE ''#">
+				<isprint value="#Result:StateProvince:DisplayName#"><br/>
+			</isif>
+		</isif>
+		<isif condition="#address:CountryCode NE ''#">
+			<isCountryName countrycode="#address:CountryCode#" locale="#CurrentSession:Locale#"><br/>
+		</isif>
+		
+		<isif condition="#isDefined (address:Extension("Store"))#">
+			<isif condition="#isDefined(address:PhoneBusiness) AND (address:PhoneBusiness NE '')#">
+				<istext key="store.telephone.label"/> <isprint value="#address:PhoneBusiness#"><br/>
+			</isif>
+			<isif condition="#isDefined(address:Fax) AND (address:Fax NE '')#">
+				<istext key="store.fax.label"/> <isprint value="#address:Fax#"><br/>
+			</isif>
+		<iselseif condition="#isDefined(address:PhoneHome) AND (address:PhoneHome NE '')#">
+			<isprint value="#address:PhoneHome#"><br/>
+		</isif>
+	</isif>
+	
+	<isif condition="#showemail EQ 'true'#">
+		<isprint value="#address:EMail#">
+	</isif>
+</address>

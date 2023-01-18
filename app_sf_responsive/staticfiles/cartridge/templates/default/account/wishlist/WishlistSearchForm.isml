@@ -1,0 +1,49 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<isif condition="#CurrentSession:LoggedIn#">
+
+	<h2><istext key="account.wishlist.searchform.header"></h2>
+
+	<isif condition="#hasElements(WishlistSearchForm:Errors)#" >
+		<div class="alert alert-danger">
+			<isloop iterator="WishlistSearchForm:Errors" alias="Error">
+				<istext key="#'account.wishlist.searchform.'.Error#">
+			</isloop>
+		</div>
+	</isif>
+	
+	<div class="wishlist-form">
+		
+		<p><istext key="account.wishlist.searchform.header.details"></p>
+		
+		<isform action="#URLEX(SecureURL,'',Action('ViewWishlist-Search'))#" method="post" name="SearchWishList" class="form-horizontal" >
+			<div class="form-group">
+				<label class="col-sm-3 control-label" for="<isprint value="#WishlistSearchForm:FirstName:QualifiedName#">"><istext key="account.wishlist.searchform.firstname.label"></label>
+				<div class="col-sm-6 col-md-5">
+					<input type="text"	name="<isprint value="#WishlistSearchForm:FirstName:QualifiedName#">" class="form-control" id="<isprint value="#WishlistSearchForm:FirstName:QualifiedName#">"	maxlength="35"	value="<isprint value="#WishlistSearchForm:FirstName:Value#">" />
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label" for="<isprint value="#WishlistSearchForm:LastName:QualifiedName#">"><istext key="account.wishlist.searchform.lastname.label"></label>
+				<div class="col-sm-6 col-md-5">
+					<input type="text" name="<isprint value="#WishlistSearchForm:LastName:QualifiedName#">" class="form-control" id="<isprint value="#WishlistSearchForm:LastName:QualifiedName#">"	maxlength="35"	value="<isprint value="#WishlistSearchForm:LastName:Value#">" />
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-3 control-label" for="<isprint value="#WishlistSearchForm:Email:QualifiedName#">"><istext key="account.wishlist.searchform.email.label"/></label>
+				<div class="col-sm-6 col-md-5">
+					<input type="text"	id="<isprint value="#WishlistSearchForm:Email:QualifiedName#">" class="form-control"  name="<isprint value="#WishlistSearchForm:Email:QualifiedName#">" value="<isprint value="#WishlistSearchForm:Email:Value#">" />
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-3 col-sm-3">
+					<button class="btn btn-primary" type="submit" value="Search" name="Search"><istext key="account.wishlist.searchform.button.search"/></button>
+				</div>
+			</div>
+		</isform>
+	</div>
+
+	<a href="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#"><istext key="account.wishlist.searchform.continue_shopping.link"></a>
+</isif>

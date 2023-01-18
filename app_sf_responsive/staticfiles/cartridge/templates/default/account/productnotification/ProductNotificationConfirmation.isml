@@ -1,0 +1,50 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><isprint value="#ProductBO:Name#"></h2>
+		</div>
+		
+		<div class="modal-body">
+			<isif condition="#isDefined(ListItem)#">
+				<fieldset>
+					<p><istext key="account.productnotification.set.notification_set"></p>
+					
+					<div>
+						<isif condition="#ListItem:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.StockConditionHandler'#">
+							<label for="InStockNotification"><istext key="account.productnotification.set.availability"></label>
+							<span id="InStockNotification"><istext key="account.productnotification.set.product_in_stock"></span>
+						</isif>
+						<isif condition="#ListItem:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.PriceConditionHandler'#">
+							<label for="PriceValue"><istext key="account.productnotification.set.price">&nbsp;
+								<span id="PriceValue">
+									<isif condition="#isDefined(ListItem:Value)#">
+										<isprint value="#ListItem:Value#">
+									</isif>
+								</span>
+							</label>
+							<span><ISProductPriceAdditionalText ProductBO="#ProductBO#"></span>
+						</isif>
+					</div>
+					
+					<div>
+						<label for="ListItemForm_NotificationMailAddress"><istext key="account.productnotification.set.email">&nbsp;
+						<span id="ListItemForm_NotificationMailAddress">
+							<isif condition="#isDefined(ListItem:NotificationMailAddress)#">
+								<isprint value="#ListItem:NotificationMailAddress#">
+							</isif>
+						</span>
+						</label>
+					</div>
+				</fieldset>
+			</isif>
+		</div>
+		
+		<div class="modal-footer">
+			<a class="btn btn-default" href="#URLEX(SecureURL,'', Action('ViewProductNotification-List'))#"><istext key="account.productnotification.set.close"/></a>
+		</div>
+	</div>
+</div>

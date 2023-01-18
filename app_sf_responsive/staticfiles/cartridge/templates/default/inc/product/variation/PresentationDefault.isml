@@ -1,0 +1,49 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(ProductBO:AttributeValue(VariationAttribute:Name))#">
+	<isset name="defaultValue" value="#ProductBO:AttributeValue(VariationAttribute:Name):Object#" scope="request" />
+<iselse>
+	<isset name="defaultValue" value="" scope="request" />
+</isif>
+
+<isset name="defaultValues" value="" scope="request">
+<isif condition="#hasLoopElements(defaultValue)#">
+	<isloop iterator="defaultValue" alias="defValue">
+	   <isset name="defaultValues" value="#defaultValues.defValue#" scope="request"/>
+	   <isif condition="#hasNext(defValue)#"><isset name="defaultValues" value="#defaultValues.'|'#" scope="request"/></isif>
+	</isloop>
+<iselse/>
+    <isset name="defaultValues" value="#defaultValue#" scope="request">
+</isif>
+
+<!--- make sure, the Attribute IDs are W3C valid (-> data-variation-attribute): [A-Za-z][0-9]-_:. --->
+<isset name="VarAttrID" value="#replace(VariationAttribute:Name,'[^\\w-:\\.]','')#" scope="request"/>
+
+<select class="variation-attribute form-control"
+	id="ID_<isprint value="#VarAttrID#"/>_<isprint value="#ProductBO:ID#"/>"
+	aria-required="true" data-validate="required"
+	name="VariationAttribute_<isprint value="#VarAttrID#"/>"
+	data-variation-attribute="<isprint value="#VariationAttribute:Name#"/>">
+	<isloop iterator="VariationInfo:VariationValues(VariationAttribute)" alias="AttributeValue">
+		<isset name="VariationProduct" value="#VariationInfo:VariationProduct(VariationAttribute, AttributeValue)#" scope="request">
+			<isset name="AttributeValues" value="" scope="request">
+			<isif condition="#hasLoopElements(AttributeValue)#">
+				    <isloop iterator="AttributeValue" alias="attrValue">
+				       <isset name="AttributeValues" value="#AttributeValues.attrValue#" scope="request"/>
+				       <isif condition="#hasNext(attrValue)#"><isset name="AttributeValues" value="#AttributeValues.'|'#" scope="request"/></isif>
+				    </isloop>
+				<iselse/>
+				    <isset name="AttributeValues" value="#AttributeValue#" scope="request">
+			</isif>
+
+			<isif condition="#isDefined(VariationProduct)#">
+				<option value="<isprint value="#AttributeValues#"/>" <isif condition="#AttributeValues EQ defaultValues#">selected="selected"</isif>>
+					<isprint value="#AttributeValues#">
+				</option>
+			<iselse/>
+				<option class = "available_in_different_configuration" value="<isprint value="#AttributeValues#"/>" <isif condition="#AttributeValues EQ defaultValues#">selected="selected"</isif>>
+					<isprint value="#AttributeValues#"> - <istext key="product.available_in_different_configuration"/>
+				</option>
+			</isif>
+	</isloop>
+</select>

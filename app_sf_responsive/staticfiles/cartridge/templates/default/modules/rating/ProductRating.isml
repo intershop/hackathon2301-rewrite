@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<isset name="ApprovedReviewsAggregatedRating" value="#ProductBO:Extension("Review"):AggregatedRatingBO("APPROVED")#" scope="request">
+
+<div class="product-rating clearfix" <isif condition="#(ApprovedReviewsAggregatedRating:TotalRatingCount > 0) AND (RichSnippetsEnabled EQ 'true')#">itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"</isif>>
+	<ISRating 
+		TotalRatingCount="#ApprovedReviewsAggregatedRating:TotalRatingCount#"
+		AverageRating="#ApprovedReviewsAggregatedRating:AverageRating#"
+		RichSnippetsEnabled="#RichSnippetsEnabled#"
+	>
+	
+	<isif condition="#((NOT isDefined(SimpleRatingView)) OR (SimpleRatingView EQ 'false'))#">
+		<isif condition="#ApprovedReviewsAggregatedRating:TotalRatingCount == 0#">
+			<span class="rating-rated hidden-xs"><istext key="product.rating.not_rated"/></span>
+		</isif>
+	</isif>
+</div>

@@ -1,0 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<ul id="AccountNav" class="account-navigation list-unstyled" data-testing-id="myaccount-navigation">
+	
+	<isinclude extensionpoint="MyAccountNavigationExtension"/>
+	
+	<li>
+		<a href="#URL(Action('ViewUserAccount-LogoutUser'))#"><istext key="account.navigation.logout.link"/></a>
+	</li>
+</ul>

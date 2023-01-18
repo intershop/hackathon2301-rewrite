@@ -1,0 +1,54 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!---
+	Garbles a string that is longer than the passed length using the passed character<br/>
+	Nothing is done if the passed string length is smaller than len.
+	text:      the string to garble
+	direction: 'begin' to garble at the beginning, else 'end'
+	length:    count of characters to remain unchanged
+	character: character used to replace in string
+	output:    the name used as key for the dictionary output
+	Example:   "12345678", 'front', 4, '*', "garbled" -> garbled = "****5678"
+--->
+
+<%@page import = "java.lang.Integer"%>
+<%@page import = "java.lang.String"%>
+<%@page import = "java.lang.StringBuffer"%>
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+
+	if ( null != dict.get("text") )
+	{
+		StringBuffer text       = new StringBuffer( (String)dict.get("text") );
+		String       direction  = (String) dict.get("direction");
+		int          length     = new Integer( (String) dict.get( "length" ) ).intValue();
+		char         character  = ((String) dict.get( "character" )).charAt(0);
+
+		String       output     = (String) dict.get( "output" );
+
+		int currentLen = text.toString().length();
+
+		if (length < currentLen)
+		{
+			if ( direction.equals( "begin" ) )
+			{
+				int pos = 0;
+				while ( pos < currentLen - length)
+				{
+					text.setCharAt( pos, character );
+					pos++;
+				}
+			}
+			else
+			{
+				int pos = length;
+				while ( pos < currentLen )
+				{
+					text.setCharAt( pos, character );
+					pos++;
+				}
+			}
+		}
+		dict.put(output, text.toString());
+	}
+%>

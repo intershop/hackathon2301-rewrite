@@ -1,0 +1,110 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+<isinclude template="modules/account/Modules">
+
+<div class="edit-email-page">
+	<isif condition="#'LoginAlreadyInUse' EQ ERROR_User#">
+		<div role="alert" class="alert alert-danger">
+			<istext key="account.update_email.email.error.already_in_use"/>
+		</div>
+	<iselseif condition="#'PasswordValidationFailed' EQ ERROR_User#">
+		<div role="alert" class="alert alert-danger">
+			<istext key="account.update_email.email.error.password_validation_failed"  parameter0="#encodeValue(URLEX(SecureURL,'',Action('ViewProfileSettings-ViewPassword')))#" encoding="off"/>
+		</div>
+	</isif>
+
+	<isform 
+		action="#URLEX(SecureURL,'',Action('ViewProfileSettings-UpdateEmail'))#" 
+		method="post"
+		name="UpdateEmailForm"
+		class="form-horizontal bv-form">
+
+		<div class="form-group">
+			<label class="col-md-3 col-sm-3 control-label">
+				<istext key="account.update_email.email.label"/>
+			</label>
+			<div class="col-md-2 col-sm-3 control-label">
+				<isprint value="#UserBO:Email#">
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:Email:QualifiedName#">" class="col-md-3 col-sm-3 control-label">
+				<istext key="account.update_email.newemail.label"/>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<input class="form-control" maxlength="256" autocomplete="off" 
+					type="email" required
+					id="<isprint value="#CurrentForm:Email:QualifiedName#">"
+					name="<isprint value="#CurrentForm:Email:QualifiedName#">"
+					value="<isprint value="#CurrentForm:Email:Value#">"
+					data-bv-emailaddress-message="<istext key="account.update_email.email.error.email"/>"
+					data-bv-notempty-message="<istext key="account.update_email.email.error.notempty"/>"/>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="<isprint value="#CurrentForm:EmailConfirmation:QualifiedName#">" class="col-md-3 col-sm-3 control-label">
+				<istext key="account.update_email.email_confirmation.label"/>
+			</label>
+			<div class="col-md-4 col-sm-6">
+				<input class="form-control" maxlength="256" autocomplete="off" type="email" required
+					id="<isprint value="#CurrentForm:EmailConfirmation:QualifiedName#">"
+					name="<isprint value="#CurrentForm:EmailConfirmation:QualifiedName#">"
+					value="<isprint value="#CurrentForm:EmailConfirmation:Value#">"
+					data-bv-emailaddress-message="<istext key="account.update_email.email.error.email"/>"
+					data-bv-notempty-message="<istext key="account.update_email.email.error.notempty"/>"
+					data-bv-identical="true"
+					data-bv-identical-field="<isprint value="#CurrentForm:Email:QualifiedName#">"
+					data-bv-identical-message="<istext key="account.update_email.email_confirmation.error.stringcompare"/>"
+					<!--- force validation of email confirmation field by change event: --->
+					data-bv-trigger="change keyup" />
+			</div>
+		</div>
+
+		<div class="<isif condition="#hasElements(CurrentForm:Password:Errors) OR (ERROR_User EQ 'IncorrectPassword') OR (ERROR_User EQ 'PasswordNotValid')#">has-error</isif>">
+			<div class="form-group">
+				<label for="<isprint value="#CurrentForm:Password:QualifiedName#">" class="col-md-3 col-sm-3 control-label">
+					<istext key="account.update_email.password.label"/>
+				</label>
+				<div class="col-md-4 col-sm-6">
+					<input class="form-control" autocomplete="off" size="18" type="password" required
+					id="<isprint value="#CurrentForm:Password:QualifiedName#">"
+					name="<isprint value="#CurrentForm:Password:QualifiedName#">"
+					data-bv-notempty-message="<istext key="account.update_email.password.error.required"/>"/>
+
+					<isif condition="#hasElements(CurrentForm:Password:Errors) OR (ERROR_User EQ 'IncorrectPassword') OR (ERROR_User EQ 'PasswordNotValid')#">
+						<small class="help-block"><istext key="account.update_email.password.error.incorrect"/></small>
+					</isif>
+
+				</div>
+			</div>
+		</div>
+
+		
+
+
+		<div class="form-group">
+			<div class="col-sm-offset-3 col-sm-8">
+				<button class="btn btn-primary" type="submit" value="UpdateEmail" name="UpdateEmail"><istext key="account.update.button.label"/></button>
+				<a class="btn btn-default" href="<isprint value="#URLEX(SecureURL,'',Action('ViewProfileSettings-ViewProfile'))#">"><istext key="account.cancel.link"/></a>
+			</div>
+		</div>
+
+	</isform>
+</div>
+<script type="text/javascript">
+function emailChangeListener() { // validates email confirmation field on each key input in email field in order to check if they are identical
+    var emailConfirmationField = $("#'#'#<isprint value="#CurrentForm:EmailConfirmation:QualifiedName#">");
+    
+    if (!(emailConfirmationField.val() == "")) {
+        // force validation of email confirmation field by change event:
+        emailConfirmationField.change();     
+    }
+}
+
+$().ready(function(){
+    var emailField = $("#'#'#<isprint value="#CurrentForm:Email:QualifiedName#">");
+    emailField.keyup(emailChangeListener);
+});
+</script>

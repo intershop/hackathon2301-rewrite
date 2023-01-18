@@ -1,0 +1,24 @@
+<iscontent charset="UTF-8" compact="true">
+<isif condition="#isDefined(PreferredWishlistBO)#">
+	<div class="section">
+		<h2><istext key="account.wishlists.settings.header"/></h2>
+		<isform action="#URLEX(SecureURL,'',Action('ViewWishlist-SaveSettings'))#" method="post">
+			<div class="form-group">
+				<div class="radio">
+					<label><input type="radio" name="UsePreferredWishlist" value="true"
+					<isif condition="#UsePreferredWishlist#"> checked="checked" </isif>/>
+					<istext key="account.wishlists.settings.use_preferred_list"></label>
+				</div>
+				<div class="radio">
+					<label><input type="radio"  name="UsePreferredWishlist" value="false"
+					<isif condition="#NOT UsePreferredWishlist#"> checked="checked" </isif>/>
+					<istext key="account.wishlists.settings.always_ask"></label>
+				</div>
+			</div>
+			
+			<div class="ish-field-buttonGroup">
+				<button class="btn btn-default" type="submit" value="SaveSettings" name="SaveSettings"><istext key="account.wishlists.settings.save_settings"></button>
+			</div>
+		</isform>
+	</div>
+</isif>

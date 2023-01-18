@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#CategoryBO#">
+<isCurrentUserBO currentuserbo="UserBO">
+<isset name="SubCategoriesIterator" value="#CategoryBO:SortedAccessibleSubCatalogCategoryBOs(UserBO)#" scope="request">
+
+<isif condition="#(NOT(isDefined(maxsubcategoriesdepth)) OR (maxsubcategoriesdepth >= subcategoriesdepth)) AND hasElements(SubCategoriesIterator)#">
+	<ul class="category-level<isprint value="#subcategoriesdepth#" formatter="#"/> <isif condition="#subcategoriesdepth == 1#">dropdown-menu</isif>">
+		<isloop iterator="SubCategoriesIterator" alias="SubCategoryBO">
+			<iscachekey object="#SubCategoryBO#">
+			<isif condition="#SubCategoryBO:Accessible#">
+				<li class="main-navigation-level<isprint value="#subcategoriesdepth#" formatter="#"/>-item">
+					<a href="#URL(Action('ViewStandardCatalog-Browse'), Parameter('CatalogID', SubCategoryBO:CatalogBO:Name), Parameter('CategoryName', SubCategoryBO:Name))#" ><isprint value="#SubCategoryBO:DisplayName#"></a>
+					
+					<isif condition="#isDefined(recursive) AND (lcase(recursive) EQ 'true') AND 
+					(NOT(isDefined(maxsubcategoriesdepth)) OR (subcategoriesdepth < maxsubcategoriesdepth))#">
+						<ISSubCategories
+							CategoryBO="#SubCategoryBO#"
+							recursive="#recursive#"
+							subcategoriesdepth="#subcategoriesdepth + 1#"
+							maxsubcategoriesdepth="#maxsubcategoriesdepth#"
+						>
+					</isif>
+				</li>
+			</isif>
+		</isloop>
+	</ul>
+</isif>

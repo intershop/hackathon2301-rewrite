@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="page.category.pagelet2">
+  <pageEntryPointDefinitions name="Page">
+    <callParameterDefinitions name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO"/>
+    <callParameterDefinitions name="CatalogBO" type="com.intershop.component.catalog.capi.CatalogBO"/>
+    <callParameterDefinitions name="Repository" type="com.intershop.component.mvc.capi.catalog.Repository"/>
+    <callParameterDefinitions name="CurrentOrganization" type="com.intershop.component.organization.capi.Organization"/>
+    <callParameterDefinitions optional="true" name="PageNumber" type="java.lang.String"/>
+    <callParameterDefinitions optional="true" name="PageSize" type="java.lang.String"/>
+    <callParameterDefinitions optional="true" name="SortingAttribute" type="java.lang.String"/>
+    <callParameterDefinitions optional="true" name="Action" type="java.lang.String"/>
+    <callParameterDefinitions optional="true" name="PageableID" type="java.lang.String"/>
+    <callParameterDefinitions optional="true" name="SearchParameter" type="java.lang.String"/>
+    <callParameterDefinitions optional="true" name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"/>
+    <callParameterDefinitions optional="true" name="hasParametricNavigation" type="java.lang.Boolean"/>
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.page.standard.pagelet2-Interface"/>
+    <configurationParameterDefinitions optional="true" name="HasParametricNavigation" localizable="false" typeReference="bc_pmc:types.pagelet2-Boolean"/>
+    <configurationParameterDefinitions optional="true" name="SearchQueryDefinitionID" localizable="false" typeReference="sld_mcm:parametertype.predefinedproductfilter.pagelet2-PredefinedProductFilter"/>
+  </pageEntryPointDefinitions>
+</pagelet:PageletModel>

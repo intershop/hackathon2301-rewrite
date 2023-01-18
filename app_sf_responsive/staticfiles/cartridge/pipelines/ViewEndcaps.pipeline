@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Handles the view of Endcaps (Filtered Product List)
+@Group Search-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewEndcaps" type="view">
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Browse">
+<!--@BendPoints 1,3-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="ConfigurationCtnrUUID">
+    <nodeSuccessors name="decision_yes" next="GetConfigurationParameterCtnrByUUID0"/>
+<!--@BendPoints 5,5-->
+    <nodeSuccessors name="decision_no" next="JoinNode3"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetConfigurationParameterCtnrByUUID0">
+    <pipelet href="enfinity:/bc_pmc/pipelets/GetConfigurationParameterCtnrByUUID.xml"/>
+    <nodeSuccessors name="next" next="GetConfigurationParametersAsMap0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="ConfigurationParameterCtnrUUID" objectPath="ConfigurationCtnrUUID"/>
+    <returnValueBindings name="ConfigurationParameterCtnr" objectPath="ConfigurationCtnr"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetConfigurationParametersAsMap0">
+    <configurationValues name="UseLocaleFallback" value="true"/>
+    <pipelet href="enfinity:/bc_pmc/pipelets/GetConfigurationParametersAsMap.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+    <parameterBindings name="ConfigurationParameterCtnr" objectPath="ConfigurationCtnr"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap0"/>
+    <parameterBindings name="InValue_1" objectPath="ConfigurationParameterMap:Title"/>
+    <returnValueBindings name="OutValue_1" objectPath="Title"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap0">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="InMap" objectPath="GenericHandlerPipelineParams"/>
+    <parameterBindings name="Key1" constant="ConfigurationCtnrUUID"/>
+    <parameterBindings name="Key2" constant=""/>
+    <parameterBindings name="Key3" constant=""/>
+    <parameterBindings name="Key4" constant=""/>
+    <parameterBindings name="Key5" constant=""/>
+    <parameterBindings name="Value1" objectPath="ConfigurationCtnrUUID"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+<!--@BendPoints 5,17 5,19-->
+    <nodeSuccessors name="ERROR" next="JoinNode0"/>
+    <startNode referencedName="ProcessEndcaps-GetProductsByFilter"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="RenderSystemPage0_Input"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPage0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.productListFilter.pagelet2-Page"/>
+    <pipelet href="enfinity:/sld_pmc/pipelets/com.intershop.sellside.pmc.capi.pipeline.RenderSystemPage.pipelinenode"/>
+    <inConnectors name="Input"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="RemoveDictionaryValue0"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="Title"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/RemoveDictionaryValue.xml"/>
+<!--@BendPoints 5,15-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="ProductPaging">
+<!--@BendPoints 5,3-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="ViewAll">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+</pipeline:Pipeline>

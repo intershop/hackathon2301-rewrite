@@ -1,0 +1,10 @@
+<isif condition="#isDefined(wishlistBO)#">
+	<isif condition="#isDefined(wishlistBO:UserBO:FirstName) OR isDefined(wishlistBO:UserBO:LastName)#">
+		<isset name="wishlistOwnerName" value="#wishlistBO:UserBO:FirstName.' '.wishlistBO:UserBO:LastName#" scope="request">
+	<iselse>
+		<isset name="wishlistOwnerName" value="#wishlistBO:UserBO:Login#" scope="request">
+	</isif>
+	<isset name="title" value="#localizeTextEx('account.wishlist.public.title', ParameterList(wishlistOwnerName, wishlistBO:Name))#" scope="request">
+<iselse>
+	<isset name="title" value="#localizeText('account.wishlists.unavailable_wishlist_breadcrumb')#" scope="request">
+</isif>

@@ -1,0 +1,34 @@
+.divider-horizontal-line() {
+    height: 1px;
+    content: '';
+    flex: 1;
+    background: @border-color-light;
+}
+
+.divider {
+    &.horizontal{
+        margin-top: @divider-horizontal-spacing;
+        margin-bottom: @divider-horizontal-spacing;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .divider-label {
+            text-transform: uppercase;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            &::before {
+                margin-right: @divider-horizontal-label-margin;
+                .divider-horizontal-line()
+            }
+            
+            &::after {
+                margin-left: @divider-horizontal-label-margin;
+                .divider-horizontal-line()
+            }
+        }
+    }
+}

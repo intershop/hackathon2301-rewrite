@@ -1,0 +1,30 @@
+<iscontent type="text/javascript" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24" />
+<%@page import="com.intershop.beehive.core.capi.request.ServletResponse"%>
+<%@page import="com.intershop.beehive.core.capi.request.Request"%>
+<%
+	ServletResponse servletResponse = Request.getCurrent().getServletResponse();
+	servletResponse.setHeader("X-IS-BINARY", "1");
+%>
+(function($){
+$.extend(KOR.namespace('KOR.extStrings.strings'), {
+<isloop iterator="LocalizationTexts" alias="LocalizationText">
+"<isprint value="#LocalizationText:Key#" encoding="JavaScript">":
+    <isif condition="#LocalizationText:DomainValue NE ''#">
+        "<isprint value="#LocalizationText:DomainValue#" encoding="JavaScript">"
+    <iselse>
+        "<isprint value="#LocalizationText:CartridgeValue#" encoding="JavaScript">"
+    </isif>
+    <isif condition="#hasNext(LocalizationText)#">, </isif>
+</isloop>
+})
+
+KOR.templates = KOR.templates || {};
+
+<isif condition="#SearchedKeyFallback#">
+	<isinclude template="application/ExternalizedStringsTemplatesBasic">
+	<isinclude template="application/ExternalizedStringsTemplatesExtension">
+</isif>
+
+
+})(jQuery);

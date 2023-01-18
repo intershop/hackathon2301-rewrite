@@ -1,0 +1,12 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+{
+	<isif condition="#hasElements(ProductBO:ProductVariationInformationBO:VariationProducts)#">
+		<isloop iterator="ProductBO:ProductVariationInformationBO:VariationProducts" alias="VariationProductBO">
+			<isif condition="#VariationProductBO:Online#">
+				<isset  scope="request" name="VariationProductBO" value="#VariationProductBO#">
+				<isinclude template="product/json/ProductVariationJSON"><isif condition="#hasNext(VariationProductBO)#">, </isif>
+			</isif>
+		</isloop>
+	</isif>
+}

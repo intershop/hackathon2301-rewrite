@@ -1,0 +1,117 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!--- 
+	This module is used for output of html created with the html-editor.
+	The html-editor stores links with a special syntax to be parsed to
+	create an URL. This is needed since such URL might need to contain a 
+	pgid and/or sid. Since the html might also be rendered in a backoffice, 
+	the module supports two modes ("storefront" and backoffice"). The mode 
+	"backoffice" does replace the URL with "javascript:void(0);" to avoid, 
+	that a user clicking on a link is led away from the backoffice.
+	
+	Parameters:
+		- value (required) 
+			The text that has been edited with the html-editor.
+		- mode (optional) [storefront|backoffice] - default: storefront
+			Switch between "backoffice" or "storefront" rendering mode.
+	
+	Example:
+		<isHtmlPrint value="#PageletConfigurationParameters:text#">
+ --->
+<ismodule template = "inc/HtmlPrint.isml"
+	name="HtmlPrint"
+	strict="true"
+	attribute="value"
+	attribute="mode"
+>
+
+<!---
+	Includes the default page structure and sets the <body> tags id and class attributes.
+	This way the common html page structure is created as it was done with the 
+	ApplicationFrame.isml in earlier Enfinity versions.
+	
+	Parameters:
+		- bodyid (optional) 
+			Id for the body tag.
+		- bodyclass (optional) 
+			CSS class name for the body tag.
+	
+	Example:
+		<isDefaultPageVariation
+			bodyid="#PageletConfigurationParameters:HTMLBodyID#"
+			bodyclass="#PageletConfigurationParameters:HTMLBodyClass#">
+--->
+<ismodule template = "modules/cms/DefaultPageStructure"
+	name="DefaultPageStructure"
+	attribute="bodyid"
+	attribute="bodyclass"
+>
+
+<!---
+	Module that can include a marketing slot depending on a given id.
+	It is at this level only a dummy implementation but with an additional
+	content model cartridge this module can map to explicit pagelet slots
+	(see app_sf_responsive_cm).
+	
+	Parameters:
+		- id (required) [baseMarketing|contentMarketing|sidePanelMarketing]
+			ID for the marketing slot that should be included 
+			(not a slotid or qualified name).
+	
+	Example:
+		<ISMarketingSlot id="baseMarketing">
+--->
+<ismodule template = "modules/cms/MarketingSlot"
+	name="MarketingSlot"
+	attribute="id"
+>
+
+<!--- 
+	Module to generate a HashMap from a semicolon separated string of key value pairs.
+	
+	It is used together with the parametertype.gridwidth.pagelet2-960GridWidth
+	configuration parameter type.
+	
+	Parameters:
+		- configparameterstring (required) 
+			String of semicolon separated key value pairs.
+		- resultmapname (required) 
+			Name of the dictionary key that holds the returned results map.
+	
+	Example:
+		<isCustomConfigParameterMapper
+			configparameterstring="#PageletConfigurationParameters:listItemGridWidth#"
+			resultmapname="listItemGrid">
+ --->
+<ismodule template = "modules/cms/CustomConfigParameterMapper.isml"
+	name="CustomConfigParameterMapper"
+	attribute="configparameterstring"
+	attribute="resultmapname"
+>
+<!--- 
+	Module to generate grid CSS classes from a defined set of key value pairs.
+	input : width=1;prefix=2;suffix=3;push=4;pull=5
+	output: gd-grid-1 gd-prefix-2 gd-suffix-3 gd-push-4 gd-pull-5
+	
+	It is used together with the parametertype.gridsystem.pagelet2-960GridSystem
+	configuration parameter type.
+	
+	Parameters:
+		- gridconfigstring (required) [width=1;prefix=2;suffix=3;push=4;pull=5]
+			String of semicolon separated key value pairs.
+		- additionalcssclasses (optional)
+			String that holds additional CSS classes that will be appended.
+		- result (required) 
+			Name of the dictionary key that holds the returned results.
+	
+	Example:
+		<isGridParameterGenerator
+			gridconfigstring="#PageletConfigurationParameters:grid#"
+			result="gridClasses">
+ --->
+<ismodule template = "modules/cms/GridParameterGenerator.isml"
+	name="GridParameterGenerator"
+	attribute="gridconfigstring"
+	attribute="additionalcssclasses"
+	attribute="result"
+>

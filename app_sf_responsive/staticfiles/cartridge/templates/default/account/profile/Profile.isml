@@ -1,0 +1,58 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude extensionpoint="AccountProfileExtensions">
+<isGetLoginPreferenceReader>
+
+<div class="row section">
+	<div class="col-md-4 pull-right col-xs-2">
+		<a class="btn-tool" title="<istext key="account.profile.update.link"/>" href="#URLEX(SecureURL,'',Action('ViewProfileSettings-ViewProfilePreferences'))#">
+			<span class="glyphicon glyphicon-pencil"></span>
+		</a>
+	</div>
+	<div class="col-md-8 col-xs-10">
+		<h3>
+			<istext key="account.profile.detail.heading"/>
+		</h3>
+		<div class="row">
+			<div class="col-sm-12">
+				<dl class="dl-horizontal dl-separator">
+					<dt><istext key="account.profile.name.label"/></dt>
+					<dd>
+						<isif condition="#(isDefined(UserBO:Title) AND (UserBO:Title NE ''))#"><isprint value="#UserBO:Title#">&nbsp;</isif><isprint value="#UserBO:FirstName#"> <isprint value="#UserBO:LastName#">
+					</dd>
+					<isif condition="#UserLoginType EQ "username"#">
+						<dt><istext key="account.login.email.label"/></dt>
+						<dd>
+							<isprint value="#UserBO:Email#">
+						</dd>
+					</isif>
+					<isinclude extensionpoint="AccountProfileDepartmentExtensions">
+					<isinclude template="account/profile/Phone">
+					
+					<dt><istext key="account.profile.fax.label"/></dt>
+					<dd><isprint value="#UserBO:Fax#"></dd>
+					
+					<dt><istext key="account.profile.birthday.label"/></dt>
+					<dd>
+						<isif condition="#isDefined(UserBO:BirthdayDate)#">
+							<isprint value="#UserBO:BirthdayDate#" style="DATE_LONG">
+						<iselse>
+							<istext key="account.profile.birthday.not_available"/>
+						</isif>
+					</dd>
+					
+					<isset name="PreferredLocale" value="#UserBO:Extension("UserBOPreferencesExtension"):PreferredLocale#" scope="request"/>
+					<dt><istext key="account.profile.language.label"/></dt>
+					<dd>
+						<isprint value="#PreferredLocale:DisplayName(PreferredLocale)#">
+					</dd>
+					
+					<dt><istext key="account.newsletter.label"/></dt>
+					<dd>
+						<isif condition="#isDefined(ReceiveNewsletters) AND ReceiveNewsletters#"><istext key="account.newsletter.subscribed"/><iselse> <istext key="account.newsletter.unsubscribed"/> </isif>
+					</dd>
+					
+				</dl>
+			</div>
+		</div>
+	</div>
+</div>

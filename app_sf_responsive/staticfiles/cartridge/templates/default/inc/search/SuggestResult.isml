@@ -1,0 +1,98 @@
+<iscontent charset="UTF-8" compact="false" type="text/html" templatemarker="false">
+<iscache type="relative" hour="24">
+<isif condition="#hasLoopElements(SearchResult:Hits) AND (SuggestSearchIndex:SearchIndexFeature:FeatureID EQ 'SFObjectSuggestSearch')#">
+	<ul class="suggest-results-list">
+		<isset scope="request" name="ProductHits" value="#SearchResult:HitsBySuggestType("product")#">
+		<isif condition="#hasLoopElements(ProductHits) AND ("ShowProducts" EQ "ShowProducts")#"> <!--- TODO read configuration --->
+			<li class="sectionHeader"><istext key="search.result.type.product.label"/></li>
+			<isset scope="request" name="ProductBORepository" value="#ApplicationBO:Repository("ProductBORepository")#">
+			<isloop iterator="ProductHits" alias="Hit">
+				<li>
+					<!--- anchor below points to product based on indexed reference without need to look-up all products before clicking on a specific one --->
+					<!--- a href="#url(action('ViewProduct-Start'), parameter('ProductRefID', Hit:Reference))#"><isprint value="#Hit:Query#" /></a --->
+					<a href="#url(action('ViewProduct-Start'), parameter('SKU', Hit:Product:SKU))#" data-search-result="<isprint value="#Hit:Query#" encoding="off"/>" class="search-result">
+						<div>
+							<span class="left">
+								<isset scope="request" name="ProductBO" value="#ProductBORepository:ProductBOBySKU(Hit:Product:SKU)#">
+								<img src="#stringToHtml(ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("S"):EffectiveUrl)#" />
+								<isprint value="#replace(Hit:Query, '(?i)(\\Q' . SearchTerm . '\\E)' , '<span class="ish-searchTerm">$1</span>')#" encoding="off">
+							</span>
+							<span class="right">
+								<isprint value="#ProductBO:Price#" />
+							</span>
+							<span class="clearfix"></span>
+						</div>
+						<isif condition="#hasNext(Hit)#"><div class="border"></div></isif>
+					</a>
+				</li>
+			</isloop>
+		</isif>
+
+		<isset scope="request" name="CategoryHits" value="#SearchResult:HitsBySuggestType("category")#">
+		<isif condition="#hasLoopElements(CategoryHits) AND ("ShowCategories" EQ "ShowCategories")#"> <!--- TODO read configuration --->
+			<li class="sectionHeader"><istext key="search.result.type.category.label"/></li>
+			<isloop iterator="CategoryHits" alias="Hit">
+				<li class="textOnly">
+					<a href="#url(action('ViewStandardCatalog-Browse'), parameter('CatalogID', Hit:Catalog:Id), parameter('CategoryName', Hit:Category:Name))#" data-search-result="<isprint value="#Hit:Category:DisplayName#" encoding="off"/>" class="search-result">
+						<div>
+							<span class="left"><isprint value="#replace(Hit:Category:DisplayName, '(?i)(\\Q' . SearchTerm . '\\E)' , '<span class="ish-searchTerm">$1</span>')#" encoding="off"><!--- isprint value="#Hit:Category:DisplayName#" ---></span>
+							<span class="right">(<isprint value="#Hit:HitCount#">)</span>
+							<span class="clearfix"></span>
+						</div>
+						<isif condition="#hasNext(Hit)#"><div class="border"></div></isif>
+					</a>
+				</li>
+			</isloop>
+		</isif>
+
+		<isset scope="request" name="BrandHits" value="#SearchResult:HitsBySuggestType("brand")#">
+		<isif condition="#hasLoopElements(BrandHits) AND ("ShowBrands" EQ "ShowBrands")#"> <!--- TODO read configuration --->
+			<li class="sectionHeader"><istext key="search.result.type.brand.label"/></li>
+			<isloop iterator="BrandHits" alias="Hit">
+				<li class="textOnly">
+					<a href="#url(action('ViewParametricSearch-SimpleOfferSearch'), parameter('SearchTerm', Hit:Query))#" data-search-result="<isprint value="#Hit:Query#" encoding="off"/>" class="search-result">
+						<div>
+							<span class="left"><isprint value="#replace(Hit:Query, '(?i)(\\Q' . SearchTerm . '\\E)' , '<span class="ish-searchTerm">$1</span>')#" encoding="off"></span>
+							<span class="right">(<isprint value="#Hit:HitCount#">)</span>
+							<span class="clearfix"></span>
+						</div>
+						<isif condition="#hasNext(Hit)#"><div class="border"></div></isif>
+					</a>
+				</li>
+			</isloop>
+		</isif>
+
+		<isset scope="request" name="ContentHits" value="#SearchResult:HitsBySuggestType("content")#">
+		<isif condition="#hasLoopElements(ContentHits) AND ("ShowContents" EQ "ShowContents")#"> <!--- TODO read configuration --->
+			<li class="rcol sectionHeader"><istext key="search.result.type.content.label"/></li>
+			<isloop iterator="ContentHits" alias="Hit">
+				<li class="rcol textOnly">
+					<a href="#url(action('ViewContent-Start'), parameter('PageletEntryPointID', Hit:Reference))#" data-search-result="<isprint value="#Hit:Query#" encoding="off"/>" class="search-result">
+						<div>
+							<span class="left"><isprint value="#replace(Hit:Query, '(?i)(\\Q' . SearchTerm . '\\E)' , '<span class="ish-searchTerm">$1</span>')#" encoding="off"></span>
+							<span class="right">(<isprint value="#Hit:HitCount#">)</span>
+							<span class="clearfix"></span>
+						</div>
+						<isif condition="#hasNext(Hit)#"><div class="border"></div></isif>
+					</a>
+				</li>
+			</isloop>
+		</isif>
+		
+		<!---
+		<li>SEARCH</li>
+		<isloop iterator="SearchResult:HitsBySuggestType('search')" alias="Hit">
+			<li>
+				<button type="button" data-search-result="<isprint value="#Hit:Query#" encoding="off"/>" class="search-result"><isprint value="#replace(Hit:Query, '(?i)(\\Q' . SearchTerm . '\\E)' , '<span class="ish-searchTerm">$1</span>')#" encoding="off" /></button>
+			</li>
+		</isloop>
+		 --->
+	</ul>
+<iselseif condition="#hasLoopElements(SearchResult:Hits)#"/>
+	<ul class="suggest-results-list">
+		<isloop iterator="SearchResult:Hits" alias="Hit">
+			<li class="classic"><button type="button" data-search-result="<isprint value="#Hit:Query#" encoding="off"/>" class="search-result"><isprint value="#replace(Hit:Query, '(?i)(\\Q' . SearchTerm . '\\E)' , '<span class="ish-searchTerm">$1</span>')#" encoding="off" /></button></li>
+		</isloop>
+	</ul>
+</isif>
+

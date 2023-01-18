@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<isinclude template="modules/rest/RESTConfiguration.isml">
+<iscachekey object="#ProductBO#">
+
+<div class="modal-dialog"
+	data-dynamic-block
+	data-dynamic-block-call-parameters="EditInCart&LineItemUUID=<isprint value="#ProductLineItemBO:ID#">"
+	data-dynamic-block-product-sku="<isif condition="#ProductBO:isMastered#"><isprint value="#ProductBO:ProductBOMaster:SKU#"><iselse><isprint value="#ProductBOr:SKU#"></isif>">""
+>
+	<div class="modal-content">
+		<isform name="editVariationCommand" action="#URLEX(SecureURL,'',Action('ViewCart-UpdateVariation'))#" method="post" class="bv-form">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+				<h2 class="modal-title"><isprint value="#ProductBO:Name#"></h2>
+			</div>
+			
+			<div class="modal-body">
+				<div class="row product-details">
+					<div class="col-sm-4">
+						<ISProductImage ProductBO="#ProductBO#" ImageType="M">
+					</div>
+					
+					<div class="col-sm-8 product-info">
+						<ISProductPrice
+							ProductBO="#ProductBO#"
+							Currency="#CurrentRequest:Currency#"
+							ShowInformationalPrice="true"
+						>
+						<input type="hidden" name="SKU" value="<isprint value="#ProductBO:SKU#">" />
+						<input type="hidden" name="updateVariation" value="<isprint value="#ProductLineItemBO:ID#">"/>
+						
+						<ISProductVariationSelect ProductBO="#ProductBO#">
+						
+						<ISProductQuantity ProductBO="#ProductBO#" ProductLineItemBO="#ProductLineItemBO#" Currency="#CurrentRequest:Currency#">
+						
+						<ISPromotionList ProductBO="#ProductBO#" MaxNumber="5" Locale="#CurrentRequest:Locale#">
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit"><istext key="shopping_cart.variation.save.button.label" /></button>
+				<button class="btn btn-default" type="button" data-dismiss="modal" name="cancel"><istext key="shopping_cart.button.cancel" /></button>
+			</div>
+		</isform>
+	</div>
+</div>	

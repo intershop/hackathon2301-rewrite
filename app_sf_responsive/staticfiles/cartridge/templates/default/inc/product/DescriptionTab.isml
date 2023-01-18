@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<ISUUID name="collectionItemID">
+<div class="panel-heading">
+	<a data-toggle="collapse" data-parent="#'#'#accordion" href="#'#'#<isprint value="#collectionItemID#">" class="collapsed">
+		<istext key="product.description.heading" /> <span class="glyphicon glyphicon-plus pull-right"></span>
+	</a>
+</div>
+<div id="<isprint value="#collectionItemID#">" class="panel-collapse collapse">
+	<div class="panel-body">
+		<isHtmlPrint value="#ProductBO:LongDescription#">
+	</div>
+</div>

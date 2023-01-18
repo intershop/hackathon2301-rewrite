@@ -1,0 +1,39 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules"/>
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.gift_certificates.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="GIFTCARDS&CERTIFICATES">
+		</div>
+		
+		
+		<!--- main content --->
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+		
+			<h1><istext key="account.gift_certificate.heading"></h1>
+		
+			<div>
+			<!-- Gift Cards List -->
+				<isif condition="#isDefined(GiftCardService)#" >
+					<isif condition="#isDefined(GiftCardService:Capabilities:MyAccountTemplate)#" >
+						<isinclude template="#GiftCardService:Capabilities:MyAccountTemplate#" />
+					</isif>
+				</isif>
+			</div>
+		</div>
+	</div>
+</div>

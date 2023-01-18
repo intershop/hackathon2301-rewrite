@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessImagesource" overrideMode="Inherit" type="process">
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_y5RwcDV5Eeu42tqgBlwxwQ" strict="true"
+      name="Start" callMode="Private">
+    <nodeSuccessors name="next" next="DecisionNode_gA-fMDrTEeuiw_V8mel1sQ"/>
+    <parameters name="Imagesource" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_gA-fMDrTEeuiw_V8mel1sQ"
+      conditionKey="Imagesource">
+    <nodeSuccessors name="decision_yes" next="DetermineImageDimension_HNtRwL4YEeuJQrkruqb79g"/>
+<!--@BendPoints 5,3 5,7-->
+    <nodeSuccessors name="decision_no" next="JoinNode_y5RJYDV5Eeu42tqgBlwxwQ"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineImageDimension_HNtRwL4YEeuJQrkruqb79g">
+    <pipelet href="enfinity:/app_sf_responsive/pipelets/DetermineImageDimension.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_y5RJYDV5Eeu42tqgBlwxwQ"/>
+    <parameterBindings name="ContentRef" objectPath="Imagesource"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_y5RJYDV5Eeu42tqgBlwxwQ">
+    <nodeSuccessors name="next" next="EndNode_y5QiUDV5Eeu42tqgBlwxwQ"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_y5QiUDV5Eeu42tqgBlwxwQ" strict="true">
+    <returnValues name="ImageDimension" type="com.intershop.application.responsive.internal.image.Dimension"
+        optional="true"/>
+  </nodes>
+</pipeline:Pipeline>

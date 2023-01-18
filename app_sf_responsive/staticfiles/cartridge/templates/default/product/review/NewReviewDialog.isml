@@ -1,0 +1,172 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/rating/Modules"/>
+<isinclude template="modules/common/Modules">
+
+<isgetpreference preferencekey="ShowReviewerName" domainname="#CurrentDomain:DomainName#" type="String" return="ShowReviewerName">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="review.new_review.rate_and_review_item.text" /></h2>
+		</div>
+		<isif condition="#hasLoopElements(Reviews)#">
+			<div class="modal-body">
+				<istext key="review.already_reviewed"/>
+			</div>
+		<iselse>
+			<isform name="CreateProductReviewForm" 
+				action="#URL(Action('ViewProductReview-CreateReview'),
+				Parameter('AjaxRequestMarker', 'true'),
+				Parameter('CategoryDomainName', CategoryDomainName),
+				Parameter('CategoryName', CategoryName))#"
+				method="post"
+				data-hijax="true"
+				class="form-horizontal bv-form"
+			>
+				<div class="modal-body">
+					<input type="hidden" name="SKU" value="<isprint value="#SKU#">"/>
+					<input type="hidden" name="submittype" data-form-action="true"/>
+					
+					<div class="rating-description">
+						<p>
+							<istext key="review.new_review.header.text"/>
+						</p>
+						
+						<!--- Display in Popover of Review Guidelines link --->
+						<ul class="list-unstyled">
+							<li>
+								<ul class="rating-display rating-one clearfix">
+									<li class="star-one"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-two"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-three"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-four"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-five"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="rating-description"><istext key="review.rating.one_star.description"></li>
+								</ul>
+							</li>
+							<li>
+								<ul class="rating-display rating-two clearfix">
+									<li class="star-one"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-two"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-three"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-four"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-five"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="rating-description"><istext key="review.rating.two_stars.description"></li>
+								</ul>
+							</li>
+							<li>
+								<ul class="rating-display rating-three clearfix">
+									<li class="star-one"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-two"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-three"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-four"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-five"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="rating-description"><istext key="review.rating.three_stars.description"></li>
+								</ul>
+							</li>
+							<li>
+								<ul class="rating-display rating-four clearfix">
+									<li class="star-one"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-two"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-three"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-four"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-five"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="rating-description"><istext key="review.rating.four_stars.description"></li>
+								</ul>
+								
+							</li>
+							<li> 
+								<ul class="rating-display rating-five clearfix">
+									<li class="star-one"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-two"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-three"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-four"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="star-five"><span class="glyphicon glyphicon-star"></span></li>
+									<li class="rating-description"><istext key="review.rating.five_stars.description"></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					
+					<isif condition="#(ShowReviewerName EQ 'true') OR (ShowReviewerName EQ 'userDecision')#">
+						<div class="form-group">
+							<label class="col-sm-4"><istext key="review.new_review.name.label"/></label>
+							<div class="col-sm-8">
+								<isif condition="#(isDefined(CurrentUser:Profile:FirstName)) AND (CurrentUser:Profile:FirstName NE '')#">
+									<isprint value="#CurrentUser:Profile:FirstName#"> <isprint value="#CurrentUser:Profile:Last#">
+								<iselse>
+									<input 
+										class="form-control"
+										maxlength="70"
+										name="CreateProductReviewForm_AuthorName"
+										type="text"
+										value="<isprint value="#CreateProductReviewForm:AuthorName:Value#">">
+										<isFieldErrorMessagePlaceholder class="kor-field-error-right" ext_string_prefix="review.new_review.author_name" fieldname="#CreateProductReviewForm:AuthorName#">
+								</isif>
+								<isif condition="#ShowReviewerName EQ 'userDecision'#">
+									<div class="checkbox">
+										<label>
+											<input name="CreateProductReviewForm_ShowAuthorName" type="checkbox" value="true" checked="checked">
+											<istext key="review.new_review.show_author_name.text"/>
+										</label>
+									</div>
+								</isif>
+							</div>
+						</div>
+					</isif>
+					
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><istext key="review.new_review.rating.label"/><span class="required">*</span></label>
+						<div class="col-sm-8">
+							<ISRatingInput Name="CreateProductReviewForm_Rating" Value="#CreateProductReviewForm:Rating:Value#">
+							<small class="input-help"><istext key="review.new_review.rate.guideline.text"/></small>
+							<isFieldErrorMessagePlaceholder class="kor-field-error-bottom" ext_string_prefix="review.new_review.rating" fieldname="#CreateProductReviewForm:Rating#">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-4 control-label" for="CreateProductReviewForm_ReviewTitle"><istext key="review.new_review.title.label"/><span class="required">*</span></label>
+						<div class="col-sm-8">
+							<input class="form-control"
+								required
+								data-bv-notempty-message="<istext key="review.new_review.title.error.required"/>"
+								maxlength="60"
+								name="CreateProductReviewForm_ReviewTitle"
+								type="text"
+								value="<isprint value="#CreateProductReviewForm:ReviewTitle:Value#">"
+							>
+							<isFieldErrorMessagePlaceholder class="kor-field-error-right" ext_string_prefix="review.new_review.title" fieldname="#CreateProductReviewForm:ReviewTitle#">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-4 control-label"><istext key="review.new_review.content.label"/><span class="required">*</span></label>
+						
+						<div class="col-sm-8">
+							<textarea class="form-control"
+								required
+								data-bv-notempty-message="<istext key="review.new_review.content.error.required"/>"
+								maxlength="4000"
+								name="CreateProductReviewForm_ReviewContent"
+								data-charactercounter="cCounterCreateProductReviewForm_ReviewContent"
+							><isprint value="#CreateProductReviewForm:ReviewContent:Value#"></textarea>
+							
+							<small class="input-help">
+								<istext key="review.new_review.entered.1"/> <span id="cCounterCreateProductReviewForm_ReviewContent">4000</span> <istext key="review.new_review.entered.2"/>
+							</small>
+							<isFieldErrorMessagePlaceholder class="kor-field-error-right" ext_string_prefix="review.new_review.content" fieldname="#CreateProductReviewForm:ReviewContent#">
+						</div>
+					</div>
+					
+				</div>
+				
+				<div class="modal-footer">
+					<button class="btn btn-primary" name="rate" type="submit"><istext key="review.new_review.rate.button.label"/></button>
+					<button name="cancel" type="button" class="btn btn-default" data-dismiss="modal"><istext key="review.new_review.cancel.button.label"/></button>
+				</div>
+			</isform>
+		</isif>
+	</div>
+</div>

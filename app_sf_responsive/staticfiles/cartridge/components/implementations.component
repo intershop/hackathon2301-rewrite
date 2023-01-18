@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<components xmlns="http://www.intershop.de/component/2010">
+	
+	<implementation name="CategoryPageletEntryPointLookupStrategy" class="com.intershop.sellside.storefront.base.internal.lookup.CategoryPageletEntryPointLookupStrategy">
+		<implements contract="CategoryPageletEntryPointLookupStrategy" />
+	</implementation>
+	<implementation name="ProductPageletEntryPointLookupStrategy" class="com.intershop.sellside.storefront.base.internal.lookup.ProductPageletEntryPointLookupStrategy">
+		<implements contract="ProductPageletEntryPointLookupStrategy" />
+	</implementation>
+	
+	<!-- Link Page Renderer -->
+    <implementation name="StorefrontLinkRendererPageImpl" implements="StorefrontLinkRenderer" class="com.intershop.sellside.storefront.base.internal.linkrenderer.StorefrontLinkRendererPageImpl">
+    	<requires name="action" contract="String"  />
+    	<requires name="prefix" contract="String"  cardinality="0..1" />
+    	<requires name="defaultResourceSetId" contract="String"  cardinality="0..1" />
+  	</implementation>
+  	
+  	<implementation name="StorefrontLinkRendererProductImpl" implements="StorefrontLinkRenderer" class="com.intershop.sellside.storefront.base.internal.linkrenderer.StorefrontLinkRendererProductImpl">
+    	<requires name="action" contract="String"  />
+    	<requires name="prefix" contract="String"  cardinality="0..1" />
+  	</implementation>
+  	
+  	<implementation name="StorefrontLinkRendererPipelineImpl" implements="StorefrontLinkRenderer" class="com.intershop.sellside.storefront.base.internal.linkrenderer.StorefrontLinkRendererPipelineImpl">
+    	<requires name="prefix" contract="String"  cardinality="0..1" />
+  	</implementation>
+  	
+  	<implementation name="StorefrontLinkRendererCategoryImpl" implements="StorefrontLinkRenderer" class="com.intershop.sellside.storefront.base.internal.linkrenderer.StorefrontLinkRendererCategoryImpl">
+    	<requires name="action" contract="String"  />
+    	<requires name="prefix" contract="String"  cardinality="0..1" />
+  	</implementation>
+
+  	<implementation name="b2cresponsive.ImageLinkRenderer" implements="StorefrontLinkRenderer" class="com.intershop.application.responsive.internal.links.ImageLinkRenderer">
+  	</implementation>
+	
+	<!-- extension factory for customer approval -->
+	<implementation name="b2c.ApplicationBOCustomerApprovalExtensionFactory" 
+					implements="BusinessObjectExtensionFactory" 
+					class="com.intershop.sellside.storefront.base.internal.application.customer.approval.ApplicationBOCustomerApprovalExtensionFactory">
+	</implementation>
+	
+	<implementation name="ApplicationBOPasswordReminderPreferencesExtensionFactory" 
+					implements="BusinessObjectExtensionFactory" 
+					class="com.intershop.sellside.storefront.base.internal.application.preference.email.ApplicationBOPasswordReminderPreferencesExtensionFactory">
+	</implementation>
+	
+	<!-- Basket Validation Dispatching -->
+    
+	 <implementation name="CheckoutDispatcherImpl" 
+	 	implements="CheckoutDispatcher" 
+	 	class="com.intershop.application.responsive.internal.checkout.CheckoutDispatcherImpl">
+    	<requires name="dispatchEntry" contract="DispatchEntry" cardinality="0..n" />
+  	</implementation>
+  	
+	<implementation name="DispatchEntry" 
+		implements="DispatchEntry" 
+		class="com.intershop.application.responsive.capi.checkout.DispatchEntry">
+			<requires name="failureCode" contract="String" cardinality="0..n"/>
+			<requires name="position" contract="Integer"/>
+			<requires name="target" contract="String"/>
+	</implementation>
+</components>

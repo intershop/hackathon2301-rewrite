@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#isDefined(ShowSuccessMessage)#">
+	<div class="alert alert-success alert-fade">
+		<isif condition="#ShowSuccessMessage EQ 'UpdateEmail'#">
+			<p><istext key="account.profile.update_email.message" /></p>
+		</isif>
+		<isif condition="#ShowSuccessMessage EQ 'UpdateUsername'#">
+			<p><istext key="account.profile.update_username.message" /></p>
+		</isif>
+		<isif condition="#ShowSuccessMessage EQ 'UpdateProfile'#">
+			<p><istext key="account.profile.update_profile.message" /></p>
+		</isif>
+		<isif condition="#ShowSuccessMessage EQ 'UpdatePassword'#">
+			<p><istext key="account.profile.update_password.message" /></p>
+		</isif>
+		<isif condition="#ShowSuccessMessage EQ 'UpdateNewsletter'#">
+			<p><istext key="account.profile.update_newsletter.message" /></p>
+		</isif>
+	</div>
+</isif>

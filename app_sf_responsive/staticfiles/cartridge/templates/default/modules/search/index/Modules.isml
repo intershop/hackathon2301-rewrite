@@ -1,0 +1,67 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!--- show a single filter and its entries ---> 
+<ismodule template = "modules/search/index/Filter.isml"
+	name="Filter"
+	attribute="pipeline"
+	attribute="query"
+	attribute="filter"
+	attribute="showselected"
+	attribute="showcount"
+	attribute="noncategoryfilterselected"
+	attribute="params"
+	attribute="sortvalue"
+>
+
+
+<!--- selected values of a filter as items--->
+<ismodule template = "modules/search/index/FilterSelectedValues.isml"
+	name="FilterSelectedValues"
+	attribute="pipeline"
+	attribute="query"
+	attribute="filter"
+	attribute="showcount"
+	attribute="params"
+	attribute="sortvalue"
+>
+
+<ismodule template = "modules/search/index/FilterLink.isml"
+	name="FilterLink"
+	attribute="pipelinename"
+	attribute="searchparameter"
+	attribute="pagesize"
+	attribute="catalogcategoryid"
+	attribute="params"
+	attribute="catalogid"
+	attribute="sortvalue"
+>
+
+<!---
+    The Product filter module dedicated to the master product page MPDP
+ ---> 
+<ismodule template = "modules/search/index/MasterProductFilter.isml"
+	name="MasterProductFilter"
+	attribute="pipeline"
+	attribute="query"
+	attribute="filter"
+	attribute="showselected"
+	attribute="showcount"
+	attribute="noncategoryfilterselected"
+	attribute="params"
+	attribute="sortvalue"
+	attribute="HasUnselectedValues"
+>
+<!---
+    The Product filter module dedicated to the master product page MPDP for REMOVAL
+ ---> 
+<ismodule template = "modules/search/index/MasterProductFilterRemove.isml"
+	name="MasterProductFilterRemove"
+	attribute="pipeline"
+	attribute="query"
+	attribute="filter"
+	attribute="showselected"
+	attribute="showcount"
+	attribute="noncategoryfilterselected"
+	attribute="params"
+	attribute="sortvalue"
+>

@@ -1,0 +1,3 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+
+<p class="help-block"><istext key="account.overview.note.heading"/>: <istext key="account.overview.note.text" parameter0="#encodeValue(URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systempage.privacyPolicy.pagelet2-Page')))#" encoding="off" /></p>

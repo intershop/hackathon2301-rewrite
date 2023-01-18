@@ -1,0 +1,49 @@
+<!--- TEMPLATENAME: MoneyComparator.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%@page import = "com.intershop.beehive.foundation.quantity.MoneyCalculator"%>
+<%@page import = "com.intershop.beehive.foundation.quantity.Money"%>
+<%@page import = "com.intershop.beehive.foundation.quantity.CurrencyException"%>
+
+
+<%
+    PipelineDictionary pipelineDictionary = getPipelineDictionary();
+    
+    MoneyCalculator calculator = MoneyCalculator.createLowPrecisionCalculator();
+    
+    String comparisonMethod = pipelineDictionary.get("method");
+    if(comparisonMethod == null)
+    {
+    	throw new NullPointerException("The required attribute method is not provided");
+    }
+    
+    Money operand1 = pipelineDictionary.get("operand1");
+    if(operand1 == null)
+    {
+    	throw new NullPointerException("The required attribute operand1 is not provided");
+    }
+    
+    Money operand2 = pipelineDictionary.get("operand2");
+    if(operand2 == null)
+    {
+    	throw new NullPointerException("The required attribute operand2 is not provided");
+    }
+    
+    boolean result = false;
+
+    try
+    {
+        if (comparisonMethod.equals("lessThan"))
+            result = calculator.isLessThan(operand1, operand2);
+        else if (comparisonMethod.equals("greaterThan"))
+            result = calculator.isGreaterThan(operand1, operand2);
+    }
+    catch(CurrencyException ex)
+    {
+        Logger.error(this, "CurrencyException is thrown during the comparison of two Money objects", ex);
+    }
+
+    String comparisonResultDictionaryKey = (String)pipelineDictionary.get("comparisonresult");
+    pipelineDictionary.put(comparisonResultDictionaryKey, result);
+%>

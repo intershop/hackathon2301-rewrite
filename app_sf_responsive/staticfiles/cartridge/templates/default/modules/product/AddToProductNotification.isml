@@ -1,0 +1,57 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(class) AND (class NE '')#">
+	<isset name="CssClass" value="#class#" scope="request"/>
+<iselse>
+	<isset name="CssClass" value="btn-link" scope="request"/>
+</isif>
+
+<isif condition="#NOT ProductBO:isEndOfLife#">
+	<isset name="ProductInventory" value="#ProductBO:Extension("Inventory")#" scope="request" />
+	<isif condition="#ProductInventory:ServiceEnabled#">
+		<isset name="InStock" value="#InventoryStatus:InStock AND NOT ProductBO:isLastOrderDate#" scope="request" />
+	<iselse/>
+		<isset name="InStock" value="#ProductBO:InventoryStatus:InStock AND NOT ProductBO:isLastOrderDate#" scope="request" />
+	</isif>
+	<isif condition="#CurrentSession:isLoggedIn#">
+		<isif condition="#InStock#">
+			<isif condition="#NOT ProductBO:isRetailSet#">
+				<a data-dialog 
+					class="btn price-notification <isprint value="#CssClass#">"
+					data-url-fragment-navigation="add-notification_<isprint value="#ProductBO:SKU#"/>"
+					href="#URL(Action('ViewProductNotification-ViewAlertForm'), Parameter('AjaxRequestMarker', 'true'), Parameter('SKU', ProductBO:SKU), Parameter('Type', 'price'))#"
+					data-testing-class="button-addPriceNotification"
+				>
+					<istext key="account.productnotification.add_notif_list.price_notification">
+				</a>
+			</isif>
+		<iselse>
+			<a data-dialog 
+				class="btn price-notification <isprint value="#CssClass#">"
+				data-url-fragment-navigation="add-notification_<isprint value="#ProductBO:SKU#"/>"
+				href="#URL(Action('ViewProductNotification-ViewAlertForm'), Parameter('AjaxRequestMarker', 'true'), Parameter('SKU', ProductBO:SKU), Parameter('Type', 'stock'))#"
+				data-testing-class="button-addPriceNotification"
+			>
+				<istext key="account.productnotification.add_notif_list.notify_when_available">
+			</a>
+		</isif>
+	<iselse>
+		<isif condition="#InStock#">
+			<isif condition="#NOT ProductBO:isRetailSet#">
+				<a class="btn price-notification <isprint value="#CssClass#">"
+					href="#URLEX(SecureURL, '', Action('ViewUserAccount-ShowLogin'), Parameter('TargetPipeline', 'ViewProduct-Start'), Parameter('Parameter1_Name', 'SKU'), Parameter('Parameter1_Value', ProductBO:SKU), Parameter('TargetURLFragment', 'add-notification_'.ProductBO:SKU), Parameter('LoginToUse', 'notifications'))#"
+					data-testing-class="button-addPriceNotification"
+				>
+					<istext key="account.productnotification.add_notif_list.price_notification">
+				</a>
+			</isif>
+		<iselse>
+			<a class="btn price-notification <isprint value="#CssClass#">"
+				href="#URLEX(SecureURL, '', Action('ViewUserAccount-ShowLogin'), Parameter('TargetPipeline', 'ViewProduct-Start'), Parameter('Parameter1_Name', 'SKU'), Parameter('Parameter1_Value', ProductBO:SKU), Parameter('TargetURLFragment', 'add-notification_'.ProductBO:SKU), Parameter('LoginToUse', 'notifications'))#"
+				data-testing-class="button-addPriceNotification"
+			>
+				<istext key="account.productnotification.add_notif_list.notify_when_available">
+			</a>
+		</isif>
+	</isif>
+</isif>

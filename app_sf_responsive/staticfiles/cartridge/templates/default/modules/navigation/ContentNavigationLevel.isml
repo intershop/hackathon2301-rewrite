@@ -1,0 +1,24 @@
+<iscontent charset="UTF-8" compact="true">
+
+<isif condition="#navigationItem:Active#">
+	<isset name="css" value="#css . 'page-navigation-active'#" scope="request">
+</isif>
+<!--- TODO: css classes can be used to display nodes with children and nodes with active children differently
+<isif condition="#hasLoopElements(navigationItem:Sub)#">
+	<isset name="css" value="#css . ' '#" scope="request">
+</isif>
+<isif condition="#navigationItem:HasChildren#">
+	<isset name="css" value="#css . ' '#" scope="request">
+</isif>
+--->
+
+<li<isif condition="#css NE ''#"> class="#encodeValue(css)#"</isif>>
+	<a <ishref link="#navigationItem:Link#" encoding="off"> title="<isprint value="#navigationItem:Desc#">" > <isprint value="#navigationItem:Title#" > </a>
+	<isif condition="#hasLoopElements(navigationItem:Sub)#">
+		<ul class="page-navigation-<isprint value="#navigationDepth#" formatter="#0.#">">
+			<isloop iterator="navigationItem:Sub:Iterator" alias="SubItem">
+				<isContentNavigationLevel navigationItem="#SubItem#" navigationDepth="#navigationDepth+1#">
+			</isloop>
+		</ul>
+	</isif>
+</li>

@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset name="PackSlipMessage" value="#bucket:OrderPackSlipMessageLineItemBO:Message#" scope="request">
+
+<!--- Shipping Details --->
+<div class="infobox">
+	<h3><istext key="account.orderdetails.bucket.shipping_method.label"/></h3>
+	<h4><isprint value="#bucket:ShippingMethodDisplayName#"></h4>
+	
+	<isif condition="#(isDefined(bucket:ShippingInstructions)) AND (bucket:ShippingInstructions NE '')#">
+		<h5><istext key="account.orderdetails.bucket.details.shipping_instructions.label"></h5>
+		<isprint value="#bucket:ShippingInstructions#" encoding="nl2br,html"/>
+	</isif>
+	
+	<isif condition="#isDefined(PackSlipMessage)#">
+		<h5><istext key="account.orderdetails.bucket.details.packslip_message.label"></h5>
+		<isif condition="#trim(PackSlipMessage:To) NE ''#">
+			<istext key="account.orderdetails.bucket.details.packslip_message_to.label">&nbsp;
+			<isprint value="#PackSlipMessage:To#" /><br/>
+		</isif>
+		
+		<isif condition="#trim(PackSlipMessage:From) NE ''#">		
+			<istext key="account.orderdetails.bucket.details.packslip_message_from.label">&nbsp;
+			<isprint value="#PackSlipMessage:From#" /><br/>
+		</isif>
+		<isprint value="#PackSlipMessage:Message#" encoding="nl2br,html"/>
+		
+	</isif>
+</div>

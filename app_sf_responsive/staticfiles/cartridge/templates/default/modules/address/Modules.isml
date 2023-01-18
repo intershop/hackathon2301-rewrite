@@ -1,0 +1,230 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false"><!---
+	Display an complete address form for creating / modyfing an address.
+
+	Parameters:
+		- webform (required):
+			the related webform itself
+		- address (optional):
+			the address to update (if you want prefill the address form)
+		- addresstemplate (required)
+			address template name
+		- countrylist (required)
+			the country list for the country select box
+		- validationgroup (optional)
+			additional info for the JavaScript validation
+		- locale (optional)
+		- isshippingaddress (optional)
+			'true' if it is a shipping address - controles the phone hint and the input id so that it is possible to have a billing and a ahipping form on one page
+		- customer (optional)
+		    The customer for which the address will be created.
+		- user (optional)
+		    The user for which the address will be created when the customer is private.    
+	Example:
+		
+			<isaddressform
+						webform="#ShippingAddress#"
+						countrylist="#ShippingCountries#"
+						addresstemplate="#'modules/address/forms/'.ShippingAddressWebFormFileName#"
+						validationgroup="shipopt2"
+						customer="#CustomerBO#">
+		
+
+---><ismodule template = "modules/address/AddressForm"
+	name="AddressForm"
+	attribute="webform"
+	attribute="address"
+	attribute="addresstemplate"
+	attribute="countrylist"
+	attribute="validationgroup"
+	attribute="locale"
+	attribute="isshippingaddress"
+	attribute="salutation_enumeration_provider"
+	attribute="customer"
+	attribute="user"
+	attribute="isRegistration"
+	strict="true"
+><!---
+
+	Show the name of the country in the correct language
+
+	Parameters:
+		- countrycode (required)
+
+---><ismodule template = "modules/address/CountryName.isml"
+	name="CountryName"
+	attribute="countrycode"
+	attribute="locale"
+	strict="true"
+><!---
+
+	Display an address suggest (from address validation service)
+
+	Parameters:
+		- sourceaddress (required)
+		- targetaddress (required)
+		- suggestedaddresses (required)
+
+---><ismodule template = "modules/address/AddressSuggest.isml"
+	name="AddressSuggest"
+	attribute="formprefix"
+	attribute="locale"
+	attribute="sourceaddress"
+	attribute="targetaddress"
+	attribute="suggestedaddresses"
+	attribute="validateaddressnoresultmessagekey"
+	strict="true"
+><!---
+
+	Display an address
+
+	Parameters:
+		- address (required)
+		- show_email (optional - true/false; default= false)
+
+---><ismodule template = "modules/address/Address.isml"
+	name="Address"
+	attribute="address"
+	attribute="compact"
+	attribute="showemail"
+>
+
+<!---
+
+	Display an address suggest (from address validation service)
+
+	Parameters:
+		- sourceaddress (required)
+		- targetaddress (required)
+		- suggestedaddresses (required)
+
+---><ismodule template="modules/address/AddressListItem.isml"
+	name="AddressListItem"
+	attribute="addressBO"
+	attribute="userBO"
+	attribute="removable"
+	strict="true"
+>
+
+<!---
+
+	Country select box
+
+	Parameters:
+		- formparameter (Required):
+			The name of the form parameter which holds the selected country name.
+		- country (Optional):
+			The name of the preselected country name entry.
+         - showalloption (Optional):
+              If set to 'true' a additional option will be displayed. The option has the 
+              value 'All' and is used by the store finder
+         - reloadonchange (Optional):
+         	  If set to 'true', when the user chooses a country, the whole form will be submitted.
+         	  This can be useful for showing the states/provinces of the selected country in another combo box.
+         	  The default value is 'false'.  
+
+	Example:
+		...
+		<ISCountrySelectBox
+		   formparameter="ContactForm_Country"
+		   country="#ContactForm:Country:Value#">
+		...
+---><ismodule template = "modules/address/CountrySelectBox.isml"
+	name="CountrySelectBox"
+	attribute="formparameter"
+	attribute="countrycode"
+    attribute="showalloption"
+    attribute="reloadonchange"
+	strict="true"
+><!---
+
+	State select box
+
+	Parameters:
+		- formparameter (Required):
+			The name of the form parameter which holds the selected state name.
+		- state (Optional):
+			The name of the preselected state name entry.
+		- class (optional)
+			a css class for the select box
+		- style (optional)
+			additional css styles
+		- validation (required)
+			switch the JavaScript validation checks on or off
+		- validationgroup (optional)
+			additional info for the JavaScript validation
+		- displaymode (optional)
+			'showAbbreviationCodes' =  shows only the 2 character state abbreviation codes (AL, AK ...)
+			'showNames' = shows the names of the states (Alabama, Alaska ...) (default)
+		- autosuggestion (optional)
+			off - the module displays a selectbox (default)
+			on - the module displays a 2 character input field with auto suggestion
+		- countryCode (required if autosuggestion on)
+			this is necessary to retrieve the state/provinces list
+		- inputfieldid ( optional)
+			if no id is given, the formparameter will be set as inputfieldid
+		
+	Example:
+		...
+		<isstateselectbox 
+			validation="required" 
+			validationgroup="#validationgrp#"
+			formparameter="#webform:State:QualifiedName#" 
+			state="#webform:State:Value#" 
+			class="kor-error"
+			displaymode="showAbbreviationCodes"
+			autosuggestion="on"
+			countryCode="US">
+			id
+		...
+---><ismodule template = "modules/address/StateSelectBox.isml"
+	name="StateSelectBox"
+	attribute="formparameter"
+	attribute="state"
+	attribute="class"
+	attribute="style"
+	attribute="validation"
+	attribute="validationgroup"
+	attribute="displaymode"
+	attribute="autosuggestion"
+	attribute="countrycode"
+	attribute="id"
+	attribute="width"
+	attribute="inputfieldid"
+	strict="true"
+><!---
+
+	Display an address suggest item property
+
+	Parameters:
+		- text (required)
+		- highlighted (required) : valid values are 'true' & 'false'
+
+---><ismodule template = "modules/address/AddressSuggestItemProperty.isml"
+	name="AddressSuggestItemProperty"
+	attribute="text"
+	attribute="highlighted"
+	strict="true"
+>
+
+<!---
+
+	Input Address Usage - This is an (preferred) invoice address, This is a (preferred) shipping address
+
+	Parameters:
+		- webform (required)
+			address web form
+		- customerBO (required)
+		- addressBO (optional)
+		- userBO (optional)
+		- checkoutAddressType (optional)
+			possibleValues: "shipping" / "invoice"
+
+---><ismodule template = "modules/address/forms/inc/AddressUsageInput.isml"
+	name="AddressUsageInput"
+	attribute="webform"
+	attribute="customerBO"
+	attribute="addressBO"
+	attribute="userBO"
+	attribute="checkoutAddressType"
+	strict="true"
+>

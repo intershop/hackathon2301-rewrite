@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query>
+<parameters>
+    <parameter name="ProductDomain" type="com.intershop.beehive.core.capi.domain.Domain" optional="false"/>
+    <parameter name="LocaleInformation" type="com.intershop.beehive.core.capi.localization.LocaleInformation" optional="false"/>
+    <parameter name="NameOrID" type="com.intershop.component.foundation.capi.search.SearchExpression" optional="true"/>
+    <parameter name="CatalogCategory" type="com.intershop.beehive.xcs.capi.catalog.CatalogCategory" optional="true"/>
+    <parameter name="SortAttribute" type="java.lang.String" optional="true"/>
+    <parameter name="SortAttributeType" type="java.lang.String" optional="true"/>
+	<parameter name="SortOrder" type="java.lang.String" optional="true"/>
+    <parameter name="Filters" type="java.util.Iterator" optional="true"/>
+    <parameter name="Currency" type="java.lang.String" optional="true"/>
+</parameters>
+<return-mappings>
+    <return-mapping name="Product" type="provider" class="ProductViewProvider">
+        <return-attribute name="UUID"/>
+        <return-attribute name="DOMAINID"/>
+    </return-mapping>
+</return-mappings>
+<processor name="JDBC">
+    <processor-preprocessing output="cNameOrID" input="NameOrID" processing="SearchExpression2Contains"/>
+</processor>
+<template type="countedobjects">
+	<sql-dialect name="Microsoft">
+		SELECT TOP 100 PERCENT
+	</sql-dialect>
+	<sql-dialect name="Oracle">
+		SELECT 
+	</sql-dialect>
+
+    p.uuid AS UUID, 
+    <template-variable value="ProductDomain:UUID"/> AS DOMAINID,
+    count(p.uuid) over() as "ROWCOUNT", 
+    p.sorting AS SORTING
+FROM 
+    (
+    <template-call name="product/GetProductsByAdvancedSearch">
+        <call-parameter name="ProductDomain" value="ProductDomain"/>
+        <call-parameter name="LocaleInformation" value="LocaleInformation"/>
+        <call-parameter name="NameOrID" value="NameOrID"/>
+        <call-parameter name="Online" value="'(Integer)1'"/>
+        <call-parameter name="SortAttribute" value="SortAttribute"/>
+        <call-parameter name="SortAttributeType" value="SortAttributeType"/>
+        <call-parameter name="Currency" value="Currency"/>
+    	<call-parameter name="Filters" value="Filters"/>
+    </template-call>
+    ) p
+<template-if condition="isDefined(CatalogCategory)">
+WHERE 
+<template-call name="product/inc/ExistsInCategoryAndSubCategoriesFilter">
+    <call-parameter name="ProductDomain" value="ProductDomain"/>
+    <call-parameter name="ProductAlias" value="'p'"/>
+    <call-parameter name="CatalogCategory" value="CatalogCategory"/>
+</template-call>
+</template-if>
+
+ORDER BY  CASE WHEN SORTING IS NULL THEN 1 ELSE 0 END 
+<template-if condition="isDefined(SortOrder) AND SortOrder EQ &apos;desc&apos;">
+	
+		<template-if condition="SortAttribute EQ 'value'">
+	    	ASC
+	    <if-else/>
+	       	DESC
+	    </template-if>
+		,  SORTING DESC
+ 	<if-else/>
+ 	ASC,  SORTING ASC
+</template-if>
+</template>
+</query>

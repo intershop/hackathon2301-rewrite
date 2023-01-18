@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline displays all warranty information.
+@Group Warranties-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewWarrantyDetails" type="view">
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="NotFound">
+<!--@BendPoints 7,4-->
+    <nodeSuccessors name="next" next="SetDictionaryValue3"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue3">
+    <configurationValues name="Name" value="ErrorCode"/>
+    <configurationValues name="Value" value="ProductNotFound"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 7,6-->
+    <nodeSuccessors name="next" next="JumpNode2"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="Error-Page"/>
+  </nodes>
+<!--@displayNearNode@Calls the warrenty detail information template. 
+Input parameter: ProductDomain, SKU
+@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+    <nodeSuccessors name="next" next="GetProductBySKU1"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProductBySKU1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetProductBySKU.xml"/>
+    <nodeSuccessors name="next" next="Pipelet1"/>
+<!--@BendPoints 5,5-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="Domain" objectPath="CurrentProductRepository:RepositoryDomain"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="Pipelet1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetWarrantyBO1"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Warranty&quot;):WarrantyBORepository(Product)"/>
+    <returnValueBindings name="OutValue_1" objectPath="WarrantyBORepository"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetWarrantyBO1">
+    <pipelet href="enfinity:/bc_warranty/pipelets/GetWarrantyBO.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="SKU" objectPath="Product:SKU"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="warranty/WarrantyDetails"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JumpNode1"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewWarrantyDetails-NotFound"/>
+  </nodes>
+</pipeline:Pipeline>

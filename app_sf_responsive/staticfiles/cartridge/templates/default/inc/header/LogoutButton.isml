@@ -1,0 +1,8 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isif condition="#CurrentSession:isLoggedIn#">
+	<iscache type="forbidden" />
+	<a href="#URLEX(SecureURL,'',Action('ViewUserAccount-LogoutUser'))#"><span class="glyphicon-user glyphicon glyphicon-header-icon"></span><istext key="account.logout.link"/></a>
+<iselse>
+	<iscache type="daily" />
+	&nbsp;
+</isif>

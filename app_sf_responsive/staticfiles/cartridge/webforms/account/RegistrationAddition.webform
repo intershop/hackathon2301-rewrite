@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:webform="http://www.intershop.de/webform/2010" name="RegistrationAddition" xmlns:core="http://www.intershop.de/core/2010">
+  <forms name="RegistrationAdditionForm">
+  	<parameters xsi:type="webform:FormParameter" optional="true" name="Birthday" type="java.util.Date">
+      <validatorBindings validator="GlobalValidators-date">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="datePattern" value="MM/dd/yyyy"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="MM" value="Month"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="dd" value="Day"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="yyyy" value="Year"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ignoreTimeZonePreference" value="true"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-datemin">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="minDate" value="01/01/1900"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="datePattern" value="MM/dd/yyyy"/>
+      </validatorBindings>
+      <validatorBindings validator="GlobalValidators-daterange">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="minYear" value="-1000"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxYear" value="-16"/>
+      </validatorBindings>
+      <fields name="Month"/>
+      <fields name="Day"/>
+      <fields name="Year"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="LocaleID" type="java.lang.String">
+		<validatorBindings validator="Locale-LocaleValidator" />
+	</parameters>
+  </forms>
+</webform:WebForm>

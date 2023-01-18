@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false"><%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary,com.intershop.component.foundation.capi.upload.FileUtil"%><%
+	PipelineDictionary dict = getPipelineDictionary();
+	String cdKey = String.valueOf((Object)dict.get("contentdescriptor"));
+	String fileKey = String.valueOf((Object)dict.get("file"));
+	try
+	{
+		dict.put(fileKey, FileUtil.getFile(getValue(cdKey)));
+	}
+	catch( Exception e )
+	{
+		// fix for #7149
+
+		//it is better to clean the dictionary, because we are using this
+		//in a loop and old values remain in PD!
+		dict.put(fileKey, null);
+	}
+%>

@@ -1,0 +1,71 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="promotion.detaillist.title" /></h2>
+		</div>
+		
+		<div class="modal-body promotionsCarousel">
+			<isloop iterator="Promotions" counter="promoCounter">
+				<isset name="count" value="#promoCounter#" scope="request">
+			</isloop>
+			
+			<div id="carousel-promotions" class="carousel slide" data-ride="carousel" data-interval="0">
+				<!-- Indicators -->
+				<isif condition="#count > 1#">
+					<ol class="carousel-indicators">
+						<isloop iterator="Promotions" alias="Promotion" counter="promoCounter">
+							<li data-target="#'#'#carousel-promotions" data-slide-to="promoCounter" <isif condition="#promoCounter < 2#">class="active"></isif></li>
+						</isloop>
+					</ol>
+				</isif>
+				
+				<!-- Wrapper for slides -->
+				<div <isif condition="#count > 1#">class="carousel-inner"</isif> role="listbox">
+					<isloop iterator="Promotions" alias="Promotion" counter="promoCounter">
+						<div class="item <isif condition="#promoCounter < 2#">active</isif>">
+							<h3>
+								<isif condition="#isDefined(Promotion:LongTitle(CurrentSession:Locale))#">
+									<isHtmlPrint value="#Promotion:LongTitle(CurrentSession:Locale)#">
+								<iselse>
+									<isHtmlPrint value="#Promotion:Title(CurrentSession:Locale)#">
+								</isif>
+							</h3>
+							
+							<isif condition="#isDefined(Promotion:RuleDescription(CurrentSession:Locale))#">
+								<p><isHtmlPrint value="#Promotion:RuleDescription(CurrentSession:Locale)#"></p>
+							</isif>
+							
+							<isif condition="#isDefined(Promotion:LegalContentMessage(CurrentSession:Locale))#">
+								<p class="help-block"><isHtmlPrint value="#Promotion:LegalContentMessage(CurrentSession:Locale)#"></p>
+							</isif>
+							
+							<isif condition="#isDefined(Promotion:ExternalDetailsURL)#">
+								<p><a href="<isprint value="#Promotion:ExternalDetailsURL#">" target="_blank"><isprint value="#Promotion:ExternalDetailsURL#"></a></p>
+							</isif>
+							
+							<isinclude template="marketing/promotion/ViewEligibleItemsLink"/>
+							<isset name="Additionals" value="#Promotion2Attachments:get(Promotion)#" scope="request">
+							<isinclude template="marketing/promotion/Attachment"/>
+						</div>
+					</isloop>
+				</div>
+				
+				<isif condition="#count > 1#">
+					<!-- Controls -->
+					<a class="left carousel-control" href="#'#'#carousel-promotions" role="button" data-slide="prev">
+						<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+						<span class="sr-only">Previous</span>
+					</a>
+					<a class="right carousel-control" href="#'#'#carousel-promotions" role="button" data-slide="next">
+						<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+						<span class="sr-only">Next</span>
+					</a>
+				</isif>
+			</div>
+		</div>
+	</div>
+</div>

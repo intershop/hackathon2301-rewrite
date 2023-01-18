@@ -1,0 +1,64 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%
+String paramsName = (String)getObject("params");
+Object params = getObject(paramsName);
+if(params != null)
+{
+	getPipelineDictionary().put("TmpParams", params);
+}
+%>
+<isif condition="#NOT isDefined(showcount)#" >
+	<isset scope="request" name="showcount" value="true" >
+</isif>
+<isif condition="#isDefined(sortvalue)#">
+	<isset scope="request" name="tmp_sortvalue" value="#sortvalue#" />
+</isif>
+<isif condition="#filter:Selected#" >
+	<isloop iterator="filter:FilterAttributeEntry" alias="entry">
+		<isif condition="#entry:Selected#">
+			<li class="ws-selected ws-filter">
+		        <isif condition="#filter:hasImageRefs AND isDefined(entry:getImageRef)#" >
+		        	<span class="ws-filter-name">
+		        		<isif condition="#filter:ConfigurationAttribute:FilterOptions:DisplayName NE ''#">
+							<isprint value="#filter:ConfigurationAttribute:FilterOptions:DisplayName#">
+						<iselse>
+							<isprint value="#filter:ConfigurationAttribute:DisplayName#">
+						</isif>
+					</span>
+		            <span class="ws-filter-name"><img src="#ContentURL(entry:getImageRef, CurrentRequest:Locale:LocaleID)#" alt="<isprint value="#entry:Value#">" /></span>
+		            <isif condition="#(showcount EQ 'true') AND (entry:Count != 0)#" >
+		            	<span class="ws-filter-count">(<isprint value="#entry:Count#">)</span>
+		            </isif>	
+				<iselse>
+		        	<span class="ws-filter-name">
+		        		<isif condition="#filter:ConfigurationAttribute:FilterOptions:DisplayName NE ''#">
+							<isprint value="#filter:ConfigurationAttribute:FilterOptions:DisplayName#">
+						<iselse>
+							<isprint value="#filter:ConfigurationAttribute:DisplayName#">
+						</isif>
+					</span>
+		            <span class="ws-filter-value"><isprint value="#entry:DisplayValue#"></span>
+	                <isif condition="#(showcount EQ 'true') AND (entry:Count != 0)#" >
+		            	<span class="ws-filter-count">(<isprint value="#entry:Count#">)</span>
+		            </isif>	
+		        </isif>
+		        
+		        <isset name="tmp_query" value="#query:RemovedValueCondition(entry:Name,entry:Value)#" scope="request"/>
+				<isif condition="#entry:Name EQ 'ContextCategoryUUID'#">
+		            <isif condition="#isDefined(entry:CatalogCategory:Parent:UUID)#">
+		            	<isset name="tmp_query" value="#tmp_query:ExtendedCondition("ContextCategoryUUID",entry:CatalogCategory:Parent:UUID)#" scope="request"/>
+	                </isif>
+	            </isif>
+				<a class="ws-clear-filter-link" href="<isfilterlink pipelinename="#pipeline#"
+					searchparameter="#tmp_query#"
+					pagesize="#query:PageSize#"
+					params="TmpParams"
+					catalogcategoryid="#entry:CatalogCategory:Parent:UUID#"
+					catalogid="#entry:CatalogCategory:UUID#"
+					sortvalue="#tmp_sortvalue#"
+					>"><istext key="search.filter.clear.link" />
+				</a>
+			</li>
+		</isif>
+	</isloop>
+</isif>

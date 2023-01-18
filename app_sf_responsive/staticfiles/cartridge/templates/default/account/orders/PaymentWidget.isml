@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset name="OrderPayment" value="#OrderBO:Extension("Payment")#" scope="request"/>
+
+<h3><istext key="account.orderdetails.payment_methods.heading"/></h3>
+
+<isif condition="#hasLoopElements(OrderPayment:PaymentTransactionBOs)#">
+	<!---open tender --->
+	<isloop iterator="OrderPayment:PaymentTransactionBOs" alias="PTBO">
+		<isif condition="#PTBO:PaymentBO:PaymentServiceBO:Extension("LimitedTender") EQ null#">
+			<div>
+				<isif condition="#PTBO:StatusDisplayName NE ''#">
+					<div class="pull-right">
+						<div class="label label-info"><isprint value="#PTBO:StatusDisplayName#"></div>
+					</div>
+				</isif>
+				<p><isprint value="#PTBO:PaymentBO:PaymentServiceBO:DisplayName#">
+					<isif condition="#PTBO:PaymentBO:PaymentInstrumentBO:AccountIdentifier NE ''#">
+						<br /><isprint value="#PTBO:PaymentBO:PaymentInstrumentBO:AccountIdentifier#"/>
+					</isif>
+				</p>
+				<br/><isinclude extensionpoint="AdditionalDataOpenTender"/>
+			</div>
+		</isif>
+	</isloop>
+
+	<!---limited tender --->
+	<isloop iterator="OrderPayment:PaymentTransactionBOs" alias="PTBO">
+		<isif condition="#PTBO:PaymentBO:PaymentServiceBO:Extension("LimitedTender") NE null#">
+			<div class="pull-right">
+				<div class="label label-info"><isprint value="#PTBO:StatusDisplayName#"></div>
+			</div>
+			<p><isprint value="#PTBO:PaymentBO:PaymentServiceBO:DisplayName#">
+				<isif condition="#PTBO:PaymentBO:PaymentInstrumentBO:AccountIdentifier NE ''#">
+					<br /><isprint value="#PTBO:PaymentBO:PaymentInstrumentBO:AccountIdentifier#"/>
+				</isif>
+			</p>
+			<br/><isinclude extensionpoint="AdditionalDataLimitedTender"/>
+		</isif>
+	</isloop>
+<iselse>
+	<istext key="account.orderdetails.payment.no_payment_required.info" />
+</isif>
+
+<isinclude extensionpoint="PaymentInfoExtensions"/>

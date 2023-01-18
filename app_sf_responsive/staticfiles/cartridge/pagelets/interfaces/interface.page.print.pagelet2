@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="interface.page.print.pagelet2">
+  <callParameterInterfaces name="Interface">
+    <callParameterDefinitions name="Dictionary" type="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"/>
+  </callParameterInterfaces>
+</pagelet:PageletModel>

@@ -1,0 +1,142 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<!--- LineItems per bucket --->
+<div class="section">
+	<div class="list-header">
+		<div class="list-header-item col-sm-5"><istext key="checkout.shipping.pli.description.heading" /></div>
+		<div class="list-header-item col-lg-1 visible-lg"><istext key="checkout.shipping.pli.qty.heading" /></div>
+		<div class="list-header-item col-sm-3 col-lg-2"><istext key="checkout.shipping.pli.availability.heading" /></div>
+		<div class="list-header-item col-sm-2 column-price"><istext key="checkout.pli.price.heading" /></div>
+		<div class="list-header-item col-sm-2 column-price"><istext key="checkout.pli.total.heading" /></div>
+	</div>
+	<div class="list-body">
+		<isloop iterator="Bucket:ProductLineItemBOs" alias="PLI">
+
+			<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+			<isset name="PLIGifting" value="#PLI:Extension("Gifting")#" scope="request"/>
+			<isset name="PLIAppliedRebate" value="#PLI:Extension("AppliedRebate")#" scope="request"/>
+
+			<isif condition="#not(PLI:isHiddenGift)#">
+
+				<div class="list-item-row-big list-item-row">
+					<!---Product Description --->
+					<div class="col-xs-9 col-sm-5 list-item">
+						<isPLIDescription pli="#PLI#" showimage="false" editable="false" showid="true" variationattributes="horizontal" owningdomain="#CurrentOrganization:OwningDomain#" showwarranty="false">
+						
+						<!---gift card number and pin only on receipt page --->
+						<isif condition="#isDefined(OrderBO) AND isDefined(PLI:ProductBO:ServiceType:PhysicalGiftCard) AND (PLI:ProductBO:ServiceType:PhysicalGiftCard EQ 'true')#">
+							<ispipeline pipeline="ProcessPrepareOrderReceiptViewOfGiftCards-PrepareOrderReceiptView" params="#ParamMap(ParamEntry('Domain', CurrentOrganization:OwningDomain),ParamEntry('PLIUUID', PLI:ID))#" alias="GiftCardsDetail" />
+							<isinclude template="#GiftCardsDetail:GiftCardService:Capabilities:OrderReceiptPliTemplate#">
+						</isif>
+						
+						<!---  gifting for PLI --->
+						<isif condition="#(isDefined(GiftWrap_Switch) AND (GiftWrap_Switch EQ 'true')) OR (isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true'))#">
+							<isif condition="#(isDefined(PLIGifting:GiftOptionMarked) AND (PLIGifting:GiftOptionMarked EQ 'true'))#">
+								<span><istext key="checkout.gifting.giftwrap.header" />&nbsp;<istext key="checkout.gifting.pli.selected.text" /></span> 
+								<isif condition="#(NOT isDefined(OrderBO)) AND (BasketBO:RequisitionDocumentNo EQ '')#">
+									<span>&nbsp; &nbsp; <a href="#URL(Action('ViewCheckoutGifting-Start'), parameter('ID',PLI:ID), parameter('BID',Bucket:ID))#" title="<istext key="checkout.gifting.pli.edit.text" />"><istext key="checkout.gifting.pli.edit.text" /></a></span>
+								</isif><br />
+							<iselseif condition="#(isDefined(PLIGifting:GiftWrappable) AND (PLIGifting:GiftWrappable EQ 'true')) OR (isDefined(PLIGifting:GiftMessagable) AND (PLIGifting:GiftMessagable EQ 'true'))#">
+								<span><istext key="checkout.gifting.giftwrap.header" />&nbsp;<istext key="checkout.gifting.pli.notselected.text" /></span> 
+								<isif condition="#(NOT isDefined(OrderBO)) AND (BasketBO:RequisitionDocumentNo EQ '')#">
+									<span>&nbsp; &nbsp; <a href="#URL(Action('ViewCheckoutGifting-Start'), parameter('ID',PLI:ID), parameter('BID',Bucket:ID))#" title="<istext key="checkout.gifting.pli.edit.text" />"><istext key="checkout.gifting.pli.edit.text" /></a></span>
+								</isif><br />
+							</isif>
+						</isif>
+
+						<!--- pli promotion messages and free gift --->
+						<isinclude template="checkout/common/PromotionCodeList">
+					</div>
+					
+					<!--- Price --->
+					<div class="hidden-xs col-sm-2 col-sm-push-3 list-item column-price">
+						<isif condition="#PriceDisplayType EQ 'net'#">
+							<isprint value="#PLI:SingleBasePriceNet#">
+						<iselse>
+							<isprint value="#PLI:SingleBasePriceGross#">
+						</isif>
+					</div>
+					
+					<!--- Total --->
+					<div class="col-xs-3 col-sm-2 col-sm-push-3 list-item column-price">
+						<div>
+							<isif condition="#PriceDisplayType EQ 'net'#">
+								<isprint value="#PLI:DiscountedPriceNet#">
+							<iselse>
+								<isprint value="#PLI:DiscountedPriceGross#">
+							</isif>
+						</div>
+					
+						<isif condition="#PLIAppliedRebate:ItemValueRebatesTotal:Available#">
+							<div class="old-price">
+								<isif condition="#PriceDisplayType EQ 'net'#">
+									<isprint value="#PLI:PriceNet#">
+								<iselse/>
+									<isprint value="#PLI:PriceGross#">
+								</isif>
+							</div>
+						</isif>&nbsp;
+					</div>
+					
+					<!--- Availability --->
+					<div class="clearfix visible-xs-block"></div>
+					<div class="col-sm-3 col-sm-pull-4 col-lg-2 col-lg-pull-3 list-item">
+						<p>
+							<isif condition="#PLI:ProductBO:Available EQ 'true'#">
+								<span class="product-in-stock"><istext key="checkout.pli.instock.text" /></span>
+							<iselse>
+								<span class="product-out-of-stock"><istext key="checkout.pli.out_of_stock.text" /></span>
+							</isif>
+						</p>
+	
+						<isif condition="#isDefined(PLI:DesiredDeliveryDate)#">
+							<span><istext key="checkout.shipping.pli.dddate.short.text" />:</span>
+							<span data-testing-class="pli-desiredDeliveryDate"><isprint value="#PLI:DesiredDeliveryDate#" style="DATE_LONG"/></span> 
+							<isif condition="#(NOT isDefined(OrderBO)) AND (BasketBO:RequisitionDocumentNo EQ '')#">
+								<a data-csrf-guarded href="#URL(Action('ViewCheckoutShipping-Review'))#" title="<istext key="checkout.shipping.pli.dddate.edit.link" />"><istext key="checkout.shipping.pli.dddate.edit.link" /></a>
+							</isif>
+						</isif>
+					</div>
+					
+					<!--- Qty --->
+					<div class="clearfix visible-md-block visible-sm-block visible-xs-block"></div>
+					<div class="col-lg-pull-6 col-lg-1 list-item">
+						<label class="hidden-lg control-label"><istext key="checkout.shipping.pli.qty.label"></label>
+						<isprint value="#PLI:Quantity#">
+					</div>
+					
+							
+					<!--- Warranty --->
+					<isif condition="#isDefined(PLIWarranty:Warranty)#">
+						<div class="clearfix">
+							<div class="col-xs-9 col-sm-8 list-item" data-testing-id="checkout-pli-warranty-details">
+								<isprint value="#PLIWarranty:Warranty:Warranty:DisplayName#">
+								<a class="details-link" href="#URL(Action('ViewWarrantyDetails-Start'), Parameter('SKU', PLIWarranty:Warranty:ProductSKU))#" data-dialog><istext key="checkout.pli.warranty.details.text"/></a>
+							</div>
+							<div class="hidden-xs col-sm-2 list-item column-price">
+								<isif condition="#isDefined(PLIWarranty:Warranty)#">
+									<isif condition="#PriceDisplayType EQ 'net'#">
+										<isprint value="#PLIWarranty:Warranty:SingleBasePriceNet#">
+									<iselse>
+										<isprint value="#PLIWarranty:Warranty:SingleBasePriceGross#">
+									</isif>
+								</isif>
+							</div>
+							<div class="col-xs-3 col-sm-2 list-item column-price">
+								<isif condition="#PriceDisplayType EQ 'net'#">
+									<isprint value="#PLIWarranty:Warranty:PriceNet#">
+								<iselse/>
+									<isprint value="#PLIWarranty:Warranty:PriceGross#">
+								</isif>
+							</div>
+						</div>
+					</isif>
+				</div>
+			</isif>	
+		</isloop><!--- PLI loop --->
+	</div>
+</div>

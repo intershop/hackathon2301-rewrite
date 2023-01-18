@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="breadcrumbs row">
+	<isWishlistPublicTitle wishlistBO="#WishlistBO#" title="wishlistTitle">
+	<isBreadcrumb showhomelink="true" trailtext0="#wishlistTitle#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+
+<isinclude template="account/wishlist/PublicWishlistHeader"/>
+<isinclude template="account/wishlist/PublicWishlistInclude"/>

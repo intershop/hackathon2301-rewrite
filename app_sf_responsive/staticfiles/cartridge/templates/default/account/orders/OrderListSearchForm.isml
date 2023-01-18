@@ -1,0 +1,20 @@
+<iscontent charset="UTF-8" compact="true">
+
+<isform data-submit-form-handler="change" name="SortOrdersByForm" action="#URLEX(SecureURL, '', Action('ViewOrders-SimpleOrderSearch'))#" method="post" class="form-inline">
+	<div class="col-sm-6">
+		<div class="form-group">
+			<label class="control-label" for="SortOrdersBy">
+				<istext key="account.orderlist.sortBy.label">
+			</label>
+			
+			<select class="form-control" data-submit-form-handler="change" id="SortOrdersBy" name="SortingAttribute">
+				<option value="CreationDate_asc" <isif condition="#SortingAttribute EQ 'CreationDate_asc'#">selected="selected"</isif>><istext key="account.orderlist.sortAttribute.creation_date">&nbsp;<istext key="account.orderlist.sortDirection.ascending"></option>
+				<option value="CreationDate_desc" <isif condition="#NOT isDefined(SortingAttribute) OR (SortingAttribute EQ 'CreationDate_desc')#">selected="selected"</isif>><istext key="account.orderlist.sortAttribute.creation_date">&nbsp;<istext key="account.orderlist.sortDirection.descending"></option>
+				<option value="OrderTotal_asc" <isif condition="#SortingAttribute EQ 'OrderTotal_asc'#">selected="selected"</isif>><istext key="account.orderlist.sortAttribute.order_total">&nbsp;<istext key="account.orderlist.sortDirection.ascending"></option>
+				<option value="OrderTotal_desc" <isif condition="#SortingAttribute EQ 'OrderTotal_desc'#">selected="selected"</isif>><istext key="account.orderlist.sortAttribute.order_total">&nbsp;<istext key="account.orderlist.sortDirection.descending"></option>
+			</select>
+			
+		</div>
+	</div>
+</isform>
+		

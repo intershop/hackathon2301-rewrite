@@ -1,0 +1,207 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<!--- show line item info on emails (email cart, email order confirmation --->
+
+<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+<isset name="PLIAppliedRebate" value="#PLI:Extension("AppliedRebate")#" scope="request"/>
+
+<isLineItemErrorMsg	pli="#PLI#"	adjustedItems="#AdjustedItems#">
+
+<!--- Product Descriptions and Attachments --->
+<table class="emailCartProductDetails" cellpadding="0" cellspacing="0" border="0" width="100%">
+	<tr>
+		<td width="33%">
+			<!---Product Image --->
+			<a href="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', PLI:ProductSKU))#">
+				<img alt="<isprint value="#PLI:ProductBO:Name#"/>" src="<isprint value="#ContentUrlEx('', '', '', '', '', PLI:ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("S"):ContentRef)#"/>">
+			</a>
+		</td>
+		<td width="66%">
+		
+			<!---Product Description --->
+			<isPLIDescription index="#pliIndex#" pli="#PLI#" variationattributes="horizontal" showstockinfo="#NOT isDefined(OrderBO)#" editable="false" removable="false" movable="true" showimage="true" showavailability="true" owningdomain="#CurrentOrganization:OwningDomain#" showgiftinginformation="false" loggedin="#CurrentSession:LoggedIn#" showwarranty="true" showshipwindowmessage="true" email="true">
+			
+			<!---Desired Delivery Date --->
+			<isif condition="#isDefined(PLI:DesiredDeliveryDate)#">
+				<br /><div>
+					<span><istext key="checkout.shipping.pli.dddate.short.text" />:</span><br />
+					<span><isprint value="#PLI:DesiredDeliveryDate#" style="DATE_LONG"/></span>
+				</div>
+			</isif>
+			
+			<!--- pli promotion messages and free gift --->
+			<isinclude template="cart/email/common/PromotionCodeList">
+			
+			<!--- Further Item Description --->
+			<isinclude extensionpoint="CartItemDescriptionExtensions"/>
+			
+		</td>
+	</tr>
+	<tr>
+		<td width="33%"></td>
+		<td width="66%">
+			<!--- product attachments --->
+			<isset name="Attachments" value="#PLI:ProductBO:ProductAttachmentBOs#" scope="request"/>
+			<isloop iterator="Attachments" alias="attachment">
+				<!---check if there is at least 1 attachment that has to be displayed in the email --->
+				<isif condition="#attachment:InEmail#">
+					<isset name="hasInEmailAttachments" value="true" scope="request"/>
+					<isbreak>
+				</isif>
+			</isloop>
+			<isif condition="#hasInEmailAttachments EQ "true"#">
+				<table class="productAttachments" cellpadding="0" cellspacing="0" border="0" width="100%">
+					<tr>
+						<td width="33%" style="padding:0;">
+							<istext key="email.order_confirmation.attachments" />
+						</td>
+						<td width="66%" style="padding:0;">
+							<isloop iterator="Attachments" alias="attachment">
+								<isif condition="#attachment:InEmail#">
+									<!--- attachment link --->
+									<a rel="enclosure" <isif condition="#lcase(pad(attachment:File,4)) EQ InsecureURL#">
+											href="<isprint value="#attachment:File#"/>" target="_blank"
+										<iselse>
+											<ISContentDescriptorFile contentdescriptor="attachment:File" file="File">
+											href="<isprint value="#URL(Action('ViewProductAttachment-OpenFile'), Parameter('LocaleId', CurrentSession:Locale:LocaleID), Parameter('DirectoryPath', File:DirectoryPath), Parameter('FileName', File:FullName), Parameter('UnitName', File:UnitDomainName))#" encoding="off"/>"
+										</isif>
+									><isprint value="#attachment:Name#"></span></a></br>
+								</isif>
+							</isloop>
+						</td>
+					</tr>
+				</table>
+			</isif>
+		</td>
+	</tr>
+</table>
+
+<!--- Product Price --->
+<table class="emailCartPrice" cellpadding="0" cellspacing="0" border="0" width="100%">
+	<tr>
+		<th width="33%"><istext key="shopping_cart.qty.heading" /></th>
+		<th width="33%"><istext key="shopping_cart.price.heading" /></th>
+		<th class="emailPriceColumn" width="33%"><istext key="shopping_cart.total.heading" /></th>
+	</tr>
+	<tr>
+		<!---Quantity --->
+		<td align="center">
+			<isprint value="#PLI:Quantity#" formatter="0">
+		</td>
+	
+		<!---Price --->
+		<td align="center">
+			<isif condition="#PriceDisplayType EQ 'net'#">
+				<isprint value="#PLI:SingleBasePriceNet#">
+			<iselse/>
+				<isprint value="#PLI:SingleBasePriceGross#">
+			</isif>
+		</td>
+			
+		<!---Total --->
+		<td class="emailPriceColumn">
+			<isif condition="#PriceDisplayType EQ 'net'#">
+				<isprint value="#PLI:DiscountedPriceNet#">
+			<iselse/>
+				<isprint value="#PLI:DiscountedPriceGross#">
+			</isif>
+	
+			<isif condition="#PLIAppliedRebate:ItemValueRebatesTotal:Available#">
+				<div class="old-price">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLI:PriceNet#">
+					<iselse/>
+						<isprint value="#PLI:PriceGross#">
+					</isif>
+				</div>
+			</isif>
+			<isif condition="#PLI:FreeGift#">
+				<istext key="checkout.pli.freegift.text" />
+			</isif>
+		</td>
+	</tr>
+</table>
+
+<!--- Warranties --->
+<isif condition="#PLIWarranty:WarrantyEligible#">
+
+	<table class="emailCartProductDetails" cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr>
+			<td width="33%"></td>
+			<td colspan="2">
+				<isinclude template="cart/warranty/WarrantySelectionCheckout">
+			</td>
+		</tr>
+	</table>
+	
+	<table class="emailCartPrice" cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr>
+			<th width="33%"></th>
+			<th width="33%"><istext key="shopping_cart.price.heading" /></th>
+			<th class="emailPriceColumn" width="33%"><istext key="shopping_cart.total.heading" /></th>
+		</tr>
+		<tr>
+			<td></td>
+			<td align="center">
+				<isif condition="#isDefined(PLIWarranty:Warranty)#">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLIWarranty:Warranty:SingleBasePriceNet#">
+					<iselse>
+						<isprint value="#PLIWarranty:Warranty:SingleBasePriceGross#">
+					</isif>
+				</isif>
+			</td>
+			<td class="emailPriceColumn">
+				<isif condition="#isDefined(PLIWarranty:Warranty)#">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLIWarranty:Warranty:PriceNet#">
+					<iselse>
+						<isprint value="#PLIWarranty:Warranty:PriceGross#">
+					</isif>
+				</isif>
+			</td>
+		</tr>
+	</table>
+	
+<iselseif condition="#PLIWarranty:Warranty:WarrantyDisplayName NE ''#">
+	
+	<table class="emailCartProductDetails" cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr>
+			<td width="33%"></td>
+			<td colspan="2">
+				<isprint value="#PLIWarranty:Warranty:Warranty:DisplayName#">
+			</td>
+		</tr>
+	</table>
+	
+	<table class="emailCartPrice" cellpadding="0" cellspacing="0" border="0" width="100%">
+		<tr>
+			<th width="33%"></th>
+			<th width="33%"><istext key="shopping_cart.price.heading" /></th>
+			<th class="emailPriceColumn" width="33%"><istext key="shopping_cart.total.heading" /></th>
+		</tr>
+		<tr>
+			<td></td>
+			<td align="center">
+				<isif condition="#isDefined(PLIWarranty:Warranty)#">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLIWarranty:Warranty:SingleBasePriceNet#">
+					<iselse>
+						<isprint value="#PLIWarranty:Warranty:SingleBasePriceGross#">
+					</isif>
+				</isif>
+			</td>
+			<td class="emailPriceColumn">
+				<isif condition="#isDefined(PLIWarranty:Warranty)#">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLIWarranty:Warranty:PriceNet#">
+					<iselse>
+						<isprint value="#PLIWarranty:Warranty:PriceGross#">
+					</isif>
+				</isif>
+			</td>
+		</tr>
+	</table>
+	
+</isif>

@@ -1,0 +1,59 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#"><iscachekey object="#VariationProductBO#">
+<isset name="ProductPrice" value="#VariationProductBO:Extension("Pricing")#" scope="request"/>
+<isset name="SalePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency)#" scope="request"/>
+<isset name="ListPrice" value="#ProductPrice:Price("ListPrice", CurrentRequest:Currency)#" scope="request"/>
+
+<isif condition="#ProductBO:Extension("Inventory"):ServiceEnabled#">
+	<isset name="InStock" value="#ProductBO:Extension("Inventory"):InventoryInStock#" scope="request" />
+<iselse/>
+	<isset name="InStock" value="#ProductBO:InventoryStatus:InStock#" scope="request" />
+</isif>
+
+"<isprint value="#VariationProductBO:ID#" encoding="JavaScript">" : {
+	"productSKU" : "<isprint value="#VariationProductBO:SKU#" encoding="JavaScript">",
+	"productUUID" : "<isprint value="#VariationProductBO:ID#" encoding="JavaScript">",
+	"productMasterUUID" : "<isprint value="#VariationProductBO:ProductBOMaster:ID#" encoding="JavaScript">",
+	"isAvailable" : <isprint value="#VariationProductBO:isAvailable#" encoding="JavaScript">,
+	"inStock" : <isif condition="#isDefined(InStock)#"><isprint value="#InStock#" encoding="JavaScript"><iselse>false</isif>,
+	"listPrice" : "<isprint value="#ListPrice:Price#" encoding="JavaScript">",
+	"salePrice" : "<isprint value="#SalePrice:Price#" encoding="JavaScript">",
+	"minOrderQuantity" : "<isprint value="#ProductBO:MinOrderQuantity#" encoding="JavaScript">",
+	"maxOrderQuantity" : "<isprint value="#ProductBO:MaxOrderQuantity#" encoding="JavaScript">",
+	"stepQuantity" : "<isprint value="#ProductBO:StepQuantity#" encoding="JavaScript">",
+	<isif condition="#hasElements(ProductBO:ProductVariationInformationBO:VariationAttributes)#">
+		<isloop iterator="ProductBO:ProductVariationInformationBO:VariationAttributes" alias="VariableVariationAttribute">
+			"<isprint value="#VariableVariationAttribute:Name#" encoding="JavaScript">" : "<isif condition="#hasLoopElements(VariationProductBO:AttributeValue(VariableVariationAttribute:Name):Object)#"><isloop iterator="VariationProductBO:AttributeValue(VariableVariationAttribute:Name):Object" alias="attrValue"><isprint value="#attrValue#" encoding="JavaScript"><isif condition="#hasNext(attrValue)#">|</isif></isloop><iselse/><isprint value="#VariationProductBO:AttributeValue(VariableVariationAttribute:Name):Object#" encoding="JavaScript"></isif>"
+			<isif condition="#hasNext(VariableVariationAttribute)#">, </isif>
+		</isloop>
+  	,<iselse>
+		<isif condition="#ProductBO:isMastered#">
+			"VariationProduct" : "<isprint value="#VariationProductBO:ID#" encoding="JavaScript">",
+		</isif>
+	</isif>
+  "images" : [
+        <isset name="It" value="#VariationProductBO:Extension("Image"):ImageContainerBO:ImageBOs#" scope="request" />
+        <isloop iterator="It" alias="ImageBO">
+			{
+				"src" : "<isprint value="#ImageBO:EffectiveUrl#" encoding="JavaScript">",
+				"view" : "<isprint value="#ImageBO:ImageViewBO:ID#" encoding="JavaScript">",
+				"size" : "<isprint value="#ImageBO:ImageTypeBO:ID#" encoding="JavaScript">"
+				<isif condition="#isDefined(ImageBO:ActualHeight)#">
+					,"height" : "<isprint value="#ImageBO:ActualHeight#" encoding="JavaScript">"
+				</isif>	
+				<isif condition="#isDefined(ImageBO:ActualWidth)#">
+					,"width" : "<isprint value="#ImageBO:ActualWidth#" encoding="JavaScript">"
+				</isif>	
+				<isif condition="#isDefined(ImageBO:ImageTypeHeight)#">
+					,"imageTypeHeight" : "<isprint value="#ImageBO:ImageTypeHeight#" encoding="JavaScript">"
+				</isif>
+				<isif condition="#isDefined(ImageBO:ImageTypeWidth)#">
+					,"imageTypeWidth" : "<isprint value="#ImageBO:ImageTypeWidth#" encoding="JavaScript">"
+				</isif>
+				<isif condition="#ImageBO:PrimaryImage#">
+					,"primary" : true
+				</isif>
+			}<isif condition="#hasNext(ImageBO)#">,</isif>
+		</isloop>
+  ]
+}

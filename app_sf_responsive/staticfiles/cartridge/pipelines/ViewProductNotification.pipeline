@@ -1,0 +1,799 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Account-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewProductNotification" type="view">
+<!--Pipeline rework:
+Still needed because of Alert pipelets
+@Location 14,4-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text0"/>
+<!--Pipeline rework:
+Still needed because of Alert pipelets
+@Location 18,4-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text1"/>
+<!--@Location 13,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start2" name="CreateAlert">
+    <nodeSuccessors name="next" next="StartSafeChangesBlock0"/>
+  </nodes>
+<!--@Location 13,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock0">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.ProductNotification"/>
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="CallNode10"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="GetCurrencies2"/>
+    <startNode referencedName="ViewProductNotification-Prefix"/>
+  </nodes>
+<!--@Location 13,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrencies2">
+    <configurationValues name="Method" value="Active Currencies"/>
+    <pipelet href="enfinity:/core/pipelets/GetCurrencies.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OrganizationDomain"/>
+  </nodes>
+<!--@Location 13,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CallNode16"/>
+    <parameterBindings name="ProductDomain" objectPath="CurrentProductRepository:RepositoryDomain"/>
+    <startNode referencedName="ProcessProductNotification-GetProduct"/>
+  </nodes>
+<!--@Location 13,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="CreateForm2"/>
+<!--@BendPoints 33,13-->
+    <nodeSuccessors name="NOT_VISIBLE" next="SetDictionaryValue5"/>
+    <startNode referencedName="ProcessUser-IsProductVisibleToCurrentUser"/>
+  </nodes>
+<!--@Location 13,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm2">
+    <configurationValues name="FormName" value="AlertForm"/>
+    <configurationValues name="FormResource" value="AlertForm"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 27,14-->
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <returnValueBindings name="Form" objectPath="AlertForm"/>
+  </nodes>
+<!--@Location 13,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="UpdateAlert"
+      operator="undef">
+<!--@BendPoints 27,16-->
+    <nodeSuccessors name="decision_yes" next="ValidateForm1"/>
+<!--@BendPoints 28,15 28,19-->
+    <nodeSuccessors name="decision_no" next="JoinNode1"/>
+  </nodes>
+<!--@Location 13,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode9"/>
+    <parameterBindings name="Form" objectPath="AlertForm"/>
+  </nodes>
+<!--@Location 13,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="Decision3"/>
+  </nodes>
+<!--@Location 13,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="Decision3" conditionKey="Alert_Type"
+      operator="str_eq" conditionValue="InStockNotification">
+    <nodeSuccessors name="decision_yes" next="CreateStockAlert1"/>
+<!--@BendPoints 29,21 29,22-->
+    <nodeSuccessors name="decision_no" next="Decision2"/>
+  </nodes>
+<!--@Location 13,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateStockAlert1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/CreateStockAlert.xml"/>
+    <nodeSuccessors name="next" next="UpdateCustomAttribute3"/>
+    <parameterBindings name="AlertDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="AlertProduct" objectPath="Product"/>
+    <parameterBindings name="AlertUser" objectPath="CurrentUser"/>
+    <returnValueBindings name="Alert" objectPath="ListItem"/>
+  </nodes>
+<!--@Location 13,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdateCustomAttribute3">
+    <configurationValues name="DefaultAttributeName" value="Value"/>
+    <configurationValues name="DefaultAttributeType" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateCustomAttribute.xml"/>
+    <nodeSuccessors name="next" next="Join2"/>
+<!--@BendPoints 28,27 28,26 32,26 32,27-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode13"/>
+    <parameterBindings name="AttributeValue" objectPath="CurrentSession:CurrencyCode"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="LocaleInformation" objectPath="CurrentSession:Locale"/>
+  </nodes>
+<!--@Location 13,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="Join2">
+    <nodeSuccessors name="next" next="PipeletNode_cdjF4JAJEeyaB46tdLgluQ"/>
+  </nodes>
+<!--@Location 13,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="PipeletNode_cdjF4JAJEeyaB46tdLgluQ">
+    <configurationValues name="DefaultAttributeName" value="AlertProductName"/>
+    <configurationValues name="DefaultAttributeType" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateCustomAttribute.xml"/>
+    <nodeSuccessors name="next" next="UpdateCustomAttribute2"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode_ct85YJAJEeyaB46tdLgluQ"/>
+    <parameterBindings name="AttributeValue" objectPath="ProductBO:DisplayName"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="LocaleInformation" objectPath="Locale"/>
+  </nodes>
+<!--@Location 13,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdateCustomAttribute2">
+    <configurationValues name="DefaultAttributeName" value="ProductImagePath"/>
+    <configurationValues name="DefaultAttributeType" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateCustomAttribute.xml"/>
+    <nodeSuccessors name="next" next="VerifyEMailAddress0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode11"/>
+    <parameterBindings name="AttributeValue" objectPath="ProductBO:Extension(&quot;Image&quot;):ImageContainerBO:PrimaryImageBO(&quot;M&quot;):ContentRef"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="LocaleInformation" objectPath="Locale"/>
+  </nodes>
+<!--@Location 13,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyEMailAddress0">
+    <pipelet href="enfinity:/core/pipelets/VerifyEMailAddress.xml"/>
+<!--@BendPoints 27,36-->
+    <nodeSuccessors name="next" next="UpdateCustomAttribute0"/>
+<!--@BendPoints 28,35-->
+    <nodeSuccessors name="pipelet_error" next="UpdateCustomAttribute1"/>
+    <parameterBindings name="EMailAddress" objectPath="AlertForm_NotificationMailAddress"/>
+  </nodes>
+<!--@Location 13,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdateCustomAttribute0">
+    <configurationValues name="DefaultAttributeName" value="NotificationMailAddress"/>
+    <configurationValues name="DefaultAttributeType" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateCustomAttribute.xml"/>
+    <nodeSuccessors name="next" next="EndSafeChangesBlock0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="AttributeValue" objectPath="AlertForm_NotificationMailAddress"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="LocaleInformation" objectPath="CurrentSession:Locale"/>
+  </nodes>
+<!--@Location 13,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock0">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.ProductNotification"/>
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode2"/>
+  </nodes>
+<!--@Location 13,20-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="account/productnotification/ProductNotificationConfirmation"/>
+  </nodes>
+<!--@Location 14,18-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 16,18-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="EndSafeChangesBlock1"/>
+  </nodes>
+<!--@Location 16,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock1">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.ProductNotification"/>
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode3"/>
+  </nodes>
+<!--@Location 16,20-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode3">
+    <template referencedName="account/productnotification/ProductNotificationDialog"/>
+  </nodes>
+<!--@Location 14,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdateCustomAttribute1">
+    <configurationValues name="DefaultAttributeName" value="NotificationMailAddress"/>
+    <configurationValues name="DefaultAttributeType" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateCustomAttribute.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue10"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="AttributeValue" objectPath="CurrentUser:Profile:Email"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="LocaleInformation" objectPath="Locale"/>
+  </nodes>
+<!--@Location 15,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue10">
+    <configurationValues name="Name" value="ERROR_EMailAddressInvalid"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 16,17-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 16,16-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode11">
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 16,15-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_ct85YJAJEeyaB46tdLgluQ">
+    <nodeSuccessors name="next" next="JoinNode11"/>
+  </nodes>
+<!--@Location 16,13-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode13">
+    <nodeSuccessors name="next" next="JoinNode_ct85YJAJEeyaB46tdLgluQ"/>
+  </nodes>
+<!--@Location 14,11-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="Decision2" conditionKey="Alert_Type"
+      operator="str_eq" conditionValue="PriceNotification">
+    <nodeSuccessors name="decision_yes" next="VerifyMoney3"/>
+<!--@BendPoints 33,23-->
+    <nodeSuccessors name="decision_no" next="Join1"/>
+  </nodes>
+<!--@Location 14,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyMoney3">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyMoney.xml"/>
+    <nodeSuccessors name="next" next="CreatePriceAlert1"/>
+<!--@BendPoints 30,25-->
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue9"/>
+    <parameterBindings name="CurrencyMnemonic" objectPath="CurrentSession:CurrencyCode"/>
+    <parameterBindings name="LocalizedString" objectPath="PriceValue"/>
+    <returnValueBindings name="MoneyValue" objectPath="AlertPrice"/>
+  </nodes>
+<!--@Location 14,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePriceAlert1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/CreatePriceAlert.xml"/>
+    <nodeSuccessors name="next" next="JoinNode12"/>
+    <parameterBindings name="AlertDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="AlertPrice" objectPath="AlertPrice"/>
+    <parameterBindings name="AlertProduct" objectPath="Product"/>
+    <parameterBindings name="AlertUser" objectPath="CurrentUser"/>
+    <returnValueBindings name="PriceAlert" objectPath="ListItem"/>
+  </nodes>
+<!--@Location 14,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode12">
+    <nodeSuccessors name="next" next="Join2"/>
+  </nodes>
+<!--@Location 15,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue9">
+    <configurationValues name="Name" value="ERROR_PRICE"/>
+    <configurationValues name="Value" value="ERROR_PRICE"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="Join1"/>
+  </nodes>
+<!--@Location 16,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="Join1">
+    <nodeSuccessors name="next" next="JoinNode13"/>
+  </nodes>
+<!--@Location 16,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+    <nodeSuccessors name="next" next="Join1"/>
+  </nodes>
+<!--@Location 16,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue5">
+    <configurationValues name="Name" value="ERROR_ProductNotFound"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode9"/>
+  </nodes>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start1" name="Dispatch">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction0"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewProductNotification-CreateAlert"/>
+    <configurationValues name="OutValue_1" value="ViewProductNotification-UpdateAlert"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="Jump2"/>
+<!--@BendPoints 3,3 3,4-->
+    <nodeSuccessors name="pipelet_error" next="Jump1"/>
+    <parameterBindings name="Key_0" objectPath="submitNew"/>
+    <parameterBindings name="Key_1" objectPath="submitUpdate"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump2">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode referencedName="ViewProductNotification-List"/>
+  </nodes>
+<!--@Location 24,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="GetRemoveAlertConfirmation">
+<!--@BendPoints 49,2-->
+    <nodeSuccessors name="next" next="CallNode18"/>
+  </nodes>
+<!--@Location 24,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode18">
+    <nodeSuccessors name="next" next="CallNode5"/>
+    <startNode referencedName="ViewProductNotification-Prefix"/>
+  </nodes>
+<!--@Location 24,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="GetAlertByUUID0"/>
+    <parameterBindings name="ProductDomain" objectPath="CurrentProductRepository:RepositoryDomain"/>
+    <startNode referencedName="ProcessProductNotification-GetProduct"/>
+  </nodes>
+<!--@Location 24,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetAlertByUUID0">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetAlertByUUID.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue0"/>
+  </nodes>
+<!--@Location 24,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="InteractionNode7"/>
+  </nodes>
+<!--@Location 24,6-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode7">
+    <template referencedName="account/productnotification/ProductNotificationRemoveDialog"/>
+  </nodes>
+<!--@Location 25,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="ERROR_ALERT_NOT_FOUND"/>
+    <configurationValues name="Value" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 51,9-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start3" name="List">
+    <nodeSuccessors name="next" next="CallNode_WE__cDKPEeip6KN4VvIgdg"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_WE__cDKPEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="SetDictionaryValue4"/>
+    <parameterBindings name="PageName" constant="productnotification-list"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue4">
+    <configurationValues name="Name" value="JumpTarget"/>
+    <configurationValues name="Value" value="ViewProductNotification-List"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 11,6-->
+    <nodeSuccessors name="next" next="CallNode6"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+<!--@BendPoints 11,8-->
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+<!--@BendPoints 11,10-->
+    <nodeSuccessors name="next" next="GetAlertsByUser1"/>
+    <startNode referencedName="ViewProductNotification-Prefix"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetAlertsByUser1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetAlertsByUser.xml"/>
+<!--@BendPoints 11,12-->
+    <nodeSuccessors name="next" next="GetCurrencies1"/>
+    <parameterBindings name="AlertUser" objectPath="CurrentUser"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrencies1">
+    <configurationValues name="Method" value="Active Currencies"/>
+    <pipelet href="enfinity:/core/pipelets/GetCurrencies.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OrganizationDomain"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBORepository"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.productNotification.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/ProductNotificationList.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Prefix" callMode="Private">
+<!--@BendPoints 1,10-->
+    <nodeSuccessors name="next" next="CallNode11"/>
+  </nodes>
+<!--@Location 0,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <nodeSuccessors name="NOTLOGGEDIN" next="DecisionNode_SHX1oPUUEeaEKY39dwnvWQ"/>
+    <startNode referencedName="ProcessUser-CheckLoggedIn"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="EndNode1"/>
+<!--@BendPoints 3,14-->
+    <nodeSuccessors name="ERROR" next="JumpNode6"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessUser-GetProfile"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1"/>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode6">
+    <startNode referencedName="ViewUserAccount-Start"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_SHX1oPUUEeaEKY39dwnvWQ"
+      conditionKey="TargetPipeline">
+<!--@BendPoints 5,12-->
+    <nodeSuccessors name="decision_yes" next="KeyMapper_XMbq8PUUEeaEKY39dwnvWQ"/>
+<!--@BendPoints 7,11-->
+    <nodeSuccessors name="decision_no" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_XMbq8PUUEeaEKY39dwnvWQ">
+    <configurationValues name="ValueType" value="Form Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_ez1AgPUcEeaEKY39dwnvWQ"/>
+    <parameterBindings name="InValue_1" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_2" objectPath="TargetPipeline"/>
+    <parameterBindings name="InValue_4" constant=""/>
+    <returnValueBindings name="OutValue_1" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_2" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_ez1AgPUcEeaEKY39dwnvWQ">
+    <nodeSuccessors name="next" next="KeyMapper_p0r_gPUUEeaEKY39dwnvWQ"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_p0r_gPUUEeaEKY39dwnvWQ">
+    <configurationValues name="ValueType" value="Form Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue0"/>
+    <parameterBindings name="InValue_1" constant="ViewUserAccount-ShowLogin"/>
+    <parameterBindings name="InValue_2" constant="https"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Protocol"/>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="TargetURL"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode7"/>
+  </nodes>
+<!--@Location 2,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="AjaxRequestMarker">
+<!--@BendPoints 5,22-->
+    <nodeSuccessors name="decision_yes" next="InteractionNode6"/>
+<!--@BendPoints 7,21 7,22-->
+    <nodeSuccessors name="decision_no" next="InteractionNode8"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode6">
+    <template referencedName="account/RedirectToLogin"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode8">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <configurationValues name="ValueType" value="Form Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 7,15-->
+    <nodeSuccessors name="next" next="JoinNode_ez1AgPUcEeaEKY39dwnvWQ"/>
+    <parameterBindings name="InValue_1" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_2" constant="ViewProductNotification-List"/>
+    <returnValueBindings name="OutValue_1" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_2" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 21,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="RemoveAlert">
+<!--@BendPoints 43,2-->
+    <nodeSuccessors name="next" next="CallNode13"/>
+  </nodes>
+<!--@Location 21,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode13">
+    <nodeSuccessors name="next" next="CallNode19"/>
+    <startNode referencedName="ViewProductNotification-Prefix"/>
+  </nodes>
+<!--@Location 21,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode19">
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <parameterBindings name="ProductDomain" objectPath="CurrentProductRepository:RepositoryDomain"/>
+    <startNode referencedName="ProcessProductNotification-GetProduct"/>
+  </nodes>
+<!--@Location 21,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+    <parameterBindings name="ChannelOrganization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ProcessProductNotification-RemoveAlert"/>
+  </nodes>
+<!--@Location 21,4-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="account/productnotification/ProductNotificationRemoveConfirmation"/>
+  </nodes>
+<!--@Location 17,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="UpdateAlert">
+    <nodeSuccessors name="next" next="StartSafeChangesBlock1"/>
+  </nodes>
+<!--@Location 17,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock1">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.ProductNotification"/>
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="CallNode12"/>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+<!--@BendPoints 35,6-->
+    <nodeSuccessors name="next" next="GetCurrencies0"/>
+    <startNode referencedName="ViewProductNotification-Prefix"/>
+  </nodes>
+<!--@Location 17,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrencies0">
+    <configurationValues name="Method" value="Active Currencies"/>
+    <pipelet href="enfinity:/core/pipelets/GetCurrencies.xml"/>
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OrganizationDomain"/>
+  </nodes>
+<!--@Location 17,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="CallNode17"/>
+    <parameterBindings name="ProductDomain" objectPath="CurrentProductRepository:RepositoryDomain"/>
+    <startNode referencedName="ProcessProductNotification-GetProduct"/>
+  </nodes>
+<!--@Location 17,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="DecisionNode5"/>
+<!--@BendPoints 38,12-->
+    <nodeSuccessors name="NOT_VISIBLE" next="SetDictionaryValue2"/>
+    <startNode referencedName="ProcessUser-IsProductVisibleToCurrentUser"/>
+  </nodes>
+<!--@Location 17,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="ListItem">
+    <nodeSuccessors name="decision_yes" next="Join4"/>
+<!--@BendPoints 37,13 37,14-->
+    <nodeSuccessors name="decision_no" next="GetAlertByUUID2"/>
+  </nodes>
+<!--@Location 17,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="Join4">
+<!--@BendPoints 35,18-->
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+  </nodes>
+<!--@Location 17,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="Alert_Type"
+      operator="str_eq" conditionValue="NoNotification">
+    <nodeSuccessors name="decision_yes" next="CallNode20"/>
+<!--@BendPoints 37,19 37,20-->
+    <nodeSuccessors name="decision_no" next="Decision1"/>
+  </nodes>
+<!--@Location 17,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode20">
+    <nodeSuccessors name="next" next="InteractionNode9"/>
+    <parameterBindings name="ChannelOrganization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ProcessProductNotification-RemoveAlert"/>
+  </nodes>
+<!--@Location 17,11-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode9">
+    <template referencedName="account/productnotification/ProductNotificationRemoveConfirmation"/>
+  </nodes>
+<!--@Location 18,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="Decision1" conditionKey="Alert_Type"
+      operator="str_eq" conditionValue="PriceNotification">
+    <nodeSuccessors name="decision_yes" next="VerifyMoney1"/>
+<!--@BendPoints 39,21-->
+    <nodeSuccessors name="decision_no" next="Join5"/>
+  </nodes>
+<!--@Location 18,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyMoney1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyMoney.xml"/>
+    <nodeSuccessors name="next" next="UpdatePriceAlert1"/>
+<!--@BendPoints 41,23 41,24-->
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue7"/>
+    <parameterBindings name="CurrencyMnemonic" objectPath="CurrentSession:CurrencyCode"/>
+    <parameterBindings name="LocalizedString" objectPath="PriceValue"/>
+    <returnValueBindings name="MoneyValue" objectPath="AlertPrice"/>
+  </nodes>
+<!--@Location 18,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdatePriceAlert1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/UpdatePriceAlert.xml"/>
+<!--@BendPoints 37,27-->
+    <nodeSuccessors name="next" next="Join5"/>
+    <parameterBindings name="Alert" objectPath="ListItem"/>
+    <parameterBindings name="AlertPrice" objectPath="AlertPrice"/>
+    <returnValueBindings name="PriceAlert" objectPath="ListItem"/>
+  </nodes>
+<!--@Location 19,13-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="Join5">
+<!--@BendPoints 39,28-->
+    <nodeSuccessors name="next" next="SetDictionaryValue8"/>
+  </nodes>
+<!--@Location 19,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue8">
+    <configurationValues name="Name" value="UpdateAlert"/>
+    <configurationValues name="Value" value="&quot;UpdateAlert&quot;"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="DetermineLocales0"/>
+  </nodes>
+<!--@Location 19,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineLocales0">
+    <pipelet href="enfinity:/core/pipelets/DetermineLocales.xml"/>
+    <nodeSuccessors name="next" next="LoopNode0"/>
+  </nodes>
+<!--@Location 19,16-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode0" loop="Locales">
+<!--@BendPoints 37,33 37,29-->
+    <nodeSuccessors name="next" next="JoinNode12"/>
+    <entry key="Locale">
+      <nodeSuccessors name="loop_entry_next" next="RemoveCustomAttribute0"/>
+    </entry>
+  </nodes>
+<!--@Location 19,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveCustomAttribute0">
+    <configurationValues name="DefaultAttributeName" value="NotificationMailAddress"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveCustomAttribute.xml"/>
+<!--@BendPoints 40,35 40,33-->
+    <nodeSuccessors name="next" next="LoopNode0_Entry"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="LocaleInformation" objectPath="Locale"/>
+  </nodes>
+<!--@Location 20,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue7">
+    <configurationValues name="Name" value="ERROR_PRICE"/>
+    <configurationValues name="Value" value="ERROR_PRICE"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 41,26-->
+    <nodeSuccessors name="next" next="InteractionNode4"/>
+  </nodes>
+<!--@Location 20,13-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode4">
+    <template referencedName="account/productnotification/ProductNotificationDialog"/>
+  </nodes>
+<!--@Location 18,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetAlertByUUID2">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetAlertByUUID.xml"/>
+<!--@BendPoints 37,17-->
+    <nodeSuccessors name="next" next="Join4"/>
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue6"/>
+    <returnValueBindings name="Alert" objectPath="ListItem"/>
+  </nodes>
+<!--@Location 19,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue6">
+    <configurationValues name="Name" value="ERROR_ALERT_NOT_FOUND"/>
+    <configurationValues name="Value" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode10"/>
+  </nodes>
+<!--@Location 20,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+    <nodeSuccessors name="next" next="InteractionNode5"/>
+  </nodes>
+<!--@Location 20,9-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode5">
+    <template referencedName="account/productnotification/ProductNotificationDialog"/>
+  </nodes>
+<!--@Location 19,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="ERROR_ProductNotFound"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 41,13-->
+    <nodeSuccessors name="next" next="JoinNode10"/>
+  </nodes>
+<!--@Location 9,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" name="ViewAlertForm">
+    <nodeSuccessors name="next" next="CallNode8"/>
+  </nodes>
+<!--@Location 9,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode_l9BBADKPEeip6KN4VvIgdg"/>
+    <startNode referencedName="ViewProductNotification-Prefix"/>
+  </nodes>
+<!--@Location 9,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_l9BBADKPEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="CreateForm1"/>
+    <parameterBindings name="PageName" constant="productnotification-detail"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 9,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm1">
+    <configurationValues name="FormName" value="AlertForm"/>
+    <configurationValues name="FormResource" value="AlertForm"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <returnValueBindings name="Form" objectPath="AlertForm"/>
+  </nodes>
+<!--@Location 9,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="CallNode15"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <parameterBindings name="ProductSKU" objectPath="SKU"/>
+    <startNode referencedName="ProcessProduct-GetProductBOBySKU"/>
+  </nodes>
+<!--@Location 9,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+    <nodeSuccessors name="next" next="GetCurrencies3"/>
+<!--@BendPoints 23,12-->
+    <nodeSuccessors name="NOT_VISIBLE" next="SetDictionaryValue3"/>
+    <startNode referencedName="ProcessUser-IsProductVisibleToCurrentUser"/>
+  </nodes>
+<!--@Location 9,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrencies3">
+    <configurationValues name="Method" value="Active Currencies"/>
+    <pipelet href="enfinity:/core/pipelets/GetCurrencies.xml"/>
+<!--@BendPoints 19,14-->
+    <nodeSuccessors name="next" next="DecisionNode4"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OrganizationDomain"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="AlertUUID">
+    <nodeSuccessors name="decision_yes" next="JoinNode2"/>
+<!--@BendPoints 21,15 21,16-->
+    <nodeSuccessors name="decision_no" next="CallNode9"/>
+  </nodes>
+<!--@Location 9,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 19,20-->
+    <nodeSuccessors name="next" next="DecisionNode6"/>
+  </nodes>
+<!--@Location 9,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="AlertUUID"
+      operator="undef">
+<!--@BendPoints 19,29-->
+    <nodeSuccessors name="decision_yes" next="JoinNode6"/>
+<!--@BendPoints 21,21 21,22-->
+    <nodeSuccessors name="decision_no" next="CallNode14"/>
+  </nodes>
+<!--@Location 10,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+<!--@Location 10,15-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+<!--@BendPoints 21,32-->
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+  </nodes>
+<!--@Location 10,16-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="account/productnotification/ProductNotificationDialog"/>
+  </nodes>
+<!--@Location 10,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="Alert" next="GetCustomAttributes0"/>
+    <nodeSuccessors name="ERROR_ALERT_NOT_FOUND" next="JoinNode4"/>
+    <startNode referencedName="ProcessProductNotification-GetNotificationByAlertUUID"/>
+    <returnValueBindings name="Alert" objectPath="ListItem"/>
+  </nodes>
+<!--@Location 10,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCustomAttributes0">
+    <pipelet href="enfinity:/core/pipelets/GetCustomAttributes.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ListItem"/>
+    <parameterBindings name="Locale" nullBinding="true"/>
+  </nodes>
+<!--@Location 11,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+<!--@BendPoints 23,26-->
+    <nodeSuccessors name="next" next="SetDictionaryValue1"/>
+  </nodes>
+<!--@Location 11,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="ERROR_ALERT_NOT_FOUND"/>
+    <configurationValues name="Value" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 23,29-->
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 10,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+<!--@BendPoints 23,19-->
+    <nodeSuccessors name="UNKNOWN_ALERT_TYPE" next="JoinNode4"/>
+    <startNode referencedName="ProcessProductNotification-GetNotificationByProduct"/>
+  </nodes>
+<!--@Location 11,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue3">
+    <configurationValues name="Name" value="ERROR_ProductNotFound"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 24,14 24,31-->
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,55 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset name="It" value="#PliBO:ProductBO:Extension("Gifting"):ApplicableGiftWraps#" scope="request" />
+
+<isif condition="#It:Size EQ '1'#">
+	
+	<div class="form-group">
+		
+		<label class="control-label col-sm-4" for="<isprint value="#Subform:GiftWrapSelection:QualifiedName#">">
+			<istext key="checkout.gifting.giftwrap.wrap"/>
+		</label>
+		<div class="col-sm-8">
+		<isloop iterator="It" alias="wrap">
+			<input type="hidden" name="<isprint value="#Subform:GiftWrapSelection:QualifiedName#">" value="<isprint value="#wrap:ID#">" />
+			<isset name="ProductPrice" value="#wrap:Extension("Pricing")#" scope="request">
+			<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+			<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+			<isset name="salePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext)#" scope="request"/>
+			
+			<div class="control-label"><isprint value="#wrap:Name#"> - <isprint value="#salePrice:Price#">
+				<ISProductPriceAdditionalText ProductBO="#wrap#">
+			</div>
+		</isloop>
+		</div>
+	</div>
+	
+<iselse>
+	
+	<div class="form-group">
+		
+		<label class="control-label col-sm-4" for="<isprint value="#Subform:GiftWrapSelection:QualifiedName#">">
+			<istext key="checkout.gifting.giftwrap.wrap"/>
+		</label>
+		<div class="col-sm-8">
+			<select class="form-control" id="<isprint value="#Subform:GiftWrapSelection:QualifiedName#">" name="<isprint value="#Subform:GiftWrapSelection:QualifiedName#">">
+				<isloop iterator="It" alias="wrap">
+					<isset name="ProductPrice" value="#wrap:Extension("Pricing")#" scope="request">
+					<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+					<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+					<isset name="salePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext)#" scope="request"/>
+					<option value="<isprint value="#wrap:ID#">"
+							<isif condition="#not(Subform:GiftWrapSelection:ValueMissing) AND (wrap:ID EQ Subform:GiftWrapSelection:Value)#">
+								selected="selected"
+							<iselseif condition="#(Subform:GiftWrapSelection:ValueMissing) AND isDefined(SplitInfo:get("GiftWrapProduct")) AND (wrap:ID EQ SplitInfo:get("GiftWrapProduct"):ID)#">
+								selected="selected"
+							</isif>
+					><isprint value="#wrap:Name#"> - <isprint value="#salePrice:Price#">
+						<ISProductPriceAdditionalText ProductBO="#wrap#">
+					</option>
+				</isloop>
+			</select>
+		</div>
+	</div>
+	
+</isif>

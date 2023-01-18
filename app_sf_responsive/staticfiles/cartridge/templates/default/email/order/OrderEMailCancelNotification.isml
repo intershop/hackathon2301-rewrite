@@ -1,0 +1,61 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isset name="CartGifting" value="#OrderBO:Extension("Gifting")#" scope="request"/>
+<isset name="CartPayment" value="#OrderBO:Extension("Payment")#" scope="request"/>
+<isset name="OrderPayment" value="#OrderBO:Extension("Payment")#" scope="request"/>
+<isset name="OrderShippingBucket" value="#OrderBO:Extension("ShippingBucket")#" scope="request"/>
+
+<isif condition="#NOT isDefined(PriceDisplayTypeName)#">
+	<isset name="PriceDisplayTypeName" value="#OrderBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+
+<subject><istext key="email.order_cancellation.heading" parameter0="#ChannelName#" encoding="off"/></subject>
+<% getPipelineDictionary().put("CurrentDate", new java.util.Date()); %>
+
+<isinclude template="email/mailTemplate/MailHeader"/>
+
+<p class="header"><istext key="email.order_cancellation.heading" parameter0="#ChannelName#" /></p>
+
+<!--- Order Number --->
+<p>	
+	<istext key="order.order_number.label" parameter0="#OrderBO:DocumentNo#"/>
+</p>
+
+<!--- Dear Mr --->
+<p>
+	<isif condition="#isDefined(OrderBO:UserBO:Title) AND (OrderBO:UserBO:Title NE '')#">
+		<istext key="email.dear.label.title_firstname_lastname"
+			parameter0="#OrderBO:UserBO:Title#"
+			parameter1="#OrderBO:UserBO:FirstName#"
+			parameter2="#OrderBO:UserBO:LastName#"/>
+	<iselse>
+		<istext key="email.dear.label.firstname_lastname"
+			parameter0="#OrderBO:UserBO:FirstName#"
+			parameter1="#OrderBO:UserBO:LastName#" />
+	</isif>
+</p>
+
+<!--- Order Confirmation --->
+<p>
+	<istext key="email.order_cancellation.orderCanceled.text" parameter0="#CurrentDate#" parameter1="#encodeValue(URL(Action('ViewOrders-SimpleOrderSearch')))#" encoding="off" />
+</p>
+<br />
+
+<!--- Question text and thank you --->
+<p>
+	<istext key="email.order_confirmation.questions" 
+		parameter0="#URL(Action('ViewHomepage-Start'))#" 
+		parameter1="#encodeValue(ChannelName)#" 
+		parameter2="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page'))#" 
+		encoding="off" 
+	/> 
+</p>
+<p>
+	<istext key="email.best_regards.label"/><br />
+	<istext key="email.user_services.label" parameter0="#encodeValue(URL(Action('ViewHomepage-Start')))#" parameter1="#encodeValue(ChannelName)#" encoding="off" />
+</p>
+
+<isinclude template="email/mailTemplate/MailFooter"/>

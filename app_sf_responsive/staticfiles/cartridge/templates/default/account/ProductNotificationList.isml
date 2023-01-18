@@ -1,0 +1,55 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.productnotification.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div>
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="PRODUCTNOTIFICATION">
+		</div>
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<h1><istext key="account.productnotification.heading"></h1>
+		
+			<isif condition="#hasElements(UserAlerts)#">
+				<p><istext key="account.productnotification.text"></p>
+			</isif>
+
+			<!-- Product notifications -->
+			<isif condition="#hasElements(UserAlerts)#">
+				<div class="list-header">
+					<div class=" col-xs-6 list-header-item"><istext key="account.productnotification.table.header.product"></div>
+					<div class="col-xs-6 list-header-item"><istext key="account.productnotification.table.header.notification"></div>
+				</div>
+				<div class="list-body">	
+					<isloop iterator="UserAlerts" alias="ListItem">
+						<isProductNotificationItem
+							ProductBO="#ProductBORepository:ProductBOBySKU(ListItem:Product:SKU)#"
+							ListItem="#ListItem#"
+							Currency="#CurrentRequest:Currency#"
+							showImage="true"
+							showPrice="true"
+						>
+					</isloop>
+				</div>
+			<iselse>
+				<!-- No Product notifications message -->
+				<p><istext key="account.productnotification.footer.no_products"></p>
+			</isif>
+			
+		</div>
+	</div>
+</div>

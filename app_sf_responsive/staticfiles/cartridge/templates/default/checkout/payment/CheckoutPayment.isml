@@ -1,0 +1,442 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="webcontrols/Modules"/>
+
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<isset name="CartPayment" value="#CurrentCartBO:Extension("Payment")#" scope="request"/>
+<isset name="UserBO" value="#CurrentCartBO:UserBO#" scope="request"/>
+
+<h1><istext key="checkout.payment.pagetitle"></h1>
+
+<div class="row" data-testing-id="checkout-payment-page">
+	<div class="col-sm-12 col-md-8">
+		<isform id="form-payment" method="post" action="#URL(Action('ViewCheckoutPayment-Dispatch'))#" class="form-horizontal" name="PaymentForm">
+
+			<isBasketValidationMessages basketValidationResults="#BasketValidationResults#">
+			<isOrderCreationMessages orderCreationResult="#OrderCreationResult#" basketValidationResults="#BasketValidationResults#">
+
+			<!---  BEGIN Payment ERROR  --->
+			<isif condition="#AuthorizationStatus EQ 'Cancel'#">
+				<div role="alert" class="alert alert-danger">
+					<div><istext key="checkout.payment.sorry_message.text" /></div>
+					<div><istext key="checkout.payment.canceled.text" /></div>
+				</div>
+			<iselseif condition="#AuthorizationStatus EQ 'Failure'#"/>
+				<div role="alert" class="alert alert-danger">
+					<div><istext key="checkout.payment.sorry_message.text" /></div>
+					<div><istext key="checkout.payment.failed.text" /></div>
+				</div>
+			</isif>
+			
+			<isif condition="#isDefined(ERROR_Payment)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.payment.no_Selection.error"/>
+				</div>
+			<iselseif condition="#isDefined(ERROR_BasketCovered)#"><!--- react on payment provider results --->
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.payment.basketCovered.error"/>
+				</div>
+			</isif>
+
+			<isif condition="#isDefined(ERROR_PaymentServiceNotAssignable)#">
+				<div role="alert" class="alert alert-danger">
+					<isif condition="#isDefined(NotCoveredAmount)#">
+						<istext key="checkout.payment.paymentInstrumentAssigmentFailed.basketNotCovered"/>
+					<iselse>
+						<istext key="checkout.payment.paymentInstrumentAssigmentFailed.basketCovered"/>
+					</isif>
+				</div>
+			</isif>
+			
+			<isif condition="#isDefined(ERROR_duplicatePII)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.payment.method.duplicate"/>
+				</div>
+			</isif>
+			
+			<isif condition="#isDefined(Result) AND hasLoopElements(Result:Errors)#">
+				<div role="alert" class="alert alert-danger">
+					<isloop iterator="Result:Errors" alias="Error">
+						<p>
+							<!--- replace possible curly brackets which may be used for marking localization keys --->
+							<isset name="ErrorMessage" value="#replace(Error:Message,'^\\{|\\}$','')#" scope="request"/>
+							<isset name="LocalicedErrorMessage" value="#localizeText(ErrorMessage)#" scope="request"/>
+							<isif condition="#isDefined(LocalicedErrorMessage)#">
+								<isprint value="#LocalicedErrorMessage#">
+							<iselse/>
+								<isprint value="#ErrorMessage#">
+							</isif>
+						</p>
+					</isloop>
+				</div>
+			</isif>
+			
+			<!--- 
+				Extension point for additional payment errors <br/>
+				Input parameters:
+				<ul>
+					<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+					<li><b>CurrentCartBO</b>:com.intershop.component.basket.capi.BasketBO</li>
+					<li><b>CartPayment</b>:com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+					<li><b>UserBO</b>:com.intershop.component.user.capi.UserBO</li>
+				</ul> 
+			--->
+			<isinclude extensionpoint="PaymentErrors"/>
+			<!---  END Payment ERROR  --->
+
+			<!--- 
+				Extension point between payment errors and payment method selection <br/> 
+				Input parameters:
+				<ul>
+					<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+					<li><b>CurrentCartBO</b>:com.intershop.component.basket.capi.BasketBO</li>
+					<li><b>CartPayment</b>:com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+					<li><b>UserBO</b>:com.intershop.component.user.capi.UserBO</li>
+				</ul> 
+			--->
+			<isinclude extensionpoint="BeforePaymentMethodSelection"/>
+			
+			<!--- List of payment methods --->
+			<h3><istext key="checkout.payment.method.select.heading" /></h3>
+			<isif condition="#(hasElements(PaymentServiceBOs)) AND (CurrentCartBO:BasketTotalPriceMinusLimitedTenderGross:Value > 0)#">
+				<ul class="list-unstyled" id="payment-accordion" role="tablist" aria-multiselectable="true">
+					<isloop iterator="PaymentServiceBOs" alias="PaymentServiceBO">
+						<isset name="Applicability" value="#PaymentServiceBO:Applicability(CurrentCartBO)#" scope="request">
+						<!--- Restriction Errors (e.g. minimum order value not reached) --->
+						<isif condition="#Applicability:State EQ 'Restricted'#"><!---NotApplicable --->
+							<isset name="RestrictionErrors" value="#Applicability:Output:Restrictions#" scope="request">
+						<iselse>
+							<%
+								getPipelineDictionary().remove("RestrictionErrors");
+							%>
+						</isif>
+						
+						<!--- only show open tender in list --->
+						<isif condition="#(PaymentServiceBO:Extension("LimitedTender") EQ null) AND (Applicability:State NE 'NotApplicable')#">
+							
+							<!--- show this service if service has parameters
+								or if it doesn't have parameters and no paymentinstruments are available yet (neither in userrepo nor in basketrepo)  --->
+							<isif condition="#hasElements(PaymentServiceBO:PaymentInstrumentParameters)
+								OR (not hasElements(PaymentInstrumentBORepository:PaymentInstrumentBOs(PaymentServiceBO))
+									AND ((UserBO:Extension("PaymentInstrument") EQ null) 
+									OR (not hasElements(UserBO:Extension("PaymentInstrument"):PaymentInstrumentBOs(PaymentServiceBO)))))
+								AND (PaymentServiceBO:Extension("FastCheckout") EQ null)#">
+							
+								<li class="panel">
+									<div class="radio" role="tab" id="payment-accordion-heading-<isprint value = "#PaymentServiceBO:ID#">">
+										<label <isif condition="#isDefined(RestrictionErrors)#">class="disabled"</isif>>
+											<input type="radio"
+												id="paymentOption_<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">" value="<isprint value = "#PaymentServiceBO:ID#">"
+												name="PaymentServiceSelection" 
+												data-testing-id="payment-<isprint value="#PaymentServiceBO:DisplayName#" />-element"
+												data-toggle="collapse" 
+												data-parent="#'#'#payment-accordion" 
+												data-target="#'#'#payment-accordion-body-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">" 
+												aria-controls="payment-accordion-body-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">"
+												class="collapsed"
+												<isif condition="#isDefined(RestrictionErrors)#">
+													disabled="disabled"
+												<iselseif condition="#PaymentSelectionUUID eq PaymentServiceBO:ID#">
+														checked="checked"
+												</isif>
+											/>
+											<isPaymentServiceDisplay
+												currentcartbo="#CurrentCartBO#"
+												paymentservice="#PaymentServiceBO#" 
+												paymentcosts="#PaymentServiceBO:PaymentCostBO(CurrentCartBO:PurchaseCurrencyCode)#"
+												restrictionerrors="#RestrictionErrors#"
+											>
+	
+											<!--- 
+												Extension point after payment service description section<br/> 
+												Input parameters:
+												<ul>
+													<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+													<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+													<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+													<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+													<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+													<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+													<li>RestrictionErrors: java.util.Collection<String></li>
+												</ul> 
+											--->
+											<isinclude extensionpoint="AdditionalPaymentServiceDescriptionData"/>
+	
+										</label>
+									</div>
+	
+									<div 
+										id="payment-accordion-body-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">" 
+										class="panel-collapse collapse<isif condition="#PaymentSelectionUUID eq PaymentServiceBO:ID#"> in</isif>" 
+										role="tabpanel" 
+										aria-labelledby="payment-accordion-heading-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">"
+									><!---empty div is wanted for the accordion  --->
+										
+										<isif condition="#hasElements(PaymentServiceBO:PaymentInstrumentParameters)#"><!--- TODO fix for same propertygroup in several services!!! --->
+											<!--- @deprecated 7.10: extensionpoint before payment input data (property groups) --->
+											<isinclude extensionpoint="HostedPaymentPageDataBefore"/>
+											
+											<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+	
+												<isPropertyEditor  
+																propertydescriptor="#PaymentInstrumentParameter#"
+																validationresult="#ValidatedPropertyGroupConfiguration:get(PaymentInstrumentParameter)#"
+																hidetitle="true"
+																formfieldname="#PaymentServiceBO:ID#">
+											</isloop>
+											
+											<!--- extensionpoint after payment input data (property groups) --->
+											<isinclude extensionpoint="HostedPaymentPageData"/>
+	
+											<div class="form-group">
+												<div class="col-sm-offset-4 col-sm-8">
+													<!--- only allow saving data if paymentservice allows saving --->
+													<isif condition="#CurrentSession:isLoggedIn AND PaymentServiceBO:isPaymentInstrumentSavingAllowed#">
+														<fieldset>
+															<label>
+																<input name="CopyToWallet_<isprint value = "#PaymentServiceBO:ID#">" value="#PaymentServiceBO:ID#" type="checkbox" checked="checked" data-testing-id="payment-saveForLater-checkbox"/> <istext key="checkout.save_edit.checkbox.label" />
+																<isTooltip linkclass="details-tooltip" linktextkey="checkout.detail.text" headlinekey="checkout.save_edit.checkbox.label" contentkey="checkout.save_edit.checkbox.description">
+															</label>
+														</fieldset>
+													</isif>
+												</div>
+											</div>
+										</isif>
+									</div>
+	
+									<!--- 
+										Extension Point on the end of the payment service section<br/> 
+										Input parameters:
+										<ul>
+											<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+											<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+											<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+											<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+											<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+											<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+											<li>RestrictionErrors: java.util.Collection<String></li>
+										</ul> 
+									--->
+									<isinclude extensionpoint="AdditionalPaymentServiceInformation"/>
+								</li>
+							</isif>
+	
+							<!--- show available PaymentInstruments --->
+							<isif condition="#hasElements(PaymentInstrumentBOs)#">
+								<isloop iterator="PaymentInstrumentBOs" alias="PaymentInstrumentBO">
+								
+									<isif condition="#(PaymentInstrumentBO:PaymentServiceBO:ID EQ PaymentServiceBO:ID)#">
+										<li class="panel">
+											<isset name="containsPaymentInstrument" value="false" scope="request">
+											<isloop iterator="CartPayment:SelectedPaymentInstrumentBOs" alias="SelectedPaymentInstrumentBO">
+												<isif condition="#SelectedPaymentInstrumentBO:ID eq PaymentInstrumentBO:ID#">
+													<isset name="containsPaymentInstrument" value="true" scope="request">
+												</isif>
+											</isloop>
+											<div class="radio" role="tab" id="payment-accordion-heading2-<isprint value = "#PaymentInstrumentBO:ID#">">
+												<label <isif condition="#isDefined(RestrictionErrors)#">class="disabled"</isif>>
+													<input type="radio" 
+														id="paymentOption_<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">" 
+														name="PaymentServiceSelection"
+														data-testing-id="payment-<isprint value="#PaymentServiceBO:DisplayName#" />-element"
+														data-toggle="collapse" 
+														data-parent="#'#'#payment-accordion" 
+														data-target="#'#'#payment-accordion-body2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">" 
+														aria-controls="payment-accordion-body2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">"
+														value="<isprint value = "#PaymentInstrumentBO:ID#">"  
+														class="collapsed"
+														<isif condition="#isDefined(RestrictionErrors)#">
+															disabled="disabled"
+														<iselseif condition="#PaymentSelectionUUID eq PaymentInstrumentBO:ID#">
+															checked="checked"
+														</isif>
+													/>
+												
+													<isif condition="#NOT (EditPaymentInstrumentBO EQ PaymentInstrumentBO) AND (hasElements(PaymentServiceBO:PaymentInstrumentParameters))#">
+	
+														<!--- 
+															Extension Point before payment instrument parameters section<br/> 
+															Input parameters:
+															<ul>
+																<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+																<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+																<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+																<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+																<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+																<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+																<li>RestrictionErrors: java.util.Collection<String></li>
+																<li><b>PaymentInstrumentBO</b>: com.intershop.component.payment.capi.PaymentInstrumentBO</li>
+																<li><b>containsPaymentInstrument</b>: java.lang.String (boolean: true|false)</li>
+																<li>PaymentSelectionUUID: java.lang.String</li>
+															</ul> 
+														--->
+														<isinclude extensionpoint="AdditionalPaymentInstrumentDescriptionData"/>
+														<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+															<isPropertyViewer 
+																owner="#PaymentInstrumentBO#" 
+																propertydescriptor="#PaymentInstrumentParameter#"
+																hidetitle="true">
+														</isloop>
+														<isif condition="#myaccount NE 'true'#">
+															<div class="form-group">
+																<!---edit doesn't work yet due to problems with property groups
+																	<button class="ish-shiftContent" type="submit" name="editPayment" value="#PaymentInstrumentBO:ID#" ><istext key="checkout.payment.method.edit.link"/></button>
+																 --->
+																<div class="col-sm-offset-4 col-sm-8">
+																	<button class="btn btn-default" type="button" form="form-payment" name="deletePayment" value="#PaymentInstrumentBO:ID#" ><istext key="checkout.payment.method.delete.link"/></button>
+																</div>
+															</div>
+														</isif>
+													<iselse>
+														<isPaymentServiceDisplay 
+															currentcartbo="#CurrentCartBO#"
+															paymentservice="#PaymentServiceBO#" 
+															paymentcosts="#PaymentServiceBO:PaymentCostBO(CurrentCartBO:PurchaseCurrencyCode)#"
+															restrictionerrors="#RestrictionErrors#"														
+														>
+	
+														<!--- 
+															Extension Point after payment service description section (for services without parameters)<br/> 
+															Input parameters:
+															<ul>
+																<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+																<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+																<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+																<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+																<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+																<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+																<li>RestrictionErrors: java.util.Collection<String></li>
+																<li><b>PaymentInstrumentBO</b>: com.intershop.component.payment.capi.PaymentInstrumentBO</li>
+																<li><b>containsPaymentInstrument</b>: java.lang.String (boolean: true|false)</li>
+																<li>PaymentSelectionUUID: java.lang.String</li>
+															</ul> 
+														--->
+														<isinclude extensionpoint="AdditionalPaymentServiceDescriptionData"/>
+													</isif>
+												</label>
+											</div>		
+											<div 
+												id="payment-accordion-body2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">" 
+												class="panel-collapse collapse<isif condition="#PaymentSelectionUUID eq PaymentInstrumentBO:ID#"> in</isif>" 
+												role="tabpanel" 
+												aria-labelledby="payment-accordion-heading2-<isprint value = "#PaymentServiceBO:ID#">"
+											><!---empty div is wanted for the accordion  --->
+												<isif condition="#hasElements(PaymentServiceBO:PaymentInstrumentParameters)#">
+													<isif condition="#EditPaymentInstrumentBO EQ PaymentInstrumentBO#">
+														<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+															<isPropertyEditor owner="#PaymentInstrumentBO#" 
+																propertydescriptor="#PaymentInstrumentParameter#"
+																validationresult="#ValidatedPropertyGroupConfiguration:get(PaymentInstrumentParameter)#"
+																hidetitle="true"
+																formfieldname="#PaymentInstrumentBO:ID#"
+															>
+															<button class="btn btn-default" type="submit" name="applyPayment" value="#PaymentInstrumentBO:ID#" ><istext key="checkout.payment.apply.button.label"/></button>
+														</isloop>
+													</isif>
+												</isif>
+												
+												<isif condition="#hasElements(PaymentServiceBO:PaymentInstrumentParameters)#">
+												<!--- 
+													Extension Point at the end of the payment instrument parameters section, which collapses when the instrument is not selected<br/> 
+													Input parameters:
+													<ul>
+														<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+														<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+														<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+														<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+														<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+														<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+														<li>RestrictionErrors: java.util.Collection<String></li>
+														<li><b>PaymentInstrumentBO</b>: com.intershop.component.payment.capi.PaymentInstrumentBO</li>
+														<li><b>containsPaymentInstrument</b>: java.lang.String (boolean: true|false)</li>
+														<li>PaymentSelectionUUID: java.lang.String</li>
+													</ul> 
+												--->
+												<isinclude extensionpoint="AdditionalPaymentInstrumentInformationCollapsible"/>
+											</isif>
+											</div>
+	
+										<isif condition="#hasElements(PaymentServiceBO:PaymentInstrumentParameters)#">
+											<!--- 
+												Extension Point at the end of the payment instrument parameters section<br/> 
+												Input parameters:
+												<ul>
+													<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+													<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+													<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+													<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+													<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+													<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+													<li>RestrictionErrors: java.util.Collection<String></li>
+													<li><b>PaymentInstrumentBO</b>: com.intershop.component.payment.capi.PaymentInstrumentBO</li>
+													<li><b>containsPaymentInstrument</b>: java.lang.String (boolean: true|false)</li>
+													<li>PaymentSelectionUUID: java.lang.String</li>
+												</ul> 
+											--->
+											<isinclude extensionpoint="AdditionalPaymentInstrumentInformation"/>
+										<iselse>
+											<!--- 
+												Extension Point at the end of the payment service section (for services without parameters)<br/> 
+												Input parameters:
+												<ul>
+													<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+													<li><b>CurrentCartBO</b>: com.intershop.component.basket.capi.BasketBO</li>
+													<li><b>CartPayment</b>: com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+													<li><b>UserBO</b>: com.intershop.component.user.capi.UserBO</li>
+													<li><b>PaymentServiceBO</b>: com.intershop.component.payment.capi.PaymentServiceBO</li>
+													<li><b>Applicability</b>: com.intershop.api.service.common.v1.Result<ApplicabilityResult></li>
+													<li>RestrictionErrors: java.util.Collection<String></li>
+													<li><b>PaymentInstrumentBO</b>: com.intershop.component.payment.capi.PaymentInstrumentBO</li>
+													<li><b>containsPaymentInstrument</b>: java.lang.String (boolean: true|false)</li>
+													<li>PaymentSelectionUUID: java.lang.String</li>
+												</ul> 
+											--->
+											<isinclude extensionpoint="AdditionalPaymentServiceInformation"/>
+										</isif>
+										</li>
+									</isif>
+								</isloop>
+							</isif>
+						</isif>
+					</isloop>
+				</ul>
+			<iselseif condition="#CurrentCartBO:BasketTotalPriceMinusLimitedTenderGross:Value == 0#">
+				<div class="alert alert-info">
+					<istext key="checkout.payment.no_selection_required.info"/>
+				</div>
+			<!--- No payment methods available --->	
+			<iselse>
+				<div class="alert alert-danger">
+					<istext key="checkout.payment.no_AvailablePaymentMethods.error"/>
+				</div>
+			</isif>	
+		</isform>
+		
+		<div class="section checkout-payment-giftcard">
+			<!--- 
+				Lower Extension Point between payment selection / promo and submit button<br/> 
+				Input parameters:
+				<ul>
+					<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+					<li><b>CurrentCartBO</b>:com.intershop.component.basket.capi.BasketBO</li>
+					<li><b>CartPayment</b>:com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+					<li><b>UserBO</b>:com.intershop.component.user.capi.UserBO</li>
+				</ul> 
+			--->
+			<isinclude extensionpoint="AfterPaymentMethodSelection"/><!--- Gift card section - can be reloaded using ajax --->
+		</div>	
+		
+		<!--- END central payment information --->	
+	</div>
+	
+	<div class="col-sm-12 col-md-4 order-summary order-summary-paymentpage">
+		<isinclude template="checkout/payment/ajax/OrderSummary"> <!--- Order Summary - can be reloaded using ajax --->
+	</div>
+</div>
+

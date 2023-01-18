@@ -1,0 +1,50 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+<isset name="ShippingMethod" value="#Bucket:SelectedShippingMethod#" scope="request">
+
+<isif condition="#PriceDisplayType EQ 'net'#">
+	<isset name="ShippingCost" value="#Bucket:BucketPriceNet#" scope="request">
+<iselse>
+	<isset name="ShippingCost" value="#Bucket:BucketPriceGross#" scope="request">
+</isif>
+
+<p>
+	<isif condition="#ShippingMethod:shortName NE ''#">
+		<isprint value="#ShippingMethod:shortName#"> 
+	<iselse>
+		<isprint value="#ShippingMethod:DisplayName#"> 
+	</isif>
+	
+	<!--- prefer shipping costs from calculation --->
+	<isif condition="#ShippingCost NE ''#">
+		&nbsp;-&nbsp;
+		<isprint value="#ShippingCost#"/>
+		&nbsp;<isprint value="#eligibleShippingMethod:PriceDisplayAdditionalText#"/>
+	<iselse>
+		<!--- use old approach as fallback --->
+		<isif condition="#isDefined(Bucket:EligibleShippingMethods) AND hasElements(Bucket:EligibleShippingMethods)#">
+			<isloop iterator="Bucket:EligibleShippingMethods" alias="eligibleShippingMethod">
+			
+				<isif condition="#ShippingMethod:DisplayName EQ eligibleShippingMethod:DisplayName#">
+					<isif condition="#eligibleShippingMethod:ShippingMethodCost NE ''#">
+						&nbsp;-&nbsp;
+						<isif condition="#PriceDisplayType EQ 'net'#">
+							<isprint value="#eligibleShippingMethod:ShippingMethodCostNet#"/>
+						<iselse>
+							<isprint value="#eligibleShippingMethod:ShippingMethodCostGross#"/>
+						</isif>
+						&nbsp;<isprint value="#eligibleShippingMethod:PriceDisplayAdditionalText#"/>
+					</isif>
+				</isif>
+			</isloop>
+		</isif>
+	</isif>
+</p>
+
+<isif condition="#isDefined(Bucket:ShippingInstructions) AND (Bucket:ShippingInstructions NE '')#">
+	<div><strong><istext key="checkout.shipping_method.instructions.heading" /></strong></div>
+	<isprint value="#Bucket:ShippingInstructions#" encoding="nl2br,html">
+</isif>

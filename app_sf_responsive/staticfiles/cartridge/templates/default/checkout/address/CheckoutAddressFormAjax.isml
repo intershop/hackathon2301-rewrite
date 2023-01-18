@@ -1,0 +1,11 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isaddressform
+	webform="#AddressForm#"
+	countrylist="#ShippingCountries#"
+	locale="#CurrentSession:Locale#"
+	isshippingaddress="#isshippingaddress#"
+	addresstemplate="#'modules/address/forms/'.WebFormFileName#"
+	salutation_enumeration_provider="#SalutationEnumerationKeyProvider#"
+	isRegistration="#IsRegistration#">

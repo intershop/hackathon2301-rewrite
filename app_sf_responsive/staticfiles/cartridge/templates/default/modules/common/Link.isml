@@ -1,0 +1,6 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false"><%
+%><isif condition="#isDefined(link) AND (link NE '')#"><%
+%>href="<islink forcesecure="#forcesecure#" forceinsecure="#forceinsecure#" link="#link#" linkparameters="#linkparameters#" encoding="#encoding#">"<%
+%><iselse><%
+%>href=""<%
+%></isif>

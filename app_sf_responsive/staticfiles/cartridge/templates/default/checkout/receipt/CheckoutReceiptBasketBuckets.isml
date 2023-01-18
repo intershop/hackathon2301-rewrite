@@ -1,0 +1,111 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<isset name="BasketPayment" value="#BasketBO:Extension("Payment")#" scope="request"/>
+<isset name="BasketShippingMethod" value="#BasketBO:Extension("ShippingMethod")#" scope="request"/>
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#BasketBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<!--- Multiple Bucket --->
+<isif condition="#BasketShippingMethod:BasketShippingMethodSelectionBucketBOs:Size > 1#">
+	<div class="row equal">
+		<div class="col-sm-6">
+			<!---Billing Address --->
+			<div class="infobox">
+				<h3><istext key="checkout.address.billing.label" /></h3>
+				<isaddress address="#BasketBO:InvoiceToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<!---show payment details --->	
+			<div class="infobox">
+				<h3><istext key="checkout.widget.payment_method.heading" /></h3>
+				<div>
+					<isPaymentMethodDisplay paymentBOs="#BasketPayment:PaymentBOs#">
+				</div>
+				<isinclude extensionpoint="PaymentInfoExtensions">
+			</div>
+		</div>
+	</div>
+
+	<isloop iterator="BasketShippingMethod:BasketShippingMethodSelectionBucketBOs" alias="Bucket">
+		
+		<!--- LineItems per bucket --->
+		<isset scope="request" name="RecurringBasket" value="#BasketBO:Extension("RecurringBasket")#">
+		<isBucketHeader bucket="#Bucket#" bucketnumber="#BasketShippingMethod:BasketShippingMethodSelectionBucketBOs:Size#" displaydeliverytime="false" recurringbasketextension="#RecurringBasket#">
+		
+		<div class="row equal">
+			<div class="col-sm-6">
+				<!---Shipping Address --->
+				<div class="infobox">
+					<h3><istext key="checkout.widget.shipping-address.heading" /></h3>
+					<isaddress address="#Bucket:ShipToAddress#" showemail="#Bucket:SelectedShippingMethod:DigitalDelivery#">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<!---Shipping Method --->
+				<div class="infobox">
+					<h3><istext key="checkout.widget.shipping_method.heading" /></h3>
+					<isinclude template="checkout/common/widgets/ShippingMethodInc">
+				</div>
+			</div>
+		</div>
+
+		<!--- Pack Slip Message --->
+		<isinclude template="checkout/gifting/PackSlipMessageView">
+		
+		<!--- Line Items --->
+		<isinclude template="checkout/review/LineItemsPerBucket">
+
+	</isloop><!--- Bucket loop --->
+<iselse>
+	<isloop iterator="BasketShippingMethod:BasketShippingMethodSelectionBucketBOs" alias="Bucket">
+		<div class="row equal">
+			<div class="col-sm-6">
+				<!---Billing Address --->
+				<div class="infobox" data-testing-id='address-slot-invoice-to-address'>
+					<h3><istext key="checkout.address.billing.label" /></h3>
+					<isaddress address="#BasketBO:InvoiceToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<!---Shipping Address --->
+				<div class="infobox" data-testing-id='address-slot-ship-to-address'>
+					<h3><istext key="checkout.widget.shipping-address.heading" /></h3>
+					<isaddress address="#Bucket:ShipToAddress#"  showemail="#Bucket:SelectedShippingMethod:DigitalDelivery#">
+				</div>
+			</div>
+		</div>
+		<div class="row equal">
+			<div class="col-sm-6">
+				<!---Shipping Method --->
+				<div class="infobox">
+					<h3><istext key="checkout.widget.shipping_method.heading" /></h3>
+					<isinclude template="checkout/common/widgets/ShippingMethodInc">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<!---show payment details --->	
+				<div class="infobox">
+					<h3><istext key="checkout.widget.payment_method.heading" /></h3>
+					<div>
+						<isPaymentMethodDisplay paymentBOs="#BasketPayment:PaymentBOs#">
+					</div>
+					<isinclude extensionpoint="PaymentInfoExtensions">
+				</div>
+			</div>
+		</div>
+		
+		<!---Pack Slip Messages --->
+		<isinclude template="checkout/gifting/PackSlipMessageView">
+		
+		<!--- expected Delivery Time --->
+		<isset scope="request" name="RecurringBasket" value="#BasketBO:Extension("RecurringBasket")#">
+		<isBucketHeader bucket="#Bucket#" bucketnumber="#BasketShippingMethod:BasketShippingMethodSelectionBucketBOs:Size#" recurringbasketextension="#RecurringBasket#">
+		
+		<!--- Line Items --->
+		<isinclude template="checkout/review/LineItemsPerBucket">
+	</isloop>
+</isif>	

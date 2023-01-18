@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DDescriptionContainer dbo.type="com.intershop.beehive.core.rapi.common.DDescriptionContainer">
+<localeId>en_US</localeId>
+<descriptions>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletDesc" id="Pipelet1"  localeId="en_US" >
+<group>Basket</group>
+<description>Retrieves the basket from the basket cookie for the given repository. Only works if basket expiration is time-based (if default implementation of BasketCookieHandler is used); if not, no value will be returned and the error exit will be used. Also requires a request context which supports cookies (i. e. this will not work in REST).
+
+@see BasketCookieHandler#getBasketBOFromCookie(BasketBORepository)</description>
+</DDescription>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletPropertyDesc" id="dictionary-in_BasketBORepository"  localeId="en_US" >
+<description>Repository for basket lookup</description>
+</DDescription>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletPropertyDesc" id="dictionary-out_BasketBO"  localeId="en_US" >
+<description>Basket retrieved from cookie. If no basket cookie is present or no basket with this ID can be found in the repository or time-based basket expiration is not enabled, no value will be returned and the error exit will be used.</description>
+</DDescription>
+</descriptions>
+</DDescriptionContainer>

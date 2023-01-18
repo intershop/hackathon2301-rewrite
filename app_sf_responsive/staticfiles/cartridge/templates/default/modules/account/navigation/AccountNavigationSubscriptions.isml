@@ -1,0 +1,12 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<!--- Get the configuration/preference for link "Subscriptions" --->
+<ISGetCurrentApplication ApplicationBO="ApplicationBO">
+<isset name="EnableRecurringOrders" value="#ApplicationBO:Configuration:String("EnableRecurringOrders")#" scope="request"/>
+
+<isif condition="#isDefined(EnableRecurringOrders) AND (EnableRecurringOrders EQ "true")#">
+	<li class="<isif condition="#selecteditem EQ 'SUBSCRIPTIONS'#">active</isif>">
+		<a href="#URL(Action('ViewSubscriptions-List'))#" data-testing-id="myaccount-subscriptions-link"><istext key="account.subscriptions.link"/></a>
+	</li>
+</isif>

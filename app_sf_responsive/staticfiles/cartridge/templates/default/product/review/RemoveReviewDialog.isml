@@ -1,0 +1,22 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="review.remove_review.title" /></h2>
+		</div>
+		<isform name="RevmoveReviewForm" action="#URL(Action('ViewProductReview-DeleteReview'))#" data-hijax="true" method="post">
+			<div class="modal-body">
+				<input type="hidden" name="SKU" value="<isprint value="#SKU#">">
+				<input type="hidden" name="ReviewID" value="<isprint value="#ReviewID#">">
+				
+				<istext key="review.remove_review.text">
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" name="deleteReview" type="submit"><istext key="review.remove_review.confirm"></button>
+				<button name="cancel" type="button" class="btn btn-default" data-dismiss="modal"><istext key="review.remove_review.cancel"></button>
+			</div>
+		</isform>
+	</div>
+</div>

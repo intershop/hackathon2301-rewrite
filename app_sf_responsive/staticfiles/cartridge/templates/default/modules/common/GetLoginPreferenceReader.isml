@@ -1,0 +1,6 @@
+<isif condition="#NOT isDefined(LoginPreferenceReader)#">
+	<isset name="CurrentChannel" value="#Repository#" scope="request"/>
+	<ispipeline pipeline="ProcessCustomerLoginPreferences-GetLoginPreferences" alias="LoginPreferences"/>
+	<isset name="LoginPreferenceReader" value="#LoginPreferences:LoginPreferenceReader#" scope="request"/>
+	<isset name="UserLoginType" value="#LoginPreferences:LoginPreferenceReader:LoginType#" scope="request"/>
+</isif>

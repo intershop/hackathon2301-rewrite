@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<ismodule template="modules/rating/Rating"
+	name="Rating"
+	strict="true"
+	attribute="AverageRating"
+	attribute="TotalRatingCount"
+	attribute="RichSnippetsEnabled"
+>
+
+<ismodule template="modules/rating/RatingInput"
+	name="RatingInput"
+	strict="true"
+	attribute="Name"
+	attribute="Value"
+>
+
+<ismodule template="modules/rating/ProductRating"
+	name="ProductRating"
+	strict="true"
+	attribute="ProductBO"
+	attribute="User"
+	attribute="SimpleRatingView"
+	attribute="RichSnippetsEnabled"
+>
+
+<ismodule template="modules/rating/ReviewDetails"
+	name="ReviewDetails"
+	strict="true"
+	attribute="ReviewBO"
+	attribute="DomainName"
+	attribute="User"
+	attribute="RichSnippetsEnabled"
+>
+
+<ismodule template="modules/rating/ReviewList"
+	name="ReviewList"
+	strict="true"
+	attribute="ProductBO"
+	attribute="CurrentUser"
+	attribute="ListNavigationVO"
+	attribute="DomainName"
+	attribute="CategoryName"
+	attribute="CategoryDomainName"
+	attribute="ShowPaging"
+	attribute="RichSnippetsEnabled"
+>

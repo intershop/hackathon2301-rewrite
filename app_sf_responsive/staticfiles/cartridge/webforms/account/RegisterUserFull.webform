@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="RegisterUserFull">
+  <forms name="RegisterUserFullEmail">
+    <parameters xsi:type="webform:FormParameter" optional="false" name="recaptcharesponsefield" type="java.lang.String">
+      <validatorBindings validator="Captcha-ValidatorCaptcha">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="EnablePreference" value="intershop.CaptchaPreferences.Register"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="false" name="Login" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="256"/>
+      </validatorBindings>
+      <formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="EmailConfirmation" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Login"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="false" name="Password" type="java.lang.String">
+      <validatorBindings validator="PasswordValidators-PasswordPreferenceValidator"></validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="PasswordConfirmation" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Password"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="SecurityQuestion" type="java.lang.String">
+      <validatorBindings validator="Enumeration-ValidatorEnumeration">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="EnumerationKeyProviderName" value="securityQuestionEnumerationKeyProvider"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Answer" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="256"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="OrderConfirmationMail" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Newsletter" type="java.lang.String"/>
+  </forms>
+  <forms name="RegisterUserFullUsername">
+    <parameters xsi:type="webform:FormParameter" name="Login" type="java.lang.String">
+    	<formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Email" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="EmailConfirmation" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Email"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Password" type="java.lang.String">
+      <validatorBindings validator="PasswordValidators-PasswordPreferenceValidator"></validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="PasswordConfirmation" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Password"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="SecurityQuestion" type="java.lang.String">
+      <validatorBindings validator="Enumeration-ValidatorEnumeration">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="EnumerationKeyProviderName" value="securityQuestionEnumerationKeyProvider"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Answer" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="256"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="OrderConfirmationMail" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Newsletter" type="java.lang.String"/>
+  </forms>
+</webform:WebForm>

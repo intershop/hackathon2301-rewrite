@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="true">
+
+<div class="form-group <isif condition="#isDefined(webform:CountryCode) AND webform:CountryCode:isInvalid#" >has-error</isif>">
+	<label class="control-label col-sm-4" for="<isprint value = "#webform:CountryCode:QualifiedName.idSuffix#">">
+		<istext key="account.default_address.country.label" locale="#locale#" />
+		<isif condition="#NOT webform:CountryCode:Optional#"><span class="required">*</span></isif>
+	</label>
+	<div class="col-sm-8">
+		<isseq-next name="tabcount">
+		<select class="form-control <isif condition="#isDefined(webform:CountryCode) AND webform:CountryCode:isInvalid#">has-error</isif>"
+			data-url="#URL(Action('ViewUserAccount-ChangeAddressForm'))#"
+			data-country-list="data-country-list"
+			name="<isprint value = "#webform:CountryCode:QualifiedName#">"
+			id="<isprint value = "#webform:CountryCode:QualifiedName.idSuffix#">"
+			data-bv-field="<isprint value = "#webform:CountryCode:QualifiedName.idSuffix#">"
+			data-validate="<isif condition="#validationgroup NE ''#">dependsOn(#encodeValue(validationgroup)#)</isif>"
+			<isprint value="#webform:CountryCode:ClientValidationConfig("html5")#" encoding="off">
+		>
+			<isif condition="#(webform:CountryCode:Value EQ '') AND (NOT isDefined(address))#">
+				<option value="" selected="selected" disabled><istext key="account.option.select.text" locale="#locale#" /></option>
+			</isif>
+			
+			<isloop iterator="countrylist" alias="Country">
+				<option value="<isprint value="#Country:Id#">"
+					<isif condition="#isDefined(webform:CountryCode:Value)#">
+						<isif condition="#(webform:CountryCode:Value EQ Country:Id)#">
+							selected = "selected"
+						</isif>
+					<iselseif condition="#(isDefined(address) AND (address:CountryCode EQ Country:Id))#">
+						selected = "selected"
+					</isif>
+				>
+					<isprint value="#Country:DisplayName#">
+				</option>
+			</isloop>
+		</select>
+	</div>
+</div>

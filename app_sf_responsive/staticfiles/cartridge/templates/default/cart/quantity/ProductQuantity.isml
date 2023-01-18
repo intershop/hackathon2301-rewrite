@@ -1,0 +1,54 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#CartReadonly EQ 'true'#">
+	<label class="hidden-lg control-label"><istext key="shopping_cart.pli.qty.label"></label>
+	<isprint value="#PLI:Quantity#" formatter="0">
+<iselse>
+	<isif condition="#(PLI:FreeGift) OR (PLI:ProductBO:ServiceType:DigitalGiftCard)#">
+		<label class="hidden-lg control-label"><istext key="shopping_cart.pli.qty.label"></label>
+		<isprint value="#PLI:Quantity#" formatter="0">
+
+		<isif condition="#PLI:ProductBO:ServiceType:DigitalGiftCard#">
+			<input
+					data-testing-id="product-count-<isprint value="#PLI:ProductName#">-element"
+					id="quantity_<isprint value="#PLI:ID#">"
+					type="hidden"
+					name="Quantity_<isprint value = "#PLI:ID#">"
+					value="<isprint value="#PLI:Quantity#" formatter="0">"
+			/>
+		</isif>
+
+	<iselse>
+		<isset name="minQuantity" value="#PLI:MinOrderQuantity:Value#" scope="request" />
+		<isset name="maxQuantity" value="#PLI:MaxOrderQuantity:Value#" scope="request" />
+		<isset name="stepQuantity" value="#PLI:StepQuantity:Value#" scope="request"/>
+		
+		<label class="hidden-lg control-label"><istext key="shopping_cart.pli.qty.label"></label>
+		
+		<input 
+			data-testing-id="product-count-<isprint value="#PLI:ProductName#">-element"
+			id="quantity_<isprint value="#PLI:ID#">"
+			name="Quantity_<isprint value = "#PLI:ID#">"
+			type="number" 
+			class="form-control quantity js-quantity js-product-qty"
+			<isif condition="#(QUANTITY_FORMAT_PLIUUID EQ PLI:ID) AND isDefined(QUANTITY_SUBMITTED_VALUE)#">
+				value="<isprint value="#QUANTITY_SUBMITTED_VALUE#" formatter="0">"
+			<iselse>
+				value="<isprint value="#PLI:Quantity#" formatter="0">"
+			</isif>
+			required
+			min="0" 
+			max="<isprint value="#maxQuantity#" formatter="0">" 
+			step="<isprint value="#stepQuantity#" formatter="0">"
+			data-bv-integer-message="<istext key="shopping_cart.quantity.invalid.error"/>"
+			data-bv-notempty-message="<istext key="shopping_cart.quantity.invalid.error"/>"
+			data-bv-greaterThan-message="<istext key="shopping_cart.quantity.invalid.error"/>"
+			data-bv-lessThan-message="<istext key="shopping_cart.quantity.invalid.error.maxvalue"/>"
+			<isif condition="#stepQuantity != 1#">
+				data-bv-step="true"
+				data-bv-step-step="<isprint value="#stepQuantity#" formatter="0">"
+				data-bv-step-message="<istext key="shopping_cart.quantity.invalid.error.step" parameter0="#stepQuantity#"/>"
+			</isif>	
+		/>
+	</isif>
+</isif>

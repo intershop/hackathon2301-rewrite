@@ -1,0 +1,187 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title">
+				<isif condition="#isDefined(ListItem)#">
+					<isprint value="#ListItem:Product:Name#">
+				<iselse>
+					<isprint value="#ProductBO:Name#">
+				</isif>
+			</h2>
+		</div>
+		
+		<isif condition="#isDefined(ERROR_ALERT_NOT_FOUND) OR isDefined(ERROR_ProductNotFound)#">
+			<div class="modal-body">
+				<isif condition="#isDefined(ERROR_ALERT_NOT_FOUND)#">
+					<div class="alert alert-danger" role="alert">
+						<p><istext key="account.productnotification.form.err_msg_alert_not_found"></p>
+					</div>
+				</isif>
+				<isif condition="#isDefined(ERROR_ProductNotFound)#">
+					<div class="alert alert-danger" role="alert">
+						<p><istext key="account.productnotification.form.err_msg_invalid_product"></p>
+					</div>
+				</isif>
+			</div>
+		<iselse>
+			
+			<!--- edit a price notification --->
+			<isif condition="#isDefined(ListItem)#">
+				<isform class="form-horizontal bv-form" name="AlertForm" method="post"
+					action="#URL(Action('ViewProductNotification-Dispatch'), Parameter('AjaxRequestMarker', 'true'), Parameter('SKU',ListItem:Product:ProductRef:ProductSKU), Parameter('CatalogCategoryID',CatalogCategoryID))#"
+					data-hijax="true"
+				>
+					<div class="modal-body">
+						<input type="hidden" name="webform-id" value="AlertForm" />
+						<input type="hidden" name="AlertUUID" value="<isif condition="#isDefined(ListItem:UUID)#"><isprint value="#ListItem:UUID#"></isif>" />
+						
+						<isif condition="#isDefined(ERROR_PRICE)#">
+							<div class="alert alert-danger" role="alert">
+								<p><istext key="account.productnotification.form.err_msg_invalid_price"></p>
+							</div>
+						</isif>
+						<isif condition="#isDefined(ERROR_EMailAddressInvalid)#">
+							<div class="alert alert-danger" role="alert">
+								<p><istext key="account.productnotification.form.err_msg_invalid_email"></p>
+							</div>
+						</isif>
+						
+						<div>
+							<img alt="<isprint value="#ListItem:Product:Name#"/>"
+								data-type="L" data-test="true" 
+								src="<isprint value="#ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("L"):EffectiveUrl#"/>">
+						</div>
+						
+						<fieldset>
+							<div class="radio">
+								<label for="NoNotification">
+									<input type="radio" class="inputRadio" name="Alert_Type" value="NoNotification" id="NoNotification" />
+									<istext key="account.productnotification.form.no_notification">
+								</label>
+							</div>
+							
+							<isif condition="#ListItem:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.StockConditionHandler'#">
+								<div class="radio">
+									<label for="InStockNotification">
+										<input type="radio" class="inputRadio" name="Alert_Type" value="InStockNotification" id="InStockNotification" checked="checked" />
+										<istext key="account.productnotification.form.back_in_stock">
+									</label>
+								</div>
+							</isif>
+							<isif condition="#ListItem:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.PriceConditionHandler'#">
+								<div class="radio">
+									<label for="PriceNotification">
+										<input type="radio" class="inputRadio" name="Alert_Type" value="PriceNotification" id="PriceNotification" checked="checked" />
+										<istext key="account.productnotification.form.price_drop_to">
+									</label>
+								</div>
+							</isif>
+						</fieldset>
+						<isif condition="#ListItem:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.PriceConditionHandler'#">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="PriceValue" class="<isif condition="#isDefined(ERROR_PRICE)#"> inputError</isif>"><istext key="account.productnotification.form.price"></label>
+								<div class="col-sm-6 form-inline">
+									<isloop iterator="Currencies" alias="currency">
+										<isif condition="#currency:Mnemonic EQ ProductBO:Price:CurrencyMnemonic#">
+											<isprint value="#currency:CurrencySymbol#">&nbsp;
+										</isif>
+									</isloop>
+									<input class="form-control" type="text" name="PriceValue" id="PriceValue" value="<isif condition="#isDefined(ListItem:Value)#"><isprint value="#ListItem:Value#" style="MONEY_SHORT"></isif>" />
+									<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+								</div>
+							</div>
+						</isif>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" for="AlertForm_NotificationMailAddress"<isif condition="#AlertForm:NotificationMailAddress:isMissing OR AlertForm:NotificationMailAddress:isInvalid OR isDefined(ERROR_EMailAddressInvalid)#"> class="inputError"</isif>><istext key="account.productnotification.form.email"></label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text"  name="AlertForm_NotificationMailAddress" id="AlertForm_NotificationMailAddress" value="<isif condition="#isDefined(AttributeValuesMap:NotificationMailAddress:StringValue)#"><isprint value="#AttributeValuesMap:NotificationMailAddress:StringValue#"></isif>" />
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal-footer">
+						<input type="hidden" data-form-action="true"/>
+						<button type="submit" class="btn btn-primary" name="submitUpdate" value="Update"><istext key="account.productnotification.form.update"></button>
+						<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.productnotification.form.cancel"></button>
+					</div>
+				</isform>
+				
+			<!--- add a new price notification --->
+			<iselse>
+				<isform class="form-horizontal bv-form" name="AlertForm" method="post"
+					action="#URL(Action('ViewProductNotification-Dispatch'),Parameter('SKU',ProductBO:SKU), Parameter('CatalogCategoryID',CatalogCategoryID))#"
+					data-hijax="true"
+				>
+					<div class="modal-body">
+						<input type="hidden" name="webform-id" value="AlertForm" />
+						
+						<isif condition="#isDefined(ERROR_PRICE)#">
+							<div class="alert alert-danger" role="alert">
+								<p><istext key="account.productnotification.form.err_msg_invalid_price"></p>
+							</div>
+						</isif>
+						<isif condition="#isDefined(ERROR_EMailAddressInvalid)#">
+							<div class="alert alert-danger" role="alert">
+								<p><istext key="account.productnotification.form.err_msg_invalid_email"></p>
+							</div>
+						</isif>
+						
+						<div>
+							<img alt="<isprint value="#ProductBO:Name#"/>" 
+								data-type="L" data-test="true" 
+								src="<isprint value="#ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("L"):EffectiveUrl#"/>">
+						</div>
+						
+						<fieldset>
+							<isif condition="#ProductBO:InventoryStatus:InStock AND NOT ProductBO:isLastOrderDate#">
+								<input type="hidden" name="Alert_Type" value="PriceNotification" id="PriceNotification"/>
+								<h4><istext key="account.productnotification.form.price_drop_to"></h4>
+								
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="PriceValue" class="<isif condition="#isDefined(ERROR_PRICE)#"> inputError</isif>"><istext key="account.productnotification.form.price"></label>
+									<div class="col-sm-6 form-inline">
+										<isloop iterator="Currencies" alias="currency">
+											<isif condition="#currency:Mnemonic EQ ProductBO:Price:CurrencyMnemonic#">
+												<isprint value="#currency:CurrencySymbol#">&nbsp;
+											</isif>
+										</isloop>
+										
+										<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+										<isCurrentUserBO currentuserbo="UserBO">
+										<isGetProductPriceContext CustomerBO="#CustomerBO#" UserBO="#UserBO#" AddressSpecificPrice="true" ProductPriceContext="ProductPriceContext">
+										
+										<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+										<isset name="SalePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext)#" scope="request"/>
+										
+										<input class="form-control" type="text" name="PriceValue" id="PriceValue" value="<isif condition="#SalePrice:Range#"><isprint value="#SalePrice:PriceRange:MinimumPrice#" style="MONEY_SHORT"><iselseif condition="#SalePrice:Price:Available#"><isprint value="#SalePrice:Price#" style="MONEY_SHORT"><iselse><isprint value="#ProductBO:Price#" style="MONEY_SHORT"></isif>" />
+										<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+									</div>
+								</div>
+							<iselse>
+								<input type="hidden" name="Alert_Type" value="InStockNotification" id="InStockNotification"/>
+								<p><istext key="account.productnotification.form.back_in_stock"></p>
+							</isif>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="AlertForm_NotificationMailAddress"<isif condition="#AlertForm:NotificationMailAddress:isMissing OR AlertForm:NotificationMailAddress:isInvalid OR isDefined(ERROR_EMailAddressInvalid)#"> class="inputError"</isif>><istext key="account.productnotification.form.email"></label>
+								<div class="col-sm-6">
+									<input class="form-control" type="text" name="AlertForm_NotificationMailAddress" id="AlertForm_NotificationMailAddress" value="<isif condition="#NOT(CurrentUser:Profile:Email EQ '')#"><isprint value="#CurrentUser:Profile:Email#"/><iselseif condition="#NOT(CurrentUser:Profile:DefaultAddress:EMail EQ '')#"><isprint value="#CurrentUser:Profile:DefaultAddress:EMail#"><iselse><isprint value="#CurrentUser:Profile:Credentials:Login#"></isif>" />
+								</div>
+							</div>
+						</fieldset>
+					</div>
+					
+					<div class="modal-footer">
+						<input type="hidden" data-form-action="true"/>
+						<button type="submit" class="btn btn-primary" name="submitNew" value="Ok"><istext key="account.productnotification.form.ok"></button>
+						<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.productnotification.form.cancel"></button>
+					</div>
+				</isform>
+			</isif>
+		</isif>
+	</div>
+</div>

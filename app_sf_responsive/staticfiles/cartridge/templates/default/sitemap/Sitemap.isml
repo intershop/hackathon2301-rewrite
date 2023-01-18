@@ -1,0 +1,33 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<isinclude template="modules/Modules">
+
+<!--- Navigation Breadcrumbs --->
+<div class="breadcrumbs row">
+	<ISBreadcrumb showhomelink="true" trailtext0="#localizeText('sitemap.breadcrumb')#">
+</div>
+
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<!--- main content --->	
+<div class="col-xs-12 col-sm-9" data-testing-id="sitemap">
+	<h1><istext key="sitemap.heading"/></h1>
+	
+	<h2><istext key="sitemap.subheading"/></h2>
+	
+	<ISSitemap
+		RenderType="CategoryList"
+		SelectedCategoryBO="#SelectedCategoryBO#"
+		Request="#CurrentRequest#"
+		User="#CurrentUser#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="col-xs-12 col-sm-3">
+	<ISMarketingSlot id="sidePanelMarketing">
+</div>

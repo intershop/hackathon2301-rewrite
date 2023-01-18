@@ -1,0 +1,5 @@
+<iscontent charset="UTF-8" compact="true">
+<isif condition="#isDefined(webform:PreferredShippingAddress)#">
+	<input type="hidden" value="true" id="<isprint value="#webform:PreferredShippingAddress:QualifiedName#">" name="<isprint value="#webform:PreferredShippingAddress:QualifiedName#">"/>
+	<input type="hidden" value="true" id="<isprint value="#webform:PreferredBillingAddress:QualifiedName#">" name="<isprint value="#webform:PreferredBillingAddress:QualifiedName#">"/>
+</isif>

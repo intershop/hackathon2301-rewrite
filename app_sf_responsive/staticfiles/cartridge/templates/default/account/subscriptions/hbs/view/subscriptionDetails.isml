@@ -1,0 +1,145 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<div data-testing-id="subscription-details">
+
+	{{#'#'#if error}}
+
+		<h1><istext key="account.subscription.details.link" /></h1>
+		<p class="alert alert-danger"><istext key="subscription.rest.general.error"/></p>
+
+	{{else}}
+
+		<h1>
+			<istext key="account.subscription.details.link" />
+			{{#'#'#unless expired}}
+				<a class="btn btn-primary" href=""
+					data-subscription-id="{{id}}"
+					data-line-items="{{itemCount}}"
+					data-toggle="modal"
+					{{#'#'#if active}}
+						data-target="#'#'#confirmDeactivateModal"
+						title="<istext key="account.subscriptions.list.deactivate">"
+						data-dialog
+						data-quick-title="<istext key="account.subscriptions.list.deactivate">">
+						<istext key="account.subscriptions.dialog.confirm.button.deactivate"/>
+					{{else}}
+						data-target="#'#'#confirmActivateModal"
+						title="<istext key="account.subscriptions.list.activate">"
+						data-dialog
+						data-quick-title="<istext key="account.subscriptions.list.activate">">
+						<istext key="account.subscriptions.dialog.confirm.button.activate"/>
+					{{/if}}
+				</a>
+			{{/unless}}
+		</h1>
+
+		{{#'#'#unless expired}}
+			{{#'#'#if errorCode}}
+				<dd>
+					<div class="alert alert-danger"><istext key="account.subscription.details.error"/></div>
+				</dd>
+			{{/if}}	
+			
+		{{/unless}}
+
+		<p><istext key="account.subscription.details.subheadline"></p>
+
+		<div class="alert alert-info">
+			<istext key="account.subscription.details.note">
+		</div>
+
+		<div class="section">
+
+			<dl class="dl-horizontal dl-horizontal-inline dl-separator">
+				<dt>
+					<istext key="account.subscription.details.label.subscription_number">
+				</dt>
+				<dd>
+					<span data-testing-id="subscription-number">{{number}}</span>
+				</dd>
+				<dt><istext key="account.subscription.details.label.subscription_date"></dt>
+				<dd>
+					{{dateFormatter creationDate "DATE_SHORT"}}
+				</dd>
+				<dt><istext key="account.subscription.details.label.last_order_date"></dt>
+				<dd>
+					{{dateFormatter lastOrderDate "DATE_SHORT"}}
+				</dd>
+				<dt><istext key="account.subscription.details.label.next_order_date"></dt>
+				<dd>
+					{{dateFormatter nextOrderDate "DATE_SHORT"}}
+				</dd>
+				<dt><istext key="account.subscription.details.label.last_order_count"></dt>
+				<dd>
+					{{orderCount}}
+				</dd>
+				<dt><istext key="account.subscription.details.label.subscription_status"></dt>
+				<dd>
+					{{#'#'#if expired}}
+						<span class="label label-danger"><istext key="account.subscriptions.list.expired" /></span>
+					{{else}}
+						{{#'#'#if active}}
+							<span class="label label-success"><istext key="account.subscriptions.list.active"></span>
+						{{else}}
+							<span class="label label-warning"><istext key="account.subscriptions.list.deactivated"></span>
+						{{/if}}
+					{{/if}}
+				</dd>
+			</dl>
+
+		</div>
+
+		<!--- only for b2b -> Approval --->
+		<isinclude extensionpoint="SubscriptionApprovalInfoBox"/>
+
+		<div class="section">
+
+			<isset name="RecurringBasket" value="#BasketBO:Extension("RecurringBasket")#" scope="request" >
+			<isset name="CurrentCartBO" value="#BasketBO#" scope="request" >
+
+			<div class="row equal">
+
+				<!--- Subscription Info --->
+				<div class="col-md-6">
+					<div class="infobox">
+
+						<h3><istext key="subscription.title"></h3>
+						<dl class="dl-horizontal dl-horizontal-inline dl-separator">
+							<dt><istext key="account.subscription.details.label.recurrence"></dt>
+							<dd>
+								{{intervalFormatter interval}}
+							</dd>
+							<dt><istext key="account.subscription.details.label.start_date"></dt>
+							<dd>
+								{{dateFormatter startDate "DATE_SHORT"}}
+							</dd>
+							<dt><istext key="account.subscription.details.label.end_date"></dt>
+							<dd>
+								{{dateFormatter endDate "DATE_SHORT"}}
+							</dd>
+						</dl>
+
+					</div>
+				</div>
+
+				<!--- only for b2b -> Purchaser --->
+				<isinclude extensionpoint="SubscriptionPurchaserInfoBox"/>
+
+			</div>
+
+			<!--- show bucket information based on a basket --->
+			<isinclude template="checkout/receipt/CheckoutReceiptBasketBuckets">
+
+
+			<div class="section">
+				<div class="cost-summary pull-right">
+					<h3><istext key="checkout.order_summary.heading" /></h3>
+
+					<isinclude template="checkout/common/widgets/CostSummary">
+
+				</div>
+			</div>
+
+		</div>
+	{{/if}}
+</div>

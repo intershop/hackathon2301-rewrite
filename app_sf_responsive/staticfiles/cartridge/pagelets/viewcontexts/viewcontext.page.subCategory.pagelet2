@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="viewcontext.page.subCategory.pagelet2">
+  <contextObjectRelations name="ViewContext" page="true" systemManaged="true" objectType="Category">
+    <callParameterDefinitions name="Repository" type="com.intershop.component.mvc.capi.catalog.Repository"/>
+    <callParameterDefinitions name="CurrentOrganization" type="com.intershop.component.organization.capi.Organization"/>
+    <callParameterDefinitions name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO" optional="true"/>
+    <pageletEntryPointPipeline referencedName="ProcessPageViewContextCategory-GetPageletEntryPoint"/>
+    <contextType>Category</contextType>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion" name="PageCategory">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.category.pagelet2-Page"/>
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion" name="PageFamily">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.family.pagelet2-Page"/>
+    </contentEntryPointDefinitionInclusions>
+  </contextObjectRelations>
+</pagelet:PageletModel>

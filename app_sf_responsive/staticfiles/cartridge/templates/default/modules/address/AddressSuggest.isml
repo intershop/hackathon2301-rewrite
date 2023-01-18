@@ -1,0 +1,88 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="alert alert-danger">
+	<isif condition="#hasElements(suggestedaddresses)#">
+		<istext key="checkout.validate_address.text" />
+	<iselse>
+		<isif condition="#isDefined(validateaddressnoresultmessagekey)#">
+			<istext key="#validateaddressnoresultmessagekey#" />
+		<iselse>
+			<istext key="checkout.validate_address.no_result" />
+		</isif>
+	</isif>
+</div>
+<div class="row">
+	<isif condition="#hasElements(suggestedaddresses)#">
+		<div class="form-group">
+			<label class="col-xs-12 col-sm-3"><istext key="checkout.validate_address.found" /></label>
+			<div class="radio clearfix">
+				<div class="col-xs-12 col-sm-9">
+					<isloop iterator="suggestedaddresses" alias="Address">
+						<div><label>
+							<isif condition="#(sourceaddress:AddressLine1 NE Address:AddressLine1) AND (len(Address:AddressLine1) > 0)#"><isset name="address1Change" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:AddressLine2 NE Address:AddressLine2) AND (len(Address:AddressLine2) > 0)#"><isset name="address2Change" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:AddressLine3 NE Address:AddressLine3) AND (len(Address:AddressLine3) > 0)#"><isset name="address3Change" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:MainDivision NE Address:MainDivision) AND (len(Address:MainDivision) > 0)#"><isset name="stateChange" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:PostalCode NE Address:PostalCode) AND (len(Address:PostalCode) > 0)#"><isset name="postalCodeChange" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:PostBox NE Address:PostBox) AND (len(Address:PostBox) > 0)#"><isset name="postBoxChange" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:City NE Address:City) AND (len(Address:City) > 0)#"><isset name="cityChange" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:SubDivision NE Address:SubDivision) AND (len(Address:SubDivision) > 0)#"><isset name="countyChange" value="true" scope="request" /></isif>
+							<isif condition="#(sourceaddress:CountryCode NE Address:CountryCode) AND (len(Address:CountryCode) > 0)#"><isset name="countryCodeChange" value="true" scope="request" /></isif>
+				
+							<input data-validate="requiredRadioGrp" data-validate-error-message="You must make a selection" data-validate-post-failure-events="click" type="radio" name="<isprint value = "#formprefix#">Selection" value="<isprint value = "#Address:ID#">"/>
+				
+							<ISAddressSuggestItemProperty text="#getValue(Address:AddressLine1)#" highlighted="#sourceaddress:AddressLine1 NE Address:AddressLine1#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:AddressLine2)#" highlighted="#sourceaddress:AddressLine2 NE Address:AddressLine2#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:AddressLine3)#" highlighted="#sourceaddress:AddressLine3 NE Address:AddressLine3#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:MainDivision)#" highlighted="#sourceaddress:MainDivision NE Address:MainDivision#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:PostalCode)#" highlighted="#sourceaddress:PostalCode NE Address:PostalCode#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:PostBox)#" highlighted="#sourceaddress:PostBox NE Address:PostBox#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:City)#" highlighted="#sourceaddress:City NE Address:City#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:SubDivision)#" highlighted="#sourceaddress:SubDivision NE Address:SubDivision#">
+							<ISAddressSuggestItemProperty text="#getValue(Address:Country)#" highlighted="#sourceaddress:CountryCode NE Address:CountryCode#">
+						</label></div>
+					</isloop>
+				</div>
+			</div>
+		</div>
+	</isif>
+</div>
+
+<div class="row suggest-address-entered">
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-3"><istext key="checkout.validate_address.entered" /></label>
+		<div class="radio clearfix">
+			<div class="col-xs-12 col-sm-9">
+				<div><label>
+					<isif condition="#isDefined(targetaddress:ID)#">
+						<input type="hidden" name="<isprint value = "#formprefix#">TargetAddressID" value="<isprint value="#targetaddress:ID#">"/>
+					<iselse>	
+						<input type="hidden" name="<isprint value = "#formprefix#">TargetAddressID" value="<isprint value="#targetaddress:UUID#">"/>
+					</isif>
+					<isif condition="#isDefined(sourceaddress:ID)#">
+						<input type="hidden" name="<isprint value = "#formprefix#">SourceAddressID" value="<isprint value="#sourceaddress:ID#">"/>
+						<input type="radio" checked="checked" name="<isprint value="#formprefix#">Selection" value="<isprint value="#sourceaddress:ID#">"/>
+					<iselse>	
+						<input type="hidden" name="<isprint value = "#formprefix#">SourceAddressID" value="<isprint value="#sourceaddress:UUID#">"/>
+						<input type="radio" checked="checked" name="<isprint value="#formprefix#">Selection" value="<isprint value="#sourceaddress:UUID#">"/>
+					</isif>
+	
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:AddressLine1)#" highlighted="#isDefined(address1Change)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:AddressLine2)#" highlighted="#isDefined(address2Change)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:AddressLine3)#" highlighted="#isDefined(address3Change)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:MainDivision)#" highlighted="#isDefined(stateChange)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:PostalCode)#" highlighted="#isDefined(postalCodeChange)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:PostBox)#" highlighted="#isDefined(postBoxChange)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:City)#" highlighted="#isDefined(cityChange)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:SubDivision)#" highlighted="#isDefined(countyChange)#">
+					<ISAddressSuggestItemProperty text="#getValue(sourceaddress:Country)#" highlighted="#isDefined(countryCodeChange)#">
+				</label></div>
+			</div>
+			<div class="help-block col-xs-12 col-sm-9 col-sm-offset-3">
+				<istext key="checkout.validate_address.star" />
+			</div>
+		</div>	
+	</div>
+</div>
+<isinclude extensionpoint="AddressSuggestExtensions"/>

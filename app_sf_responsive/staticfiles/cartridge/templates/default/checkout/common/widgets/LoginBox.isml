@@ -1,0 +1,118 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/common/Modules">
+
+<isGetLoginPreferenceReader>
+<h2><istext key="checkout.account.login.returning_customer.heading" /></h2>
+
+<isif condition="#(LoginForm:Submitted AND LoginForm:Invalid) OR (isDefined(ERROR_User) AND (ERROR_User NE 'UserNotLoggedIn'))#">
+	<!--- BEGIN error handling --->
+	<div role="alert" class="alert alert-danger">
+		<isif condition="#isDefined(RegistrationLoginType) AND (RegistrationLoginType EQ "username")#">
+			<isif condition="#LoginForm:Login:isError("error.required") OR LoginForm:Password:isError("error.required")#">
+				<istext key="account.login.username_password.error.required"/>
+			</isif>
+		<iselse>
+			<isif condition="#LoginForm:Login:isError("error.required") OR LoginForm:Password:isError("error.required")#">
+				<istext key="account.login.email_password.error.required"/>
+			</isif>
+		</isif>
+		<isif condition="#isDefined(ERROR_User)#">
+			<isif condition="#((ERROR_User EQ 'UnableToFindMembershipData') OR (ERROR_User EQ 'IncorrectPassword'))#">
+				<isif condition="#isDefined(RegistrationLoginType) AND (RegistrationLoginType EQ "username")#">
+					<istext key="account.login.username_password.error.invalid"/>
+				<iselse>
+					<istext key="account.login.email_password.error.invalid"/>
+				</isif>
+			</isif>
+			<isif condition="#ERROR_User EQ 'AccountTemporarilyLocked'#">
+				<% getPipelineDictionary().put("CurrentDate", new java.util.Date()); %>
+				<isset scope="request" name="TimeToUnlock" value="#(LockedUser:Profile:Credentials:DisabledUntil:Time - CurrentDate:Time)/60000 + 0.9#"/>
+				<istext key="account.login.temporarily_locked.error" parameter0="#getValue(TimeToUnlock,INTEGER)#"/>
+			</isif>
+			<isif condition="#ERROR_User EQ 'DisabledUser'#">
+				<istext key="account.login.disabled_user.error"/>
+			</isif>
+			<isif condition="#ERROR_User EQ 'DisabledCustomer'#">
+				<istext key="account.login.disabled_customer.error"/>
+			<iselseif condition="#ERROR_User EQ 'NonApprovedCustomer'#">
+				<istext key="account.login.non_approved_customer.error"/>
+			</isif>
+		</isif>
+	</div>
+	<!--- END error handling --->
+</isif>
+
+<isform class="form-horizontal bv-form" action="#URLEX(SecureURL,'',Action('ViewCheckoutAddresses-Dispatch'))#" method="post" name="LoginUserForm" autocomplete="off">
+	
+	<isif condition="#isDefined(Dictionary:TargetPipeline)#">
+		<input type="hidden" name="TargetPipeline" value="<isprint value="#Dictionary:TargetPipeline#">">
+		<isif condition="#isDefined(Dictionary:Parameter1_Name)#">
+			<input type="hidden" name="Parameter1_Name" value="<isprint value="#Dictionary:Parameter1_Name#">">
+			<input type="hidden" name="Parameter1_Value" value="<isprint value="#Dictionary:Parameter1_Value#">">
+		</isif>
+		<isif condition="#isDefined(Dictionary:Parameter2_Name)#">
+			<input type="hidden" name="Parameter2_Name" value="<isprint value="#Dictionary:Parameter2_Name#">">
+			<input type="hidden" name="Parameter2_Value" value="<isprint value="#Dictionary:Parameter2_Value#">">
+		</isif>
+		<isif condition="#isDefined(Dictionary:Parameter3_Name)#">
+			<input type="hidden" name="Parameter3_Name" value="<isprint value="#Dictionary:Parameter3_Name#">">
+			<input type="hidden" name="Parameter3_Value" value="<isprint value="#Dictionary:Parameter3_Value#">">
+		</isif>
+		<isif condition="#isDefined(Dictionary:Parameter4_Name)#">
+			<input type="hidden" name="Parameter4_Name" value="<isprint value="#Dictionary:Parameter4_Name#">">
+			<input type="hidden" name="Parameter4_Value" value="<isprint value="#Dictionary:Parameter4_Value#">">
+		</isif>
+		<isif condition="#isDefined(Dictionary:Parameter5_Name)#">
+			<input type="hidden" name="Parameter5_Name" value="<isprint value="#Dictionary:Parameter5_Name#">">
+			<input type="hidden" name="Parameter5_Value" value="<isprint value="#Dictionary:Parameter5_Value#">">
+		</isif>
+		<isif condition="#isDefined(Dictionary:Parameter6_Name)#">
+			<input type="hidden" name="Parameter6_Name" value="<isprint value="#Dictionary:Parameter6_Name#">">
+			<input type="hidden" name="Parameter6_Value" value="<isprint value="#Dictionary:Parameter6_Value#">">
+		</isif>
+		<isif condition="#isDefined(Dictionary:TargetURLFragment)#">
+			<input type="hidden" name="TargetURLFragment" value="<isprint value="#TargetURLFragment#">">
+		</isif>
+	</isif>
+	
+	<div class="form-group required">		
+
+				<label for="<isprint value="#LoginForm:Login:QualifiedName#">" class="col-sm-2 control-label text-nowrap"> 
+					<isif condition="#isDefined(UserLoginType) AND (UserLoginType EQ "username")#"><istext key="account.login.username.label"/><iselse><istext key="account.login.email.label"/></isif>
+				</label>
+						
+		<div class="col-sm-9 col-sm-offset-1">
+			<input class="form-control" required
+				id="<isprint value="#LoginForm:Login:QualifiedName#">"
+				name="<isprint value="#LoginForm:Login:QualifiedName#">"
+				value="<isprint value="#LoginForm:Login:FormattedValue#">"
+				<isif condition="#isDefined(UserLoginType) AND (UserLoginType EQ "username")#">
+					type="text"
+					data-bv-notempty-message="<istext key="account.login.username.error.required"/>"
+				<iselse>
+					type="email"
+					data-bv-notempty-message="<istext key="account.login.email.error.required"/>"
+					data-bv-emailaddress-message="<istext key="account.login.email.error.invalid"/>"
+				</isif>
+			/>
+		</div>
+	</div>
+	<div class="form-group required">
+		<label for="<isprint value="#LoginForm:Password:QualifiedName#">" class="col-sm-2 control-label"><istext key="account.login.password.label"/></label>
+		<div class="col-sm-9 col-sm-offset-1">
+			<input class="form-control" type="password" required
+				id="<isprint value="#LoginForm:Password:QualifiedName#">"
+				name="<isprint value="#LoginForm:Password:QualifiedName#">"
+				data-bv-notempty-message="<istext key="account.login.password.error.required"/>"
+			/>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-9 col-sm-offset-3">
+			<button type="submit" name="signIn" class="btn btn-primary"><istext key="account.signin.button.label"/></button>
+			<a class="btn btn-link" href="#URLEX(SecureURL,'',Action('ViewForgotLoginData-ForgotPassword'))#"><istext key="account.send_password.heading"/></a>
+		</div>
+	</div>
+	
+</isform>

@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="breadcrumbs">
+	<isAccountBreadcrumb 
+		link="#URLEX(SecureURL,'',Action('ViewWishlist-ViewAll'))#"
+		text="#localizeText('account.wishlists.link')#"
+		trailtext="#localizeText('account.wishlists.unavailable_wishlist_breadcrumb')#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="WISHLISTS">
+		</div>
+		
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<h1><istext key="account.wishlists.unavailable_wishlist_title"/></h1>
+			
+			<p><istext key="account.wishlists.unavailable_wishlist_text" encoding="off"/></p>
+			<p><istext key="account.wishlists.unavailable_wishlist_text_search" encoding="off"/></p>
+			
+			<isinclude template="account/wishlist/WishlistSearchForm">
+			
+		</div>
+	</div>
+</div>

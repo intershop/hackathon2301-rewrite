@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Load localization properties and refresh the subscription list
+	Note:
+		Variable "subscriptionsLocalizationProperties" is defined in ISML template "SubscriptionDetails.isml"
+		until a new technique to load localization properties from server is available for client side (JavaScript).
+--->
+
+var controller = this;
+
+$.i18n()
+	.load(subscriptionsLocalizationProperties)
+	.done(function() {
+		subscriptionRefresh();
+	});
+
+<!--- REST call and template update with REST response data --->
+function subscriptionRefresh() {
+	var client = new ISHRestClient();
+	client
+		<!--- If the customer an account admin the related url part will be set --->
+		<isif condition="#CurrentUserBO:Extension("UserBORoleExtension"):hasRole("APP_B2B_ACCOUNT_OWNER")#">
+			.customer(RESTConfiguration.getCustomerUrlPart(true))
+		</isif>
+		.get('/recurringorders/'  + '<isprint value="#SubscriptionID#">').then(function(data) {
+			controller
+				.model(data)
+				.update();
+		}, function() {
+			var model =  {error: true};
+			controller
+				.model(model)
+				.update();
+		});
+}
+
+<!---
+	REFRESH LIST BY TRIGGER SOME CUSTOM EVENTS
+	Listener:
+		subscriptions.refresh
+		subscriptions.activate.succesfully
+		subscriptions.deactivate.succesfully
+--->
+$(document).on(
+	'subscriptions.refresh subscriptions.activate.succesfully subscriptions.deactivate.succesfully',
+	subscriptionRefresh
+);

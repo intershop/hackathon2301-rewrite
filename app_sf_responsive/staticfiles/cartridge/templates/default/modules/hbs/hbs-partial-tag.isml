@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!--- Renders the handlebars (hbs) script tag and includes the related template --->
+<isif condition="#isDefined(name) AND isDefined(folder)#">
+	
+	<!--- Variables Definitions --->
+	<isset name="hbsFolder" value="hbs" scope="request" />
+	<isset name="hbsViewFolder" value="view" scope="request" />
+	<isset name="hbsControllerFolder" value="controller" scope="request" />
+	
+	<isset name="hbsPath" 			value="#folder.'/'.hbsFolder#" scope="request" />
+	<isset name="hbsViewPath" 		value="#hbsPath.'/'.hbsViewFolder.'/'.name#" scope="request" />
+	<isset name="hbsControllerPath"	value="#hbsPath.'/'.hbsControllerFolder.'/'.name.'Controller'#" scope="request" />
+	
+	<!--- Includes the View Template (hbs) --->
+	<isif condition="#existsTemplate(hbsViewPath)#">
+		<script id="<isprint value="#name#"/>" type="text/x-handlebars-template">
+			<isinclude template="#hbsViewPath#">
+		</script>
+	</isif>
+	
+	<!--- Generates the JavaScript code snippet to register the Handlebars partial --->
+	<script type="text/javascript">
+		$(function() {
+		    if ($("#'#'#<isprint value="#name#"/>").length) {
+		        Handlebars.registerPartial("<isprint value="#name#"/>", $("#'#'#<isprint value="#name#"/>").html());
+		    }
+		});
+    </script>
+	
+</isif>

@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!--- 
+	This module renders the header within emails with the option of additional configuration.
+	This is not possible if it is just used as an include.
+	
+	Parameters:
+		- ChannelName (required)
+			The channel name that is used for the header link.
+		- OrganizationName (optional)
+			The organization name.
+		- ShowMyAccountLink (optional) [true|false] - default: false
+			Render a My Account link in the email header.
+		- ShowCustomerInformation (optional) [true|false] - default: false
+			Display customer information in the email header.
+	
+	Example:
+		<isMailHeader ChannelName="#ChannelName#" ShowMyAccountLink="true" ShowCustomerInformation="true">
+ --->
+<ismodule template = "email/mailTemplate/MailHeader.isml"
+	name="MailHeader"
+	strict="true"
+	attribute="ChannelName"
+	attribute="OrganizationName"
+	attribute="ShowMyAccountLink"
+	attribute="ShowCustomerInformation"
+>

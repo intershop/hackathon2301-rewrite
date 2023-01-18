@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="StoreFinder">
+  <forms name="StoreFinder">
+    <parameters xsi:type="webform:FormParameter" optional="true" name="CountryCode" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="PostalCode" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="City" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="State" type="java.lang.String"/>
+  </forms>
+</webform:WebForm>

@@ -1,0 +1,4 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<!---use the cost summary of the shopping cart --->
+<isinclude template="cart/common/CostSummary">

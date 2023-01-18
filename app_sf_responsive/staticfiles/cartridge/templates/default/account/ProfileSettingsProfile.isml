@@ -1,0 +1,36 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb
+		link="#URLEX(SecureURL,'',Action('ViewProfileSettings-ViewProfile'))#"
+		text="#localizeText('account.profile.link')#"
+		trailtext="#localizeText('account.update_profile.breadcrumb')#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+
+<div class="account-wrapper" data-testing-id="profile-settings-profile-page">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="PROFILE">
+		</div>
+
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+
+			<h1><istext key="account.update_profile.heading"/></h1>
+			<p><istext key="account.update_profile.text"/></p>
+
+			<isinclude template="account/profile/ProfileEdit">
+		</div>
+	</div>
+</div>

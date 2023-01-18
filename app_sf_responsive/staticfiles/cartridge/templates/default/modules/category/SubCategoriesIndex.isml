@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<iscachekey object="#SolrFilterAttributeEntries#">
+<iscachekey object="#RootSolrFilterAttributeEntry#">
+<iscachekey object="#SolrFilterAttributeEntry#">
+
+<isif condition="#(MaxSubCategoryiesDepth > CategoryFilterEntry:Level) AND (CategoryFilterEntry:Count > 0)#">
+	<ul class="category-level<isprint value="#CategoryFilterEntry:Level + 1#" formatter="#"/> <isif condition="#CategoryFilterEntry:Level < 1#">dropdown-menu</isif>">
+		<isloop iterator="CategoryFilterEntries" alias="CurrentCategoryEntry">
+			<isif condition="#CategoryFilterEntry:Value EQ CurrentCategoryEntry:CatalogCategory:ParentCategoryID#">
+				<li class="main-navigation-level<isprint value="#CurrentCategoryEntry:Level#" formatter="#"/>-item">
+					<a href="#URL(Action('ViewStandardCatalog-Browse'), Parameter('CatalogID', CurrentCategoryEntry:CatalogCategoryBO:CatalogBO:Name), Parameter('CategoryName', CurrentCategoryEntry:CatalogCategory:Name))#" ><isprint value="#CurrentCategoryEntry:CatalogCategory:DisplayName#"/></a>
+					<isif condition="#(MaxSubCategoryiesDepth - 1) > CategoryFilterEntry:Level#">
+						<ISSubCategoriesIndex
+						CategoryFilterEntry="#CurrentCategoryEntry#"
+						RootCategoryFilterEntry="#RootCategoryFilterEntry#"
+						CategoryFilterEntries="#CategoryFilterEntries#"
+						MaxSubCategoryiesDepth="#MaxSubCategoryiesDepth#"
+					>
+					</isif>
+				</li>
+			</isif>
+		</isloop>
+	</ul>
+</isif>

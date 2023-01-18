@@ -1,0 +1,9 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+{
+	<isif condition="#hasElements(ProductBO:ProductAttachments)#">
+		<isloop iterator="ProductBO:ProductAttachments" alias="ProductAttachment">
+			<isinclude template="product/json/ProductAttachmentJSON"><isif condition="#hasNext(ProductAttachment)#">, </isif>
+		</isloop>
+	</isif>
+}

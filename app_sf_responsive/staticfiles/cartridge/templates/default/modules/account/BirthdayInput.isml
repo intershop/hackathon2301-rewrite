@@ -1,0 +1,115 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import="java.util.Date"%>
+<%@page import="java.time.Year"%>
+<%@page import="java.time.ZoneId"%>
+<%@page import="java.time.LocalDate"%>
+<%
+    ZoneId UTC = ZoneId.of("UTC");
+    if (getObject("birthday") instanceof Date)
+    {
+        Date birthday = (Date) getObject("birthday");
+        LocalDate birthdayDate = birthday.toInstant().atZone(UTC).toLocalDate();
+        getPipelineDictionary().put("birthdayDate", birthdayDate);
+    }
+%>
+<isif condition="#formparameter:Month:Value NE ''#">
+		<isset name="month" value="#formparameter:Month:Value#" scope="request"/>
+		<isset name="day" value="#formparameter:Day:Value#" scope="request"/>
+		<isset name="year" value="#formparameter:Year:Value#" scope="request"/>
+<iselseif condition="#isDefined(birthdayDate)#">
+		<isset name="month" value="#birthdayDate:MonthValue#" scope="request"/>
+		<isset name="day" value="#birthdayDate:DayOfMonth#" scope="request"/>
+		<isset name="year" value="#birthdayDate:Year#" scope="request"/>
+</isif>
+
+<isif condition="#isDefined(type) AND (type EQ 'select')#">
+	<div class="birthday-input clearfix">
+		<isset name="SelectMonth" value="#localizeText("account.address.birthday.select_month_option")#" scope="request">
+		<isset name="Months" value="#split('1,2,3,4,5,6,7,8,9,10,11,12', ',')#" scope="request">
+		<select name="<isprint value="#formparameter:Month:QualifiedName#"/>"
+				id="<isprint value="#formparameter:Month:QualifiedName#"/>"
+				class="form-control <isprint value="#class#">"
+				data-validate="dateEmpty('#'#'#<isprint value="#formparameter:Day:QualifiedName#">','#'#'#<isprint value="#formparameter:Year:QualifiedName#">') <isif condition="#required EQ 'true'#">required</isif>"
+				data-name-overwrite="<isprint value="#formparameter:QualifiedName#">"
+		>
+			<option value=""> <isprint value="#SelectMonth#"/> </option>
+			<isloop iterator="Months" alias="Month">
+				<option value="<isprint value="#Month#"/>"<isif condition="#month EQ Month#"> selected="selected"</isif>>
+					<isprint value="#Month#"/>
+				</option>
+			</isloop>
+		</select>
+		<isset name="SelectDay" value="#localizeText("account.address.birthday.select_day_option")#" scope="request">
+		<isset name="Days" value="#split('1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31', ',')#" scope="request">
+		<select name="<isprint value="#formparameter:Day:QualifiedName#"/>"
+				id="<isprint value="#formparameter:Day:QualifiedName#"/>"
+				class="form-control <isprint value="#class#">"
+				data-validate="dateEmpty('#'#'#<isprint value="#formparameter:Month:QualifiedName#">','#'#'#<isprint value="#formparameter:Year:QualifiedName#">') <isif condition="#required EQ 'true'#">required</isif>"
+				data-name-overwrite="<isprint value="#formparameter:QualifiedName#">"
+		>
+			<option value=""> <isprint value="#SelectDay#"/> </option>
+			<isloop iterator="Days" alias="Day">
+				<option value="<isprint value="#Day#"/>"<isif condition="#day EQ Day#"> selected="selected"</isif>>
+					<isprint value="#Day#"/>
+				</option>
+			</isloop>
+		</select>
+		<select name="<isprint value="#formparameter:Year:QualifiedName#"/>"
+				id="<isprint value="#formparameter:Year:QualifiedName#"/>"
+				class="form-control <isprint value="#class#">"
+				data-validate="dateEmpty('#'#'#<isprint value="#formparameter:Month:QualifiedName#">','#'#'#<isprint value="#formparameter:Day:QualifiedName#">') <isif condition="#required EQ 'true'#">required</isif>"
+				data-name-overwrite="<isprint value="#formparameter:QualifiedName#">"
+		>
+			<isset name="SelectYear" value="#localizeText("account.address.birthday.select_year_option")#" scope="request">
+			<option value=""> <isprint value="#SelectYear#"/> </option>
+			<!--- minimum age: 16 --->
+			<%
+				int maxYear = Year.now(UTC).getValue();
+				for(int i = 1900; i < maxYear-15; i++){
+				getPipelineDictionary().put("Year", i); %>
+				<option value="<isprint value="#Year#" formatter="####"/>"<isif condition="#year == Year#"> selected="selected"</isif>>
+					<isprint value="#Year#" formatter="####"/>
+				</option>
+			<% } %>
+		</select>
+	</div>
+	
+</isif>
+
+
+<isif condition="#isDefined(type) AND (type EQ 'text')#">
+	<input
+		type="text" 
+		value="<isprint value="#month#"/>"
+		class="form-control <isif condition="#formparameter:Month:Invalid#"> has-error</isif>"
+		name="<isprint value="#formparameter:Month:QualifiedName#"/>"
+		id="<isprint value="#formparameter:Month:QualifiedName#"/>"
+		size="2"
+	/>
+	<input
+		type="text" value="<isprint value="#day#"/>"
+		class="form-control <isif condition="#formparameter:Day:Invalid#"> has-error</isif>"
+		name="<isprint value="#formparameter:Day:QualifiedName#"/>"
+		id="<isprint value="#formparameter:Day:QualifiedName#"/>"
+		size="2"
+	/>
+	<input
+		type="text" value="<isprint value="#year#"/>"
+		class="form-control <isif condition="#formparameter:Year:Invalid#"> has-error</isif>"
+		name="<isprint value="#formparameter:Year:QualifiedName#"/>"
+		id="<isprint value="#formparameter:Year:QualifiedName#"/>"
+		size="4"
+	/>
+</isif>
+
+<isif condition="#hasElements(formparameter:Errors)#">
+	<small class="help-block">
+		<isloop iterator="formparameter:Errors" alias="Error">
+			<isif condition="#Error EQ 'error.daterange'#">
+				<istext key="account.default_address.birthday.error.default" /> <istext key="account.default_address.birthday.error.daterange" />
+			<iselse>
+				<istext key="account.default_address.birthday.error.default" />
+			</isif>	
+		</isloop>
+	</small>	
+</isif>

@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import="com.intershop.component.foundation.capi.localization.LocalizedCountryNamesProvider"%>
+<%@page import="com.intershop.beehive.core.capi.naming.NamingMgr"%>
+<%@page import="java.util.Locale"%>
+<%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%@page import="com.intershop.beehive.core.capi.localization.LocaleInformation"%>
+<%@page import="com.intershop.beehive.core.capi.request.Request"%>
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+	
+	String language=(String)dict.get("locale:Language");
+	if (language == null || language.isEmpty())
+	{
+	    LocaleInformation locale = Request.getCurrent().getLocale();
+	    language = locale.getLanguage();
+	}
+	
+	String countryCode = (String)dict.get("countrycode");
+	
+	String countryName = "";
+	
+	if((language!=null)&&(countryCode!=null))	
+	{
+	 	LocalizedCountryNamesProvider namesProvider 
+                = NamingMgr.getProvider(LocalizedCountryNamesProvider.class);
+	
+		countryName = namesProvider.getCountryNameForCountryCode(language,countryCode);
+	}
+
+	dict.put("countryName", countryName);
+%>
+<isprint value="#countryName#">

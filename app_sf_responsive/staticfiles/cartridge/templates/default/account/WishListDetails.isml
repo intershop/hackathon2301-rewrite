@@ -1,0 +1,41 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb wishlistBO="#WishlistBO#">
+</div>
+
+<!--- After AddToCart from Wishlist WishListDetails page is reloaded, so next line add tracking code for add product event --->
+<ISIncludeTrackingTool template="BasketChangeAdd">
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="WISHLISTS">
+		</div>
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<isTooltip 
+				linktext="#localizeText('account.wishlists.heading.tooltip.link')#" 
+				headline="#localizeText('account.wishlists.heading.tooltip.headline')#"
+				content="#localizeText('account.wishlists.heading.tooltip.content')#"
+				contenttype="html"
+				placement="bottom"
+			>
+			<isinclude template="account/wishlist/WishlistHeader">
+			
+			<isinclude template="account/wishlist/Wishlist">
+			
+			<isinclude template="account/wishlist/WishlistSearchForm">
+		
+		</div>
+	</div>
+</div>

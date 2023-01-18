@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Account-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewPaymentInstrumentInfo" type="view">
+<!--Create the Payment Instrument Info first 
+if user has selected a payment method for 
+which he has not yet create a payment instrument info. 
+This must not happen for payment methods
+ that require input fields.
+@Location 13,4-->
+  <nodes xsi:type="pipeline:Text" nodeID="TextNode1"/>
+<!--@Location 11,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start8" name="ApplyDefaultPII">
+    <nodeSuccessors name="next" next="CallNode16"/>
+  </nodes>
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="DecisionNode9"/>
+    <startNode referencedName="ViewPaymentInstrumentInfo-Prefix"/>
+  </nodes>
+<!--@Location 11,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode9" conditionKey="PaymentServiceSelection">
+    <nodeSuccessors name="decision_yes" next="CallNode10"/>
+<!--@BendPoints 24,5-->
+    <nodeSuccessors name="decision_no" next="SetDictionaryValue1"/>
+  </nodes>
+<!--@Location 11,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <nodeSuccessors name="Error" next="CallNode9"/>
+    <parameterBindings name="PaymentInstrumentID" objectPath="PaymentServiceSelection"/>
+    <startNode referencedName="ProcessPayment-GetPaymentInstrumentFromUserByID"/>
+  </nodes>
+<!--@Location 11,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="SetPaymentInstrumentAsDefault0"/>
+  </nodes>
+<!--@Location 11,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetPaymentInstrumentAsDefault0">
+    <pipelet href="enfinity:/bc_orderprocess/pipelets/SetPaymentInstrumentAsDefault.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValues0"/>
+  </nodes>
+<!--@Location 11,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValues0">
+    <configurationValues name="Keys" value="ValidatedPropertyGroupConfiguration PaymentInstrumentBO"/>
+    <configurationValues name="RemoveFormValues" value="false"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValues.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue2"/>
+  </nodes>
+<!--@Location 11,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue2">
+    <configurationValues name="Key" value="PaymentServiceSelection"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper5"/>
+  </nodes>
+<!--@displayNearNode@ShowSuccessMessage = "NewPayment"
+@Location 11,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper5">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 23,30-->
+    <nodeSuccessors name="next" next="Jump17"/>
+    <parameterBindings name="InValue_1" constant="NewPayment"/>
+    <returnValueBindings name="OutValue_1" objectPath="ShowSuccessMessage"/>
+  </nodes>
+<!--@Location 11,15-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump17">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+<!--@Location 12,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <nodeSuccessors name="Error" next="SetDictionaryValue0"/>
+    <parameterBindings name="PaymentServiceID" objectPath="PaymentServiceSelection"/>
+    <startNode referencedName="ProcessPayment-GetPaymentServiceByID"/>
+  </nodes>
+<!--@Location 13,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="PaymentServiceBO:PaymentInstrumentParameters"
+      operator="has_elements">
+<!--@BendPoints 29,11-->
+    <nodeSuccessors name="decision_yes" next="GetIndirectDictValue0"/>
+<!--@BendPoints 27,19-->
+    <nodeSuccessors name="decision_no" next="JoinNode2"/>
+  </nodes>
+<!--@Location 14,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetIndirectDictValue0">
+    <pipelet href="enfinity:/core/pipelets/GetIndirectDictValue.xml"/>
+    <nodeSuccessors name="next" next="AddObjectToCollection0"/>
+    <parameterBindings name="KeyNameHolder" objectPath="PaymentServiceSelection"/>
+    <returnValueBindings name="MappedEntry" objectPath="PropertyGroupConfiguration"/>
+  </nodes>
+<!--@Location 14,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToCollection0">
+    <pipelet href="enfinity:/core/pipelets/AddObjectToCollection.xml"/>
+    <nodeSuccessors name="next" next="ConvertPropertyGroupValues0"/>
+    <parameterBindings name="InCollection" objectPath="PaymentServiceBO:PaymentInstrumentParameters"/>
+    <returnValueBindings name="OutCollection" objectPath="AcceptPropertyGroups"/>
+  </nodes>
+<!--@Location 14,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConvertPropertyGroupValues0">
+    <pipelet href="enfinity:/ui_web_library/pipelets/ConvertPropertyGroupValues.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 14,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 14,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <nodeSuccessors name="Error" next="ValidatePropertyGroupValues1"/>
+    <parameterBindings name="PaymentParameters" objectPath="PropertyGroupValues"/>
+    <startNode referencedName="ProcessPayment-CreatePaymentInstrumentForUser"/>
+  </nodes>
+<!--Payment parameters are not validated again, but the result from the validation in ProcessPayment will be made available for displaying in the property editor.
+@Location 14,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidatePropertyGroupValues1">
+    <pipelet href="enfinity:/ui_web_library/pipelets/ValidatePropertyGroupValues.xml"/>
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue2"/>
+  </nodes>
+<!--@Location 14,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="JumpNode1"/>
+  </nodes>
+<!--@Location 14,13-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+<!--@Location 15,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="ERROR_VALIDATION"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 31,25-->
+    <nodeSuccessors name="next" next="JoinNode3"/>
+  </nodes>
+<!--@Location 12,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="ERROR_PaymentMethod"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JumpNode0"/>
+  </nodes>
+<!--@Location 12,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+<!--@Location 12,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="ERROR_PaymentSelection"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 26,5-->
+    <nodeSuccessors name="next" next="JumpNode5"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode5">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+<!--@Location 8,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start1" name="DeletePII">
+<!--@BendPoints 17,2-->
+    <nodeSuccessors name="next" next="CallNode15"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+    <nodeSuccessors name="next" next="CallNode8"/>
+    <startNode referencedName="ViewPaymentInstrumentInfo-Prefix"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode5"/>
+<!--@BendPoints 19,5-->
+    <nodeSuccessors name="Error" next="JoinNode1"/>
+    <parameterBindings name="PaymentInstrumentID" objectPath="deletePII"/>
+    <startNode referencedName="ProcessPayment-GetPaymentInstrumentFromUserByID"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="RemoveDictionaryValue0"/>
+    <nodeSuccessors name="Error" next="JoinNode1"/>
+    <startNode referencedName="ProcessPayment-RemovePaymentInstrumentFromUser"/>
+  </nodes>
+<!--@Location 8,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="PaymentInstrumentBO"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue1"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue1">
+    <configurationValues name="Key" value="PaymentServiceSelection"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+  </nodes>
+<!--@displayNearNode@ShowSuccessMessage = "DeletedPayment"
+@Location 8,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="Jump12"/>
+    <parameterBindings name="InValue_1" constant="DeletedPayment"/>
+    <returnValueBindings name="OutValue_1" objectPath="ShowSuccessMessage"/>
+  </nodes>
+<!--@Location 8,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump12">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+<!--@Location 9,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="SetDictionaryValue4"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue4">
+    <configurationValues name="Name" value="ERROR_PaymentInstrumentInfo"/>
+    <configurationValues name="Value" value="PaymentInstrumentInfoNotFound"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="Jump12"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start12" name="Dispatch">
+<!--@BendPoints 3,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction0"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewUserAccount-Start"/>
+    <configurationValues name="OutValue_1" value="ViewPaymentInstrumentInfo-ApplyDefaultPII"/>
+    <configurationValues name="OutValue_2" value="ViewPaymentInstrumentInfo-Edit"/>
+    <configurationValues name="OutValue_3" value="ViewPaymentInstrumentInfo-DeletePII"/>
+    <configurationValues name="OutValue_4" value="ViewPaymentInstrumentInfo-Edit"/>
+    <configurationValues name="OutValue_6" value="ViewPaymentInstrumentInfo-ResetPPI"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="Jump1"/>
+<!--@BendPoints 5,3 5,4-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode8"/>
+    <parameterBindings name="Key_0" objectPath="cancel"/>
+    <parameterBindings name="Key_1" objectPath="apply"/>
+    <parameterBindings name="Key_2" objectPath="confirmDeletePII"/>
+    <parameterBindings name="Key_3" objectPath="deletePII"/>
+    <parameterBindings name="Key_4" objectPath="cancelDeletePII"/>
+    <parameterBindings name="Key_5" objectPath="applyGiftCard"/>
+    <parameterBindings name="Key_6" objectPath="resetPPI"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode8">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Edit">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="CallNode_NWCS8DKJEeip6KN4VvIgdg"/>
+    <startNode referencedName="ViewPaymentInstrumentInfo-Prefix"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_NWCS8DKJEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="SetDictionaryValue3"/>
+    <parameterBindings name="PageName" constant="payment"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue3">
+    <configurationValues name="Name" value="JumpTarget"/>
+    <configurationValues name="Value" value="ViewPaymentInstrumentInfo-Edit"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="CallNode18"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode18">
+    <nodeSuccessors name="next" next="CallNode14"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <startNode referencedName="ViewPaymentInstrumentInfo-Prefix"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <startNode referencedName="ProcessPayment-GetPaymentInstrumentsFromUser"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+    <startNode referencedName="ProcessPayment-GetApplicablePaymentServicesByUser"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="PaymentSelection"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="KeyMapper1"/>
+<!--@BendPoints 12,17 13,17 13,21-->
+    <nodeSuccessors name="decision_no" next="JoinNode6"/>
+  </nodes>
+<!--@Location 5,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <parameterBindings name="InValue_1" objectPath="DefaultPaymentInstrumentInfo:UUID"/>
+    <parameterBindings name="InValue_2" objectPath="DefaultPaymentInstrumentInfo"/>
+    <returnValueBindings name="OutValue_1" objectPath="PaymentSelection"/>
+    <returnValueBindings name="OutValue_2" objectPath="PaymentInstrumentInfo"/>
+  </nodes>
+<!--@Location 5,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+  </nodes>
+<!--@Location 5,11-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.payment.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/Payment.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" strict="true" name="Prefix"
+      callMode="Private">
+<!--@BendPoints 3,10-->
+    <nodeSuccessors name="next" next="CallNode11"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="CallNode1"/>
+<!--@BendPoints 5,13 5,14-->
+    <nodeSuccessors name="NOTLOGGEDIN" next="KeyMapper2"/>
+    <startNode referencedName="ProcessUser-CheckLoggedIn"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="KeyMapper3"/>
+    <nodeSuccessors name="ERROR" next="JumpNode6"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessUser-GetProfile"/>
+    <returnValueBindings name="Profile" objectPath="Scope"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO1"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="UserBORepository"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO1">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper4"/>
+    <parameterBindings name="UserID" objectPath="CurrentUser:ID"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="EndNode1"/>
+    <parameterBindings name="InValue_1" objectPath="UserBO:Extension(&quot;PaymentInstrument&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="PaymentInstrumentBORepository"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="Scope" type="com.intershop.beehive.core.capi.profile.Profile"/>
+    <returnValues name="UserBO" type="com.intershop.component.user.capi.UserBO"/>
+    <returnValues name="PaymentInstrumentBORepository" type="com.intershop.component.payment.capi.PaymentInstrumentBORepository"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode6">
+    <startNode referencedName="ViewUserAccount-Start"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 5,16-->
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <parameterBindings name="InValue_1" constant="ViewUserAccount-ShowLogin"/>
+    <parameterBindings name="InValue_2" constant="https"/>
+    <parameterBindings name="InValue_4" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_5" constant="ViewPaymentInstrumentInfo-Edit"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Protocol"/>
+    <returnValueBindings name="OutValue_3" objectPath="TargetSite"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+<!--@Location 15,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_VtBhoC12Eeu9JKk2A6Xz5g" name="ResetPPI">
+    <nodeSuccessors name="next" next="CallNode_xXjxMC2FEeumqtVSfnPuXw"/>
+  </nodes>
+<!--@Location 15,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_xXjxMC2FEeumqtVSfnPuXw">
+    <nodeSuccessors name="next" next="ResetDefaultPaymentInstrument_P7pwMC2HEeu5K_sMjLUwtQ"/>
+    <startNode referencedName="ViewPaymentInstrumentInfo-Prefix"/>
+  </nodes>
+<!--@Location 15,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ResetDefaultPaymentInstrument_P7pwMC2HEeu5K_sMjLUwtQ">
+    <pipelet href="enfinity:/bc_payment/pipelets/ResetDefaultPaymentInstrument.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue_cRcQ4C12Eeu9JKk2A6Xz5g"/>
+  </nodes>
+<!--@Location 15,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue_cRcQ4C12Eeu9JKk2A6Xz5g">
+    <configurationValues name="Key" value="PaymentInstrumentBO"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue_cRVjMC12Eeu9JKk2A6Xz5g"/>
+  </nodes>
+<!--@Location 15,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue_cRVjMC12Eeu9JKk2A6Xz5g">
+    <configurationValues name="Key" value="PaymentServiceSelection"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper_dnjBAC2eEeu5K_sMjLUwtQ"/>
+  </nodes>
+<!--@Location 15,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_dnjBAC2eEeu5K_sMjLUwtQ">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JumpNode_cRX_cC12Eeu9JKk2A6Xz5g"/>
+    <parameterBindings name="InValue_1" constant="ResetPayment"/>
+    <returnValueBindings name="OutValue_1" objectPath="ShowSuccessMessage"/>
+  </nodes>
+<!--@Location 15,6-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode_cRX_cC12Eeu9JKk2A6Xz5g">
+    <startNode referencedName="ViewPaymentInstrumentInfo-Edit"/>
+  </nodes>
+</pipeline:Pipeline>

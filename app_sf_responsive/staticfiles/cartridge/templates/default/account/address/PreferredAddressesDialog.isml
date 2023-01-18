@@ -1,0 +1,46 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="account.addresses.remove_dialog.title"/></h2>
+		</div>
+		
+		<isform class="form-horizontal bv-form"
+			action="#URL(Action('ViewUserAddressList-Dispatch'))#"
+			method="post"
+			data-hijax="true"
+		>
+		
+		<div class="modal-body">
+			<!--- This message should actually never occur --->
+			<isif condition="#(AddressBO:ID EQ UserBO:PreferredShipToAddressBO:ID) OR (AddressBO:ID EQ UserBO:PreferredInvoiceToAddressBO:ID)#">
+				<div class="alert alert-info">
+					<p><istext key="account.addresses.remove_dialog.message_line1"/></p>
+				</div>
+			</isif>
+			
+			<input type="hidden" name="AddressID" value="<isprint value="#AddressBO:ID#">"/>
+			<isif condition="#CustomerBO:AddressBOs:Size > 1#">
+				<p><istext key="account.addresses.remove_dialog.message_line2"/></p>
+			<iselse>
+				<div class="alert alert-danger">
+					<p><istext key="account.addresses.last_address_cannot_be_deleted.error"/></p>
+				</div>		
+			</isif>
+			
+		</div>
+		
+		<div class="modal-footer">
+			<input type="hidden" data-form-action="true"/>
+			<isif condition="#CustomerBO:AddressBOs:Size <= 1#">
+				<button class="btn btn-primary" data-dismiss="modal"><istext key="account.addresses.remove_dialog.label_ok"/></button>
+			<iselse>
+				<button class="btn btn-primary" type="submit" value="delete" name="delete" ><istext key="account.addresses.remove_dialog.label_yes"/></button>
+				<a class="btn btn-default" data-dismiss="modal"><istext key="account.addresses.remove_dialog.label_no"/></a>
+			</isif>
+		</div>
+		</isform>
+	</div>
+</div>

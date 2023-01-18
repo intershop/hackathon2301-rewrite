@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(class) AND (class NE '')#">
+	<isset name="CssClass" value="#class#" scope="request"/>
+<iselse>
+	<isset name="CssClass" value="btn-link" scope="request"/>
+</isif>
+
+<isif condition="#NOT(ProductBO:isEndOfLife)#">
+	<isif condition="#DisplayType EQ 'glyphicon'#">
+		<button class="btn btn-link add-to-compare add-to-compare-trigger" title="<istext key="product.compare.link" />"
+			data-product-ref="<isprint value="#ProductBO:ProductRef#">"
+			data-url-add="#URL(Action('ViewProductCompare-AddAjax'), Parameter("ProductRef",ProductBO:ProductRef))#"
+			data-url-delete="#URL(Action('ViewProductCompare-DeleteAjax'), Parameter("ProductRef",ProductBO:ProductRef))#"
+			rel="nofollow"
+		>
+			<span class="glyphicon glyphicon-equalizer"></span>
+		</button>
+	<iselseif condition="#DisplayType EQ 'share-tool'#">
+		<a class="add-to-compare" data-testing-id="compare-<isprint value="#ProductBO:SKU#"/>" 
+			href="#URL(Action('ViewProductCompare-Add'), Parameter('ProductRefID', ProductBO:ProductRef))#"
+			rel="nofollow"
+		>
+			<span class="glyphicon glyphicon-equalizer"></span>
+			<span class="share-label"><istext key="product.compare.link" /></span>
+		</a>
+	<iselse>
+		<a class="btn add-to-compare <isprint value="#CssClass#"/>" data-testing-id="compare-<isprint value="#ProductBO:SKU#"/>"
+			href="#URL(Action('ViewProductCompare-Add'), Parameter('ProductRefID', ProductBO:ProductRef))#"
+			rel="nofollow"
+		>
+			<istext key="product.compare.link" />
+		</a>
+	</isif>
+</isif>

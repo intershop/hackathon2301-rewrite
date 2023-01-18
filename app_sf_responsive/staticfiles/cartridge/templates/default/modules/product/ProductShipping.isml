@@ -1,0 +1,19 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isif condition="#ProductBO:ServiceType:DigitalGiftCard#">
+<!--- gift certificates are sent by mail,no message required --->
+<iselse>
+	<isif condition="#isDefined(ProductBO:ReadyForShipmentMin) AND isDefined(ProductBO:ReadyForShipmentMax) AND ProductBO:isAvailable AND NOT(ProductBO:isLastOrderDate OR ProductBO:isEndOfLife)#">
+		<div class="ready-for-shipment" data-testing-id="section-productshipping-shortinfo">
+			<isif condition="#(ProductBO:ReadyForShipmentMin EQ '0')#">
+				<isif condition="#(ProductBO:ReadyForShipmentMax EQ '1')#">
+					<istext key="product.ready_for_shipment.within24"/>
+				<iselse>
+					<istext key="product.ready_for_shipment.within" parameter0="#ProductBO:ReadyForShipmentMax#"/>
+				</isif>
+			<iselse>
+				<istext key="product.ready_for_shipment.minmax" parameter0="#ProductBO:ReadyForShipmentMin#" parameter1="#ProductBO:ReadyForShipmentMax#" />
+			</isif>
+			<a data-dialog class="details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.readyForShipment.pagelet2-Include'))#" rel="nofollow"><istext key="product.ready_for_shipment.detail.text" /></a>
+		</div>
+	</isif>
+</isif>

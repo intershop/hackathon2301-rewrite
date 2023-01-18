@@ -1,0 +1,206 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<isif condition="#isDefined(RestrictedItemsMap) AND (hasElements(RestrictedItemsMap:EntrySet))#">
+	
+	<div class="alert alert-box" role="alert">
+		<div class="alert-box-header">
+			<istext key="restricted-items.error.message1"/>
+			
+			<ul class="list-unstyled">
+				<isset scope="request" name="ErrorMessage" value="">
+				<isloop iterator="RestrictedItemsMap:EntrySet" alias="restrictedItem" counter="count">
+					<isif condition="#count == 1#">
+						<li><isprint value="#restrictedItem:Value#"></li>
+						<isset scope="request" name="ErrorMessage" value="#restrictedItem:Value#">
+					<iselseif condition="#ErrorMessage NE restrictedItem:Value#">
+						<li><isprint value="#restrictedItem:Value#"></li>
+						<isset scope="request" name="ErrorMessage" value="#restrictedItem:Value#">
+					</isif>
+				</isloop>
+			</ul>
+			
+			<istext key="restricted-items.error.message2"/>
+		</div>
+		
+		<div class="alert-box-body">
+			<div class="list-header hidden-xs">
+				<div class="col-sm-8 col-lg-7 list-header-item"><istext key="restricted-items.description.heading" /></div>
+				<div class="hidden-sm hidden-md col-lg-1 list-header-item "><istext key="restricted-items.quantity.heading" /></div>
+				<div class="col-sm-2 list-header-item column-price"><istext key="restricted-items.price.heading" /></div>
+				<div class="col-sm-2 list-header-item column-price"><istext key="restricted-items.total.heading" /></div>
+			</div>
+			<div class="list-body">
+				<isloop iterator="RestrictedItemsMap:EntrySet" alias="restrictedItem">
+					<isset name="showItem" value="false" scope="request">
+					<isset scope="request" name="pliBO" value="#restrictedItem:Key#">
+						
+					<isif condition="#pliBO:RootLineItem#">
+						<isset scope="request" name="removeWarranty" value="false">
+						<isset name="showItem" value="true" scope="request">
+						<isset name="PLIWarranty" value="#pliBO:Extension("Warranty")#" scope="request"/>
+					<iselse>
+						<isset scope="request" name="ParentID" value="#pliBO:Extension("PersistentObjectBOExtension"):PersistentObject:ParentLineItem:ParentLineItemID#">
+						<isset scope="request" name="parentPliBO" value="#CurrentCartBO:getProductLineItemBOByID(ParentID)#">
+					</isif>
+					
+					<!--- get warranty bo and parent pli --->
+					<isif condition="#NOT(pliBO:RootLineItem) AND (pliBO:ProductBO:Extension("Warranty"):isWarranty)#">
+						<isset scope="request" name="pliBO" value="#parentPliBO#">
+						<isset scope="request" name="removeWarranty" value="true">
+						<isset name="showItem" value="true" scope="request">
+						<isset name="PLIWarranty" value="#pliBO:Extension("Warranty")#" scope="request"/>
+						<!--- Don't show warranty item when parent item is restricted as well --->
+						<isloop iterator="RestrictedItemsMap:EntrySet" alias="possibleParent">
+							<isif condition="#ParentID EQ possibleParent:Key:ID#">
+								<isset name="showItem" value="false" scope="request">
+								<isbreak>
+							</isif>
+						</isloop>
+					</isif>
+					
+					<!--- get gift wrap bo and parent pli --->
+					<isif condition="#NOT(pliBO:RootLineItem) AND (parentPliBO:Extension("Gifting"):hasGiftWrap)#">
+						
+						<isset scope="request" name="pliBO" value="#parentPliBO#">
+						<isset scope="request" name="removeGiftWrap" value="true">
+						<isset name="showItem" value="true" scope="request">
+						<isset name="PLIGifting" value="#pliBO:ProductBO#" scope="request"/>
+						<!--- Don't show gift item when parent item is restricted as well --->
+						<isloop iterator="RestrictedItemsMap:EntrySet" alias="possibleParent">
+							<isif condition="#ParentID EQ possibleParent:Key:ID#">
+								<isset name="showItem" value="false" scope="request">
+								<isbreak>
+							</isif>
+						</isloop>
+					</isif>
+					
+					<isif condition="#showItem EQ 'true'#">
+						<div class="list-item-row list-item-row-big">
+							<div class="clearfix">
+								<!---Product Image --->
+								<div class="col-xs-2 list-item">
+									<ISProductImage ProductBO="#pliBO:Product#" ImageType="S">
+								</div>
+								<div class="col-xs-7 col-sm-6 list-item">
+									<!---Product Description --->
+									<div class="col-lg-10 list-item">
+										<div class="product-title"><isprint value="#pliBO:ProductName#"></div>
+										<p class="product-id"><istext key="checkout.pli.item.text.id" />&nbsp;<isprint value="#pliBO:ProductSKU#"></p>
+										
+										<div>
+											<isif condition="#isDefined(pliBO:VariationInformationBO)#">
+												<isif condition="#hasLoopElements(pliBO:VariationInformationBO:VariationAttributes)#">
+													<dl id="editProductVariation<isprint value="#index#" style="INTEGER" />" class="dl-horizontal">
+														<isloop iterator="pliBO:VariationInformationBO:VariationAttributes" alias="VariationAttribute">
+															<dt><isprint value="#VariationAttribute:DisplayName#">:</dt>
+															<dd><isprint value="#pliBO:StringAttribute(VariationAttribute:Name)#"></dd>
+														</isloop>
+													</dl>
+												</isif>
+											</isif>
+											
+											<!--- show warranty description --->
+											<isif condition="#PLIWarranty:hasWarranty#">
+												<div class="warranty">
+													<isif condition="#isDefined(removeWarranty) AND (removeWarranty EQ 'true')#">
+														<del>
+															<span><istext key="checkout.pli.warranty.text" /></span>
+															<span><isprint value="#PLIWarranty:Warranty:Name#"></span>
+														</del>
+													<iselse>
+														<span><istext key="checkout.pli.warranty.text" /></span>
+														<span><isprint value="#PLIWarranty:Warranty:Name#"></span>
+													</isif>
+												</div>
+											</isif>
+											
+											<!--- show gift wrap description --->
+											<isif condition="#isDefined(PLIGifting)#">
+												<div class="warranty">
+													<isif condition="#isDefined(removeGiftWrap) AND (removeGiftWrap EQ 'true')#">
+														<del>
+															<span><istext key="checkout.gifting.giftwrap.wrap" /></span>
+															<span><isprint value="#PLIGifting:Name#"></span>
+														</del>
+													<iselse>
+														<span><istext key="checkout.gifting.giftwrap.wrap" /></span>
+														<span><isprint value="#PLIGifting:Name#"></span>
+													</isif>
+												</div>
+											</isif>
+										</div>
+									
+									</div>
+									<!---Quantity --->
+									<div class="col-lg-2 list-item">
+										<label class="hidden-lg control-label"><istext key="shopping_cart.pli.qty.label"></label>
+										<span><isprint value="#pliBO:Quantity#"></span>
+									
+										<isif condition="#editable EQ 'true'#">
+											<a href="#URL(Action('ViewCart-EditProduct'), Parameter('LineItemUUID', pli:ID))#" data-dialog class="btn-tool" title="checkout.variation.edit.button.label">
+												<span class="glyphicon glyphicon-pencil"></span>
+											</a>
+										</isif>
+									</div>
+								</div>
+								<!---Price --->
+								<div class="col-sm-2 hidden-xs list-item column-price">
+									<isif condition="#PriceDisplayType EQ 'net'#">
+										<isprint value="#pliBO:SingleBasePriceNet#">
+									<iselse/>
+										<isprint value="#pliBO:SingleBasePriceGross#">
+									</isif>
+									<isif condition="#PLIWarranty:hasWarranty#">
+										<div class="warranty">
+											<isif condition="#isDefined(removeWarranty) AND (removeWarranty EQ 'true')#">
+												<del><isprint value="#PLIWarranty:Warranty:SingleBasePrice#"></del>
+											<iselse>
+												<isprint value="#PLIWarranty:Warranty:SingleBasePrice#">
+											</isif>
+										</div>
+									</isif>
+								</div>
+								<!---Total --->
+								<div class="col-xs-3 col-sm-2 list-item column-price">
+									<isif condition="#PriceDisplayType EQ 'net'#">
+										<isprint value="#pliBO:DiscountedPriceNet#">
+									<iselse/>
+										<isprint value="#pliBO:DiscountedPriceGross#">
+									</isif>
+									<isif condition="#PLIWarranty:hasWarranty#">
+										<div class="ish-warranty ish-itemPrice">
+											<isif condition="#isDefined(removeWarranty) AND (removeWarranty EQ 'true')#">
+												<del><isprint value="#PLIWarranty:Warranty:Price#"></del>
+											<iselse>
+												<isprint value="#PLIWarranty:Warranty:Price#">
+											</isif>
+										</div>
+									</isif>
+								</div>
+							</div>
+							<div class="text-right">
+								<isif condition="#isDefined(removeWarranty) AND (removeWarranty EQ 'true')#">
+									<isform method="post" action="#URL(Action('ViewCheckoutAddresses-RemoveRestrictedWarrantyPLI'), Parameter('ProductLineItemUUID', pliBO:ID))#">
+										<button name="RemoveWarranty" value="RemoveWarranty" class="btn btn-default kor-cancel" type="submit"><istext key="restricted-items.RemoveWarranty.button" /></button>
+									</isform>
+								<iselseif condition="#isDefined(removeGiftWrap) AND (removeGiftWrap EQ 'true')#">
+									<isform method="post" action="#URL(Action('ViewCheckoutAddresses-RemoveRestrictedGiftWrapPLI'), Parameter('ProductLineItemUUID', pliBO:ID))#">
+										<button name="RemoveGiftWrap" value="RemoveGiftWrap" class="btn btn-default kor-cancel" type="submit"><istext key="restricted-items.RemoveGiftWrap.button" /></button>
+									</isform>
+								<iselse>
+									<isform method="post" action="#URL(Action('ViewCheckoutAddresses-RemoveRestrictedPLI'), Parameter('ProductLineItemUUID', pliBO:ID))#">
+										<button name="Remove" value="Remove" class="btn btn-default kor-cancel" type="submit"><istext key="restricted-items.Remove.button" /></button>
+									</isform>
+								</isif>
+							</div>
+						</div>
+					</isif>
+				</isloop>
+			</div>
+		</div>
+	</div>
+</isif>

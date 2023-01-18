@@ -1,0 +1,62 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<strong><isprint value="#paymentservice:DisplayName#" /></strong>
+
+<!--- display description --->
+<isif condition="#NOT (isDefined(description)) OR (description NE 'true')#">
+	<isif condition="#paymentservice:Description NE ''#">
+		<p><isprint  value="#paymentservice:Description#" encoding="off"></p>
+	</isif>	
+</isif>
+
+<!--- display payment costs and threshold messages --->
+<isif condition="#isDefined(paymentcosts)#">
+	<isif condition="#isDefined(restrictionerrors)#">
+		<isif condition="#paymentcosts:PaymentCost:Value > 0#">
+			<div>
+				<istext key="checkout.payment.method.charges.text"/>&nbsp;<isprint value="#paymentcosts:PaymentCost#"/><span class="help-block help-block-inline" ><isprint value="#currentcartbo:PriceDisplayAdditionalText#"/></span>
+			</div>
+		</isif>		
+	<iselse>
+		<isif condition="#(paymentcosts:Threshold:Value <= 0)#">
+			<isif condition="#(paymentcosts:PaymentCost:Value > 0)#">
+				<p>
+					<istext key="checkout.payment.method.charges.text"/>&nbsp;<isprint value="#paymentcosts:PaymentCost#"/>
+				</p>
+			</isif>
+		<iselse>
+			<isif condition="#(paymentcosts:Threshold:Value <= currentcartbo:CalculationResultView:TotalGross:Value)#">
+				<p>
+					<istext key="checkout.payment.payment_cost_threshold.amount_reached"/>&nbsp;<isprint value="#currentcartbo:CalculationResultView:TotalGross#"/>
+				</p>
+			<iselse>
+				<p>
+					<istext key="checkout.payment.method.charges.text"/> <isprint value="#paymentcosts:PaymentCost#"/>&nbsp;
+					<span class="help-block help-block-inline"><span class="hidden-xs">&nbsp;-&nbsp;</span><istext key="checkout.payment.payment_cost_threshold.text"/> <span class="text-nowrap"><isprint value="#paymentcosts:Threshold#"/></span></span>
+				</p>
+			</isif>
+		</isif>
+	</isif>
+</isif>
+<!--- Show restriction messages --->
+<isif condition="#isDefined(restrictionerrors)#">
+	<isloop iterator="restrictionerrors" alias="Restriction">
+		<p class="text-info">
+			<isif condition="#(Restriction EQ 'MinOrderAmount') AND isDefined(paymentcosts)#">
+				<istext key="checkout.payment.payment_cost_minOrderValue.not_raeched"/>&nbsp;<isprint value="#paymentcosts:MinOrderAmount#"/>
+			<iselseif condition="#(Restriction EQ 'MaxOrderAmount') AND isDefined(paymentcosts)#">
+				<istext key="checkout.payment.payment_cost_maxOrderValue.exceeded" parameter0="#getValue(paymentcosts:MaxOrderAmount,MONEY_LONG)#"/>
+			<iselse>
+				<isset name="RestrictionMessageFromKeyWithPrefix" value="#localizeText('checkout.payment.restriction.' . Restriction)#" scope="request"/>
+				<isset name="RestrictionMessageFromKey" value="#localizeText(Restriction)#" scope="request"/>
+				<isif condition="#isdefined(RestrictionMessageFromKeyWithPrefix)#">
+					<isprint value="#RestrictionMessageFromKeyWithPrefix#"/>
+		    	<iselseif condition="#isdefined(RestrictionMessageFromKey)#"/>
+		    		<isprint value="#RestrictionMessageFromKey#"/>
+				<iselse>
+					<isprint value="#Restriction#"/>
+				</isif>
+			</isif>
+		</p>	
+	</isloop>
+</isif>

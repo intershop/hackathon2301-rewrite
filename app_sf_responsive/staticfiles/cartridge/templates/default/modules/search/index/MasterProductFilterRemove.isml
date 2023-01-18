@@ -1,0 +1,62 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- This file is a variant of Filter.siml intended to be displayed in Master Product Detail Page --->
+<%
+    String paramsName = (String)getObject("params");
+    Object params = getObject(paramsName);
+    if(params != null)
+    {
+        getPipelineDictionary().put("TmpParams", params);
+    }
+%>
+
+<!--- fetch parameters which trigger filter visualization --->
+<isif condition="#NOT isDefined(showcount)#">
+    <isset scope="request" name="showcount" value="true">
+</isif>
+<isif condition="#isDefined(filter:ConfigurationAttribute:FilterOptions:DisplayType)#">
+    <isset scope="request" name="displayType" value="#filter:ConfigurationAttribute:FilterOptions:DisplayType#">
+<iselse>
+    <isset scope="request" name="displayType" value="text">
+</isif>
+<isset scope="request" name="displayClass" value="filter-list">
+
+<isif condition="#isDefined(filter:ConfigurationAttribute:FilterOptions:SelectionType)#">
+    <isset scope="request" name="selectionType" value="#filter:ConfigurationAttribute:FilterOptions:SelectionType#">
+<iselse>
+    <isset scope="request" name="selectionType" value="single">
+</isif>
+<isif condition="#NOT(isDefined(showselected))#">
+    <isset scope="request" name="showselected" value="true" />
+</isif>
+
+<isif condition="#isDefined(sortvalue)#">
+    <isset scope="request" name="tmp_sortvalue" value="#sortvalue#" />
+</isif>
+<!---  end fetch parameters --->
+<isif condition="#isDefined(filter) AND hasElements(filter:SelectedFilterAttributeEntries)#">
+    <isloop iterator="filter:SelectedFilterAttributeEntries" alias="appliedFiltersIterator" >
+            <isif condition="#(showselected EQ 'true') AND (appliedFiltersIterator:Value NE 'SHOWLESS')#">
+            
+                 <isset name="tmp_remove_query" value="#query:RemovedValueCondition(appliedFiltersIterator:Name,appliedFiltersIterator:Value)#" scope="request"/>
+
+                 <span class="product-filter-applied" >
+                      <span class="icon-selected"></span>
+                      <span class="product-filter-desc">
+                          <isprint value="#filter:ConfigurationAttribute:FilterOptions:DisplayName#">: <span class="product-filter-value"><isprint value="#appliedFiltersIterator:Value#"></span>
+                      </span>
+                      <a class="filter-clear"
+                        href="<isfilterlink
+                            pipelinename="#pipeline#"
+                              searchparameter="#tmp_remove_query#"
+                              pagesize="#query:PageSize#"
+                              params="TmpParams"
+                              sortvalue="#tmp_sortvalue#"
+                          >"
+                    	>
+                        <span class="glyphicon glyphicon-remove"></span>
+                      </a>
+                </span>
+                &nbsp;&nbsp;
+            </isif>
+    </isloop>
+</isif>

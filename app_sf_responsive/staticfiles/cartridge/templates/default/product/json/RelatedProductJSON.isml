@@ -1,0 +1,39 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#RelatedProductBO#">
+"<isprint value="#RelatedProductBO:SKU#" encoding="JavaScript">" : {
+	"productSKU" : "<isprint value="#RelatedProductBO:SKU#" encoding="JavaScript">",
+	"productUUID" : "<isprint value="#RelatedProductBO:ID#" encoding="JavaScript">", 
+	"productName" : "<isprint value="#RelatedProductBO:Name#" encoding="JavaScript">",
+	"isRetailSet" : <isprint value="#RelatedProductBO:isRetailSet#" encoding="JavaScript">,
+	"isAvailable" : <isprint value="#RelatedProductBO:isAvailable#" encoding="JavaScript">,
+	"inStock" : <isprint value="#RelatedProductBO:InventoryStatus:InStock#" encoding="JavaScript">,
+	"defaultCategoryUUID" : "<isprint value="#RelatedProductBO:DefaultCatalogCategory:ID#" encoding="JavaScript">",
+	"shortDescription" : "<isprint value="#RelatedProductBO:ShortDescription#" encoding="JavaScript">",
+	"productRef" : "<isprint value="#RelatedProductBO:ProductRef#" encoding="JavaScript">",
+	"productPrice" : "<isprint value="#RelatedProductBO:Price#" encoding="JavaScript">",
+	"images" : [
+        <isset name="It" value="#RelatedProductBO:Extension("Image"):ImageContainerBO:ImageBOs#" scope="request" />
+		<isloop iterator="It" alias="ImageBO">
+			{
+				"src" : "<isprint value="#ImageBO:EffectiveUrl#" encoding="JavaScript">",
+				"view" : "<isprint value="#ImageBO:ImageViewBO:ID#" encoding="JavaScript">",
+				"size" : "<isprint value="#ImageBO:ImageTypeBO:ID#" encoding="JavaScript">"
+				<isif condition="#isDefined(ImageBO:ActualHeight)#">
+				,"height" : "<isprint value="#ImageBO:ActualHeight#" encoding="JavaScript">"
+				</isif>
+				<isif condition="#isDefined(ImageBO:ActualWidth)#">
+				,"width" : "<isprint value="#ImageBO:ActualWidth#" encoding="JavaScript">"
+				</isif>
+				<isif condition="#isDefined(ImageBO:ImageTypeHeight)#">
+				,"imageTypeHeight" : "<isprint value="#ImageBO:ImageTypeHeight#" encoding="JavaScript">"
+				</isif>
+				<isif condition="#isDefined(ImageBO:ImageTypeWidth)#">
+				,"imageTypeWidth" : "<isprint value="#ImageBO:ImageTypeWidth#" encoding="JavaScript">"
+				</isif>
+				<isif condition="#ImageBO:PrimaryImage#">
+				,"primary" : true
+				</isif>
+			}<isif condition="#hasNext(ImageBO)#">,</isif>
+		</isloop>
+	]
+}

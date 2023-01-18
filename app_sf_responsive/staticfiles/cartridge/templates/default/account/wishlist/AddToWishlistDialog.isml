@@ -1,0 +1,49 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="account.wishlists.add_to_wishlist.title"/></h2>
+		</div>
+		
+		<isif condition="#isDefined(ErrorCode) AND (ErrorCode EQ 'NoProductsToAdd')#">
+			<div class="modal-body">
+				<istext key="account.wishlists.add_to_wishlist.no_product.message"/>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.wishlists.add_to_wishlist.cancel_button.text" /></button>
+			</div>
+		<iselse>
+			<isform action="#URL(Action(AddToWishlistFormActionPipeline), Parameter('AjaxRequestMarker', 'true'))#"
+				class="bv-form" method="post" id="add-to-wishlist-form"
+				data-hijax="true"
+			>
+				<div class="modal-body">
+					<input type="hidden" name="ProductSKU" value="<isprint value="#SKU#"/>" />
+					<input type="hidden" name="QuantityValue" value="<isprint value="#Quantities:get(ProductSKU)#"/>" />
+					<input type="hidden" name="PLIID" value="<isprint value="#PLIID#"/>" />
+					
+					<isif condition="#AddToWishlistForm:Invalid#" >
+						<div role="alert" class="alert alert-danger">
+							<isloop iterator="AddToWishlistForm:NewWishlistName:Errors" alias="Error">
+								<istext key="#'account.wishlist.name.'.Error#">
+							</isloop>
+							<isloop iterator="AddToWishlistForm:TargetWishlistID:Errors" alias="Error">
+								<istext key="#'account.wishlist.id.'.Error#">
+							</isloop>
+						</div>
+					</isif>
+					
+					<isChooseWishlist Wishlists="#Wishlists#" PreferredWishlistID="#PreferredWishlistBO:ID#" CurrentForm="#AddToWishlistForm#">
+				</div>
+				
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary"name="AddWishlistItem"><istext key="account.wishlists.add_to_wishlist.add_button.text" /></button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.wishlists.add_to_wishlist.cancel_button.text" /></button>
+				</div>
+			</isform>
+		</isif>
+	</div>
+</div>

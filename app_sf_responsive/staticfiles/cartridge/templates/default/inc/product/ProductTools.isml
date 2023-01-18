@@ -1,0 +1,64 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+<isinclude template="modules/captcha/Modules">
+
+<div class="row product-details-top-line">
+	<div class="col-md-12 pull-right">
+		<isProductRating 
+			ProductBO="#ProductBO#"
+			User="#CurrentUser#"
+			SimpleRatingView="false"
+			RichSnippetsEnabled="#RichSnippetsEnabled#"
+		>
+		<ul class="share-tools pull-right">
+			<isif condition="#NOT(ProductBO:isEndOfLife)#">
+				<ispipeline pipeline="DetermineRepositories-Channel" alias="RepositoriesDictionary">
+				<isset name="ChannelName" value="#RepositoriesDictionary:Repository:DisplayName#" scope="request">
+				<isset name="EmailAFriendSubject" value="#replace(encodeValue(localizeTextEx("email.recommended_product.heading", ParameterList(ChannelName)), "url"), "\\+", "%20")#" scope="request">
+				<issetcanonicallink
+					name="CurrentProductURL"
+					action="ViewProduct-Start"
+					parameters="#ParameterList(Parameter('SKU', ProductBO:SKU))#"
+					scope="request">
+				<isset name="EmailAFriendBody" value="#replace(encodeValue(localizeTextEx("email.recommended_product.text", ParameterList(ProductBO:DisplayName, CurrentProductURL)), "url"), "\\+", "%20")#" scope="request">
+			
+				<li>
+					<a href="mailto:?subject=#EmailAFriendSubject#&body=#EmailAFriendBody#">
+						<span class="glyphicon glyphicon-send"></span>
+						<span class="share-label"><istext key="product.email_a_friend.link" /></span>
+					</a>
+				</li>
+			</isif>
+			<li class="hidden-xs">
+				<a class="link-print" href="javascript:window.print();" rel="nofollow">
+					<span class="glyphicon glyphicon-print"></span>
+					<span class="share-label"><istext key="product.print_page.link" /></span>
+				</a>
+			</li>
+			<isif condition="#NOT(ProductBO:ProductMaster)#">
+				<li>
+					<isif condition="#(ProductBO:isRetailSet AND hasElements(ProductBO:BundleInformationBO:BundledProductBOs))#">
+						<ISAddToWishlist class="btn-link btn-tool"
+							ProductBO="#ProductBO#" 
+							Currency="#CurrentRequest:Currency#"
+							DisplayType="share-tool"
+							DataAttributes="#'data-dialog-form=retailSetForm_' . replace(ProductBO:SKU, '\\s', '---')#"
+						>
+					<iselse>
+						<ISAddToWishlist class="btn-link btn-tool"
+							ProductBO="#ProductBO#" 
+							Currency="#CurrentRequest:Currency#"
+							DisplayType="share-tool"
+							DataAttributes="#'data-dialog-form=productDetailForm_' . replace(ProductBO:SKU, '\\s', '---')#"
+						>
+					</isif>
+				</li>		
+				<li>
+					<ISAddToProductCompare ProductBO="#ProductBO#" DisplayType="share-tool">
+				</li>
+			</isif>			
+		</ul>
+	</div>
+</div>

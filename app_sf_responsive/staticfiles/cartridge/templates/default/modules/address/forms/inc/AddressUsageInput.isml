@@ -1,0 +1,54 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<!--- Address can always be used as invoice and shipping address --->
+<input type="hidden" name="#webform:UseAsBillingAddress:QualifiedName#" value="true" />
+<input type="hidden" name="#webform:UseAsShippingAddress:QualifiedName#" value="true" />
+
+<!--- check boxes for preferred addresses --->
+<isif condition="#NOT isDefined(checkoutAddressType)#">
+	<div class="form-group">
+		<div class="col-sm-8 col-sm-push-4">
+			<div class="checkbox">
+				<label class="control-label">
+					<input type="checkbox" 
+						id="<isprint value="#webform:PreferredBillingAddress:QualifiedName.idSuffix#">"
+						name="<isprint value="#webform:PreferredBillingAddress:QualifiedName#">"
+						<isif condition="#isDefined(webform:PreferredBillingAddress:Value)#">
+							<isif condition="#webform:PreferredBillingAddress:Value EQ 'true'#">checked="checked" </isif>
+						<iselseif condition="#isDefined(addressBO)#">
+							<isif condition="#addressBO:ID EQ userBO:PreferredInvoiceToAddressBO:ID#">checked="checked"</isif>
+						</isif>
+						<isif condition="#NOT hasElements(customerBO:AddressBOs)#">
+							title="<istext key="account.address.preferred_billing_first.checkbox.label" />"
+						</isif>	
+					/>
+					
+					<istext key="account.address.preferred_billing.checkbox.label" />
+				</label>
+				<input type="hidden" id="<isprint value="#webform:UseAsBillingAddress:QualifiedName.idSuffix#">"
+						name="<isprint value="#webform:UseAsBillingAddress:QualifiedName#">" value="true"/>
+			</div>
+			
+			<div class="checkbox">
+				<label class="control-label">
+					<input type="checkbox" 
+						id="<isprint value="#webform:PreferredShippingAddress:QualifiedName.idSuffix#">"
+						name="<isprint value="#webform:PreferredShippingAddress:QualifiedName#">"
+						<isif condition="#isDefined(webform:PreferredShippingAddress:Value)#">
+							<isif condition="#webform:PreferredShippingAddress:Value EQ 'true'#">checked="checked"</isif>
+						<iselseif condition="#isDefined(addressBO)#">
+							<isif condition="#addressBO:ID EQ userBO:PreferredShipToAddressBO:ID#">checked="checked"</isif>	
+						</isif>
+						<isif condition="#NOT hasElements(customerBO:AddressBOs)#">
+							title="<istext key="account.address.preferred_shipping_first.checkbox.label" />"
+						</isif>
+						/>	
+					<istext key="account.address.preferred_shipping.checkbox.label" />
+				</label>
+				<input type="hidden" id="<isprint value="#webform:UseAsShippingAddress:QualifiedName.idSuffix#">"
+						name="<isprint value="#webform:UseAsShippingAddress:QualifiedName#">" value="true"/>
+			</div>
+		</div>
+	</div>
+</isif>

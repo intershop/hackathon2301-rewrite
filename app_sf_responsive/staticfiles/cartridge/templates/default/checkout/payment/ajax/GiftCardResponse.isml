@@ -1,0 +1,16 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<isinclude template="webcontrols/Modules"/>
+
+<!--- section which will be updated after gift card entry --->
+<!--- Gift card section --->
+<div class="checkout-payment-giftcard">
+	<isinclude extensionpoint="AfterPaymentMethodSelection"/>
+</div>
+
+<!--- order summary --->
+<div class="order-summary-paymentpage">
+	<isinclude template="checkout/payment/ajax/OrderSummary">
+</div>	
+
+

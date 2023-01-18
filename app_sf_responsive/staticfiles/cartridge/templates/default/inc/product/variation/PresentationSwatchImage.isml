@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- Get domain for the preference "Swatch Image Usage" --->
+<ISGetCurrentDomain CurrentDomain="CurrentDomain">
+<!--- Get the preference for "Swatch Image Usage" --->
+<ISGetPreference preferencekey="SwatchImageUsingImageFW" domainname="#CurrentDomain:DomainName#" type="String" return="SwatchImageUsingImageFW">
+
+<isif condition="#isDefined(SwatchImageUsingImageFW) AND (SwatchImageUsingImageFW EQ 'true')#">
+	<ISProductImage ProductBO="#VariationProduct#" ImageType="swatches" ImageView="front" AltText="#VariationValues#">
+<iselse>
+	<img src="#ContentURL(VariationProduct:AttributeValue(VariationAttribute:PresentationProductAttributeName):StringValue)#" alt="<isprint value="#VariationValues#">" <isif condition="#isDefined(VariationProduct) AND NOT(VariationProduct:Available)#">title="<istext key="product.variation.not_available.text" />"</isif> height="32" width="32"/>
+</isif>

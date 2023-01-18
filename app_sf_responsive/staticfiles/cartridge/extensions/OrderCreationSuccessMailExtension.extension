@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensionpoint:ExtensionPointModel xmlns:extensionpoint="http://www.intershop.de/extensionpoint/2011"
+    name="OrderCreationSuccessMailExtension">
+  <extensionBindings type="java" extensionPoint="com.intershop.component.basket.capi.remote.service.handler.BasketServiceOrderCreationHandler-BasketService.orderCreationSuccess"
+      extension="com.intershop.application.responsive.internal.basket.BasketServiceOrderCreationHandlerImpl"/>
+</extensionpoint:ExtensionPointModel>

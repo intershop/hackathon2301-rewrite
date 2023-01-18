@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Provides start nodes for getting or creating data used for doing REST calls.-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessRESTConfiguration" overrideMode="Inherit" type="process">
+<!--Creates a token that authenticates 
+the given user.
+@Location 4,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="CreateToken"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CreateAuthenticationToken1"/>
+<!--This user is used to create a token.-->
+    <parameters name="CurrentUser" type="com.intershop.beehive.core.capi.user.User"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateAuthenticationToken1">
+    <pipelet href="enfinity:/app_sf_responsive/pipelets/CreateAuthenticationToken.xml"/>
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" strict="true">
+<!--A token that authenticates the given user.-->
+    <returnValues name="Token" type="com.intershop.component.rest.capi.auth.Token"
+        optional="true"/>
+  </nodes>
+<!--Gets properties that are used 
+for doing REST calls.
+@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="GetProperties"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetPropertyValue0"/>
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+    <parameters name="CurrentRequest" type="com.intershop.beehive.core.capi.request.Request"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue0">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetPropertyValue1"/>
+    <nodeSuccessors name="pipelet_error" next="LogMessage0"/>
+    <parameterBindings name="PropertyName" constant="intershop.WebServerSecureURL"/>
+    <returnValueBindings name="PropertyValue" objectPath="WebServerSecureURL"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue1">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetPropertyValue2"/>
+    <nodeSuccessors name="pipelet_error" next="LogMessage1"/>
+    <parameterBindings name="PropertyName" constant="intershop.urlmapping.rest.webadapter"/>
+    <returnValueBindings name="PropertyValue" objectPath="URLMappingRESTWebadapter"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue2">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetPropertyValue3"/>
+    <nodeSuccessors name="pipelet_error" next="LogMessage2"/>
+    <parameterBindings name="PropertyName" constant="intershop.WebServerURL"/>
+    <returnValueBindings name="PropertyValue" objectPath="WebServerURL"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue3">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetPropertyValue4"/>
+    <nodeSuccessors name="pipelet_error" next="LogMessage3"/>
+    <parameterBindings name="PropertyName" constant="intershop.urlmapping.pipeline.webadapter"/>
+    <returnValueBindings name="PropertyValue" objectPath="URLMappingPipelineWebadapter"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue4">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="ConvertISMLMoneyStylesToAccountingJSFormat0"/>
+    <nodeSuccessors name="pipelet_error" next="LogMessage4"/>
+    <parameterBindings name="PropertyName" constant="intershop.urlmapping.static.webadapter"/>
+    <returnValueBindings name="PropertyValue" objectPath="URLMappingStaticWebadapter"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConvertISMLMoneyStylesToAccountingJSFormat0">
+    <pipelet href="enfinity:/app_sf_responsive/pipelets/ConvertISMLMoneyStylesToAccountingJSFormat.xml"/>
+    <nodeSuccessors name="next" next="GetISMLDatePatterns0"/>
+    <parameterBindings name="LocaleInformation" objectPath="CurrentRequest:Locale"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetISMLDatePatterns0">
+    <pipelet href="enfinity:/app_sf_responsive/pipelets/GetISMLDatePatterns.xml"/>
+    <nodeSuccessors name="next" next="GetServerGroup0"/>
+    <parameterBindings name="LocaleInformation" objectPath="CurrentRequest:Locale"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetServerGroup0">
+    <pipelet href="enfinity:/core/pipelets/GetServerGroup.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="Site" objectPath="CurrentDomain"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+<!--The global property of intershop.urlmapping.rest.webadapter.-->
+    <returnValues name="URLMappingRESTWebadapter" type="java.lang.String"/>
+<!--The global property of intershop.WebServerSecureURL.-->
+    <returnValues name="WebServerSecureURL" type="java.lang.String"/>
+<!--The global property of intershop.WebServerURL.-->
+    <returnValues name="WebServerURL" type="java.lang.String"/>
+<!--The global property of intershop.urlmapping.pipeline.webadapter.-->
+    <returnValues name="URLMappingPipelineWebadapter" type="java.lang.String"/>
+<!--The global property of intershop.urlmapping.static.webadapter.-->
+    <returnValues name="URLMappingStaticWebadapter" type="java.lang.String"/>
+    <returnValues name="AccountingJSMoneyFormats" type="java.util.Map&lt;String,String>"/>
+    <returnValues name="ServerGroup" type="java.lang.String"/>
+    <returnValues name="ISMLDatePatterns" type="java.util.Map&lt;String,String>"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="LogMessage4">
+    <configurationValues name="Level" value="Error"/>
+    <configurationValues name="Marker" value="GetServerProperties"/>
+    <pipelet href="enfinity:/core/pipelets/LogMessage.xml"/>
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <parameterBindings name="MessageText" constant="Could not get property intershop.urlmapping.static.webadapter."/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="EndNode1"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" name="Error" strict="true"/>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="LogMessage3">
+    <configurationValues name="Level" value="Error"/>
+    <configurationValues name="Marker" value="GetServerProperties"/>
+    <pipelet href="enfinity:/core/pipelets/LogMessage.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="MessageText" constant="Could not get property intershop.urlmapping.pipeline.webadapter."/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="LogMessage2">
+    <configurationValues name="Level" value="Error"/>
+    <configurationValues name="Marker" value="GetServerProperties"/>
+    <pipelet href="enfinity:/core/pipelets/LogMessage.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="MessageText" constant="Could not get property intershop.WebServerURL."/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="LogMessage1">
+    <configurationValues name="Level" value="Error"/>
+    <configurationValues name="Marker" value="GetServerProperties"/>
+    <pipelet href="enfinity:/core/pipelets/LogMessage.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="MessageText" constant="Could not get property intershop.urlmapping.rest.webadapter."/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="LogMessage0">
+    <configurationValues name="Level" value="Error"/>
+    <configurationValues name="Marker" value="GetServerProperties"/>
+    <pipelet href="enfinity:/core/pipelets/LogMessage.xml"/>
+<!--@BendPoints 7,3-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="MessageText" constant="Could not get property intershop.WebServerSecureURL."/>
+  </nodes>
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_E_LBsPcOEemvVuHzl0BHwQ" strict="true"
+      name="GetRestConfiguration" callMode="Private">
+    <nodeSuccessors name="next" next="GetPropertyValue_E_TkkPcOEemvVuHzl0BHwQ"/>
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue_E_TkkPcOEemvVuHzl0BHwQ">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetPropertyValue_E_PTIPcOEemvVuHzl0BHwQ"/>
+    <parameterBindings name="PropertyName" constant="intershop.WebServerSecureURL"/>
+    <returnValueBindings name="PropertyValue" objectPath="WebServerSecureURL"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue_E_PTIPcOEemvVuHzl0BHwQ">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetPropertyValue_E_RvYPcOEemvVuHzl0BHwQ"/>
+    <parameterBindings name="PropertyName" constant="intershop.urlmapping.rest.webadapter"/>
+    <returnValueBindings name="PropertyValue" objectPath="URLMappingRESTWebadapter"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPropertyValue_E_RvYPcOEemvVuHzl0BHwQ">
+    <configurationValues name="PropertyType" value="Global"/>
+    <pipelet href="enfinity:/core/pipelets/GetPropertyValue.xml"/>
+    <nodeSuccessors name="next" next="GetServerGroup_E_Nd8PcOEemvVuHzl0BHwQ"/>
+    <parameterBindings name="PropertyName" constant="intershop.WebServerURL"/>
+    <returnValueBindings name="PropertyValue" objectPath="WebServerURL"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetServerGroup_E_Nd8PcOEemvVuHzl0BHwQ">
+    <pipelet href="enfinity:/core/pipelets/GetServerGroup.xml"/>
+    <nodeSuccessors name="next" next="EndNode_E_QhQPcOEemvVuHzl0BHwQ"/>
+    <parameterBindings name="Site" objectPath="CurrentDomain"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_E_QhQPcOEemvVuHzl0BHwQ" strict="true">
+    <returnValues name="ServerGroup" objectPath="ServerGroup" type="java.lang.String"/>
+    <returnValues name="WebServerURL" objectPath="WebServerURL" type="java.lang.String"/>
+    <returnValues name="URLMappingRESTWebadapter" objectPath="URLMappingRESTWebadapter"
+        type="java.lang.String"/>
+  </nodes>
+</pipeline:Pipeline>

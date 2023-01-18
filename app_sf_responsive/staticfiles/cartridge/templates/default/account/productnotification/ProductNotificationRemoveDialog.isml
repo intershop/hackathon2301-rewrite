@@ -1,0 +1,36 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><isprint value="#ProductBO:Name#"></h2>
+		</div>
+		
+		<isform name="formRemoveProductNotification" method="post" 
+			action="#URL(Action('ViewProductNotification-RemoveAlert'), Parameter('AlertUUID', Alert:UUID), Parameter('SKU',ProductBO:SKU))#"
+			data-hijax="true"
+		>
+			<div class="modal-body">
+			
+				<isif condition="#isDefined(ERROR_ALERT_NOT_FOUND)#">
+					<div role="alert" class="kor-form-error-message">
+						<div class="kor-form-error-message-contents">
+							<istext key="account.productnotification.remove_dialog.cannot_deleted.error"/>
+						</div>
+					</div>
+				</isif>
+				<p><istext key="account.productnotification.remove_dialog.message_line1"/></p>
+				<p><istext key="account.productnotification.remove_dialog.message_line2"/></p>
+				
+			</div>
+			
+			<div class="modal-footer">
+				<input type="hidden" data-form-action="true"/>
+				<button type="submit" class="btn btn-primary" name="delete" value="delete"><istext key="account.productnotification.remove_dialog.label_yes"/></button>
+				<a class="btn btn-default" name="cancel" data-dismiss="modal"><istext key="account.productnotification.remove_dialog.label_no"/></a>
+			</div>
+		</isform>
+		
+	</div>
+</div>

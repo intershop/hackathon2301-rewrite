@@ -1,0 +1,218 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<isinclude template="modules/Modules">
+<isinclude template="inc/BootstrapSelect">
+
+<isset name="AddressSelectExtensionSeparator" value=" | " scope="request"/>
+
+<!--- Error messages --->
+<isif condition="#isDefined(RestrictedItemsMap) AND (hasElements(RestrictedItemsMap:EntrySet))#">
+	<isinclude template="checkout/common/RestrictedItems">	
+</isif>
+
+<isif condition="#isDefined(AddressCreationResult) AND NOT(AddressCreationResult:Success)#">
+	<isif condition="#AddressCreationResult:FailureCode EQ 'DuplicateAddress'#">
+		<div class="alert alert-info">
+			<p><istext key="checkout.addresses.create_address.duplicate.error"/></p>
+		</div>
+	<iselse>
+		<div class="alert alert-danger">
+			<p><istext key="#'checkout.addresses.create_address.'.AddressCreationResult:FailureCode.'.error'#"/></p>
+		</div>
+	</isif>
+</isif>
+
+<h3><istext key="checkout.select_shipping_address.heading" /></h3>
+
+<!--- dropdown: select all items to a single address --->
+<div class="section">
+	<p>
+		<istext key="checkout.ship_to_a_single_address.text"/>
+	</p>
+	<isform action="#URL(Action('ViewCheckoutAddressBook-UseAsShipToAddress'))#" method="post">
+		<select 
+			name="ShippingAddressID" 
+			class="selectpicker js-select-shippingaddress js-select-singleshippingaddress"
+			data-live-search="true"
+			title="<istext key="checkout.button.singleShipping" />"
+		>	
+			<optgroup label="<istext key="checkout.addresses.select.optgroup.my_addresses" />" >
+				<isloop iterator="ShippingAddresses" alias="Address" counter="Counter">
+					<isif condition="#((isDefined(Address:Country) AND (Address:Country NE ''))
+						OR (isDefined(Address:CountryCode) AND (Address:CountryCode NE ''))
+						OR (isDefined(Address:City) AND (Address:City NE ''))
+						OR (isDefined(Address:AddressLine1) AND (Address:AddressLine1 NE '')))
+						AND NOT isDefined (Address:Extension("Store"))#">
+						<option value="<isprint value="#Address:URN#">">
+							<isinclude extensionpoint="AddressSelectExtensions"/>
+							<isprint value="#Address:FirstName#"> <isprint value="#Address:LastName#"> | <isprint value="#Address:AddressLine1#">
+						</option>
+					<iselseif condition="#isDefined (Address:Extension("Store"))#">
+						<isset name="StoresAvailable" value="true" scope="request"/>
+					</isif>
+				</isloop>
+			</optgroup>
+		
+			<optgroup label="<istext key="checkout.addresses.select.optgroup.stores" />" data-selectpicker-store>
+				<isif condition="#StoresAvailable EQ 'true'#">
+					<isloop iterator="ShippingAddresses" alias="Address">
+						<isif condition="#((isDefined(Address:Country) AND (Address:Country NE ''))
+							OR (isDefined(Address:CountryCode) AND (Address:CountryCode NE ''))
+							OR (isDefined(Address:City) AND (Address:City NE ''))
+							OR (isDefined(Address:AddressLine1) AND (Address:AddressLine1 NE '')))
+							AND isDefined (Address:Extension("Store"))#">
+							<option value="<isprint value="#Address:URN#">">
+								<isinclude extensionpoint="AddressSelectExtensions"/>
+								<isprint value="#Address:AddressName#"> | <isprint value="#Address:AddressLine1#">
+							</option>
+						</isif>	
+					</isloop>
+				</isif>
+			</optgroup>
+		</select>
+	</isform>
+</div>
+
+<!--- id="form-multiple-shipping" --->
+<isset name="formKey" value="Splitting" scope="request" />
+<isset name="Subform" value="#MultipleAddressesForm:get(formKey)#" scope="request"/>
+<isset name="StoresAvailable" value="false" scope="request"/>
+
+<div class="list-header">
+	<div class="list-header-item col-sm-5 col-lg-4"><istext key="checkout.shipping.pli.description.heading" /></div>
+	<div class="list-header-item col-sm-1"><istext key="checkout.shipping.pli.qty.heading" /></div>
+	<div class="list-header-item col-sm-6 col-lg-7"><istext key="checkout.pli.ship_to.heading" /></div>
+</div>
+
+<div class="list-body">
+	<isset name="foundRestrictedPLIError" value="#'false'#" scope="request"/>
+	
+	<!--Start Do not show destination for Donation Item-->
+	<isloop iterator="CurrentCartBO:ProductLineItemBOs" alias="PLI">
+		<isloop iterator="PLISplitInfoMap:get(PLI)" alias="SplitInfo">
+			<isform action="#URL(Action('ViewCheckoutAddresses-Dispatch'))#" method="post">
+				<input type="hidden" name="<isprint value="#Subform:SplitInfoMapID:QualifiedName#">" value="<isprint value = "#PLISplitInfoMap:ID#">" />
+				<isset name="formKey" value="#SplitInfo:ID#" scope="request" />
+				<isset name="Subform" value="#MultipleAddressesForm:get(formKey)#" scope="request"/>
+				<isset name="restrictedPLIError" value="#'false'#" scope="request"/>
+				
+				<div class="list-item-row list-item-row-big">
+				
+					<!---Product Description --->
+					<div class="col-sm-5 col-lg-4 list-item">
+						<isPLIDescription pli="#PLI#" variationattributes="horizontal" showid="true" owningdomain="#CurrentOrganization:OwningDomain#" showwarranty="true">
+						
+						<!--- pli promotion messages and free gift --->
+						<isinclude template="checkout/common/PromotionCodeList">
+					</div>
+					
+					<!---Quantity --->
+					<div class="col-sm-1 list-item">
+						<label class="visible-xs pull-left control-label"><istext key="checkout.shipping.pli.qty.label"></label>
+						<isprint value="#SplitInfo:Quantity:Value#" formatter="#">
+					</div>	
+					
+					<div class="col-sm-6 col-lg-7 list-item">
+						<!--- Restriction Errors --->
+						<isif condition="#isDefined(RestrictedItemsMap) AND (hasElements(RestrictedItemsMap:EntrySet)) AND NOT(foundRestrictedPLIError EQ 'true')#">
+							<isif condition="#isDefined(RestrictedItemsMap:get(PLI))#">
+								<isset name="restrictedPLIError" value="#'true'#" scope="request"/>
+								<div role="alert" class="alert alert-danger">
+									<p><istext key="checkout.restricted.lineitem.text"/></p>
+								</div>
+							<iselse>
+								<!--- check for a restriction of a dependent item (like warranty) --->
+								<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request">
+								<isset name="PLIGifting" value="#PLI:Extension("Gifting")#" scope="request">
+								<isif condition="#PLIWarranty:hasWarranty#">
+									<isset name="DependentPLIID" value="#PLIWarranty:BasketWarrantyLineItem:Extension("PersistentObjectBOExtension"):PersistentObject:ParentLineItemID#" scope="request">
+								<iselseif condition="#PLIGifting:hasGiftWrap#">
+									<isset name="DependentPLIID" value="#PLIGifting:BasketGiftWrapLineItemBO:ID#" scope="request">
+								<iselseif condition="#PLIGifting:hasGiftMessage#">
+									<isset name="DependentPLIID" value="#PLIGifting:BasketGiftMessageLineItemBO:ID#" scope="request">										
+								</isif>
+								<isif condition="#isDefined(DependentPLI) #">
+									<isif condition="#isDefined(RestrictedItemsMap:get(CurrentCartBO:getProductLineItemBOByID(DependentPLIID))) #">
+										<isset name="restrictedPLIError" value="#'true'#" scope="request"/>
+										<div role="alert" class="alert alert-danger">
+											<p><istext key="checkout.restricted.item.text" parameter0="#RestrictedItemsMap:get(DependentPLI)#"/></p>
+										</div>
+									</isif>
+								</isif>
+							</isif>	
+						</isif>
+						
+						<!--- Address Selection --->
+						<isif condition="#NOT (isDefined(PLI:ProductBO:ServiceType) AND PLI:ProductBO:ServiceType:DigitalGiftCard)#">
+							<div class="row">
+								<div class="col-lg-5">
+									<label class="visible-xs control-label"><istext key="checkout.pli.ship_to.label"></label>
+									<isaddress address="#SplitInfo:OriginProductLineItem:ShipToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+								</div>
+								<div class="col-lg-7">
+								
+									<select 
+										name="<isprint value="#Subform:ShipToAddressID:QualifiedName#">" 
+										class="form-control selectpicker js-select-shippingaddress js-select-multipleshippingaddress<isif condition="#ShippingAddresses:Size <= 1#"> hide</isif>"
+										data-live-search="true"
+										data-testing-id="multiple-address-select-<isprint value="#PLI:ProductName#">" 
+										title="<istext key="checkout.addresses.select_a_different_address.default" />"
+										<isif condition="#PLI:FreeGift#">disabled</isif>
+									>
+										<isset name="Addresses" value="#CustomerBO:ShipToAddressBOs#" scope="request"/><!---ToDo: All available Shipping addresses --->
+										<isset name="PLIAddressID" value="#SplitInfo:get("ShipToAddressID")#" scope="request"/>
+
+										<optgroup label="<istext key="checkout.addresses.select.optgroup.my_addresses" />" >
+											<isloop iterator="ShippingAddresses" alias="Address" counter="Counter">
+												<isif condition="#(NOT (isDefined(SplitInfo:OriginProductLineItem:ShipToAddressBO)) OR NOT(Address:hasSameAddressData(SplitInfo:OriginProductLineItem:ShipToAddressBO)))#">
+													<isif condition="#((isDefined(Address:Country) AND (Address:Country NE ''))
+														OR (isDefined(Address:CountryCode) AND (Address:CountryCode NE ''))
+														OR (isDefined(Address:City) AND (Address:City NE ''))
+														OR (isDefined(Address:AddressLine1) AND (Address:AddressLine1 NE '')))
+														AND NOT isDefined (Address:Extension("Store"))#">
+														<option value="<isprint value="#Address:URN#">" <!--- <isif condition="#Address:URN EQ PLIAddressID#">selected="selected"</isif>--->>
+															<isinclude extensionpoint="AddressSelectExtensions"/>
+															<isprint value="#Address:FirstName#"> <isprint value="#Address:LastName#"> | <isprint value="#Address:AddressLine1#">
+														</option>
+													<iselseif condition="#isDefined (Address:Extension("Store"))#">
+														<isset name="StoresAvailable" value="true" scope="request"/>
+													</isif>
+												</isif>
+											</isloop>
+										</optgroup>
+									
+										<optgroup label="<istext key="checkout.addresses.select.optgroup.stores" />" data-selectpicker-store>
+											<isif condition="#StoresAvailable EQ 'true'#">
+												<isloop iterator="ShippingAddresses" alias="Address">
+													<isif condition="#(NOT Address:hasSameAddressData(SplitInfo:OriginProductLineItem:ShipToAddressBO))#">
+														<isif condition="#((isDefined(Address:Country) AND (Address:Country NE ''))
+															OR (isDefined(Address:CountryCode) AND (Address:CountryCode NE ''))
+															OR (isDefined(Address:City) AND (Address:City NE ''))
+															OR (isDefined(Address:AddressLine1) AND (Address:AddressLine1 NE '')))
+															AND isDefined (Address:Extension("Store"))#">
+															<option value="<isprint value="#Address:URN#">">
+																<isinclude extensionpoint="AddressSelectExtensions"/>
+																<isprint value="#Address:AddressName#"> | <isprint value="#Address:AddressLine1#">
+															</option>
+														</isif>
+													</isif>	
+												</isloop>
+											</isif>
+										</optgroup>
+									</select>
+								</div>
+							</div>
+						<iselse>
+							<p><label class="visible-xs pull-left control-label"><istext key="checkout.pli.ship_to.label"></label><isprint value="#PLI:ShipToAddressBO:EMail#"></p>
+						</isif>
+						
+						<!--- remove link for restricted items --->
+						<isif condition="#restrictedPLIError EQ 'true'#">
+							<isinclude template="inc/CSRFGuardJSToken"/>
+							<a data-csrf-guarded href="#URL(Action('ViewCheckoutAddresses-RemoveRestrictedPLI'), Parameter('ProductLineItemUUID',PLI:ID))#" class="btn-link" ><istext key="checkout.remove.from.cart.button.label" /></a>
+						</isif>
+					</div>
+				</div>
+			</isform>
+		</isloop>
+	</isloop>	
+</div>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Handles the contact form view logic.-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewContact" type="view">
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction1"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction1">
+    <configurationValues name="OutValue_0" value="ViewContact-Send"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+    <parameterBindings name="Key_0" objectPath="send"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Send">
+    <nodeSuccessors name="next" next="CreateForm2"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm2">
+    <configurationValues name="FormName" value="ContactUsForm"/>
+    <configurationValues name="FormResource" value="ContactUs"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <returnValueBindings name="Form" objectPath="ContactUsForm"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="Form" objectPath="ContactUsForm"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+<!--@BendPoints 5,8 5,11-->
+    <nodeSuccessors name="next" next="JoinNode6"/>
+<!--@BendPoints 7,8-->
+    <nodeSuccessors name="ERROR" next="SetDictionaryValue1"/>
+    <parameterBindings name="ContactUsForm" objectPath="ContactUsForm"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ViewContact-SendContactForm"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="RenderSystemPage0_Input"/>
+    <parameterBindings name="PageName" constant="contact"/>
+    <parameterBindings name="PageType" constant="general"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPage0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.helpdesk.contactUs.pagelet2-Page"/>
+    <pipelet href="enfinity:/sld_pmc/pipelets/com.intershop.sellside.pmc.capi.pipeline.RenderSystemPage.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="PageletEntryPointID" constant="systempage.helpdesk.contactUs.pagelet2-Page"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="ERROR"/>
+    <configurationValues name="Value" value="SendContactForm"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+<!--@BendPoints 9,9 9,11-->
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 0,8-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" strict="true" name="SendContactForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetRepositoryByRepositoryDomain1"/>
+    <parameters name="Organization" type="com.intershop.component.organization.capi.Organization"/>
+    <parameters name="ContactUsForm" type="com.intershop.beehive.core.capi.webform.Form"
+        optional="true"/>
+  </nodes>
+<!--@Location 0,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRepositoryByRepositoryDomain1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetRepositoryByRepositoryDomain.xml"/>
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+<!--@BendPoints 3,19-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="RepositoryDomain" objectPath="Organization:OwningDomain"/>
+    <returnValueBindings name="Repository" objectPath="ChannelRepository"/>
+  </nodes>
+<!--@Location 0,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+  </nodes>
+<!--@Location 0,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetDomainPreference2"/>
+    <parameterBindings name="InValue_1" objectPath="ContactUsForm:Email:Value"/>
+    <parameterBindings name="InValue_10" objectPath="ContactUsForm:Comments:Value"/>
+    <parameterBindings name="InValue_2" objectPath="ContactUsForm:Subject:Value"/>
+    <parameterBindings name="InValue_3" objectPath="ApplicationBO:App:NamedObject(&quot;contactUsEnumerationKeyProvider&quot;)"/>
+    <parameterBindings name="InValue_4" objectPath="ContactUsForm:Name:Value"/>
+    <parameterBindings name="InValue_5" objectPath="ContactUsForm:Phone:Value"/>
+    <parameterBindings name="InValue_6" objectPath="ContactUsForm:Order:Value"/>
+    <parameterBindings name="InValue_7" objectPath="ContactUsForm:Subject:FormattedValue"/>
+    <returnValueBindings name="OutValue_1" objectPath="SenderEmail"/>
+    <returnValueBindings name="OutValue_10" objectPath="QuestionAndComments"/>
+    <returnValueBindings name="OutValue_2" objectPath="MailSubject"/>
+    <returnValueBindings name="OutValue_3" objectPath="ContactUsEnumerationKeyProvider"/>
+    <returnValueBindings name="OutValue_4" objectPath="SenderName"/>
+    <returnValueBindings name="OutValue_5" objectPath="SenderPhone"/>
+    <returnValueBindings name="OutValue_6" objectPath="AboutOrder"/>
+    <returnValueBindings name="OutValue_7" objectPath="Subject"/>
+  </nodes>
+<!--@Location 0,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference2">
+    <configurationValues name="DefaultPreferenceKey" value="ContactFormUserServiceEmailTo"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="ConcatenateStrings0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="PreferenceDomain" objectPath="ChannelRepository:Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="ServiceMailTo"/>
+  </nodes>
+<!--@Location 0,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConcatenateStrings0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/ConcatenateStrings.xml"/>
+    <nodeSuccessors name="next" next="GetDomainPreference_iL5MwK9BEeuCOLEug0bP1w"/>
+    <parameterBindings name="String0" objectPath="ContactUsForm:Email:Value"/>
+    <parameterBindings name="String1" constant=";"/>
+    <parameterBindings name="String2" objectPath="ServiceMailTo"/>
+    <returnValueBindings name="Concatenated" objectPath="MailTo"/>
+  </nodes>
+<!--@Location 0,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference_iL5MwK9BEeuCOLEug0bP1w">
+    <configurationValues name="DefaultPreferenceKey" value="ContactFormUserServiceEmailFrom"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="GetDomainPreference1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode_oYJToK9BEeuCOLEug0bP1w"/>
+    <parameterBindings name="PreferenceDomain" objectPath="ChannelRepository:Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="PreferenceMailFrom"/>
+  </nodes>
+<!--@Location 0,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference1">
+    <configurationValues name="DefaultPreferenceKey" value="ContactFormUserServiceEmailTemplate"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="StartSafeChangesBlock0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="PreferenceDomain" objectPath="ChannelRepository:Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="MailTemplate"/>
+  </nodes>
+<!--@Location 0,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock0">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.SendContactMail"/>
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="ProcessMail1"/>
+  </nodes>
+<!--@Location 0,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ProcessMail1">
+    <configurationValues name="UseErrorConnector" value="true"/>
+    <pipelet href="enfinity:/bc_mail/pipelets/ProcessMail.xml"/>
+    <nodeSuccessors name="next" next="EndSafeChangesBlock0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode4"/>
+    <parameterBindings name="MailFrom" objectPath="PreferenceMailFrom"/>
+    <parameterBindings name="ReplyTo" objectPath="ContactUsForm:Email:Value"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+  </nodes>
+<!--@Location 0,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock0">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.SendContactMail"/>
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="EndNode5"/>
+  </nodes>
+<!--@Location 0,19-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" strict="true"/>
+<!--@Location 1,17-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+<!--@BendPoints 3,36-->
+    <nodeSuccessors name="next" next="EndNode4"/>
+  </nodes>
+<!--@Location 1,19-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4" name="ERROR" strict="true"/>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 1,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_oYJToK9BEeuCOLEug0bP1w">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode_oYJToK9BEeuCOLEug0bP1w"/>
+  </nodes>
+<!--@Location 4,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+    <nodeSuccessors name="next" next="CreateForm1"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm1">
+    <configurationValues name="FormName" value="ContactUsForm"/>
+    <configurationValues name="FormResource" value="ContactUs"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <returnValueBindings name="Form" objectPath="ContactUsForm"/>
+  </nodes>
+</pipeline:Pipeline>

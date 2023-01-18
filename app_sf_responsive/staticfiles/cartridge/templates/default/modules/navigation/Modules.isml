@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<ismodule template="modules/navigation/FilterList.isml"
+	name="FilterList"
+	strict="true"
+	attribute="ListNavigationVO"
+	attribute="showCount"
+	attribute="showSelected"
+	attribute="CategoryBO"
+>
+
+<ismodule template="modules/navigation/ContentNavigation"
+	name="ContentNavigation"
+	strict="true"
+	attribute="navigationRoot"
+	attribute="navigationDepth"
+	attribute="currentPageletEntryPointID"
+	attribute="locale"
+>
+
+<ismodule template="modules/navigation/ContentNavigationLevel"
+	name="ContentNavigationLevel"
+	strict="true"
+	attribute="navigationItem"
+	attribute="navigationDepth"
+>
+
+<ismodule template="modules/navigation/ContentBreadcrumb"
+	name="ContentBreadcrumb"
+	strict="true"
+	attribute="navigationRoot"
+	attribute="currentPageletEntryPointID"
+	attribute="locale"
+>
+
+<ismodule template="modules/navigation/MasterProductFilterList.isml"
+    name="MasterProductFilterList"
+    strict="true"
+    attribute="ListNavigationVO"
+    attribute="showCount"
+    attribute="showSelected"
+    attribute="CategoryBO"
+>

@@ -1,0 +1,67 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+	<isif condition="#hasElements(SortedOrders)#">
+		<isif condition="#NOT isDefined(OrderHistoryServices) OR (OrderHistoryServices:isEmpty)#">
+			<div class="row section section-seperator">
+				<isinclude template="account/orders/OrderListSearchForm">
+			</div>
+		</isif>
+	
+		<div class="list-header">
+			<div class="list-header-item col-sm-2"><istext key="account.orderlist.table.date_of_order"/></div>
+			<div class="list-header-item col-sm-2"><istext key="account.orderlist.table.order_number"/></div>
+			<div class="list-header-item col-sm-1"><istext key="account.orderlist.table.items"/></div>
+			<div class="list-header-item col-sm-2"><istext key="account.orderlist.table.order_status"/></div>
+			<div class="list-header-item col-sm-2"><istext key="account.orderlist.table.destination"/></div>
+			<div class="list-header-item col-sm-2 text-right"><istext key="account.orderlist.table.order_total"/></div>
+			<div class="list-header-item col-sm-1">&nbsp;</div>
+		</div>
+		
+		<div class="list-body">
+			<isloop iterator="SortedOrders" alias="OrderBO">
+				<!--- B2C --->
+				<isOrderHistoryItem 
+					OrderBO="#OrderBO#" 
+					showOrderNumber="true" 
+					showNumberOfItems="true" 
+					showDestination="true" showOrderStatus="true"
+				>
+			</isloop>
+		</div>
+		
+		<!--- Pagination --->
+		<div class="row">
+			<div class="pagination clearfix col-xs-12">
+				<isif condition="#isDefined(ListNavigationVO)#">
+					<ismappagination 
+						pipeline="#ListNavigationVO:HandlerPipeline.'-SimpleOrderSearch'#"
+						params="#ListNavigationVO:GenericHandlerPipelineParams#"
+						itemcount="#ListNavigationVO:ElementCount#"
+						currentpage="#ListNavigationVO:CurrentPage#"
+						pagecount="#ListNavigationVO:PageCount#"
+					>
+				<iselse>
+					<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+					<%
+						PipelineDictionary dict = getPipelineDictionary();
+						int pageSize = dict.get("PageSize");
+						int totalCount = dict.get("SortedOrders:TotalCount");
+						int pageCount = (totalCount + pageSize - 1) / pageSize;
+						dict.put("PageCount", pageCount);
+					%>
+					<ismappagination 
+						pipeline="#HandlerPipeline.'-SimpleOrderSearch'#"
+						itemcount="#SortedOrders:TotalCount#"
+						currentpage="#PageNumber#"
+						pagesize="#PageSize#"
+						pagecount="#PageCount#"
+						params="#GenericHandlerPipelineParams#"
+					>
+				</isif>
+			</div>
+		</div>
+		
+	<iselse>
+		<p><istext key="account.orderlist.no_orders_message" parameter0="#Dictionary:Repository:DisplayName#"/></p>
+	</isif>
+

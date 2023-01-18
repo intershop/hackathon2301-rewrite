@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query>
+<parameters>
+	<parameter name="OrderDomain" type="com.intershop.beehive.core.capi.domain.Domain" optional="false"/>
+	<parameter name="Customer" type="com.intershop.component.customer.capi.CustomerBO" optional="true"/>
+	<parameter name="Buyer" type="com.intershop.beehive.core.capi.user.User" optional="true"/>
+	<parameter name="SortAttribute" type="java.lang.String" optional="true" description="the attribute to sort the result set"/>
+	<parameter name="SortDirection" type="java.lang.String" optional="true" description="sort the result set in ascending or descending order"/>	
+	<parameter name="Limit" type="java.lang.Integer" optional="true"/>
+	<parameter name="SearchTerm" type="com.intershop.component.foundation.capi.search.SearchExpression"  optional="true"/>
+	<parameter name="IncludedStatusCodes" type="java.util.Collection" optional="true" description="A set of order status codes determining orders of what statuses will appear in the result set"/>
+	<parameter name="ExcludedStatusCodes" type="java.util.Collection" optional="true" description="A set of order status codes determining orders of what statuses will not appear in the result set"/>
+	<parameter name="BuyingContext" type="com.intershop.component.organizationhierarchies.capi.buyingcontext.BuyingContext" optional="true"/>
+</parameters>
+<return-mappings>
+	<return-mapping name="Count" type="rename">
+		<return-attribute name="count"/>
+	</return-mapping>
+	<return-mapping name="OrderBO" type="bo-orm" class="com.intershop.beehive.bts.internal.orderprocess.fulfillment.OrderPO" mapperclass="OrderPOToOrderBOMapper">
+		<return-attribute name="OrderUUID" />
+	</return-mapping>
+</return-mappings>
+<processor name="JDBC"/>
+<template type="count">
+	SELECT COUNT(*) as count
+	FROM isorder o
+	<template-if condition="isDefined(BuyingContext) AND isDefined(BuyingContext:Group)">
+   	    JOIN isorderbuyingcontext c ON (o.uuid = c.orderid)
+   	</template-if>
+	WHERE
+		<template-if condition="isDefined(Customer)"> 
+			o.customerid=<template-variable value="Customer:ID"/>
+		<if-else/>
+			o.userid=<template-variable value="Buyer:ID"/>
+		</template-if>
+	AND o.DomainID=<template-variable value="OrderDomain:UUID"/>
+	<template-if condition="isDefined(BuyingContext) AND isDefined(BuyingContext:Group)">
+		AND o.customerno=<template-variable value="BuyingContext:Group:OrganizationID"/>
+		AND c.groupid=<template-variable value="BuyingContext:Group:ID"/>
+	</template-if>
+	<template-if condition="isDefined(SearchTerm)">
+	AND	(
+		<template-call name="inc/SearchExpression2Like">
+			<call-parameter name="SearchExpression" value="SearchTerm"/>
+			<call-parameter name="ColumnNames" value="&quot;o.buyerfirstname&quot;"/>
+			<call-parameter name="CaseInsensitive" value="true()"/>
+		</template-call>
+		<template-call name="inc/SearchExpression2Like">
+			<call-parameter name="SearchExpression" value="SearchTerm"/>
+			<call-parameter name="ColumnNames" value="&quot;o.buyerlastname&quot;"/>
+			<call-parameter name="CaseInsensitive" value="true()"/>
+			<call-parameter name="ConcatenationOperator" value="&quot; OR &quot;"/>
+		</template-call>
+		<template-call name="inc/SearchExpression2Like">
+			<call-parameter name="SearchExpression" value="SearchTerm"/>
+			<call-parameter name="ColumnNames" value="&quot;o.documentno&quot;"/>
+			<call-parameter name="CaseInsensitive" value="true()"/>
+			<call-parameter name="ConcatenationOperator" value="&quot; OR &quot;"/>
+		</template-call>	
+		)
+	</template-if>
+	<template-if condition="isDefined(IncludedStatusCodes) and hasElements(IncludedStatusCodes)">
+		AND o.status in (<template-loop alias="StatusCode" iterator="IncludedStatusCodes"><loop-separator>,</loop-separator><loop-statement><template-variable value="StatusCode"/></loop-statement></template-loop>)
+	</template-if>
+	<template-if condition="isDefined(ExcludedStatusCodes) and hasLoopElements(ExcludedStatusCodes)">
+		AND NOT o.status in (<template-loop alias="StatusCode" iterator="ExcludedStatusCodes"><loop-separator>,</loop-separator><loop-statement><template-variable value="StatusCode"/></loop-statement></template-loop>)
+	</template-if>
+</template>
+<template type="countedobjects">
+	SELECT o.uuid as OrderUUID, COUNT(*) over() AS "rowcount" 
+	FROM isorder o
+	<template-if condition="isDefined(BuyingContext) AND isDefined(BuyingContext:Group)">
+        JOIN isorderbuyingcontext c ON (o.uuid = c.orderid)
+    </template-if>
+	WHERE 
+		<template-if condition="isDefined(Customer)"> 
+			o.customerid=<template-variable value="Customer:ID"/>
+		<if-else/>
+			o.userid=<template-variable value="Buyer:ID"/>
+		</template-if>
+	AND o.DomainID=<template-variable value="OrderDomain:UUID"/>
+	<template-if condition="isDefined(BuyingContext) AND isDefined(BuyingContext:Group)">
+		AND o.customerno=<template-variable value="BuyingContext:Group:OrganizationID"/>
+		AND c.groupid=<template-variable value="BuyingContext:Group:ID"/>
+	</template-if>
+	<template-if condition="isDefined(SearchTerm)">
+		AND	(
+			<template-call name="inc/SearchExpression2Like">
+				<call-parameter name="SearchExpression" value="SearchTerm"/>
+				<call-parameter name="ColumnNames" value="&quot;o.buyerfirstname&quot;"/>
+				<call-parameter name="CaseInsensitive" value="true()"/>
+			</template-call>
+			<template-call name="inc/SearchExpression2Like">
+				<call-parameter name="SearchExpression" value="SearchTerm"/>
+				<call-parameter name="ColumnNames" value="&quot;o.buyerlastname&quot;"/>
+				<call-parameter name="CaseInsensitive" value="true()"/>
+				<call-parameter name="ConcatenationOperator" value="&quot; OR &quot;"/>
+			</template-call>
+			<template-call name="inc/SearchExpression2Like">
+				<call-parameter name="SearchExpression" value="SearchTerm"/>
+				<call-parameter name="ColumnNames" value="&quot;o.documentno&quot;"/>
+				<call-parameter name="CaseInsensitive" value="true()"/>
+				<call-parameter name="ConcatenationOperator" value="&quot; OR &quot;"/>
+			</template-call>	
+			)
+	</template-if>
+	<template-if condition="isDefined(IncludedStatusCodes) and hasElements(IncludedStatusCodes)">
+		AND o.status in (<template-loop alias="StatusCode" iterator="IncludedStatusCodes"><loop-separator>,</loop-separator><loop-statement><template-variable value="StatusCode"/></loop-statement></template-loop>)
+	</template-if>
+	<template-if condition="isDefined(ExcludedStatusCodes) and hasLoopElements(ExcludedStatusCodes)">
+		AND NOT o.status in (<template-loop alias="StatusCode" iterator="ExcludedStatusCodes"><loop-separator>,</loop-separator><loop-statement><template-variable value="StatusCode"/></loop-statement></template-loop>)
+	</template-if>
+	ORDER BY 
+		<template-if condition="SortAttribute EQ &apos;OrderTotal&apos;">
+			o.grandtotalgrosspricepcvalue
+		<if-elseif condition="SortAttribute EQ &apos;PurchaserName&apos;"/>
+			CONCAT(o.buyerfirstname, o.buyerlastname)
+		<if-else/>
+			o.creationdate
+		</template-if>
+		<template-if condition="SortDirection EQ &apos;asc&apos;">
+			ASC
+		<if-else/>
+		 	DESC
+		</template-if>
+</template>
+<template type="objects">
+	<template-if condition="isDefined(Limit)">
+		SELECT * FROM
+		(
+	</template-if>
+	SELECT
+	<template-if condition="isDefined(Limit)">
+	<sql-dialect name="Microsoft">
+		TOP <template-variable value="Limit" processing="text"/>
+	</sql-dialect>
+	</template-if>
+	 o.uuid as OrderUUID 
+	FROM isorder o
+	<template-if condition="isDefined(BuyingContext) AND isDefined(BuyingContext:Group)">
+   	    JOIN isorderbuyingcontext c ON (o.uuid = c.orderid)
+   	</template-if>
+	WHERE 
+		<template-if condition="isDefined(Customer)"> 
+			o.customerid=<template-variable value="Customer:ID"/>
+		<if-else/>
+			o.userid=<template-variable value="Buyer:ID"/>
+		</template-if>
+	AND o.DomainID=<template-variable value="OrderDomain:UUID"/>
+	<template-if condition="isDefined(BuyingContext) AND isDefined(BuyingContext:Group)">
+		AND o.customerno=<template-variable value="BuyingContext:Group:OrganizationID"/>
+		AND c.groupid=<template-variable value="BuyingContext:Group:ID"/>
+	</template-if>
+	<template-if condition="isDefined(SearchTerm)">
+		AND	(
+			<template-call name="inc/SearchExpression2Like">
+				<call-parameter name="SearchExpression" value="SearchTerm"/>
+				<call-parameter name="ColumnNames" value="&quot;o.buyerfirstname&quot;"/>
+				<call-parameter name="CaseInsensitive" value="true()"/>
+			</template-call>
+			<template-call name="inc/SearchExpression2Like">
+				<call-parameter name="SearchExpression" value="SearchTerm"/>
+				<call-parameter name="ColumnNames" value="&quot;o.buyerlastname&quot;"/>
+				<call-parameter name="CaseInsensitive" value="true()"/>
+				<call-parameter name="ConcatenationOperator" value="&quot; OR &quot;"/>
+				
+			</template-call>
+			<template-call name="inc/SearchExpression2Like">
+				<call-parameter name="SearchExpression" value="SearchTerm"/>
+				<call-parameter name="ColumnNames" value="&quot;o.documentno&quot;"/>
+				<call-parameter name="CaseInsensitive" value="true()"/>
+				<call-parameter name="ConcatenationOperator" value="&quot; OR &quot;"/>
+			</template-call>	
+		)
+	</template-if>
+	<template-if condition="isDefined(IncludedStatusCodes) and hasElements(IncludedStatusCodes)">
+		AND o.status in (<template-loop alias="StatusCode" iterator="IncludedStatusCodes"><loop-separator>,</loop-separator><loop-statement><template-variable value="StatusCode"/></loop-statement></template-loop>)
+	</template-if>
+	<template-if condition="isDefined(ExcludedStatusCodes) and hasLoopElements(ExcludedStatusCodes)">
+		AND NOT o.status in (<template-loop alias="StatusCode" iterator="ExcludedStatusCodes"><loop-separator>,</loop-separator><loop-statement><template-variable value="StatusCode"/></loop-statement></template-loop>)
+	</template-if>
+	ORDER BY 
+		<template-if condition="isDefined(SortAttribute) AND (SortAttribute EQ &apos;OrderTotal&apos;)">
+			o.grandtotalgrosspricepcvalue
+		<if-elseif condition="isDefined(SortAttribute) AND (SortAttribute EQ &apos;PurchaserName&apos;)"/>
+			CONCAT(o.buyerfirstname, o.buyerlastname)
+		<if-else/>
+			o.creationdate
+		</template-if>
+		<template-if condition="isDefined(SortDirection) AND (SortDirection EQ &apos;asc&apos;)">
+			ASC
+		<if-else/>
+			DESC
+		</template-if>
+		<template-if condition="isDefined(Limit)">
+			)a
+			<sql-dialect name="Oracle">
+			WHERE ROWNUM &lt;= <template-variable value="Limit"/>
+			</sql-dialect>
+		</template-if>	
+</template>
+</query>

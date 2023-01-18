@@ -1,0 +1,13 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#(isDefined(ProductBO:Extension("Gifting"):GiftWrappingEnabled) AND (ProductBO:Extension("Gifting"):GiftWrappingEnabled EQ 'true')) AND (isDefined(ProductBO:Extension("Gifting"):ApplicableGiftWraps) AND NOT(ProductBO:Extension("Gifting"):ApplicableGiftWraps:Empty))#">
+	<div class="gift-wrap">
+		<istext key="gifting.giftwrap.indicator_text.standard" /><a  data-dialog class="details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.giftWrap.pagelet2-Include'))#" rel="nofollow"><istext key="product.details.link" /></a>
+	</div>
+</isif>
+	
+<isif condition="#(isDefined(ProductBO:Extension("Gifting"):GiftMessagingEnabled) AND (ProductBO:Extension("Gifting"):GiftMessagingEnabled EQ 'true')) AND (isDefined(ProductBO:Extension("Gifting"):ApplicableGiftMessages) AND NOT(ProductBO:Extension("Gifting"):ApplicableGiftMessages:Empty))#">
+	<div class="gift-message">
+		<istext key="gifting.giftmessage.indicator_text.standard" /><a data-dialog class="details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.giftMessage.pagelet2-Include'))#" rel="nofollow"><istext key="product.details.link" /></a>
+	</div>
+</isif>

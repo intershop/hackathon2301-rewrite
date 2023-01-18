@@ -1,0 +1,26 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<div class="form-group">
+
+	<label class="control-label col-sm-4" for="<isprint value="#EmailAddress:Email:QualifiedName.idSuffix#">">
+		<istext key="checkout.addresses.email.label"/>
+		<isif condition="#NOT webform:Email:Optional#"><span class="required">*</span></isif>
+	</label>
+	<div class="col-sm-8">
+		<input maxlength="255" aria-required="true" 
+			type="email" 
+			id="<isprint value="#EmailAddress:Email:QualifiedName#">"
+			name="<isprint value="#EmailAddress:Email:QualifiedName#">"
+			<isif condition="#isDefined(EmailAddress:Email:Value)#">
+				value="<isprint value="#EmailAddress:Email:Value#">"
+			<iselse>
+				value="<isprint value="#CurrentCartBO:InvoiceToAddressBO:EMail#">"
+			</isif>
+			class="form-control <isif condition="#EmailAddress:Email:isInvalid#">has-error</isif>"
+			required 
+			data-bv-notempty-message="<istext key="account.email.error.email">"
+			data-bv-emailaddress-message="<istext key="checkout.addresses.email.invalid.error"/>"
+			data-flash-error-keys="fieldFailureMessageGlobal" />
+	</div>
+</div>

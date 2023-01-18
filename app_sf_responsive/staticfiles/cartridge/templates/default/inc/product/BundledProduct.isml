@@ -1,0 +1,35 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#BundledProductBO#">
+<isinclude template="modules/Modules">
+
+<div class="product-tile-list row">
+	<div class="col-xs-2">
+		<ISProductImage ProductBO="#BundledProductBO#" ImageType="S">
+	</div>
+	<div class="col-xs-10">
+		<div class="row">
+			<div class="col-xs-8 text-left">
+				<a class="product-title" href="<isprint value="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', BundledProductBO:SKU), Parameter('CategoryName', CategoryBO:Name), Parameter('CatalogID', CategoryBO:CatalogBO:Name))#">">
+					<isprint value="#BundledProductBO:Name#">
+				</a>
+				<isProductRating
+					ProductBO="#BundledProductBO#"
+					SimpleRatingView="true"
+				>
+				<div class="product-number">
+					<span class="product-number-label"><istext key="product.itemNumber.label"/></span>
+					<span class="product-number-value"><isprint value="#BundledProductBO:SKU#"></span>
+				</div>
+				<div class="product-description">
+					<isHtmlPrint value="#BundledProductBO:ShortDescription#">
+				</div>
+			</div>
+			<div class="quantity col-xs-4 text-left">
+				<span class="label-quantity"><istext key="product.bundledQuantity.label"/></span>
+				<span class="value-quantity"><isprint value="#ProductBO:BundledProductQuantity(BundledProductBO)#"></span>
+			</div>
+			
+		</div>
+	</div>
+</div>

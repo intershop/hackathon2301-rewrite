@@ -1,0 +1,50 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+<isGetProductPriceContext CustomerBO="#CustomerBO#" ContextProductBO="#ProductBO#" ProductPriceContext="ProductPriceContext">
+
+<isset name="Warranties" value="#ProductBO:Extension("Warranty"):WarrantyBOs#" scope="request" />
+<isset name="WarrantyIsOnline" value="#ProductBO:Extension("Warranty"):isAnyWarrantyOnline#" scope="request" />
+<isif condition="#hasLoopElements(Warranties)#">
+	<isif condition="#((isDefined(WarrantyIsOnline)) AND (WarrantyIsOnline EQ 'true'))#">
+		<div class="product-warranty" data-testing-id="product-details-warranty">
+			<isif condition="#(DisplayType EQ 'dropdown')#">
+				<select name="<isprint value="#'DependentSKU_'.ProductBO:SKU#">" data-testing-id="product-details-warranty-select">
+					<isloop iterator="Warranties" alias="Warranty">
+						<option value="<isprint value="#'Warranty_'.Warranty:ProductRef:ProductSKU#">">
+							<isprint value="#Warranty:DisplayName#"> - <isprint value="#Warranty:Extension("Pricing"):Price("WarrantyPrice", Currency, ProductPriceContext):Price#">
+							<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+						</option>
+					</isloop>
+					<option value="NoWarranty" selected="selected"><istext key="product.warranty.nowarranty"/></option>
+				</select>
+			<iselse>
+				<div class="product-warranty-title"><istext key="product.warranty.text" /></div>
+				<dl class="product-warranty-list" data-testing-id="product-details-warranty-list">
+					<isloop iterator="Warranties" alias="Warranty">
+						<isif condition="#Warranty:Online AND NOT(Warranty:EndOfLife)#">
+							<dd>
+								<label>
+									<input type="radio" 
+										name="<isprint value="#'DependentSKU_'.ProductBO:SKU#">" 
+										value="<isprint value="#'Warranty_'.Warranty:ProductRef:ProductSKU#">"/>
+									<a href="#URL(Action('ViewWarrantyDetails-Start'), Parameter('SKU', Warranty:ProductRef:ProductSKU))#" data-dialog rel="nofollow">
+										<isprint value="#Warranty:DisplayName#">
+									</a>
+									<span class="product-warranty-cost">
+										 - <isprint value="#Warranty:Extension("Pricing"):Price("WarrantyPrice", Currency, ProductPriceContext):Price#">
+									</span>
+									<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+								</label> 
+							</dd>
+						</isif>
+					</isloop>
+					<dd>
+						<input type="radio" id="<isprint value="#'DependentSKU_'.ProductBO:SKU#">" name="<isprint value="#'DependentSKU_'.ProductBO:SKU#">" value="" checked="checked" />
+						<label for="<isprint value="#'DependentSKU_'.ProductBO:SKU#">"><istext key="product.warranty.nowarranty"/></label>
+					</dd>
+				</dl>
+			</isif>
+		</div>
+	</isif>
+</isif>

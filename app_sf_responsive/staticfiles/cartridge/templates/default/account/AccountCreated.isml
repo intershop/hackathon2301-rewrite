@@ -1,0 +1,22 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<ispipeline pipeline="DetermineRepositories-Channel" alias="dict">
+<isset name="ChannelName" value="#dict:Repository:DisplayName#" scope="request">
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<isif condition="#isDefined(WasLoggedIn)#">
+	<h3><istext key="account.customer.approval.enabled.message"/></h3>
+<iselse/>
+	<h1><istext key="account.customer.registered.heading"/></h1>
+</isif>
+
+
+<p><istext key="account.customer.approval.message" encoding="off" parameter0="#encodeValue(NonApprovedUserBO:Email)#" parameter1="#encodeValue(ChannelName)#"/></p>
+
+<p><istext key="account.customer.contacts.message"/></p>
+<a href="#URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page'))#"><istext key="account.customer.service.link"/></a> | <isprint value="#ChannelName#">
+

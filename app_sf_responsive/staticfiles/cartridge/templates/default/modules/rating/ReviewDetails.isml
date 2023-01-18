@@ -1,0 +1,59 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+
+<isinclude template="modules/rating/Modules">
+<isinclude template="modules/common/Modules">
+
+<isset name="ReviewApprovalBO" value="#ReviewBO:Extension("Approval"):ReviewApprovalBO#" scope="request"/>
+
+<isgetpreference preferencekey="ShowReviewerName" domainname="#DomainName#" type="String" return="ShowReviewerName">
+
+<div class="col-sm-12 row review-item" <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="review" itemscope itemtype="http://schema.org/Review"</isif>>
+	<div class="col-sm-3 col-md-2">
+		<div class="row" itemprop="reviewRating" <isif condition="#RichSnippetsEnabled EQ 'true'#">itemscope itemtype="http://schema.org/Rating"</isif>>
+			<ISRating AverageRating="#ReviewBO:RatingBO:RatingValue#" RichSnippetsEnabled="#RichSnippetsEnabled#">
+		</div>
+		
+		<div class="row review-item-created">
+			<isif condition="#(ShowReviewerName EQ 'true') OR ((ShowReviewerName EQ 'userDecision') AND (ReviewBO:ShowAuthorNameEnabled EQ 'true'))#">
+				<isif condition="#RichSnippetsEnabled EQ 'true'#">
+					<span itemprop="author"><isinclude template="inc/product/review/AuthorName"/></span>
+				<iselse/>
+					<isinclude template="inc/product/review/AuthorName"/>
+				</isif>
+			</isif>
+			<p>
+				<small>
+					<isif condition="#RichSnippetsEnabled EQ 'true'#"><meta itemprop="datePublished" content="<isprint value="#ReviewBO:CreationDate#" style="DATE_TIME_INPUT">"></isif>
+					<isprint value="#ReviewBO:CreationDate#" style="DATE_SHORT"> <isprint value="#ReviewBO:CreationDate#" style="DATE_TIME">
+				</small>
+			</p>
+		</div>
+	</div>
+	
+	<div class="col-sm-8 col-md-6">
+		<div class="row review-item-header-title" <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="name"</isif>><isprint value="#ReviewBO:ReviewTitle(ReviewBO:MainLocale)#"></div>
+		
+		<div class="row review-item-text" <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="description"</isif>><isprint value="#ReviewBO:ReviewContent(ReviewBO:MainLocale)#" encoding="nl2br,html"></div>
+	
+		<isif condition="#ReviewApprovalBO:ApprovalComment NE ''#">
+			<div class="row review-item-approval-comment">
+				<span class="review-item-approval-comment-admin"><istext key="review.comment.from"></span><br />
+				<isprint value="#ReviewApprovalBO:ApprovalComment#" encoding="nl2br,html">
+			</div>
+		</isif>
+				
+		<isif condition="#User:ID EQ ReviewBO:AuthorBO:ID#">
+			<div class="row review-item-remove">
+				<isset name="SKU" value="#ReviewBO:Extension("Product"):AttachedProductBO:SKU#" scope="request">
+				<a data-dialog 
+					href="#URL(Action('ViewProductReview-RemoveReview'), 
+					Parameter('AjaxRequestMarker', 'true'), 
+					Parameter('SKU', SKU), 
+					Parameter('ReviewID', ReviewBO:ID))#"
+				>
+					<istext key="review.remove_review.link">
+				</a>
+			</div>
+		</isif>
+	</div>
+</div>

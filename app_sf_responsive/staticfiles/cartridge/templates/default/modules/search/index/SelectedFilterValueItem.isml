@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#(displayType EQ 'checkbox')#">
+	<label class="filter-checkbox-label selected" for="<isprint value="#trim(entry:DisplayValue)#">_id"><isprint value="#entry:DisplayValue#"></label>
+	<input type="checkbox" id="<isprint value="#trim(entry:DisplayValue)#">_id" name="SearchParameter" checked="checked" class="filter-checkbox" data-document-location="<isfilterlink pipelinename="#pipeline#"
+		searchparameter="#tmp_remove_query#"
+		pagesize="#query:PageSize#"
+		params="TmpParams"
+		sortvalue="#tmp_sortvalue#"
+		>"
+		<isif condition="#(entry:Name EQ 'ContextCategoryUUID') AND (isDefined(entry:CatalogCategory) AND (entry:CatalogCategory:RootCategory EQ 'true'))  AND NOT(isDefined(ListNavigationVO:SearchTerm))#">disabled="disabled"</isif>
+	>
+	<isprint value="#entry:DisplayValue#">
+<iselseif condition="#(displayType EQ 'dropdown')#">
+	<a class="filter-clear" href="<isfilterlink pipelinename="#pipeline#"
+		searchparameter="#tmp_remove_query#"
+		pagesize="#query:PageSize#"
+		params="TmpParams"
+		sortvalue="#tmp_sortvalue#"
+		>"><span class="glyphicon glyphicon-minus pull-right"></span>
+	</a><span class="icon-selected"></span><isprint value="#entry:DisplayValue#">
+<iselseif condition="#displayType NE 'swatch'#">
+	<isif condition="#(selectionType EQ 'taxonomic') AND (entry:Name EQ 'ContextCategoryUUID') AND (isDefined(entry:CatalogCategory) AND (entry:CatalogCategory:RootCategory EQ 'true'))  AND NOT(isDefined(ListNavigationVO:SearchTerm))#">
+		<span class="icon-selected"></span><isprint value="#entry:DisplayValue#">
+	<iselse>
+		<a class="filter-item-name" href="<isfilterlink pipelinename="#pipeline#"
+			searchparameter="#tmp_remove_query#"
+			pagesize="#query:PageSize#"
+			params="TmpParams"
+			sortvalue="#tmp_sortvalue#"
+			>">
+			<span class="icon-selected"></span><isprint value="#entry:DisplayValue#">
+		</a>
+	</isif>
+</isif>
+
+<isif condition="#(showcount EQ 'true') AND (entry:Count != 0) AND NOT (displayType EQ 'swatch')#">
+	<span class="filter-count">(<isprint value="#entry:Count#">)</span>
+</isif>

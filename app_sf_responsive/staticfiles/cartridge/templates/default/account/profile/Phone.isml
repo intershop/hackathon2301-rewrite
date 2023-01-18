@@ -1,0 +1,3 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<dt><istext key="account.profile.phone.label"/></dt>
+<dd><isprint value="#UserBO:PhoneHome#"></dd>

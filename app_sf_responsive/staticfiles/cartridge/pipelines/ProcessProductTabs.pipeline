@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Processing pipleines for product tab content.
+@Group Product-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessProductTabs" type="process">
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="GetAttributeGroup"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetValuesFromRequest1"/>
+<!--The product whose attributes will be returned.-->
+    <parameters name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+    <parameters name="AttributeGroupID" type="java.lang.String"/>
+  </nodes>
+<!--@displayNearNode@DetermineRepositories\-Current
+@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetValuesFromRequest1">
+    <configurationValues name="Namespace" value="ApplicationRepository"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetValuesFromRequest.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+<!--@BendPoints 4,5 4,7-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode4"/>
+    <parameterBindings name="Key" nullBinding="true"/>
+    <parameterBindings name="Namespace" nullBinding="true"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="GetAttributeGroupByID0"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetAttributeGroupByID0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetAttributeGroupByID.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+<!--@BendPoints 5,9-->
+    <nodeSuccessors name="pipelet_error" next="AddMultipleEntriesToMap0"/>
+    <parameterBindings name="Domain" objectPath="Repository:Domain"/>
+    <parameterBindings name="ID" objectPath="AttributeGroupID"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CreateAttributeDescriptorsMap0"/>
+    <parameterBindings name="InValue_1" objectPath="AttributeGroup:SortedAttributeDescriptors"/>
+    <returnValueBindings name="OutValue_1" objectPath="AttributeDescriptors"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateAttributeDescriptorsMap0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateAttributeDescriptorsMap.xml"/>
+    <nodeSuccessors name="next" next="SortIteratorByComparator0"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SortIteratorByComparator0">
+    <configurationValues name="ComparatorClassName" value="com.intershop.component.foundation.capi.util.AttributeDescriptorComparator"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SortIteratorByComparator.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="Iterator" objectPath="AttributeDescriptorsMap:Values:Iterator"/>
+    <returnValueBindings name="SortedIterator" objectPath="SortedAttributeDescriptors"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="EndNode2"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" strict="true">
+    <returnValues name="AttributeDescriptorsMap" type="java.util.Map"/>
+    <returnValues name="AttributeDescriptors" type="java.util.Iterator" optional="true"/>
+    <returnValues name="SortedAttributeDescriptors" type="com.intershop.beehive.foundation.util.ResettableIterator&lt;E>"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap0">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="InMap" nullBinding="true"/>
+    <parameterBindings name="Key1" nullBinding="true"/>
+    <parameterBindings name="Key2" nullBinding="true"/>
+    <parameterBindings name="Key3" nullBinding="true"/>
+    <parameterBindings name="Key4" nullBinding="true"/>
+    <parameterBindings name="Key5" nullBinding="true"/>
+    <returnValueBindings name="OutMap" objectPath="AttributeDescriptorsMap"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="GetShippingDetails"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+    <parameters name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO0"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO0">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <parameterBindings name="UserID" objectPath="CurrentUser:ID"/>
+  </nodes>
+<!--@Location 4,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="UserBO">
+    <nodeSuccessors name="decision_yes" next="DecisionNode1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode2"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="UserBO:PreferredShippingAddressBO">
+    <nodeSuccessors name="decision_yes" next="KeyMapper1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode2"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="InValue_1" objectPath="UserBO:PreferredShippingAddressBO:Extension(&quot;PersistentObjectBOExtension&quot;):PersistentObject"/>
+    <returnValueBindings name="OutValue_1" objectPath="Address"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="OK" next="GetProductByUUID0"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <startNode referencedName="ProcessOrganization-GetOrganization"/>
+  </nodes>
+<!--@Location 4,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProductByUUID0">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetProductByUUID.xml"/>
+    <nodeSuccessors name="next" next="GetEligibleShippingMethods0"/>
+<!--@BendPoints 11,15 11,21-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="ProductDomain" objectPath="Organization:OwningDomain"/>
+    <parameterBindings name="ProductUUID" objectPath="ProductBO:ID"/>
+  </nodes>
+<!--@Location 4,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetEligibleShippingMethods0">
+    <pipelet href="enfinity:/bc_shipping/pipelets/GetEligibleShippingMethods.xml"/>
+    <nodeSuccessors name="next" next="GetShippingInformation1"/>
+    <returnValueBindings name="List" objectPath="AdvancedShippingMethods"/>
+  </nodes>
+<!--@Location 4,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetShippingInformation1">
+    <pipelet href="enfinity:/bc_shipping/pipelets/GetShippingInformation.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="CurrencyMnemonic" objectPath="CurrentRequest:CurrencyCode"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <returnValueBindings name="List" objectPath="ShippingInformation"/>
+  </nodes>
+<!--@Location 4,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+<!--@BendPoints 9,22-->
+    <nodeSuccessors name="next" next="EndNode0"/>
+  </nodes>
+<!--@Location 4,11-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="AdvancedShippingMethods" type="java.util.List"/>
+    <returnValues name="ShippingInformation" type="java.util.List&lt;java.lang.String>"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,24 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<!--- these payment instruments are of type limited tender and are currently assigned to the basket --->
+<isloop iterator="PaymentInstrumentBORepository:PaymentBOs" alias="PaymentBO">
+	<div class="section">
+		<isif condition="#PaymentServiceBO EQ PaymentBO:PaymentServiceBO#">
+			<h5><isprint value="#PaymentServiceBO:DisplayName#"> <isprint value="#PaymentBO:PaymentTotalAmount#"></h5>
+			<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+				<isPropertyViewer 
+					owner="#PaymentBO:PaymentInstrumentBO#" 
+					propertydescriptor="#PaymentInstrumentParameter#"
+					hidetitle="true"
+				>
+			</isloop>
+			<!--- delete button --->
+			<isinclude template="inc/CSRFGuardJSToken"/>
+			<div class="form-group">
+				<div class="col-sm-offset-4 col-sm-8">
+					<a href="#URL(Action('ViewCheckoutPayment-Dispatch'), Parameter('deletePayment', PaymentBO:PaymentInstrumentBO:ID))#" class="btn btn-default" data-csrf-guarded><istext key="checkout.payment.method.delete.link"/></a>
+				</div>
+			</div>
+		</isif>
+	</div>
+</isloop>

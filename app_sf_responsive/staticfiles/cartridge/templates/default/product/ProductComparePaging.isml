@@ -1,0 +1,12 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#(ProductBOs:Page != 0) OR ((ProductBOs:Page + 1) < ProductBOs:PageCount)#">
+<div class="row">
+	<isif condition="#ProductBOs:Page != 0#">
+		<a class="btn btn-link" href="#URL(Action('ViewProductCompare-PreviousPage'),Parameter('PageableID',ProductBOs:ID),Parameter('PreviousPage', getValue(ProductBOs:Page-1,'0')))#" class="kor-control kor-control-previous"><istext key="product.compare.previous.button.label" /></a>
+	</isif>
+	<isif condition="#(ProductBOs:Page + 1) < ProductBOs:PageCount#">
+		<a class="btn btn-link pull-right" href="#URL(Action('ViewProductCompare-NextPage'),Parameter('PageableID',ProductBOs:ID),Parameter('NextPage',getValue(ProductBOs:Page+1,'0')))#" class="kor-control kor-control-next"><istext key="product.compare.next.button.label" /></a>
+	</isif>
+</div>
+</isif>

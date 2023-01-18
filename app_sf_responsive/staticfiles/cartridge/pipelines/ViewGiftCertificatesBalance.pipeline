@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Shows the gift certificate balance.
+@Group OnlineMarketing-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewGiftCertificatesBalance" type="view">
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="CheckBalance">
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CreateForm1"/>
+    <startNode referencedName="ViewGiftCertificatesBalance-Prefix"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm1">
+    <configurationValues name="FormName" value="GiftCertificateBalance"/>
+    <configurationValues name="FormResource" value="GiftCertificateBalance"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <parameterBindings name="FormAlias" constant="GiftCertificateBalance"/>
+    <parameterBindings name="FormName" constant="GiftCertificateBalance"/>
+    <parameterBindings name="FormResource" objectPath="GiftCertificateBalance"/>
+    <returnValueBindings name="Form" objectPath="GiftCertificateBalanceForm"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="DetermineGiftCardTenderBalance1"/>
+<!--@BendPoints 8,9 8,17-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode4"/>
+    <parameterBindings name="Form" objectPath="GiftCertificateBalanceForm"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineGiftCardTenderBalance1">
+    <pipelet href="enfinity:/bc_giftcard/pipelets/DetermineGiftCardTenderBalance.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+<!--@BendPoints 7,11-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="Domain" objectPath="CurrentApplication:Domain"/>
+    <parameterBindings name="GiftCardNumber" objectPath="GiftCertificateBalanceForm:GiftCardNumber:Value"/>
+    <parameterBindings name="GiftCardPIN" objectPath="GiftCertificateBalanceForm:GiftPinNumber:Value"/>
+    <parameterBindings name="ServiceConfigurationBORepository" objectPath="ApplicationBO:Repository(&quot;ServiceConfigurationBORepository&quot;)"/>
+    <returnValueBindings name="Domain" objectPath="CurrentApplication:Domain"/>
+    <returnValueBindings name="GiftCardNumber" objectPath="GiftCertificateBalanceForm:GiftCardNumber:Value"/>
+    <returnValueBindings name="GiftCardPIN" objectPath="GiftCertificateBalanceForm:GiftPinNumber:Value"/>
+    <returnValueBindings name="ServiceConfigurationBORepository" objectPath="ApplicationBO:Repository(&quot;ServiceConfigurationBORepository&quot;)"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="&quot;0&quot;"
+      operator="str_eq" conditionItem="GiftCardTenderBalance:Status">
+    <nodeSuccessors name="decision_yes" next="GetCurrency0"/>
+    <nodeSuccessors name="decision_no" next="JoinNode2"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrency0">
+    <pipelet href="enfinity:/core/pipelets/GetCurrency.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <nodeSuccessors name="pipelet_error" next="JumpNode2"/>
+    <parameterBindings name="Mnemonic" objectPath="GiftCardTenderBalance:TenderBalance:CurrencyMnemonic"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+  </nodes>
+<!--@displayNearNode@ViewGiftCertificatesBalance\-CheckBalance
+@Location 3,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="InValue_1" constant="ViewGiftCertificatesBalance-CheckBalance"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 3,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate1_Input"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate1">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.giftCertificatesBalance.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/giftcertificate/GiftCertificateBalance.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewGiftCertificatesBalance-Show"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="KeyMapper2"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="InValue_1" constant="ErrorBalance"/>
+    <returnValueBindings name="OutValue_1" objectPath="ErrorBalance"/>
+  </nodes>
+<!--@Location \-2,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Dispatch">
+<!--@BendPoints \-3,4-->
+    <nodeSuccessors name="next" next="DispatchFormAction0"/>
+  </nodes>
+<!--@Location \-2,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewGiftCertificatesBalance-CheckBalance"/>
+    <configurationValues name="OutValue_1" value="ViewGiftCertificatesBalance-Show"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+<!--@BendPoints \-2,5 \-2,7-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="Key_0" objectPath="checkbalance"/>
+    <parameterBindings name="Key_1" objectPath="checkCard"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location \-2,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints \-3,8-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+  </nodes>
+<!--@Location \-2,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location \-1,7-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="Prefix" callMode="Private">
+    <nodeSuccessors name="next" next="GetCurrentDate0"/>
+  </nodes>
+<!--@Location \-1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrentDate0">
+    <pipelet href="enfinity:/core/pipelets/GetCurrentDate.xml"/>
+    <nodeSuccessors name="next" next="CheckUserLoggedIn0"/>
+    <returnValueBindings name="CurrentDate" objectPath="Date"/>
+  </nodes>
+<!--@Location \-1,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn0">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <nodeSuccessors name="pipelet_error" next="RemoveDictionaryValue0"/>
+  </nodes>
+<!--@Location \-1,12-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2"/>
+<!--@Location 0,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="TargetURL"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+  </nodes>
+<!--@Location 0,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 1,24-->
+    <nodeSuccessors name="next" next="InteractionNode8"/>
+    <parameterBindings name="InValue_1" constant="ViewUserAccount-ShowLogin"/>
+    <parameterBindings name="InValue_2" constant="https"/>
+    <parameterBindings name="InValue_4" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_5" constant="ViewGiftCertificatesBalance-Show"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Protocol"/>
+    <returnValueBindings name="OutValue_3" objectPath="TargetSite"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 0,12-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode8">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Show">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="CallNode__-O6oDKkEeip6KN4VvIgdg"/>
+    <startNode referencedName="ViewGiftCertificatesBalance-Prefix"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode__-O6oDKkEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="CreateForm10"/>
+    <parameterBindings name="PageName" constant="giftcard-balance"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm10">
+    <configurationValues name="FormName" value="GiftCertificateBalance"/>
+    <configurationValues name="FormResource" value="GiftCertificateBalance"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper3"/>
+    <parameterBindings name="FormAlias" objectPath="GiftCertificateBalance"/>
+    <parameterBindings name="FormName" objectPath="GiftCertificateBalance"/>
+    <parameterBindings name="FormResource" objectPath="GiftCertificateBalance"/>
+    <returnValueBindings name="Form" objectPath="GiftCertificateBalanceForm"/>
+  </nodes>
+<!--@displayNearNode@ViewGiftCertificatesBalance\-Show
+@Location 0,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 1,12-->
+    <nodeSuccessors name="next" next="CallNode28"/>
+    <parameterBindings name="InValue_1" constant="ViewGiftCertificatesBalance-Show"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode28">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.giftCertificatesBalance.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/giftcertificate/GiftCertificateBalance.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+</pipeline:Pipeline>

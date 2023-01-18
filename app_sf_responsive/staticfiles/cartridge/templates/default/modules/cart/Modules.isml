@@ -1,0 +1,362 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false">
+<!---
+	This Module prints the taxes, duties and fees contained in basketbo according to the basket-configuration values: "Display Taxes"
+	and "Display Handling Fee". Taxes have a short and a long name.
+
+	Parameters:
+		- useShortNames (required)
+			useShortName is used to decide which of the names is displayed
+		- estimated (optional)
+			print additional label
+		- taxesLabel (required)
+			label, e.g. "checkout.tax.TaxesLabel.SalesTax" (key for localized text included in the checkout_xx.properties)
+		- ihfLabel (required)
+			label, e.g. "checkout.tax.ihfLabel.Long" or "checkout.tax.ihfLabel.Short" (key for localized text included in the checkout_xx.properties)
+		- duLabel
+		  label, e.g. "checkout.tax.duLabel" (key for localized text included in the checkout_xx.properties)
+		- displayIHFMode
+
+		- displayTaxesMode
+
+		- basketbo (required)
+			the basketBO object (the source of the information)
+
+	Example:
+		...
+		<ISTaxesBox
+			basketbo="#CurrentCartBO#"
+			useShortNames="true"
+			taxesLabel="checkout.tax.TaxesLabel.SalesTax"
+			ihfLabel="checkout.tax.ihfLabel.Short"
+			duLabel="checkout.tax.duLabel"
+			displayIHFMode="#BasketDisplayHandlingFee:StringValue#"
+			displayTaxesMode="#BasketDisplayTaxes:StringValue#">
+		...
+ --->
+<ismodule template = "modules/cart/TaxesBox.isml"
+	name="TaxesBox"
+	attribute="useShortNames"
+	attribute="estimated"
+	attribute="taxesLabel"
+	attribute="ihfLabel"
+	attribute="duLabel"
+	attribute="displayIHFMode"
+	attribute="displayTaxesMode"
+	attribute="basketbo"
+	attribute="cssClass"
+	strict="true"
+>
+<!---
+	This Module prints the product line item description. Included are the image, name, id and variations attributes.
+
+	Parameters:
+		- pli (required)
+			the product line item
+		- editable (required)
+			if the editable true, the pli can be changed by another variation of the product
+		- removable (required)
+			if the editable true, the pli can be removed
+		- movable (required)
+			if the editable true, the pli can be moved to the wishlist
+		- showimage (required)
+			if true then show a product picture
+		- showavailability (required)
+			show availability
+		- index (required)
+			index of the line
+		- showstockinfo (required)
+			if true then show a stock info with id ("IN STOCK - Item: 2838224")
+		- showid (required)
+			if true then show the product id
+		- variationattributes (required)
+			affects displaying of variation attributes ("vertical" or "horizontal" or nothing for not)
+		- owningdomain (optional)
+			for the display of supplementary giftcard text
+		- showwarranty (otional)
+		    display warranty information if assigned to product
+		- showshipwindowmessage (optional)
+		    display ship window message (usually ships in x days)
+		- email (optional)	
+			display data optimized for emails, default="false"
+
+	Example:
+		...
+		<isPLIDescription
+			index="#pliIndex#"
+			editable="true"
+			removable="true"
+			movable="true"
+			pli="#PLI#"
+			showimage="true"
+			showstockinfo="true"
+			showid="true"
+			variationdirection="horizontal"
+			showavailability="true"
+			showwarranty="true"
+			showshipwindowmessage="true"
+			email="false">
+		...
+ --->
+<ismodule template = "modules/cart/PLIDescription.isml"
+	name="PLIDescription"
+	attribute="pli"
+	attribute="editable"
+	attribute="removable"
+	attribute="movable"
+	attribute="showimage"
+	attribute="showavailability"
+	attribute="index"
+	attribute="showstockinfo"
+	attribute="showid"
+	attribute="variationattributes"
+	attribute="owningdomain"
+	attribute="showgiftinginformation"
+	attribute="loggedin"
+	attribute="showwarranty"
+	attribute="showshipwindowmessage"
+	attribute="email"
+	strict="true"
+	attribute="InventoryMappings"
+	attribute="BasketBOInventoryExtension"
+>
+
+<!---
+	This Module prints the errors on line items
+
+	Parameters:
+	    - pli (required)
+	    	the product line item being processed
+		- adjustedItems (optional)
+			a map holding reason for each line item why this item ways modified
+		- colspan (required)
+			the number of cells the table line for the error box contains
+
+	Example:
+		...
+		<isLineItemErrorMsg
+			pli="#PLI#"
+			adjustedItems="#AdjustedItems#"
+			colspan="4">
+		...
+ --->
+<ismodule template = "modules/cart/LineItemErrorMsg.isml"
+	name="LineItemErrorMsg"
+	attribute="pli"
+	attribute="adjustedItems"
+	attribute="cssClass"
+	strict="true"
+>
+
+
+<!---
+	This Module prints the global errors on cart
+
+	Parameters:
+	    - addToBasketResults (optional)
+	    	results of add-to-basket actions
+		- removeFromBasketResultsInventory
+			results of removing actions due to inventory issues
+		- removeFromBasketResultsWithoutPrice
+			results of removing actions due to missing prices
+		- adjustBasketResults
+			results of adjust basket actions
+		- adjustBasketResultsInventory
+			results of adjust basket inventory actions
+		- updateVariationResults
+			results of update-variation actions
+		- basketValidationResults
+			results of basket validation
+		- orderCreationResult
+			result of order creation
+			
+	Example:
+		...
+		<isShoppingCartGlobalErrorMsg
+			addToBasketResults="#addToBasketResults#"
+			removeFromBasketResultsInventory="#removeBasketResults#"
+		>
+		...
+ --->
+<ismodule template = "modules/cart/ShoppingCartGlobalErrorMsg.isml"
+	name="ShoppingCartGlobalErrorMsg"
+	attribute="addToBasketResults"
+	attribute="removeFromBasketResultsInventory"
+	attribute="removeFromBasketResultsWithoutPrice"
+	attribute="adjustBasketResults"
+	attribute="adjustBasketResultsInventory"
+	attribute="updateVariationResults"
+	attribute="basketValidationResults"
+	attribute="orderCreationResult"
+	strict="true"
+>
+
+<!---
+	This Module prints the errors on line items
+
+	Parameters:
+	    - productLineItem (required)
+	    	the product line item being processed
+		- addToBasketResult (optional)
+			result of add-to-basket action
+		- adjustBasketResult
+			result of adjustments
+		- adjustBasketResultByInventory
+			result of adjustments
+		- adjustedUpdateVariationResult
+			result of adjusted update variations
+		- failedUpdateVariationResult
+			result of failed update variations
+
+	Example:
+		...
+		<isShoppingCartLineItemErrorMsg
+			productLineItem="#PLI#"
+			addToBasketResult="#addToBasketResult#"
+			adjustBasketResult="#adjustBasketResult#"
+			adjustBasketResultByInventory="#adjustBasketResultByInventory#"
+		>
+		...
+ --->
+<ismodule template = "modules/cart/ShoppingCartLineItemErrorMsg.isml"
+	name="ShoppingCartLineItemErrorMsg"
+	attribute="productLineItem"
+	attribute="addToBasketResult"
+	attribute="adjustBasketResult"
+	attribute="adjustBasketResultByInventory"
+	attribute="failedAdjustBasketResult"
+	attribute="adjustedUpdateVariationResult"
+	attribute="failedUpdateVariationResult"
+	attribute="adjustBasketValidationResult"
+	strict="true"
+>
+
+<!---
+	This module shows products that were not added
+	
+	Parameters:
+	    - products (required)
+	    	products that were not added
+
+	Example:
+		...
+		<isNotAddedProducts
+			addToBasketResults="#addToBasketResults:Failures#"
+		>
+		...
+ --->
+<ismodule template = "modules/cart/NotAddedProducts.isml"
+	name="NotAddedProducts"
+	attribute="addToBasketResults"
+	strict="true"
+>
+
+<!---
+	This module shows products that were removed
+	
+	Parameters:
+	    - products (required)
+	    	products that were removed
+
+	Example:
+		...
+		<isRemovedProducts
+			removeFromBasketResults="#removeFromBasketResults:Successes#"
+		>
+		...
+ --->
+<ismodule template = "modules/cart/RemovedProductsError.isml"
+	name="RemovedProductsError"
+	attribute="removeFromBasketResults"
+	strict="true"
+>
+
+<!---
+	This Module prints the promotion error for not accepted promotion codes
+
+	Parameters:
+		- promotionCode (required)
+			the entered promotion code
+		- errorCode (required)
+			the error code
+
+	Example:
+		...
+		<isPromotionError
+			promotionCode="#promotionCode#"
+			errorCode="#ERROR_PromotionCode#">
+		...
+ --->
+<ismodule template = "modules/cart/PromotionError.isml"
+	name="PromotionError"
+	attribute="promotionCode"
+	attribute="errorCode"
+	attribute="maxCodeRedemption"
+	attribute="promotionIDs"
+	strict="true"
+>
+
+<!---
+	Display a pliimage with serveral sizes:
+
+	Parameters:
+		- size (required)
+			size of the image [tiny, small, normal, big]
+		- class (optional)
+			css-class
+		- id (optional)
+			id of the image
+		- name (optional)
+			name of the image
+		- alt (optional)
+			content for the alt-attribute
+		- height (optional)
+			height of the image
+		- width (optional)
+			width of the image
+		- product (required if pli not set)
+			the product object
+		- pli (required if product not set)
+			the productLineItem object
+
+	Example:
+		...
+		<isPLIImage
+			width="50"
+			height="50"
+			alt="#pli:ProductName#"
+			pli="#pli#"
+			size="tiny">
+		...
+--->
+<ismodule template="modules/cart/PLIImage"
+	name="PLIImage"
+	attribute="size"
+	attribute="class"
+	attribute="id"
+	attribute="name"
+	attribute="alt"
+	attribute="height"
+	attribute="width"
+	attribute="product"
+	attribute="pli"
+	attribute="localeID"
+	strict="true"
+>
+
+<!---
+	This module renders the gift option indicators.
+
+	Parameters:
+		giftwrappingenabled			: Indicates gift wrapping preference.
+		giftwraps					: Indication for multiple gift wraps.
+		giftmessagingenabled 		: Indicates gift messaging preference.
+		giftmessages				: Indication for multiple gift product.	
+ --->
+
+<ismodule template = "modules/cart/GiftOptionIndicatorInc.isml"
+	name="GiftOptionIndicator"
+	attribute="giftwrappingenabled"
+	attribute="giftwraps"
+	attribute="giftmessagingenabled"
+	attribute="giftmessages"	
+>

@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- dummy implementation for the rendering of marketing slots --->
+<isif condition="#isDefined(id) AND (id NE '')#">
+	<!-- Marketing slot: "<isprint value="#id#"/>" -->
+</isif>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel name="interface.include.dialog.pagelet2" xmlns:pagelet="http://www.intershop.de/pagelet/2010">
+  <callParameterInterfaces name="Interface" />
+</pagelet:PageletModel>

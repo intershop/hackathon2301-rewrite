@@ -1,0 +1,26 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(pli) AND (lcase(size) EQ 'tiny')#">
+	<isset scope="request" name="image" value="#pli:ProductThumbnail#">
+	<isset scope="request" name="boolean_true" value="#1 == 1#">
+
+	<isif condition="#(replace(image, 'http://.*', '')  NE '') 
+		AND (replace(image, 'https://.*', '')  NE '') 
+		AND (replace(image, '.*:/.*', '') EQ '')#">
+		<isset scope="request" name="image" value="#ContentURL(image)#">
+	</isif>
+	
+	<isif condition="#isDefined(image) AND (image NE '')#">
+		<isif condition="#isDefined(link)#">
+			<a href="<isprint value="#link#" encoding="off">"><img src="<isprint value="#image#">" alt="<isprint value="#alt#">" height="<isprint value="#height#">" width="<isprint value="#width#">" class="<isprint value="#class#">" <isif condition="#isDefined(name)#">name="<isprint value="#name#">"</isif> <isif condition="#isDefined(id)#">id="<isprint value="#id#">"</isif> /></a>
+		<iselse>
+			<img src="#stringToHtml(pli:ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("1XS"):EffectiveUrl(localeID,boolean_true))#" alt="<isprint value="#alt#">" height="<isprint value="#height#">" width="<isprint value="#width#">" class="<isprint value="#class#">" <isif condition="#isDefined(name)#">name="<isprint value="#name#">"</isif> <isif condition="#isDefined(id)#">id="<isprint value="#id#">"</isif>/>
+		</isif>
+	<iselse>
+		<isif condition="#isDefined(link)#">
+			<a href="<isprint value="#link#" encoding="off">"><img src="#WebRoot()#/img/not_available.png" alt="<isprint value="#ImageProduct:Name#">" class="<isprint value="#class#">"/></a>
+		<iselse>
+			<img src="#WebRoot()#/img/not_available.png" alt="<isprint value="#alt#">" height="<isprint value="#height#">" width="<isprint value="#width#">" class="<isprint value="#class#">" <isif condition="#isDefined(name)#">name="<isprint value="#name#">"</isif> <isif condition="#isDefined(id)#">id="<isprint value="#id#">"</isif> />
+		</isif>
+	</isif>
+</isif>

@@ -1,0 +1,155 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false"><!--- 
+	Prints the active Subcategories for a given category. 
+	Max subCategory depth is 20
+
+	Parameters: 
+		- categorybo (required):
+			Category view opject of a Category.
+		- categorypath (required):
+			The category path of the active category
+		- recursive (optional):
+			If 'true' allow recursive call of the module. 
+		- subcategoriesdepth (optional):
+			Defines how many subCategory tiers are shown.
+	Example: 
+	 	...
+		<ISListSubCategories
+		   categorybo="#CategoryBO#"
+		   categorypath="#CategoryBO:CatalogCategoryPath#"
+		   recursive="true"
+		   subcategoriesdepth="1">
+		...
+--->
+<ismodule template = "modules/category/ListSubCategories.isml"
+	name="ListSubCategories"
+	strict="true"
+	attribute="categorybo"
+	attribute="categorypath"
+	attribute="activecategorybo"
+	attribute="recursive"
+	attribute="subcategoriesdepth"
+>
+<!--- 
+	Prints the sub categories for a given category. 
+	Parameters:
+		- SolrFilterAttributeEntry (required):
+			CategorySolrEntry view object of a Category
+		- SolrFilterAttributeEntries (required):
+			CategorySolrEntris view object of a Categories
+		- RootSolrFilterAttributeEntry (required):
+			RootSolrFilterAttributeEntry is needed for url links generation
+			
+			
+
+--->
+<ismodule template = "modules/category/SubCategoriesIndex.isml"
+	name="SubCategoriesIndex"
+	strict="true"
+	attribute="CategoryFilterEntry"
+	attribute="RootCategoryFilterEntry"
+	attribute="CategoryFilterEntries"
+	attribute="MaxSubCategoryiesDepth"
+>
+
+<!--- 
+	Prints the sub categories for a given category. 
+	Parameters:
+		- CategoryBO (required):
+			Category view opject of a Category (The key CategoryBO is used for the URL rewriting too!).
+		- recursive (optional):
+			If 'true' allow recursive call of the module. 
+		- subcategoriesdepth (optional):
+			actual subcategory level
+		- maxsubcategoriesdepth (optional):
+			Defines how many subcategory tiers are shown.
+	Example: 
+		<ISSubCategories
+			CategoryBO="#CategoryBO#"
+			recursive="true"
+			subcategoriesdepth="1"
+			maxsubcategoriesdepth="5">
+--->
+<ismodule template = "modules/category/SubCategories.isml"
+	name="SubCategories"
+	strict="true"
+	attribute="CategoryBO"
+	attribute="recursive"
+	attribute="subcategoriesdepth"
+	attribute="maxsubcategoriesdepth"
+>
+
+<!--- 
+	Renders a categories navigation for a given category. 
+	Parameters:
+		- SolrFilterAttributeEntry (required):
+			CategoryFilterAttributeEntry view object of a Category.
+			
+		- SolrFilterAttributeEntries (required):
+			all CategoriesFilterAttributeEntries
+--->
+<ismodule template = "modules/category/CategoryNavigationIndex.isml"
+	name="CategoryNavigationIndex"
+	strict="true"
+	attribute="CategoryFilterEntry"
+	attribute="CategoryFilterEntries"
+	attribute="MaxSubCategoryiesDepth"
+>
+
+
+<!--- 
+	Renders a categories navigation for a given category. 
+	Parameters:
+		- CategoryBO (required):
+			Category view object of a Category (The key CategoryBO is used for the URL rewriting too!).
+		- AlternateNavigationTitle (optional):
+			If given, the alternate navigation title is used for the navigation link instead of the categories display name.
+		- MaxSubCategoriesDepth (optional):
+			Defines how many sub categories are rendered.
+	Example:
+		<isCategoriesNavigation
+			CategoryBO="#CatalogBO:RootCatalogCategoryBO#">
+--->
+<ismodule template = "modules/category/CategoryNavigation.isml"
+	name="CategoryNavigation"
+	strict="true"
+	attribute="CategoryBO"
+	attribute="AlternateNavigationTitle"
+	attribute="MaxSubCategoriesDepth"
+>
+
+<!--- 
+	This module renders a category image. It is able to perform a fall back 
+    and shows a standard no image picture if no image is available.
+	
+	Parameters:
+		category	: The categorybo whos image should be shown
+		imagetypeid: (required) - the image type to use
+		imageView: (otional) - the image view to use, if empty use the primary view
+		class   : (optional) class for image
+ --->
+<ismodule template="modules/category/CategoryImage.isml"
+	name="CategoryImage"
+	attribute="category"
+	attribute="imagetypeid"
+	attribute="imageView"
+	attribute="class"
+>
+
+
+<!--- 
+	Renders a given Categories iterator as category listing.
+	
+	Parameters:
+		- CategoryBOs (required)
+			The categories to be listed.
+		- viewContext (required):
+			The Category ViewContext to use for category rendering.
+ --->
+<ismodule template="modules/category/CategoryList.isml"
+	name="CategoryList"
+	strict="true"
+	attribute="CategoryBOs"
+	attribute="viewContext"
+	attribute="cssClass"
+	attribute="listItemCssClass"
+>

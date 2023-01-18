@@ -1,0 +1,28 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8"	compact="true">
+<isif condition="#fieldname:Invalid#">
+	<div role="alert" class="server-error">
+		<isif condition="#isDefined(error_message_override)#">
+			<small class="help-block">
+			<isif condition="#isDefined(localizeText(error_message_override))#">
+				<istext key="#error_message_override#" />
+			<iselse>
+				<!--- Fallback in case that explicit error message is provided --->
+				<isprint value="#error_message_override#" />
+			</isif>
+			</small>
+		<iselse>
+			<isloop iterator="fieldname:Errors" alias="error">
+				<small class="help-block">
+				<isif condition="#isDefined(localizeText(ext_string_prefix.".".error))#">
+					<istext key="#ext_string_prefix.".".error#"/>
+					<iselseif condition="#isDefined(localizeText(ext_string_prefix.".error.default"))#">
+					<istext key="#ext_string_prefix.".error.default"#"/>
+				<iselse>
+					<istext key="common.fielderrorlist.error_description_missing" />
+					<isprint value="#ext_string_prefix.".".error#">
+				</isif>
+				</small>
+			</isloop>
+		</isif>
+	</div>
+</isif>

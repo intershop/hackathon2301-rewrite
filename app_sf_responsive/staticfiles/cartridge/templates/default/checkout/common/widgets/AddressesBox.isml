@@ -1,0 +1,51 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isset name="MultipleShipToAddresses" value="#CurrentCartBO:Extension("ShippingBucket"):MultipleShipToAddresses#" scope="request"/>
+
+<isif condition="#NOT(MultipleShipToAddresses)#">
+	<isif condition="#CurrentCartBO:MultipleShipmentsSupported#">
+		<isset name="OrderShippingBucket" value="#CurrentCartBO:Extension("ShippingBucket")#" scope="request"/>
+		<isset name="CommonShipToAddress" value="#OrderShippingBucket:SoleShipToAddressBO#" scope="request">
+	<iselse>
+		<isset name="CommonShipToAddress" value="#CurrentCartBO:CommonShipToAddressBO#" scope="request">
+	</isif>
+</isif>	
+	
+<div class="address-summary">
+		
+	<!---Billing Address --->
+	<div class="clearfix">
+		<a class="pull-right btn-tool" href = "#URL(Action('ViewCheckoutAddressBook-EditAddress'),Parameter('AddressID',CurrentCartBO:InvoiceToAddressBO:URN))#" title="<istext key="checkout.address.update.label" />"><span class="glyphicon glyphicon-pencil"></span></a>		
+		<h5 class="pull-left"><istext key="checkout.address.billing.label" /></h5>
+	</div>
+	<div data-testing-id="address-summary-invoice-to-address">
+		<isaddress address="#CurrentCartBO:InvoiceToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+	</div>
+
+	<!--- Delivery Address --->
+	<isif condition="#NOT isDefined(MultipleAddressesForm)#"><!--- Do not show shipping addresses on multiple shipping addresses page --->
+		<div class="clearfix">
+			<isif condition="#MultipleShipToAddresses#">
+				<isinclude template="inc/CSRFGuardJSToken"/>
+				<a class="pull-right btn-tool" data-csrf-guarded href="#URL(Action('ViewCheckoutMultipleAddresses-SelectMultipleShipToAddresses'))#" title="<istext key="checkout.address.update.label" />"><span class="glyphicon glyphicon-pencil"></span></a>
+			<iselse>
+				<isif condition="#((isDefined(CommonShipToAddress:Country) AND (CommonShipToAddress:Country NE ''))
+								OR (isDefined(CommonShipToAddress:CountryCode) AND (CommonShipToAddress:CountryCode NE ''))
+								OR (isDefined(CommonShipToAddress:City) AND (CommonShipToAddress:City NE ''))
+								OR (isDefined(CommonShipToAddress:MainDivision) AND (CommonShipToAddress:MainDivision NE ''))
+								OR (isDefined(CommonShipToAddress:AddressLine1 ) AND (CommonShipToAddress:AddressLine1 NE '')))#">
+					<a class="pull-right btn-tool" href="#URL(Action('ViewCheckoutAddressBook-EditAddress'), Parameter('AddressID',CommonShipToAddress:URN))#" title="<istext key="checkout.address.update.label" />"><span class="glyphicon glyphicon-pencil"></span></a>
+				</isif>
+			</isif>
+			<h5><istext key="checkout.address.shipping.label" /></h5>
+		</div>		
+		<div data-testing-id="address-summary-ship-to-address">
+			<isif condition="#MultipleShipToAddresses#">
+				<address><istext key="checkout.multiple_addresses_selected.text" /></address>
+			<iselseif condition="#CurrentCartBO:InvoiceToAddressBO:hasSameAddressData(CommonShipToAddress)#">
+				<address><istext key="checkout.same_as_billing_address.text" /></address>
+			<iselse>
+				<isaddress address="#CommonShipToAddress#" showemail="#CurrentCartBO:TotalProductQuantity EQ CurrentCartBO:ShippedByEmailProductsQuantity#">
+			</isif>
+		</div>
+	</isif>	
+</div>

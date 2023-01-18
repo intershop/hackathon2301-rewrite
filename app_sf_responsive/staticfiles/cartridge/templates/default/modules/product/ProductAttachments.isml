@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#ProductBO#">
+
+<isif condition="#isDefined(Type) AND (Type NE 'All')#">
+	<isset name="Attachments" value="#ProductBO:ProductAttachmentsForType(Type)#" scope="request"/><!--- attachments for a given type only --->
+<iselse>
+	<isset name="Attachments" value="#ProductBO:ProductAttachments#" scope="request"/><!--- get all attachments --->
+</isif>
+
+<isif condition="#hasElements(Attachments)#">
+	<div class="product-attachments">
+		<isloop iterator="Attachments" alias="attachment" counter="Counter">
+			<isif condition="#isDefined(MaxNumber) AND (Counter > val(MaxNumber))#"><isbreak/></isif>
+			<div class="product-attachments-list-item">
+				<strong><isprint value="#attachment:Name#"></strong>
+				<!--- attachment link --->
+				<a rel="enclosure" <isif condition="#lcase(pad(attachment:Value,4)) EQ InsecureURL#">
+						href="<isprint value="#attachment:Value#"/>" target="_blank"
+					<iselse>
+						<ISContentDescriptorFile contentdescriptor="attachment:Value" file="File">
+						href="<isprint value="#URL(Action('ViewProductAttachment-OpenFile'), Parameter('LocaleId', Locale:LocaleID), Parameter('DirectoryPath', File:DirectoryPath), Parameter('FileName', File:FullName), Parameter('UnitName', File:UnitDomainName))#" encoding="off"/>"
+					</isif>
+				><span class="glyphicon glyphicon-download"></span></a>
+				<!--- description --->
+				<isif condition="#(ShowDescription NE 'false') AND (attachment:Description NE '')#">
+					<p class="product-attachments-list-item-description"><isprint value="#attachment:Description#" encoding="off"></p>
+				</isif>
+			</div>
+		</isloop>
+	</div>
+</isif>

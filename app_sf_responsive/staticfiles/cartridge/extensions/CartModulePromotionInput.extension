@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensionpoint:ExtensionPointModel xmlns:extensionpoint="http://www.intershop.de/extensionpoint/2011" name="CartModulePromotionInput">
+  <extensionBindings type="isml" extensionPoint="cart/ShoppingCart-CartModulesExtensions" extension="cart/additionalmodules/02_PromotionInput.isml" priority="50"/>
+</extensionpoint:ExtensionPointModel>

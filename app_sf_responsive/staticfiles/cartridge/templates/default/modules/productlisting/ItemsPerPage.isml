@@ -1,0 +1,73 @@
+<iscontent compact="true" charset="UTF-8">
+<ISUUID name="labelid">
+<isif condition="#isDefined(ListNavigationVO)#">
+	<isif condition="#displayType EQ 'dropdown'#">
+		<isform name="itemsPerPageForm" method="post" action="#URL(Action(ListNavigationVO:HandlerPipeline.'-Browse'))#">
+			<isloop iterator="ListNavigationVO:GenericHandlerPipelineParams:EntrySet" alias="map">
+				<input type="hidden" name="<isprint value="#map:Key#">" value="<isprint value="#map:Value#">" />
+			</isloop>
+			<input type="hidden" name="SortingAttribute" value ="<isprint value="#ListNavigationVO:SortingAttribute#">" />
+			<input type="hidden" name="PageNumber" value="0" />
+			<!--- <label class="hidden-xs" for="<isprint value="#labelid#">"><istext key="search.paging.show"/></label>--->
+			
+			<select id="<isprint value="#labelid#">" class="form-control" name="PageSize" data-submit-form-handler="change">
+				<isif condition="#isDefined(pageSizes)#">
+					<isset name="PageSizeIterator" value="#split(pageSizes, ',')#" scope="request">
+				</isif>
+				<isif condition="#hasElements(PageSizeIterator)#">
+					<isloop iterator="PageSizeIterator" alias="aPageSize" counter="count">
+						<isset name="aPageSize" value="#trim(aPageSize)#" scope="request" />
+						<option value="<isprint value="#trim(aPageSize)#">"<isif condition="#ListNavigationVO:PageSize EQ trim(aPageSize)#"> selected="selected"</isif>><isprint value="#trim(aPageSize)#"> <istext key="search.paging.products_per_page.label"/></option>
+					</isloop>
+				<iselse>
+					<option><isprint value="#ListNavigationVO:PageSize#"></option>
+				</isif>
+				<isif condition="#isDefined(showViewAll) AND (showViewAll EQ 'true')#">
+					<option value="<isprint value = "#ListNavigationVO:MaxPageSize#">"<isif condition="#ListNavigationVO:PageSize EQ ListNavigationVO:MaxPageSize#"> selected="selected"</isif>><istext key="product.items.view_all.link">
+					</option>
+				</isif>
+			</select>
+			<noscript>
+				<button class="btn btn-default" type="submit" name="pagesize" title="#localizeText('product.sort.button.limit.label')#"><istext key="product.sort.button.label" /></button>
+			</noscript>
+			
+		</isform>
+	<iselse>
+		<isloop iterator="ListNavigationVO:GenericHandlerPipelineParams:EntrySet" alias="map">
+			<isset name="link_params" value="#link_params.'&'#" scope="request">
+			<%
+				String value = (String)getObject("map:Value");
+				String encodedValue = java.net.URLEncoder.encode(value, "UTF-8");
+				getPipelineDictionary().put("encodedValue", encodedValue);
+			%>
+			<isset name="link_params" value="#link_params.map:Key.'='.encodedValue#" scope="request">
+		</isloop>
+		<div class="ws-product-listing-products-per-page">
+			<span class="ws-product-listing-filter-label"><istext key="search.paging.products_per_page.label"/></span>
+			<ul class="ish-listFilters-productsPerPageList">
+				<isif condition="#isDefined(pageSizes)#">
+					<isset name="PageSizeIterator" value="#split(pageSizes, ',')#" scope="request">
+				</isif>
+				<isif condition="#hasElements(PageSizeIterator)#">
+					<isloop iterator="PageSizeIterator" alias="aPageSize" counter="count">
+						<isset name="aPageSize" value="#trim(aPageSize)#" scope="request" />
+						<isif condition="#ListNavigationVO:PageSize EQ trim(aPageSize)#">
+							<li class="ish-listFilters-productsPerPageList-item ish-listFilters-productsPerPageList-item-active<isif condition="#count EQ '1'#"> ish-listFilters-productsPerPageList-item-first</isif>"><isprint value="#aPageSize#"></li>
+						<iselse>
+							<li class="ish-listFilters-productsPerPageList-item<isif condition="#count EQ '1'#"> ish-listFilters-productsPerPageList-item-first</isif>"><a href="#URL(Action(ListNavigationVO:HandlerPipeline.'-Browse'),Parameter('PageSize',trim(aPageSize)),Parameter('SortingAttribute',ListNavigationVO:SortingAttribute)).encodeValue(link_params)#" class="ws-product-listing-products-per-page-link"><isprint value="#aPageSize#"></a></li>
+						</isif>
+					</isloop>
+				<iselse>
+					<li class="ish-listFilters-productsPerPageList-item ish-listFilters-productsPerPageList-item-active<isif condition="#count EQ '1'#"> ish-listFilters-productsPerPageList-item-first</isif>"><isprint value="#ListNavigationVO:PageSize#"></li>
+				</isif>
+				<isif condition="#isDefined(showViewAll) AND (showViewAll EQ 'true')#">
+					<isif condition="#ListNavigationVO:PageSize EQ ListNavigationVO:MaxPageSize#">
+						<li class="ish-listFilters-productsPerPageList-item ish-listFilters-productsPerPageList-item-active ish-listFilters-productsPerPageList-item-last"><istext key="product.items.view_all.link" /></li>
+					<iselse>
+						<li class="ish-listFilters-productsPerPageList-item ish-listFilters-productsPerPageList-item-last"><a href="#URL(Action(ListNavigationVO:HandlerPipeline.'-Browse'),Parameter('PageSize',ListNavigationVO:MaxPageSize),Parameter('SortingAttribute',ListNavigationVO:SortingAttribute)).encodeValue(link_params)#" class="ws-product-listing-products-per-page-link"><istext key="product.items.view_all.link" /></a></li>
+					</isif>
+				</isif>
+			</ul>
+		</div>
+	</isif>
+</isif>

@@ -1,0 +1,26 @@
+<iscontent compact="true" charset="UTF-8">
+
+<isset name="ProductInventory" value="#ProductBO:Extension("Inventory")#" scope="request" />
+
+<div class="product-availability">
+	<isif condition="#ProductInventory:ServiceEnabled#">
+		<isif condition="#InventoryStatus:InStock EQ 'true'#">
+			 <istext key="product.instock.textinventory" />
+		<iselse>
+			<istext key="product.out_of_stock.textinventory" />
+		</isif>
+	<iselse>
+		<isif condition="#NOT(ProductBO:InventoryStatus:InStock)#">
+			<isif condition="#RichSnippetsEnabled EQ 'true'#">
+				<link itemprop="availability" href="http://schema.org/OutOfStock" />
+			</isif>
+			<istext key="product.out_of_stock.text" />
+			<iselseif
+				condition="#NOT(ProductBO:isEndOfLife) AND NOT(ProductBO:isLastOrderDate)#">
+			<isif condition="#RichSnippetsEnabled EQ 'true'#">
+				<link itemprop="availability" href="http://schema.org/InStock" />
+			</isif>
+			<istext key="product.instock.text" />
+		</isif>
+	</isif>
+</div>

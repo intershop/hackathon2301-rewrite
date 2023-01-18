@@ -1,0 +1,240 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Load localization properties and refresh the subscription list
+	Note:
+		Variable "subscriptionsLocalizationProperties" is defined in ISML template "SubscriptionsList.isml"
+		until a new technique to load localization properties from server is available for client side (JavaScript).
+--->
+var controller = this;
+
+$.i18n()
+	.load(subscriptionsLocalizationProperties)
+	.done(function() {
+		subscriptionsRefreshList();
+	});
+
+<!--- REST call and template update with REST response data --->
+function subscriptionsRefreshList() {
+	
+	controller
+		.model({ loading: true })
+		.update();
+	
+	var client = new ISHRestClient();
+	client
+		<!--- If the customer an account admin the related url part will be set --->
+		<isif condition="#CurrentUserBO:Extension("UserBORoleExtension"):hasRole("APP_B2B_ACCOUNT_OWNER")#">
+			.customer(RESTConfiguration.getCustomerUrlPart(true))
+		</isif>
+		.get('/recurringorders').then(function(data) {
+			
+			<isif condition="#CurrentUserBO:Extension("UserBORoleExtension"):hasRole("APP_B2B_ACCOUNT_OWNER")#">
+				$.each(data.elements, function(i, item) {
+					item.showBuyer = true;
+					
+					<isif condition="#isDefined(CurrentUserBO:LastName) AND (CurrentUserBO:LastName NE '')#">
+						if (typeof item.buyer !== 'undefined') {
+							
+							if (typeof item.buyer.firstName !== 'undefined') {
+					            var firstName = item.buyer.firstName;
+					        }else{
+					            var firstName = "";
+					        }
+					        
+					        if (typeof item.buyer.lastName !== 'undefined') {
+					            var lastName = item.buyer.lastName;
+					        }else{
+					            var lastName = "";
+					        }
+							
+							var fullName = firstName + " " + lastName;
+							
+							if (fullName === '<isprint value="#CurrentUserBO:FirstName#"> <isprint value="#CurrentUserBO:LastName#">') {
+								item.ownUser = true;
+							}
+							
+						}
+					</isif>
+					
+				});
+			</isif>
+			
+			controller.model(data);
+			subscriptionsSortAndFilter();
+
+		}, function() {
+			var model = {error: true};
+			controller
+				.model(model)
+				.update();
+		});
+
+}
+
+<!---
+	REFRESH LIST BY TRIGGER SOME CUSTOM EVENTS
+	Listener:
+		subscriptions.refresh
+		subscriptions.activate.succesfully
+		subscriptions.deactivate.succesfully
+--->
+$(document).on(
+	'subscriptions.refresh subscriptions.activate.succesfully subscriptions.deactivate.succesfully',
+	subscriptionsRefreshList
+);
+
+
+<!--- SUBSCRIPTIONS FILTER for 'number' value --->
+$(document).on('keyup', '[data-filter="SubscriptionsListFilter"]', subscriptionsSortAndFilter);
+$(document).on('click', '[data-filter="EmptySubscriptionsListFilter"]', function() {
+	$('[data-filter="SubscriptionsListFilter"]').val('').trigger('subscriptions.refresh');
+});
+
+<!--- SUBSCRIPTIONS LIST SORTING for 'creationDate' or 'total' value --->
+$(document).on('change', '[data-sort="SubscriptionsListSort"]', subscriptionsSortAndFilter);
+
+
+<!---
+	Sorting and Filter for the current subscriptions list
+--->
+
+function filterBy(subscriptionsList) {
+
+	var model = controller.model();
+	
+	<!--- Remove filtered list from controller --->
+	controller.filterElements(false);
+	
+	<!--- Get filter query --->
+	var searchString = $('[data-filter="SubscriptionsListFilter"]')
+							.val()
+							.toString()
+							.toLowerCase()
+							.trim();
+	
+	if (searchString !== '') {
+		
+		model.filterNotEmpty = true;
+		
+		controller
+			.model(model)
+			.filterElements(function(item) {
+				
+				var buyerName = "";
+				
+				if (typeof item.buyer !== 'undefined' && 
+					typeof item.buyer.firstName !== 'undefined' && 
+					typeof item.buyer.lastName !== 'undefined') {
+					var buyerName = item.buyer.firstName + ' ' + item.buyer.lastName;
+				}
+				
+				// Filter on "number" or "buyer" value
+				
+				if (item.number.indexOf(searchString) === 0 ||
+					item.number.indexOf(searchString) !== -1 ||
+					buyerName.toLowerCase().indexOf(searchString) != -1
+				) {
+					return true;
+				}else{
+					return false;
+				}
+
+			}, subscriptionsList);
+
+	}else{
+		
+		model.filterNotEmpty = false;
+		
+		controller
+			.model(model)
+			.filterElements(false, subscriptionsList);
+	}
+
+}
+
+function subscriptionsSortAndFilter() {
+	
+	var model = controller.model();
+
+	<!--- SET FILTER --->
+	filterBy(controller.model());
+
+	<!--- GET VALUE FOR SORTING --->
+	var sortBy = $('[data-sort="SubscriptionsListSort"] option:selected').val();
+
+	if (sortBy !== '' && typeof model.elements !== 'undefined') {
+
+		if (sortBy === 'date_asc') {
+	        model.elements.sort(function(a,b){
+	        	return a.creationDate - b.creationDate
+	        });
+		}
+		if (sortBy === 'date_desc') {
+			model.elements.sort(function(a,b){
+        		return b.creationDate - a.creationDate;
+	        });
+		}
+		if (sortBy === 'ordertotal_asc') {
+	        model.elements.sort(function(a,b){
+
+	        	if (a.priceType === 'net') {
+	        		var a_total = a.totalNet.value;
+	        		var b_total = b.totalNet.value;
+	        	}else{
+	        		var a_total = a.totalGross.value;
+	        		var b_total = b.totalGross.value;
+        		}
+
+	        	if (a_total > b_total) {
+					return 1;
+				}
+				if (a_total < b_total) {
+					return -1;
+				}
+
+				return 0;
+	        });
+		}
+		if (sortBy === 'ordertotal_desc') {
+	        model.elements.sort(function(a,b){
+
+	        	if (a.priceType === 'net') {
+	        		var a_total = a.totalNet.value;
+	        		var b_total = b.totalNet.value;
+	        	}else{
+	        		var a_total = a.totalGross.value;
+	        		var b_total = b.totalGross.value;
+        		}
+
+	        	if (a_total < b_total) {
+					return 1;
+				}
+				if (a_total > b_total) {
+					return -1;
+				}
+
+				return 0;
+
+	        });
+		}
+
+	}
+
+	<!--- SORT BY STATUS 'active' --->
+	if (typeof model.elements !== 'undefined') {
+		model.elements.sort(function(a,b){
+	
+			if (!a.active) {
+				return 1;
+			}
+	
+			return 0;
+	
+		});
+	}
+
+	<!--- UPDATE TEMPLATE --->
+	controller.update();
+
+}

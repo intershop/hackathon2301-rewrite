@@ -1,0 +1,6 @@
+<isif condition="#(isDefined(isshippingaddress) AND (isshippingaddress EQ 'true'))#">
+	<isset scope="request" name="idSuffix" value="2">
+<iselse>
+	<isset scope="request" name="idSuffix" value="">
+</isif>
+

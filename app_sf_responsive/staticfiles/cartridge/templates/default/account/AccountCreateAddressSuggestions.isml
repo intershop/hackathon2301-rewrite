@@ -1,0 +1,40 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="true">
+<isinclude template="modules/Modules">
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="account-page">
+	<div class="row account-main">
+		
+		<div class="col-sm-12 col-md-8">
+			<h1><istext key="account.register.suggestions.account.heading" /></h1>
+			<isif condition="#isDefined(UserAddressBO)#">
+				
+				<isform method="post" action="#URL(Action('ViewUserAccount-Dispatch'))#">	
+					<h2><istext key="account.register.suggestions.addresses.heading" /></h2>
+					<isAddressSuggest locale="#CurrentSession:Locale#" sourceaddress="#UserAddressBO#" suggestedaddresses="#SuggestedAddressBOs#" validateaddressnoresultmessagekey="account.validate_address.no_result">
+					<div class="form-group">
+						<button name="CreateAccountSuggestedAddress" class="btn btn-primary" type="submit"><istext key="account.register.suggestions.create.label" /></button>
+						<a class="btn btn-default" href="#URL(Action('ViewUserAccount-GetAddressFormAnotherSuggestions'), Parameter('SourceAddressID', NewAddressBO:ID))#"><istext key="account.register.suggestions.edit.address.label" /></a>
+						<a class="btn btn-default" href="<isprint value="#URLEX(InsecureURL,'',Action('ViewUserAccount-DisplayHomepage'))#">"><istext key="account.register.suggestions.cancel.label" /></a>
+					</div>
+				</isform>
+				
+			<iselse>
+				<p><istext key="account.register.suggestions.nouser.label"/></p>
+				<div class="form-group">
+					<a class="btn btn-default" href="<isprint value="#URLEX(InsecureURL,'',Action('ViewUserAccount-DisplayHomepage'))#">"><istext key="account.register.suggestions.cancel.label" /></a>
+				</div>
+			</isif>
+		</div>
+
+		<div class="col-sm-12 col-md-4">
+			<isif condition="#NOT(CurrentSession:isLoggedIn)#">
+				<isinclude template="checkout/common/widgets/LoginBox">
+			</isif>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,44 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false"><%
+	URLParameterSet parameterSet = new URLParameterSet();
+	
+	String catalogCategoryID = context.getFormattedValue(getObject("catalogcategoryid"),null);
+	if (catalogCategoryID != null) {
+	    parameterSet.addURLParameter("CatalogCategoryID", catalogCategoryID); 
+	}
+	String searchParameter = context.getFormattedValue(getObject("searchparameter"),null);
+	if (searchParameter != null) {
+		parameterSet.addURLParameter("SearchParameter", searchParameter);
+	}
+	String pageSize = context.getFormattedValue(getObject("pagesize"),null);
+	if (pageSize != null) {
+		parameterSet.addURLParameter("PageSize", pageSize);
+	}
+	String sortingAttribute = context.getFormattedValue(getObject("sortvalue"),null);
+	if (sortingAttribute != null) {
+	    parameterSet.addURLParameter("SortingAttribute", sortingAttribute);
+	}
+	
+	// add tmp params
+	String paramsName = (String)getObject("params");
+	Object params = getObject(paramsName);
+	if(params != null)
+	{
+		getPipelineDictionary().put("TmpParams", params);
+	}
+	%><isif condition="#isDefined(TmpParams)#"><isloop iterator="TmpParams:EntrySet" alias="map"><%
+	
+		String key = (String)getObject("map:Key");
+		String value = context.getFormattedValue(getObject("map:Value"), null);
+		if (key == null || value == null) {
+			// skip
+		} else if (key.equals("SearchParameter")) {
+			// skip
+		} else {
+			parameterSet.addURLParameter(key, value);
+		}
+	%></isloop></isif><%
+	String url = this.url(true, new URLPipelineAction(context.getFormattedValue(getObject("pipelinename"),null)), parameterSet);
+	
+	// the output URL is not encoded (RewriteHandler does this for us)
+	out.write(url);
+%>

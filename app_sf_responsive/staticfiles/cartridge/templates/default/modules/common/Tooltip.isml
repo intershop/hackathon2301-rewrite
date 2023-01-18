@@ -1,0 +1,37 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<a href="javascript:void(0)" 
+	class="<isif condition="#isDefined(linkclass) AND (linkclass NE '')#"><isprint value="#linkclass#"> </isif>" 
+	data-container="body"
+	data-toggle="popover" 
+	data-placement="<isif condition="#(placement NE '')#"><isprint value="#placement#"><iselse>top</isif>"
+	data-html="<isif condition="#(contenttype EQ 'html')#">true<iselse>false</isif>"
+	title="<isif condition="#isDefined(headline) AND (headline NE '')#">
+				<isif condition="#(contenttype EQ 'html')#">
+					<isHtmlPrint value="#headline#" mode="storefront">
+				<iselse>
+					<isprint value="#headline#" />
+				</isif>
+			<iselsif condition="#isDefined(headlinekey) AND (headlinekey NE '')#">
+				<istext key="#headlinekey#"/>
+			</isif>"
+	data-content="<isif condition="#isDefined(content) AND (content NE '')#">
+			<isif condition="#(contenttype EQ 'html')#"> 
+				<isHtmlPrint value="#content#" mode="storefront">
+			<iselse>
+				<isprint value="#content#">
+			</isif>
+		<iselsif condition="#isDefined(contentkey) AND (contentkey NE '')#">
+			<isif condition="#(contenttype EQ 'html')#">
+				<istext key="#contentkey#"/>
+			<iselse>
+				<istext key="#contentkey#" encoding="off"/>
+			</isif>
+		</isif>">
+	<isif condition="#isDefined(linktext) AND (linktext NE '')#">
+		<isprint value="#linktext#" />
+	<iselsif condition="#isDefined(linktextkey) AND (linktextkey NE '')#">
+		<istext key="#linktextkey#" />
+	</isif>
+	<span class="glyphicon glyphicon-info-sign"></span>
+</a>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline is the Oracle implementation for parametric search.
+@Group Search-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewParametricSearchByOracle" type="view">
+<!--Callback from GetStandardProducts
+@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start7" name="FilterConditionsByUser"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode17"/>
+    <parameters name="Filters" type="java.util.Iterator" optional="true"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+<!--@BendPoints 11,4-->
+    <nodeSuccessors name="next" next="End1"/>
+    <parameterBindings name="CatalogFilterDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="EveryoneDomain" objectPath="CurrentOrganization:OrganizationDomain"/>
+    <parameterBindings name="UseFallbackToEveryoneDomain" constant="true"/>
+    <startNode referencedName="GetCatalogFilters-GetFiltersByUser"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="End1"/>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start4" name="OfferPaging">
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="GetPageable3"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPageable3">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetPageable.xml"/>
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="PageableID" objectPath="PageableID"/>
+    <returnValueBindings name="Pageable" objectPath="Products"/>
+  </nodes>
+<!--@displayNearNode@Key = "PageSize.Search.ProductSearch"
+@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+<!--@BendPoints 3,19-->
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="Key" constant="PageSize.Search.ProductSearch"/>
+    <parameterBindings name="Pageable" objectPath="Products"/>
+    <startNode referencedName="Paging-Update"/>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="Join38"/>
+  </nodes>
+<!--@Location 2,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="Join38">
+    <nodeSuccessors name="next" next="CallNode16"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <startNode referencedName="ProcessSearchEngineAttributes-CreateRobotsNoindexNofollowMetaTag"/>
+  </nodes>
+<!--@Location 2,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <startNode referencedName="ProcessB2CProduct-GetProductBOs"/>
+  </nodes>
+<!--@Location 2,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+<!--@BendPoints 5,28-->
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap1"/>
+    <startNode referencedName="ProcessSearchPage-DeterminePageEntryPointForSearchResults"/>
+  </nodes>
+<!--@Location 2,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap1">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+<!--@BendPoints 5,30-->
+    <nodeSuccessors name="next" next="CreateOracleSearchResultNavigationList1"/>
+    <parameterBindings name="Key1" constant="SearchCategoryUUID"/>
+    <parameterBindings name="Key2" constant="SortingAttribute"/>
+    <parameterBindings name="Key3" constant="SearchTerm"/>
+    <parameterBindings name="Value1" objectPath="SearchCategoryUUID"/>
+    <parameterBindings name="Value2" objectPath="SortingAttribute"/>
+    <parameterBindings name="Value3" objectPath="SearchTerm"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 2,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateOracleSearchResultNavigationList1">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateOracleSearchResultNavigationList.xml"/>
+<!--@BendPoints 5,32-->
+    <nodeSuccessors name="next" next="JumpNode2"/>
+    <parameterBindings name="HandlerPipeline" constant="ViewParametricSearch"/>
+  </nodes>
+<!--@Location 2,16-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewPage-Start"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 5,6-->
+    <nodeSuccessors name="next" next="Call5"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="Call5">
+    <nodeSuccessors name="next" next="VerifySearchTerm1"/>
+    <startNode referencedName="ViewParametricSearchByOracle-PrepareSearch"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifySearchTerm1">
+    <configurationValues name="AllowFuzzySearch" value="false"/>
+    <configurationValues name="AllowWildcards" value="Multi &amp; Single"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifySearchTerm.xml"/>
+<!--@BendPoints 5,10-->
+    <nodeSuccessors name="next" next="UpdateDictionary1"/>
+<!--@BendPoints 9,9-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="UserSearchTerm" objectPath="SearchTerm"/>
+    <returnValueBindings name="ErrorCode" objectPath="ErrorStatus"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdateDictionary1">
+    <configurationValues name="Name_01" value="ProductDomain"/>
+    <configurationValues name="Name_02" value="LocaleInformation"/>
+    <configurationValues name="Name_03" value="NameOrID"/>
+    <configurationValues name="Name_04" value="CatalogCategory"/>
+    <configurationValues name="Name_05" value="Filters"/>
+    <configurationValues name="Name_06" value="SortOrder"/>
+    <configurationValues name="Name_07" value="SortAttribute"/>
+    <configurationValues name="Name_08" value="Currency"/>
+    <configurationValues name="Name_09" value="SortAttributeType"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateDictionary.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <parameterBindings name="Value_01" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Value_02" objectPath="CurrentSession:Locale"/>
+    <parameterBindings name="Value_03" objectPath="SearchExpression"/>
+    <parameterBindings name="Value_04" objectPath="Category"/>
+    <parameterBindings name="Value_05" objectPath="Filters"/>
+    <parameterBindings name="Value_06" objectPath="SortOrder"/>
+    <parameterBindings name="Value_07" objectPath="SortAttribute"/>
+    <parameterBindings name="Value_08" objectPath="CurrentSession:CurrencyCode"/>
+    <parameterBindings name="Value_09" objectPath="SortAttributeType"/>
+    <returnValueBindings name="OutDictionary" objectPath="ProductSearchParameters"/>
+  </nodes>
+<!--@displayNearNode@Key = "PageSize.Search.ProductSearch"
+@Location 2,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="ExecutePageableQuery1"/>
+    <parameterBindings name="Key" constant="PageSize.Search.ProductSearch"/>
+    <startNode referencedName="Paging-GetPageSize"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExecutePageableQuery1">
+    <configurationValues name="DefaultPageSize" value="12"/>
+    <configurationValues name="QueryName" value="product/SimpleProductSearch"/>
+    <pipelet href="enfinity:/core/pipelets/ExecutePageableQuery.xml"/>
+    <nodeSuccessors name="next" next="CallNode_2fjGwClGEemQGvw8h3P96w"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="PageSize" objectPath="PageSizeInteger"/>
+    <parameterBindings name="Parameters" objectPath="ProductSearchParameters"/>
+    <returnValueBindings name="ErrorCode" objectPath="ErrorStatus"/>
+    <returnValueBindings name="SearchResult" objectPath="Products"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_2fjGwClGEemQGvw8h3P96w">
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="NumberOfResults" objectPath="Products:ElementCount"/>
+    <startNode referencedName="FireTrackingEvents-ProductSearch"/>
+  </nodes>
+<!--@Location 4,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 9,21-->
+    <nodeSuccessors name="next" next="Join38"/>
+  </nodes>
+<!--@Location 7,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start3" name="PrepareSearch" callMode="Private">
+    <nodeSuccessors name="next" next="SetDictionaryValue7"/>
+  </nodes>
+<!--@Location 7,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue7">
+    <configurationValues name="Name" value="DetermineRepositoriesPipeline"/>
+    <configurationValues name="Value" value="DetermineRepositories-Channel"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue9"/>
+  </nodes>
+<!--@Location 7,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue9">
+    <configurationValues name="Name" value="OnlineFlag"/>
+    <configurationValues name="Value" value="1"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue10"/>
+  </nodes>
+<!--@Location 7,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue10">
+    <configurationValues name="Name" value="DetermineFilterConditionsPipeline"/>
+    <configurationValues name="Value" value="ViewParametricSearch-FilterConditionsByUser"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="Decision2"/>
+  </nodes>
+<!--@Location 7,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="Decision2" conditionKey="SearchCategoryUUID">
+<!--@BendPoints 15,10-->
+    <nodeSuccessors name="decision_yes" next="CallNode10"/>
+<!--@BendPoints 16,9 16,13-->
+    <nodeSuccessors name="decision_no" next="JoinNode7"/>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <parameterBindings name="CatalogCategoryID" objectPath="SearchCategoryUUID"/>
+    <startNode referencedName="ProcessCategory-Get"/>
+  </nodes>
+<!--@Location 7,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="CallNode18"/>
+  </nodes>
+<!--@Location 7,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode18">
+<!--@BendPoints 15,16-->
+    <nodeSuccessors name="next" next="End2"/>
+    <startNode referencedName="ViewParametricSearchByOracle-FilterConditionsByUser"/>
+  </nodes>
+<!--@Location 7,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="End2"/>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start6" name="SimpleOfferSearch">
+<!--@BendPoints 7,5-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,90 @@
+<iscontent compact="true" charset="UTF-8">
+<%@page import="com.intershop.sellside.storefront.base.internal.paging.PagingGroupedByInterval"%>
+<%@page import="com.intershop.sellside.storefront.base.capi.paging.AbstractPagingCalculator"%>
+<%
+	Object cp =  getObject("currentpage");
+	Object pc =  getObject("pagecount");
+	
+	AbstractPagingCalculator paging = new PagingGroupedByInterval(cp, pc, 14,10);
+	getPipelineDictionary().put("barEntries", paging.createCalculatedPagingIterator());
+
+%>
+<div class="col-md-3 col-sm-3 col-xs-4">
+	<isinclude template="modules/paging/elements/TotalItems.isml">
+</div>
+
+<isif condition="#NOT(isDefined(sortvalue))#"><isset name="sortvalue" value="#ListNavigationVO:SortingAttribute#" scope="request"/></isif>
+<isif condition="#NOT(isDefined(pagesize))#"><isset name="pagesize" value="#ListNavigationVO:PageSize#" scope="request"/></isif>
+
+<div class="pagination-sites col-md-9 col-sm-9 col-xs-8">
+	<ul class="pagination-site-list">
+	
+		<!--- start of previous arrow --->
+		<isif condition="#currentpage > 0#">	
+			<li class="pagination-site-list-previous">
+			<iscreatepaginglink 
+							pipelinename="#pipeline#"
+							pagenumber="#getValue( currentpage - 1, '0')#"
+							pagesize = "#pagesize#" 
+							params="#params#"
+							sortvalue="#sortvalue#"
+							result="paginglink">
+				<a href="<isprint value="#paginglink#" encoding="off"/>"
+					<isif condition="#isDefined(hijax)#">data-hijax="<isprint value="#hijax#"></isif> 
+					title="<istext key="common.module.pagination.previous.title.link">">&#'#'#171;</a>
+			</li>
+			<ISPLACEMENT placeholderid="CANONICAL"><link rel="prev" href="<isprint value="#paginglink#" encoding="off"/>" /></ISPLACEMENT>
+		<iselse>
+			<li class="pagination-site-list-previous">&#'#'#171;</li>
+		</isif>
+		<!--- end of previous arrow --->
+		
+		<!--- start of outputting pagenumbers --->
+		<isloop iterator="barEntries" alias="e">
+			
+			<li class="<isif condition="#e:Value EQ getValue( currentpage, '0')#"> pagination-site-active</isif>">
+				<isif condition="#e:Value EQ getValue( currentpage, '0')#">
+					<isprint value="#e:Key#" >
+				<iselse>
+					<a href="<ispaginglink 
+						pipelinename="#pipeline#" 
+						pagenumber="#e:Value#"
+						pagesize="#pagesize#" 
+						params="#params#" 
+						sortvalue="#sortvalue#">"
+						<isif condition="#isDefined(hijax)#">data-hijax="<isprint value="#hijax#"></isif> 
+						title="to page <isprint value="#e:Key#">">
+						<span class="pagination-hide"><istext key="common.module.pagination.topage.text"></span>
+						<isprint value="#e:Key#">
+						<span class="pagination-hide">
+							<istext key="common.module.pagination.of.text"><isprint value="#pagecount#">
+						</span>
+					</a>
+				</isif>
+			</li>
+			
+		</isloop>
+		<!--- end of outputting pagenumbers --->
+		
+		<!--- start of next arrow --->
+		<isif condition="#currentpage < ( pagecount - 1 )#">
+			<li class="pagination-list-next">
+				<iscreatepaginglink 
+					pipelinename="#pipeline#"
+					pagenumber="#getValue( currentpage + 1, '0')#"
+					pagesize = "#pagesize#" 
+					params="#params#"
+					sortvalue="#sortvalue#"
+					result="paginglink">
+					
+				<a href="<isprint value="#paginglink#" encoding="off"/>"
+					<isif condition="#isDefined(hijax)#">data-hijax="<isprint value="#hijax#"></isif> 
+					title="<istext key="common.module.pagination.next.title.link">">&#'#'#187;</a>
+			</li>
+			<ISPLACEMENT placeholderid="CANONICAL"><link rel="next" href="<isprint value="#paginglink#" encoding="off"/>" /></ISPLACEMENT>
+		<iselse>
+			<li class="pagination-list-next">&#'#'#187;</li>
+		</isif>
+		<!--- end of next arrow --->		
+	</ul>
+</div>

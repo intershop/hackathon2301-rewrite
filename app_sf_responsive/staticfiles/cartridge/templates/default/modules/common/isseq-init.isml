@@ -1,0 +1,10 @@
+<iscontent type="text/html" charset="UTF-8">
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+	String name = String.valueOf((Object)dict.get("name"));
+	String mod  = String.valueOf((Object)dict.get("modulo"));
+	
+	dict.put(name, new Integer(0));
+	dict.put(name+"_mod"  , new Integer(mod));
+%>

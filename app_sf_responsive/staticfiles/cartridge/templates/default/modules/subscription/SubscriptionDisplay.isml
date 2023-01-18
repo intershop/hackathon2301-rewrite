@@ -1,0 +1,31 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div class="clearfix">
+    <!--- displays the subscription interval information --->
+	<label class="col-xs-4<isif condition="#labelclass NE ''#"> <isprint value="#labelclass#"></isif>">
+		<istext key="subscription.display.recurrence.label"/>
+	</label>
+	<div class="col-xs-8<isif condition="#dataclass NE ''#"> <isprint value="#dataclass#"></isif>" data-testing-id="subscription-recurrence-<isprint value="#recurrenceinformation:Interval#">">
+		<isPeriodDisplay period="#recurrenceinformation:Interval#">
+	</div>
+</div>
+<div class="clearfix">
+	<label class="col-xs-4<isif condition="#labelclass NE ''#"> <isprint value="#labelclass#"></isif>">
+		<istext key="subscription.display.start_date.label"/>
+	</label>
+	<div class="col-xs-8<isif condition="#dataclass NE ''#"> <isprint value="#dataclass#"></isif>" data-testing-id="subscription-start-date"><isprint value="#recurrenceinformation:StartDate#" style="DATE_SHORT"></div>
+</div>
+<div class="clearfix">
+	<label class="col-xs-4<isif condition="#labelclass NE ''#"> <isprint value="#labelclass#"></isif>">
+		<istext key="subscription.display.end_date.label"/>
+	</label>
+	<div class="col-xs-8<isif condition="#dataclass NE ''#"> <isprint value="#dataclass#"></isif>" data-testing-id="subscription-end-date">
+		<isif condition="#isDefined(recurrenceinformation:EndDate)#">
+			<isprint value="#recurrenceinformation:EndDate#" style="DATE_SHORT">
+		<iselse>
+			<istext key="subscription.display.no_end_date"/>
+		</isif>
+	</div>
+</div>
+
+

@@ -1,0 +1,57 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<%@page import="com.intershop.beehive.core.capi.localization.LocaleInformation"%>
+<%@page import="java.text.SimpleDateFormat"%>
+
+<input type="hidden" id="hidden<isprint value="#input_id#">" name="<isprint value="#input_id#">" />
+
+<!--- include localization file for bootstrap datepicker --->
+<isinclude template="inc/BootstrapDatePicker">
+
+<script type="text/javascript">
+	
+	var initializeDatepicker = function() {
+		
+		var target = $(document.getElementById('<isprint value="#input_id#">'));
+		var hiddenInput = $(document.getElementById('hidden<isprint value="#input_id#">')); 
+		hiddenInput.val(target.val());
+		
+		target.on("change", function() {
+		    if(target.val() == "") {
+		        hiddenInput.val("");
+		    }
+		});
+		
+		// send also wrong values to the server to display a server side error message
+		target.on("blur", function() {
+			if(target.val() != "") {
+		        hiddenInput.val(target.val());
+		    }
+		});
+						
+		target.on("changeDate", function() {
+			var d = $(document.getElementById('<isprint value="#input_id#">')).datepicker('getDate');
+		    $(document.getElementById('hidden<isprint value="#input_id#">')).val(d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear());
+		});
+		
+		if (Modernizr.touchevents && Modernizr.inputtypes.date) {
+		    target.attr("readonly", "readonly")
+		}
+		
+	    target.datepicker({
+	    	autoclose: true,
+	    	forceParse: false,
+	    	<isif condition="#isDefined(locale)#">language: '<isprint value="#locale:Language#">',
+	    	format: '<isprint value="#replace(CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern, 'MM', 'mm')#" encoding="javascript">',</isif>
+	    	<isif condition="#isDefined(dates_disabled)#">datesDisabled: <isprint  encoding="off" value="#dates_disabled#">,</isif>
+	    	<isif condition="#isDefined(start_date)#">startDate: '<isprint  encoding="javascript" value="#start_date#">',</isif>
+	    	<isif condition="#isDefined(end_date)#">endDate: '<isprint  encoding="javascript" value="#end_date#">',</isif>
+	    	<isif condition="#select_month EQ 'true'#">minViewMode: 1,</isif>
+	    	<isif condition="#isDefined(days_of_week_disabled)#">daysOfWeekDisabled: <isprint encoding="javascript" value="#days_of_week_disabled#">,</isif> 
+	    	todayHighlight: true
+	    });
+	};
+	
+	$(initializeDatepicker);
+	
+</script>

@@ -1,0 +1,54 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<!--- expected dictionary items: AdressID, CurrentCartBO, CustomerBO --->
+
+<isset name="MultipleShipToAddresses" value="#CurrentCartBO:Extension("ShippingBucket"):MultipleShipToAddresses#" scope="request"/>
+<isif condition="#NOT(MultipleShipToAddresses)#">
+	<isif condition="#CurrentCartBO:MultipleShipmentsSupported#">
+		<isset name="OrderShippingBucket" value="#CurrentCartBO:Extension("ShippingBucket")#" scope="request"/>
+		<isset name="CommonShipToAddress" value="#OrderShippingBucket:SoleShipToAddressBO#" scope="request">
+	<iselse>
+		<isset name="CommonShipToAddress" value="#CurrentCartBO:CommonShipToAddressBO#" scope="request">
+	</isif>
+</isif>	
+
+<div class="modal-dialog modal-md" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title" id="delAddressConfirmationLabel"><istext key="checkout.address.delete.confirmation.heading" /></h2>
+		</div>
+		<div class="modal-body">
+			<p>	
+				<isif condition="#CurrentSession:LoggedIn#">
+					<istext key="checkout.address.delete.confirmation.loggedin.text" />
+				<iselse>
+					<istext key="checkout.address.delete.confirmation.text" />
+				</isif>
+			</p>	
+			<small class="help-block"><istext key="checkout.address.delete.confirmation.deletionhint" /></small>
+		</div>
+		<div class="modal-footer">
+			<isform method="post" action="#URL(Action('ViewCheckoutAddresses-Dispatch'))#">
+				<isif condition="#isDefined(CommonShipToAddress:ID)#">
+					<input type="hidden" name="AddressID" value="<isprint value = "#CommonShipToAddress:URN#">" />
+				<iselse>
+					<input type="hidden" name="AddressID" value="<isprint value = "#AddressID#">" />
+				</isif>
+				<!--- Generate Hash for concurrent address changes --->
+				<isif condition="#isDefined(CustomerBO)#">
+					<isif condition="#isDefined(CommonShipToAddress:ID)#">
+						<isset name="HashAddressID" value="#CommonShipToAddress:URN#" scope="request"/>
+						<isset name="HashAddressBO" value="#CommonShipToAddress#" scope="request"/>
+					<iselse>
+						<isset name="HashAddressID" value="#AddressID#" scope="request"/>
+					</isif>
+					<isinclude extensionpoint="GenerateAddressHash" />
+				</isif>
+				<button type="button" class="btn btn-primary submitDeleteAddress" value="yes" name="delete"><istext key="checkout.address.button.delete" /></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal"><istext key="checkout.address.button.cancel" /></button>
+			</isform>
+		</div>
+	</div>
+</div>
+

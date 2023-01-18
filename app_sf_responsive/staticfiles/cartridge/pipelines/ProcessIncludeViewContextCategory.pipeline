@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Pagelet-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessIncludeViewContextCategory" type="process">
+<!--@displayNearNode@Determine the pagelet entry point for the given view context and category.
+@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="GetPageletEntryPoint"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetContentSharingProvider0"/>
+    <parameters name="ViewContext" type="com.intershop.component.pmc.capi.viewcontext.ViewContext"/>
+    <parameters name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO"/>
+    <parameters name="ListNavigationVO" type="java.lang.Object" optional="true"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetContentSharingProvider0">
+    <pipelet href="enfinity:/bc_pmc/pipelets/GetContentSharingProvider.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue1"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="ViewContextInclusionName"/>
+    <configurationValues name="Value" value="IncludeCategory"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 3,8-->
+    <nodeSuccessors name="next" next="GetPageletEntryPointByViewContext1"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPageletEntryPointByViewContext1">
+    <configurationValues name="Strategy" value="Category"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/GetPageletEntryPointByViewContext.xml"/>
+<!--@BendPoints 3,10-->
+    <nodeSuccessors name="next" next="EndNode1"/>
+<!--@BendPoints 7,9 7,10-->
+    <nodeSuccessors name="pipelet_error" next="EndNode2"/>
+    <parameterBindings name="Domain" objectPath="ContentSharingProvider:ContentRepositoryDomainByCurrentApplication"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" name="ERROR" strict="true"/>
+</pipeline:Pipeline>

@@ -1,0 +1,56 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset name="VariationInfo" value="#ProductBO:ProductVariationInformationBO#" scope="request"/>
+<ISGetCurrentDomain CurrentDomain="CurrentDomain">
+<% getPipelineDictionary().put("CurrentRequest", getRequest()); %>
+
+<ispipeline pipeline="ProcessOrganization-GetOrganization" alias="dict" params="#ParamMap(ParamEntry('Domain', CurrentDomain), ParamEntry('Request', CurrentRequest))#" />
+<ispipeline pipeline="ProcessProductVariationPreference-GetPreference" alias="dict" params="#ParamMap(ParamEntry('Domain', dict:Organization:OwningDomain))#" />
+<isset name="EnableAdvancedVariationHandlingPreference" value="#dict:EnableAdvancedVariationHandling#" scope="request"/>
+
+<isif condition="#hasElements(VariationInfo:VariationAttributes)#">
+	<div class="product-variation-container">
+		<isif condition="#ProductBO:isMastered#">
+			<isloop iterator="VariationInfo:VariationAttributes" alias="VariationAttribute" counter="counter">
+				<div class="product-variation">
+					<div class="form-group">
+						<isif condition="#isDefined(EnableAdvancedVariationHandlingPreference) AND (EnableAdvancedVariationHandlingPreference EQ 'false')#">
+							<label class="control-label" for="ID_<isprint value="#VariationAttribute:Name#"/>_<isprint value="#ProductBO:ID#"/>">
+								<isprint value="#VariationAttribute:DisplayName#"/>
+							</label>
+												
+							<isif condition="#((VariationAttribute:PresentationOption EQ '') OR (VariationAttribute:PresentationOption EQ 'default') OR (VariationAttribute:PresentationOption EQ 'defaultAndSwatchImage') OR (VariationAttribute:PresentationOption EQ 'defaultAndColorCode'))#">							
+								<div><isinclude template="inc/product/variation/PresentationDefault"></div>
+							</isif>
+							
+							<isif condition="#((VariationAttribute:PresentationOption EQ 'swatchImage') OR (VariationAttribute:PresentationOption EQ 'defaultAndSwatchImage') OR (VariationAttribute:PresentationOption EQ 'colorCode') OR (VariationAttribute:PresentationOption EQ 'defaultAndColorCode'))#">
+								<isinclude template="inc/product/variation/PresentationSwatchImageOrColorCode">
+							</isif>
+						<iselse/>
+							<label class="control-label" for="ID_<isprint value="#VariationAttribute:Name#"/>_<isprint value="#ProductBO:ID#"/>">
+								<isprint value="#VariationAttribute:DisplayName#"/>:&nbsp;
+							</label>
+							<isinclude template="inc/product/variation/PresentationTextDefault">							
+						</isif>
+					</div>
+				</div>
+			</isloop>
+			<isif condition="#isDefined(EnableAdvancedVariationHandlingPreference) AND (EnableAdvancedVariationHandlingPreference EQ 'true')#">				
+				<div style="font-size: 90%;"><a data-dialog href="#URL(Action('ViewProduct-Start'), Parameter('SKU', ProductBO:ProductBOMaster:SKU))#"><istext key="product.choose_another_variation.link" /></a></div>
+			</isif>
+		<iselseif condition="#ProductBO:isProductMaster#">
+			<!--- TODO: functionality for ProductMaster needs to be defined
+			<div class="product-variation">
+				<div class="form-group">
+					<label class="control-label" for="ID_VariationProduct_<isprint value="#ProductBO:ID#"/>">
+						<istext key="product.variation.label" />
+					</label>
+					<div>
+						<isinclude template="inc/product/variation/PresentationVariationProducts">
+					</div>
+				</div>
+			</div>
+			--->
+		</isif>
+	</div>	
+</isif>

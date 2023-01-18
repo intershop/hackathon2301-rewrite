@@ -1,0 +1,6 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<isif condition="#hasElements(ProductBOs)#">
+  <isloop iterator="ProductBOs" alias="ProductBO">
+	<isinclude template="product/xml/ProductXML">
+  </isloop>
+</isif>

@@ -1,0 +1,206 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/common/Modules">
+<isinclude template="modules/account/Modules">
+
+<isgetpreference preferencekey="UserRegistrationLoginType" domainname="#CurrentDomain:DomainName#" type="String" return="RegistrationLoginType">
+<isgetpreference preferencekey="SecurityQuestionEnabled" domainname="#CurrentOrganization:OwningDomain:DomainName#" type="String" return="SecurityQuestionEnabled">
+
+<div class="row">
+	<div class="col-lg-6 col-md-8 col-sm-10">
+	
+		<!--- BEGIN error handling --->
+		<isif condition="#(LoginForm:isSubmitted AND LoginForm:isInvalid) OR (isDefined(ERROR_User) AND (ERROR_User NE 'UserNotLoggedIn'))#">
+			<div class="alert alert-danger">
+				<isif condition="#LoginForm:Login:isError("error.email")#">
+					<p><istext key="account.update_email.email.error.email"/></p>
+				</isif>
+				<isif condition="#LoginForm:Login:isError("error.required")#">
+					<p><istext key="#'account.'.UserLoginType.'.empty.error'#"/></p>
+				</isif>
+				<isif condition="#isDefined(ERROR_User) AND (ERROR_User EQ 'LoginAlreadyInUse')#">
+					<p><istext key="#'account.'.UserLoginType.'.already_exist.error'#"/></p>
+				</isif>
+				<isif condition="#LoginForm:Password:isError("error.required")#">
+					<p><istext key="account.create_user.password.error.required"/></p>
+				</isif>
+				<isif condition="#LoginForm:Password:isError("invalid.password")#">
+					<p><istext key="password.invalid.password"/></p>
+				</isif>
+				<isif condition="#LoginForm:PasswordConfirmation:isError("error.required")#">
+					<p><istext key="account.create_user.password_confirmation.invalid.error"/></p>
+				</isif>
+				<isif condition="#LoginForm:PasswordConfirmation:isError("error.stringcompare")#">
+					<p><istext key="account.registration.password.not_match.error"/></p>
+				</isif>
+				<isif condition="#LoginForm:SecurityQuestion:isError("error.required")#">
+					<p><istext key="account.register.security_question.error.required"/></p>
+				</isif>
+				<isif condition="#LoginForm:Answer:isError("error.required")#">
+					<p><istext key="account.register.security_answer.error.required"/></p>
+				</isif>
+				<isif condition="#isDefined(ERROR_User) AND (ERROR_User EQ 'PasswordNotValid')#">
+					<p><istext key="account.update_password.new_password.error.regexp"/></p>
+				</isif>
+				<isif condition="#LoginForm:recaptcharesponsefield:Invalid#">
+					<p><istext key="captcha.incorrect"/></p>
+				</isif>
+			</div>
+		</isif>
+		<!--- END error handling --->
+
+		<p class="indicates-required"><span class="required">*</span><istext key="account.required_field.message" /></p>
+
+		<!--- Login and login confirm --->	
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="<isprint value="#LoginForm:Login:QualifiedName#">">
+				<istext key="#'account.register.'.UserLoginType.'.label'#"/><span class="required">*</span>
+			</label>
+			
+			<div class="col-sm-8">
+				<input autocomplete="off" class="form-control"
+					required
+					id="<isprint value="#LoginForm:Login:QualifiedName#">"
+					name="<isprint value="#LoginForm:Login:QualifiedName#">"
+					value="<isprint value="#LoginForm:Login:FormattedValue#">"
+					<isif condition="#UserLoginType EQ "username"#">
+						maxlength="<isprint value="#LoginPreferenceReader:LoginMaxLength#">"
+						type="text"
+						data-bv-notempty-message="<istext key="account.login.username.error.required"/>"
+						<isif condition="#LoginPreferenceReader:LoginMinLength > 0#">
+							data-bv-stringlength="true"
+							data-bv-stringlength-min="<isprint value="#LoginPreferenceReader:LoginMinLength#">"
+							data-bv-stringlength-message="<istext key="account.register.username.error.length" parameter0="#LoginPreferenceReader:LoginMinLength#"/>"
+						</isif>
+						<isif condition="#isDefined(LoginPreferenceReader:LoginExpression)#">
+							data-bv-regexp="true"
+							data-bv-regexp-regexp="<isprint value="#LoginPreferenceReader:LoginExpression#">"
+							data-bv-regexp-message="<istext key="account.register.username.error.regexp"/>"
+						</isif>
+					<iselse>
+						maxlength="256"
+						data-bv-notempty-message="<istext key="account.update_email.email.error.notempty"/>"
+						data-bv-regexp="true"
+						data-bv-regexp-regexp="(?:[a-z0-9!#'#'#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#'#'#$%&'*+/=?^_`{|}~-]+)*|&quot;(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*&quot;)@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){​​​​​​3}​​​​​​(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+						data-bv-regexp-message="<istext key="account.update_email.email.error.email"/>"
+					</isif>
+				/>
+			</div>
+			<div class="col-sm-8 col-sm-push-4">
+				<small class="input-help">
+					<istext key="account.register.username.extrainfo.message" encoding="off" parameter0="#encodeValue(LoginPreferenceReader:LoginMaxLength)#"/>
+				</small>
+			</div>
+		</div>
+		<isif condition="#UserLoginType EQ "username"#">
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="<isprint value="#LoginForm:Email:QualifiedName#">">
+				<istext key="account.register.email.label" />
+				<span class="required">*</span>
+			</label>
+			
+			<div class="col-sm-8">
+				<input autocomplete="off" class="form-control" maxlength="256"
+					required
+					id="<isprint value="#LoginForm:Email:QualifiedName#">"
+					name="<isprint value="#LoginForm:Email:QualifiedName#">"
+					value="<isprint value="#LoginForm:Email:FormattedValue#">"
+					data-bv-regexp="true"
+					data-bv-regexp-regexp="(?:[a-z0-9!#'#'#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#'#'#$%&'*+/=?^_`{|}~-]+)*|&quot;(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*&quot;)@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){​​​​​​3}​​​​​​(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+					data-bv-regexp-message="<istext key="account.update_email.email.error.email"/>"
+				/>
+			</div>
+		</div>
+		</isif>
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="<isprint value="#LoginForm:EmailConfirmation:QualifiedName#">">
+				<istext key="account.register.email_confirmation.label" />
+				<span class="required">*</span>
+			</label>
+			<div class="col-sm-8">
+				<input autocomplete="off" class="form-control" maxlength="256"
+					required
+					id="<isprint value="#LoginForm:EmailConfirmation:QualifiedName#">"
+					name="<isprint value="#LoginForm:EmailConfirmation:QualifiedName#">"
+					value="<isprint value="#LoginForm:EmailConfirmation:Value#">"
+					data-bv-notempty-message="<istext key="account.update_email.email.error.notempty"/>"
+					data-bv-identical="true"
+					<isif condition="#UserLoginType EQ "username"#">
+					data-bv-identical-field="<isprint value="#LoginForm:Email:QualifiedName#">"
+					<iselse>
+					data-bv-identical-field="<isprint value="#LoginForm:Login:QualifiedName#">"
+					</isif>
+					data-bv-identical-message="<istext key="account.registration.email.not_match.error"/>"
+					data-bv-regexp="true"
+					data-bv-regexp-regexp="(?:[a-z0-9!#'#'#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#'#'#$%&'*+/=?^_`{|}~-]+)*|&quot;(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*&quot;)@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){​​​​​​3}​​​​​​(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+					data-bv-regexp-message="<istext key="account.update_email.email.error.email"/>"
+				/>
+			</div>
+		</div>
+
+		<!--- Password and PasswordConfirmation --->
+		<isPasswordInput Field="#LoginForm:Password#"
+						Class="col-sm-8"
+						HintClass="col-sm-offset-4 col-sm-8"
+						LabelClass="col-sm-4"
+						ShowRequired="true"
+						Domain="#CurrentOrganization:Domain#"
+						ConfirmationField="#LoginForm:PasswordConfirmation#">
+
+		<!--- SecurityQuestion and Answer --->
+		<isif condition="#(isDefined(SecurityQuestionEnabled)) AND (SecurityQuestionEnabled EQ 'true')#">
+			<div class="form-group">
+				<label class="col-sm-4 control-label" for="<isprint value="#LoginForm:SecurityQuestion:QualifiedName#">">
+					<istext key="account.security_question.label"/>
+					<span class="required">*</span>
+				</label>
+				<div class="col-sm-8">
+					<isSecurityQuestionSelectBox formparameter="#LoginForm:SecurityQuestion:QualifiedName#" selectedsecurityquestionvalue="#LoginForm:SecurityQuestion:Value#">
+				</div>
+			</div>
+					<div class="form-group">
+				<label class="col-sm-4 control-label" for="<isprint value="#LoginForm:Answer:QualifiedName#">">
+					<istext key="account.register.security_answer.label"/>
+					<span class="required">*</span>
+				</label>
+				<div class="col-sm-8">
+					<input type="password" autocomplete="off" class="form-control <isif condition="#LoginForm:Answer:isInvalid#">server-error</isif>"
+						id="<isprint value="#LoginForm:Answer:QualifiedName#">"
+						name="<isprint value="#LoginForm:Answer:QualifiedName#">"
+						required
+						data-bv-notempty-message="<istext key="account.register.security_answer.error.required"/>"
+					/>
+				</div>
+			</div>
+		</isif>
+		<!--- Newsletter Checkbox--->
+		<isif condition="#isDefined(Provider) AND isDefined(BasketEmailOptIn) AND (BasketEmailOptIn NE 'yes')#">
+			<div class="form-group">
+				<div class="col-sm-8 col-sm-push-4">
+					<div class="checkbox">
+						<label class="control-label" for="<isprint value="#LoginForm:Newsletter:QualifiedName#">">
+							<input type="checkbox"
+								id="<isprint value="#LoginForm:Newsletter:QualifiedName#">"
+								name="<isprint value="#LoginForm:Newsletter:QualifiedName#">"
+								value="true"
+								<isif condition="#isDefined(address) AND (address:PreferredBilling EQ 'true')#">checked="checked"</isif>
+							/>
+							<istext key="account.register.newsletter.checkbox.text"/>
+							<br>
+							<small class="input-help">
+								<istext key="account.register.newsletter_opt-in_ouf.note.text" encoding="off" parameter0="#encodeValue(URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systeminclude.dialog.privacyPolicy.pagelet2-Include')))#"/>
+							</small>
+						</label>
+					</div>
+				</div>
+				<div class="col-sm-8 col-sm-push-4">
+			</div>
+		<iselse>
+			<div class="col-sm-8 col-sm-push-4">
+				<small class="input-help">
+					<istext key="account.register.newsletter_opt-in_ouf.note.text" encoding="off" parameter0="#encodeValue(URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systeminclude.dialog.privacyPolicy.pagelet2-Include')))#"/>
+				</small>
+			</div>
+		</isif>
+	</div>
+</div>

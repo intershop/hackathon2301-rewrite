@@ -1,0 +1,37 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<ispipeline pipeline="ProcessProductTabs-GetShippingDetails" params="#ParamMap(ParamEntry('ProductBO', ProductBO))#" alias="ShippingDetailsDict"/>
+
+<ISUUID name="collectionItemID">
+<div class="panel-heading" data-testing-id="section-shipping-tab">
+	<a data-toggle="collapse" data-parent="#'#'#accordion" href="#'#'#<isprint value="#collectionItemID#">" class="collapsed">
+		<istext key="product.shipping.heading" /> <span class="glyphicon glyphicon-plus pull-right"></span>
+	</a>
+</div>
+<div id="<isprint value="#collectionItemID#">" class="panel-collapse collapse">	
+	<div class="panel-body">
+		<ISProductShipping ProductBO="#ProductBO#">
+		
+		<isif condition="#hasElements(ShippingDetailsDict:ShippingInformation)#">
+			<ul>
+				<isloop iterator="ShippingDetailsDict:ShippingInformation" alias="Info">
+					<li><isprint value="#Info#"></li>
+				</isloop>
+			</ul>
+		</isif>
+		
+		<strong><istext key="product.shipping.available_methods" /></strong>
+		
+		<isif condition="#hasElements(ShippingDetailsDict:AdvancedShippingMethods)#">
+			<ul>
+				<isloop iterator="ShippingDetailsDict:AdvancedShippingMethods" alias="ShippingMethod">
+					<li><isprint value="#ShippingMethod:DisplayName#"></li>
+				</isloop>
+			</ul>
+		</isif>
+		
+	</div>
+</div>

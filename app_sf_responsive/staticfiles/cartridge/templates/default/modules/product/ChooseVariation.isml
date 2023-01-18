@@ -1,0 +1,15 @@
+<!---[Comment]--->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#isDefined(ProductBO:ProductBOMaster)#">
+	<isset name="ProductSKU" value="#ProductBO:ProductBOMaster:SKU#" scope="request">
+<iselse>
+	<isset name="ProductSKU" value="#ProductBO:SKU#" scope="request">
+</isif>
+<div class="choose-variation-link-margin">
+	<a class="btn btn-primary <isprint value="#class#">"
+			href="#URL(Action('ViewProduct-Start'), Parameter('SKU', ProductSKU), Parameter('CategoryName', CategoryBO:Name), Parameter('CatalogID', CategoryBO:CatalogBO:Name))#"
+		title="<istext key="product.choose_variation.link" />" data-testing-id="chooseVariationButton"
+	>
+		<istext key="product.choose_variation.link" />
+	</a>
+</div>

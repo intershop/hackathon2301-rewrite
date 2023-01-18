@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Load localization properties and refresh the subscription list
+	Note:
+		Variable "subscriptionsLocalizationProperties" is defined in ISML template "SubscriptionsList.isml"
+		until a new technique to load localization properties from server is available for client side (JavaScript).
+--->
+
+var controller = this;
+
+// Set template model
+var model = {
+	error: false,
+	confirm: true,
+	loading: false
+};
+
+// Update and render template
+controller.model(model);
+
+<!--- SUBSCRIPTIONS LIST CONFIRM MODAL DIALOG deactivate --->
+$(document).on('click', 'button[name="deactivate"]', function() {
+
+	model = controller.model();
+	model.loading = true;
+
+	// Show loader
+	controller
+		.model(model)
+		.update();
+
+	var client = new ISHRestClient();
+		client.update('/recurringorders/' + model.sid, {
+		    "type":"UpdateRecurringOrderRO",
+		    "active": false
+		}).then(function() {
+			model.error = false;
+			model.confirm = false;
+			controller
+				.model(model)
+				.update();
+			$(document).trigger('subscriptions.deactivate.succesfully');
+		}, function() {
+			model.error = true;
+			model.confirm = false;
+			controller
+				.model(model)
+				.update();
+		});
+
+});
+
+<!--- Attribute sid of controller stores the ID of the subscription --->
+$(document).on('click', 'a[data-target="#'#'#confirmDeactivateModal"]', function() {
+
+	model.sid = $(this).attr('data-subscription-id');
+	model.items = $(this).attr('data-line-items');
+	model.confirm = true;
+	model.loading = false;
+
+	controller
+		.model(model)
+		.update();
+
+});

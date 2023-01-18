@@ -1,0 +1,31 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+<isinclude template="modules/Modules">
+
+<ispipeline pipeline="ProcessWishlist-GetLatestWishlistItems" alias="dict" params="#ParamMap(ParamEntry('CurrentUser', CurrentUser), ParamEntry('CurrentRequest', CurrentRequest))#" />
+
+<div class="section">
+	<isif condition="#hasElements(dict:WishlistItems)#">
+		<div class="list-header">
+			<div class="col-sm-6 col-xs-3 list-header-item"><istext key="account.overview.wishlist.table.item"/></div>
+			<div class="col-sm-6 col-xs-4 list-header-item column-price"><istext key="account.overview.wishlist.table.price"/></div>
+		</div>
+		
+		<div class="list-body">
+			<isloop iterator="dict:WishlistItems" alias="WishlistItem">
+				<div class="list-item-row">
+					<isif condition="#(isDefined(WishlistItem:ProductBO:SKU))#">
+							<isWishlistItem WishlistItem="#WishlistItem#" showImage="true" showPrice="true" showWishlistLink="true" Currency="#CurrentRequest:Currency#">
+					<iselse>
+						<div class="list-item">
+							<p><istext key="account.overview.wishlist.unshared_product"/></p>
+						</div>
+					</isif>
+				</div>
+			</isloop>
+		</div>
+		
+		<a href="#URLEX(SecureURL,'',Action('ViewWishlist-ViewAll'))#"><istext key="account.overview.wishlist.view_all"/></a>
+	<iselse>
+		<p><istext key="account.overview.wishlist.no_entries"/></p>
+	</isif>
+</div>

@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- Javascript for bootstrap select --->
+
+<isplacement placeholderid="JS_head">
+	<script defer src="#webRoot().'/js/vendor/bootstrap-select-1.13.14.min.js'#"></script>
+	<!--- initialize bootstrap select --->
+	<script type="text/javascript">
+	 $(document).ready(function(){
+	     /*
+	      * Set localization text for bootstrap-select-1.13.14.js
+	      */
+	     $.fn.selectpicker.defaults = {
+	       noneSelectedText: "#localizeText('selectpicker.noneSelected.text')#",
+	       noneResultsText: "#localizeText('selectpicker.noneResults.text')#",
+	       countSelectedText: function (numSelected, numTotal) {
+	         return (numSelected == 1) ? "#localizeText('selectpicker.countSelected.single.text')#" : "#localizeText('selectpicker.countSelected.multiple.text')#";
+	       },   
+	       selectAllText: "#localizeText('selectpicker.selectAll.text')#",
+	       deselectAllText:"#localizeText('selectpicker.deselectAll.text')#"
+	     };
+	     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+	   	    $.fn.selectpicker.Constructor.DEFAULTS.mobile = true;
+	   	}
+	    });
+	</script>
+</isplacement>

@@ -1,0 +1,77 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="modules/common/Modules">
+
+<isif condition="#NOT isDefined(CurrentCartBO)#">
+	<isset name="CurrentCartBO" value="#BasketBO#" scope="request">
+</isif>
+<isset name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#" scope="request" >
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#BasketBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<!--- heading --->
+<isset scope="request" name="CurrentStep" value="#5#">
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="cart-header">
+	<h1>
+		<a class="btn-tool pull-right"	href="javascript:window.print()" title="<istext key="checkout.receipt.print.button.label"/>">
+			<span class="glyphicon glyphicon-print"></span>
+		</a>
+		<span class="cart-header-title"><istext key="checkout.receipt.thankyou.subscription.message" /></span>
+		
+		<span class="cart-header-note">
+			<istext key="shopping_cart.transaction.text" />&nbsp;
+			<a data-dialog class="details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.safeAndSecure.pagelet2-Include'))#"><istext key="shopping_cart.read_more.link" /></a>
+		</span>
+	</h1>
+</div>
+
+<div data-testing-id="checkout-receipt-page">
+	<div class="row">
+		<div class="col-xs-12 col-md-8">
+			<!--- Receipt message --->
+			<div class="section">
+				<p>
+					<span><istext key="checkout.order.number.label" /></span> <strong data-testing-id="order-document-number"><isprint value="#BasketBO:RecurringOrderDocumentNo#"></strong>
+				</p>
+				<p>
+					<istext key="checkout.receipt.notification.mail.subscription.text" parameter0="#encodeValue(BasketBO:UserBO:Email)#" encoding="off"/>
+				</p>
+			</div>
+			
+			<isinclude template="cart/ProductIsNotAvailable">
+
+			<!--- b2b: Approval Required, Message to merchant --->
+			<div class="row">
+				<isinclude extensionpoint="CheckoutReceiptStart"/>
+			</div>
+			<div class="row equal">
+				<!--- Subscription Info --->
+				<isinclude template="checkout/common/widgets/SubscriptionInfo">
+				<!--- Purchaser --->
+				<isinclude extensionpoint="CheckoutReceiptAdditionalInfoBox"/>
+			</div>
+			
+			<!--- show bucket information based on a basket --->
+			<isinclude template="checkout/receipt/CheckoutReceiptBasketBuckets">
+		</div>
+
+		<!--- Cost Summary and Create Account Box --->
+		<div class="col-xs-12 col-md-4 order-summary">
+			<h2><istext key="checkout.order_summary.heading" /></h2>
+			<div class="cost-summary">
+				<isinclude template="checkout/common/widgets/CostSummary">
+			</div>	
+			<isinclude template="checkout/common/widgets/CreateAccountBox">
+			<a href="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#"><istext key="checkout.receipt.continue.shopping" /></a>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="breadcrumbs row">
+	<ISBreadcrumb showhomelink="true" trailtext0="#localizeText('account.wishlists.unavailable_wishlist_breadcrumb')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+
+<h1><istext key="account.wishlists.unavailable_wishlist_title"/></h1>
+<p><istext key="account.wishlists.unavailable_wishlist_text" encoding="off"/></p>

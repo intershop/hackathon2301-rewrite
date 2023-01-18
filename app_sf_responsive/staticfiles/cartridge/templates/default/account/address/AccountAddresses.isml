@@ -1,0 +1,63 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.saved_addresses.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="account-addresses-page">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="ADDRESSES">
+		</div>
+		
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<div class="my-account-savedAddresses myAccount-addressBox">
+				<h1><istext key="account.addresses.saved_address.heading"/>
+					<a href="#URL(Action('ViewUserAddressList-CreateAddressForm'), Parameter('AjaxRequestMarker', 'true'))#" class="btn btn-default my-account-add-address">
+						<istext key="account.addresses.add_address.button.text" />
+					</a>
+				</h1>
+			</div>
+			
+			<div class="my-account-new-address-container my-account-address-form-container section" style="display:<isif condition="#AddressForm:isInvalid OR isDefined(ForceForm)#">block<iselse>none</isif>;">
+				<h3><istext key="account.addresses.add_address.button.text"></h3>
+				
+				<div class="shift-content">
+					<isinclude template="account/address/NewAddress"/>
+				</div>
+			</div>
+
+			<div class="error-message alert alert-danger" <isif condition="#NOT(isDefined(AddressDeletionResult)) OR AddressDeletionResult:Success#">style="display: none"</isif>>
+				<isif condition="#isDefined(AddressDeletionResult) AND NOT(AddressDeletionResult:Success)#">
+					<isif condition="#AddressDeletionResult:FailureCode EQ 'LastAddress'#">
+						<istext key="account.addresses.last_address_cannot_be_deleted.error" />
+					<iselse>
+						<istext key="#'account.addresses.delete_address.'.AddressCreationResult:FailureCode.'.error'#" />
+					</isif>
+				</isif>
+			</div>
+			
+			<div class="info-message alert alert-info" style="display: none"></div>
+			<div class="success-message alert alert-success" style="display: none"></div>
+						
+			<div class="my-account-address-list shift-content">
+				<isinclude template="account/address/AddressList"/>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+

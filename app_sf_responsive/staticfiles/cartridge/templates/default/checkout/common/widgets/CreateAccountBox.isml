@@ -1,0 +1,144 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isGetLoginPreferenceReader>
+<div class="cart-summary">
+	<!--- show message after a successful registration --->
+	<isif condition="#isDefined(RegistrationSuccessful)#">
+		<h3><istext key="checkout.create_account.heading" /></h3>
+
+		<div class="alert alert-success">
+			<div><istext key="checkout.create_account.success.message" /></div><br />
+			<a class="btn btn-default" href="#URL(Action('ViewUserAccount-Start'))#"><istext key="checkout.account.go_to_account.link" /></a>
+		</div>
+		
+		<h5><istext key="checkout.account.create.benefit.text" /></h5>
+		<ul>
+			<li><istext key="checkout.account.create.benefit1.text" /></li>
+			<li><istext key="checkout.account.create.benefit2.text" /></li>
+			<li><istext key="checkout.account.create.benefit3.text" /></li>
+			<li><istext key="checkout.account.create.benefit4.text" /></li>
+		</ul>
+	</isif>
+	
+	<isif condition="#(NOT CurrentSession:LoggedIn)#">
+		
+		<!--- Create an account message for unregistered users --->
+		<isif condition="#(NOT(isDefined(knownEMail)))#">
+			
+			<h3><istext key="checkout.create_account.heading" /></h3>
+			
+			<div class="section">
+				<isform name="CredentialForm" action="#URLEX('https','',Action(TargetPipeline))#" method="post" class="bv-form">
+					<isif condition="#(CredentialForm:isSubmitted AND CredentialForm:isInvalid) OR (isDefined(ERROR_User) AND (ERROR_User NE 'UserNotLoggedIn'))#">
+						<div role="alert" class="alert alert-danger">
+							<isif condition="#CredentialForm:Password:isError("error.stringcompare") OR CredentialForm:RetypedPassword:isError("error.stringcompare")#">
+								<p><istext key="checkout.account.password.not_match.error" /></p>
+							</isif>
+							<isif condition="#CredentialForm:Password:isError("invalid.password")#">
+								<p><istext key="account.form.invalid.error" /></p>
+							</isif>
+							<isif condition="#CredentialForm:Password:isError("error.required") OR CredentialForm:RetypedPassword:isError("error.required")#">
+								<p><istext key="error.required" /></p>
+							</isif>
+						</div>
+					</isif>
+					<!--- Should never occur - KnownEmail should be set instead --->
+					<isif condition="#(isDefined(ERROR_User) AND (ERROR_User EQ 'LoginAlreadyInUse')) OR (CredentialForm:Login:isInvalid)#">
+						<div role="alert" class="alert alert-danger">
+							<isif condition="#CredentialForm:Login:isInvalid#">
+								<p><istext key="checkout.account.email.invalid.error" /></p>
+							<iselse>
+								<p><istext key="checkout.account.email.already_exist.error" /></p>
+							</isif>
+						</div>
+						<div class="form-group">
+							<label for="email" class="control-label"><istext key="checkout.account.email.label" /></label>
+							<input autocomplete="off" 
+								id="email" 
+								name="<isprint value = "#CredentialForm:Login:QualifiedName#">"
+								class="form-control<isif condition="#(CredentialForm:Login:isInvalid) OR (isDefined(ERROR_User) AND (ERROR_User EQ 'LoginAlreadyInUse'))#"> has-error</isif>" 
+								size="18" 
+								type="text" 
+								<isif condition="#CredentialForm:isInvalid OR isDefined(ERROR_User)#"> 
+									value="<isprint value="#CredentialForm:Login:FormattedValue#">"
+								</isif>
+							/>
+
+						</div>
+						
+					<!---Display email address --->
+					<iselse>
+						<div class="form-group">
+							<label for="email"><istext key="checkout.account.email.label" />:</label>
+							<strong><isprint value="#OrderBO:NotificationEmailAddress#"></strong>
+						</div>
+					<isif condition="#UserLoginType EQ 'username'#">
+						<div class="form-group">
+							<label for="login" class="control-label"><istext key="account.login.username.label" /></label>
+							<input autocomplete="off" class="form-control" type="text"
+								required
+								id="<isprint value = "#CredentialForm:Login:QualifiedName#">"
+								name="<isprint value = "#CredentialForm:Login:QualifiedName#">"
+								value="<isprint value="#CredentialForm:Login:FormattedValue#">"
+								maxlength="<isprint value="#LoginPreferenceReader:LoginMaxLength#">"
+								data-bv-notempty-message="<istext key="account.login.username.error.required"/>"
+								<isif condition="#LoginPreferenceReader:LoginMinLength > 0#">
+									data-bv-stringlength="true"
+									data-bv-stringlength-min="<isprint value="#LoginPreferenceReader:LoginMinLength#">"
+									data-bv-stringlength-message="<istext key="account.register.username.error.length" parameter0="#LoginPreferenceReader:LoginMinLength#"/>"
+								</isif>
+								<isif condition="#isDefined(LoginPreferenceReader:LoginExpression)#">
+									data-bv-regexp="true"
+									data-bv-regexp-regexp="<isprint value="#LoginPreferenceReader:LoginExpression#">"
+									data-bv-regexp-message="<istext key="account.register.username.error.regexp"/>"
+								</isif>
+							/>
+							<input 
+								type="hidden" 
+								name="<isprint value = "#CredentialForm:Email:QualifiedName#">"
+								value="<isprint value="#OrderBO:NotificationEmailAddress#">"/>
+						</div>
+						
+					<iselse>
+						<input 
+						type="hidden" 
+						name="<isprint value = "#CredentialForm:Login:QualifiedName#">"
+						value="<isprint value="#OrderBO:NotificationEmailAddress#">"/>
+					</isif>
+					
+					</isif>
+					<input type="hidden" name="OrderID" value="<isprint value="#OrderBO:ID#">"/>
+
+					<!--- Start: Password --->
+					<isPasswordInput Field="#CredentialForm:Password#"
+									LabelKey="checkout.account.password.label"
+									Domain="#CurrentOrganization:Domain#"
+									ConfirmationField="#CredentialForm:RetypedPassword#">
+					<!--- End: Password --->
+
+					<button type="submit" class="btn btn-primary" name="register"><istext key="checkout.account.signup.button.label" /></button>
+				</isform>
+			</div>
+			
+			<h5><istext key="checkout.account.create.benefit.text" /></h5>
+			<ul class="">
+				<li><istext key="checkout.account.create.benefit1.text" /></li>
+				<li><istext key="checkout.account.create.benefit2.text" /></li>
+				<li><istext key="checkout.account.create.benefit3.text" /></li>
+				<li><istext key="checkout.account.create.benefit4.text" /></li>
+			</ul>
+		<!--- User is not logged in but has just registered --->
+		<iselseif condition="#isDefined(hasRegistered)#">
+			<h3><istext key="checkout.account.email.registered.heading" /></h3>
+			<p><istext key="account.customer.approval.message" encoding="off" parameter0="#encodeValue(NonApprovedUserBO:Email)#" parameter1="#encodeValue(Repository:DisplayName)#"/></p>
+		<!--- User is not logged in but has checked out with a registered email address --->
+		<iselse>
+			<h3><istext key="checkout.account.email.registered.heading" /></h3>
+			<istext key="checkout.account.email.registered.text" />&nbsp;<span class="text-nowrap"><a href="#URL(Action('ViewUserAccount-Start'), Parameter('InitialLogin', OrderBO:NotificationEmailAddress))#"><istext key="checkout.account.email.registered.link" /></a>.</span>
+		</isif>
+		
+	<!--- User is logged in --->
+	<iselseif condition="#not(isDefined(RegistrationSuccessful))#">
+		<h3><istext key="checkout.account.email.registered.heading" /></h3>
+		<istext key="checkout.account.email.registered.text" />&nbsp;<span class="text-nowrap"><a href="#URL(Action('ViewUserAccount-Start'))#" data-testing-id="myaccount-link"><istext key="checkout.account.email.registered.link" /></a>.</span>
+	</isif>
+</div>

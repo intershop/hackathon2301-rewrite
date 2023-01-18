@@ -1,0 +1,92 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules"/>
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.giftcard_balance.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="GIFTCARDBALANCELOOKUP">
+		</div>
+		
+		<!--- Main content --->
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<h1><istext key="account.giftcard_balance.heading"></h1>
+			
+			<isform class="form-horizontal" action="#URLEX(SecureURL,'',Action('ViewGiftCertificatesBalance-Dispatch'))#" method="post">
+				
+				<isif condition="#GiftCardTenderBalance:Status == 0#">
+					<div class="list-body">
+						<div class="list-item-row">
+							<div class="list-item col-sm-8 col-xs-9 ">
+								<istext key="account.giftcard_balance_info" parameter0="#Repository:DisplayName#" parameter1="#getValue(Date,DATE_SHORT)#">
+								
+								<isif condition="#GiftCardTenderBalance:Enabled NE 'true'#">
+									<br/><istext key="account.giftcard_balance_card_disabled">
+								</isif>
+							</div>
+							<div class="list-item col-sm-4 col-xs-3 column-price">
+								<b><isprint value = "#GiftCardTenderBalance:TenderBalance#" style="MONEY_LONG"></b>
+							</div>
+						</div>
+					</div>
+
+				<iselse>
+					<div class="section">
+						<p><istext key="account.giftcard_balance_card_helptitle.msg" encoding="off"/></p>
+						
+						<isif condition="#GiftCertificateBalanceForm:GiftCardNumber:Invalid OR GiftCertificateBalanceForm:GiftPinNumber:Invalid OR isDefined(ErrorBalance)#">
+							<div class="alert alert-danger">
+								<istext key="account.giftcard_balance_errorbalance.msg"/>
+							</div>
+						</isif>
+						
+						<div class="form-group <isif condition="#GiftCertificateBalanceForm:GiftCardNumber:Invalid#">server-error</isif>">
+							<label class="col-sm-4 control-label text-right" for="<isprint value="#GiftCertificateBalanceForm:GiftCardNumber:QualifiedName#">"><istext key="account.giftcard_balance_card_number.label"/></label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control" name="<isprint value="#GiftCertificateBalanceForm:GiftCardNumber:QualifiedName#">" maxlength="11" id="<isprint value="#GiftCertificateBalanceForm:GiftCardNumber:QualifiedName#">" value="<isif condition="#GiftCertificateBalanceForm:Submitted#"><isprint value="#GiftCertificateBalanceForm:GiftCardNumber:Value#"></isif>" />
+							</div>
+						</div>
+						
+						<div class="form-group <isif condition="#GiftCertificateBalanceForm:GiftPinNumber:Invalid#">server-error</isif>">
+							<label class="col-sm-4 control-label text-right" for="<isprint value="#GiftCertificateBalanceForm:GiftPinNumber:QualifiedName#">"><istext key="account.giftcard_balance_card_pin.label"/></label>
+							<div class="col-sm-4">
+								<input autocomplete="off" type="password" class="form-control" name="<isprint value="#GiftCertificateBalanceForm:GiftPinNumber:QualifiedName#">" maxlength="4" id="<isprint value="#GiftCertificateBalanceForm:GiftPinNumber:QualifiedName#">"	value="<isif condition="#GiftCertificateBalanceForm:Submitted#"><isprint value="#GiftCertificateBalanceForm:GiftPinNumber:Value#"></isif>" />
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<div class="col-sm-offset-4 col-sm-3">
+								<input type="hidden" data-form-action="true"/>
+								<button type="submit" value="checkbalance" name="checkbalance" class="btn btn-primary"><istext key="account.giftcard_balance_check_card.button.label"/></button>
+							</div>
+						</div>
+					</div>
+				</isif>
+				
+				
+				<isif condition="#GiftCardTenderBalance:Status == 0#">
+					<input type="hidden" data-form-action="true"/>
+					<button type="submit" class="btn btn-primary" value="checkCard" name="checkCard"><istext key="account.giftcard_balance_other_card.button.label"/></button>
+				<iselse>
+					<h5 class="help-block"><istext key = "account.giftcard_balance_card_name"/></h5>
+					<p class="help-block"><istext key = "account.giftcard_balance_card_helpdetails.msg"/></p>
+					<img src="#WebRoot()#/img/giftcard/gift_card.png"/>
+				</isif>
+			</isform>
+
+		</div>
+	</div>
+</div>

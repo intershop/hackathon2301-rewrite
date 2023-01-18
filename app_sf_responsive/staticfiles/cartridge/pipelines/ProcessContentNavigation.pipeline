@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Create a navigation based on the given pagelets
+@Group Component-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessContentNavigation" type="process">
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="Breadcrumbs"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CreateContentBreadcrumbs0"/>
+    <parameters name="RootID" type="java.lang.String" optional="true"/>
+<!--The localization this breadcrumb is rendered with-->
+    <parameters name="Locale" type="com.intershop.beehive.core.capi.localization.LocaleInformation"/>
+<!--Entrypoint of the current pagelet-->
+    <parameters name="PageletEntryPointID" type="java.lang.String"/>
+    <parameters name="Request" type="com.intershop.beehive.core.capi.request.Request"
+        optional="true"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateContentBreadcrumbs0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateContentBreadcrumbs.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="RootPageID" objectPath="RootID"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+<!--breadcrumb level 0 entry point reference-->
+    <returnValues name="EntryPoint0" type="java.lang.String" optional="true"/>
+<!--breadcrumb level 1 entry point reference-->
+    <returnValues name="EntryPoint1" type="java.lang.String" optional="true"/>
+<!--breadcrumb level 2 entry point reference-->
+    <returnValues name="EntryPoint2" type="java.lang.String" optional="true"/>
+<!--breadcrumb level 3 entry point reference-->
+    <returnValues name="EntryPoint3" type="java.lang.String" optional="true"/>
+<!--breadcrumb level 4 entry point reference-->
+    <returnValues name="EntryPoint4" type="java.lang.String" optional="true"/>
+<!--breadcrumb label for link on level 0 -->
+    <returnValues name="Text0" type="java.lang.String" optional="true"/>
+<!--breadcrumb label for link on level 1-->
+    <returnValues name="Text1" type="java.lang.String" optional="true"/>
+<!--breadcrumb label for link on level 2-->
+    <returnValues name="Text2" type="java.lang.String" optional="true"/>
+<!--breadcrumb label for link on level 3-->
+    <returnValues name="Text3" type="java.lang.String" optional="true"/>
+<!--breadcrumb label for link on level 4-->
+    <returnValues name="Text4" type="java.lang.String" optional="true"/>
+<!--Appendix-->
+    <returnValues name="TrailText" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="ContentNavigationTree"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CreateContentNavigationTree0"/>
+    <parameters name="Depth" type="java.lang.Integer" optional="true"/>
+    <parameters name="Locale" type="com.intershop.beehive.core.capi.localization.LocaleInformation"/>
+    <parameters name="PageletEntryPointID" type="java.lang.String" optional="true"/>
+    <parameters name="Date" type="java.util.Date" optional="true"/>
+    <parameters name="RootID" type="java.lang.String"/>
+    <parameters name="Request" type="com.intershop.beehive.core.capi.request.Request"
+        optional="true"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateContentNavigationTree0">
+    <configurationValues name="LinkParameterName" value="app_sf_responsive:page.link.pagelet2-Page-Link"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateContentNavigationTree.xml"/>
+    <nodeSuccessors name="next" next="EndNode1"/>
+    <parameterBindings name="MaxDepth" objectPath="Depth"/>
+    <parameterBindings name="RootPageID" objectPath="RootID"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="ContentNavigationTree" type="java.util.List"/>
+    <returnValues name="ContentNavigationTreeHeading" type="java.lang.String"/>
+  </nodes>
+</pipeline:Pipeline>

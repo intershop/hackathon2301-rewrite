@@ -1,0 +1,81 @@
+<!---[Comment]--->
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="store.store_finder.heading" /></h2>
+		</div>
+
+		<div class="modal-body">
+			<p><istext key="store.dialog.message" encoding="off" /></p>
+			<div class="help-block"><istext key="store.store_finder.note" encoding="off" /></div>
+			<isform method="post" class="form-horizontal bv-form" action="#URL(Action('ViewStoreAddresses-Dispatch'), Parameter('AjaxRequestMarker', 'true'))#" name="StoresFinderForm" data-hijax="true">
+			
+				<input type="hidden" data-form-action="true"/>
+				<div class="row">
+					<fieldset class="col-sm-12 col-md-8">
+						<isinclude template="storefinder/inc/StoreSearchForm">
+					</fieldset>	
+				</div>
+				<a class="storesSelectConfirmation" type="hidden" href="#URL(Action('ViewStoreAddresses-ShowConfirmationDialog'))#" data-hijax="true"></a>
+			</isform>
+
+			<!--- Store Finder Search Result --->
+			<isif condition="#isDefined(ListNavigationVO)#">
+				<isif condition="#isDefined(Stores) AND hasElements(Stores) #">
+					<div class="submit_Store">
+							
+							<div class="alert alert-danger" style="display:none">
+								<istext key="store.store_select.error.required" encoding="off" />
+							</div>
+							<div class="row">
+								<isloop iterator="Stores" alias="Store">
+									<div class="store-list-address col-md-4 col-sm-6 col-xs-12">
+										<div class="radio">
+											<label>
+												<input required aria-required="true" type="radio" value="#Store:ID#" name="StoreAddressOption" />
+												<div data-store-id="#Store:ID#" data-store-name="<isprint value="#Store:AddressBO:AddressName#">" data-store-address="<isprint value="#Store:AddressBO:Street#">&nbsp;<isprint value="#Store:AddressBO:Street2#">">
+													<isaddress address="#Store:AddressBO#">
+												</div>
+											</label>
+										</div>
+									</div>
+								</isloop>
+							</div>
+							<div class="row">
+								<isif condition="#ListNavigationVO:PageCount >1#">
+									<div class="pagination clearfix col-xs-12">
+										<ismappagination 
+											pipeline="#ListNavigationVO:HandlerPipeline.'-Paging'#"
+											params="#ListNavigationVO:GenericHandlerPipelineParams#"
+											itemcount="#ListNavigationVO:ElementCount#"
+											currentpage="#ListNavigationVO:CurrentPage#"
+											pagecount="#ListNavigationVO:PageCount#"
+											hijax="true"
+										>
+									</div>
+								</isif>
+							</div>
+					</div>
+				<iselse>
+					<div class="help-block">
+						<istext key="store.dialog.no_search_results.text" encoding="off" />
+					</div>
+				</isif>
+			</isif>	
+		</div>
+		
+		<div class="modal-footer">
+			<div class="form_group">
+				<isif condition="#isDefined(ListNavigationVO)#">
+					<button type="submit" class="btn btn-primary selectStore" name="selectAddress"><istext key="store.dialog.button.ok" encoding="off" /></button>
+				</isif>
+				<button type="button" data-dismiss="modal" name="cancel" class="btn btn-default" ><istext key="store.dialog.button.cancel" encoding="off" /></button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,8 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(TaxServiceUnavailableError) OR 
+			(isDefined(BasketValidationResults) AND hasElements(BasketValidtionResults:getParameterValues("TaxServiceUnavailableError")))#">
+	<div role="alert" class="alert alert-danger">
+		<p><istext key="checkout.ts.error" /></p>
+	</div>
+</isif>

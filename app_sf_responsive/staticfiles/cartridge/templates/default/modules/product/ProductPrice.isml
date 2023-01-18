@@ -1,0 +1,133 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT((ProductBO:isEndOfLife) OR (ProductBO:isLastOrderDate))#">
+	
+	<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+	<isCurrentUserBO currentuserbo="UserBO">
+	<isGetProductPriceContext CustomerBO="#CustomerBO#" UserBO="#UserBO#" AddressSpecificPrice="true" ProductPriceContext="ProductPriceContext">
+	
+	<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+	<isset name="SalePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request"/>
+	<isset name="ListPrice" value="#ProductPrice:Price("ListPrice", Currency, ProductPriceContext)#" scope="request"/>
+	
+	
+	<!---
+	-- The following logic determines whether or not this product has a sale
+	-- price and will be showing the sale price component.  Since the sale
+	-- prices exist in the product object regardless of whether the item is on
+	-- sale, complex logic is necessary to discover whether certain sale prices
+	-- are less than certain list prices, accounting for the fact that any or
+	-- all of these variables may not actually exist. The end result is that
+	-- #finalPrice# will be 1 if the list price is the final product price, or
+	-- 0 if the final product price is the sale price.
+	--->
+	<isset name="finalPrice" value="#1#" scope="request"/>
+	<isset name="greaterPrice" value="#0#" scope="request"/>
+	
+	<isif condition="#ShowInformationalPrice EQ "true"#">
+		<isset name="greaterPrice" value="#1#" scope="request"/>
+		<isif condition="#ListPrice:Price:Available#"> <!--- skip comparison against prices that are invalid --->
+			<isif condition="#ListPrice:PriceGreaterThan(SalePrice)#">
+				<isset name="finalPrice" value="#0#" scope="request"/>
+				<isset name="greaterPrice" value="#0#" scope="request"/>
+			<iselse>
+				<isif condition="#NOT SalePrice:PriceGreaterThan(ListPrice)#"> <!-- Determines if the SalePrice is equal to the Comparable Price Type -->
+					<isset name="greaterPrice" value="#0#" scope="request"/>
+				</isif>
+			</isif>
+		</isif>
+	</isif>
+	
+	<div class="current-price <isif condition="#finalPrice EQ 0#"> sale-price<iselseif condition="#greaterPrice EQ 1#"> sale-price-higher</isif>" data-testing-id="current-price">
+		<isif condition="#(SalePrice:Range) AND NOT(SalePrice:PriceRange:MinimumPrice:Equal(SalePrice:PriceRange:MaximumPrice))#">
+			<istext key="product.price.salePriceMinMax.text" parameter0="#getValue(SalePrice:PriceRange:MinimumPrice)#" parameter1="#getValue(SalePrice:PriceRange:MaximumPrice)#"/>
+		<iselseif condition="#SalePrice:Price:Available AND (finalPrice EQ 0)#">
+			<istext key="product.price.salePricePrefix.text" parameter0="#getValue(SalePrice:Price)#"/>
+		<iselseif condition="#SalePrice:Price:Available#">
+			<istext key="product.price.salePriceFallback.text" parameter0="#getValue(SalePrice:Price)#"/><!--- fallback sale price--->
+		<iselse>
+			<istext key="product.price.na.text" />
+		</isif>
+		
+		<isif condition="#RichSnippetsEnabled EQ 'true'#">
+			<isif condition="#(SalePrice:Range) AND NOT(SalePrice:PriceRange:MinimumPrice:Equal(SalePrice:PriceRange:MaximumPrice))#">
+				<isif condition="#SalePrice:PriceRange:MinimumPrice:Available#">
+					<meta itemprop="price" content="<isprint value="#SalePrice:PriceRange:MinimumPrice:Value#" formatter="#.00" symbols="DecimalSeparator=." />" />
+					<meta itemprop="priceCurrency" content="#getValue(SalePrice:PriceRange:MinimumPrice:CurrencyMnemonic)#"/>
+				</isif>
+			<iselse/>
+				<isif condition="#SalePrice:Price:Available#">
+					<meta itemprop="price" content="<isprint value="#SalePrice:Price:Value#" formatter="#.00" symbols="DecimalSeparator=." />" />
+					<meta itemprop="priceCurrency" content="#getValue(SalePrice:Price:CurrencyMnemonic)#"/>
+				</isif>
+			</isif>
+		</isif>
+		<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+	</div>
+	<isif condition="#hasElements(SalePrice:ScaledPrices)#">
+		<div class="scale-prices">
+			<span data-testing-id="scale-prices">
+				<isloop iterator="SalePrice:ScaledPrices" alias="Scale">
+					<isif condition="#Scale:Quantity:Value > 1#">
+						<istext key="product.price.scalePrice"
+							parameter0="#Scale:Quantity:Value#"
+							parameter1="#getValue(Scale:TotalPrice)#"
+							parameter2="#getValue(Scale:Price)#" >
+						<br />
+					</isif>
+				</isloop>
+			</span>
+		</div>
+	</isif>
+	
+	<!--- An Informational Price (the List Price) is shown if it is higher than the Sale Price --->
+	<isif condition="#ShowInformationalPrice EQ "true"#">
+		<isif condition="#ListPrice:Price:Available#">
+			<isset name="displayCondition" value="true" scope="request"/>
+			<!--- determine if the price should be shown --->
+			<isif condition="#SalePrice:Price:Available#"> <!--- skip comparison against prices that are invalid --->
+				<isif condition="#NOT ListPrice:PriceGreaterThan(SalePrice)#">
+					<isset name="displayCondition" value="false" scope="request"/>
+				</isif>
+			</isif>
+			<isif condition="#displayCondition EQ 'true'#">
+				<div class="old-price" data-testing-id="old-price">
+					<isif condition="#(ListPrice:Range) AND NOT(ListPrice:PriceRange:MinimumPrice:Equal(ListPrice:PriceRange:MaximumPrice))#">
+						<istext key="product.price.listPriceMinMax.text" parameter0="#getValue(ListPrice:PriceRange:MinimumPrice)#" parameter1="#getValue(ListPrice:PriceRange:MaximumPrice)#"/>
+					<iselseif condition="#ListPrice:Price:Available#">
+						<isif condition="#ProductBO:isProductMaster#">
+							<istext key="product.price.listPriceFallback.text" parameter0="#getValue(ListPrice:PriceRange:MinimumPrice)#"/><!--- fallback sale price--->
+						<iselse>
+							<istext key="product.price.listPriceFallback.text" parameter0="#getValue(ListPrice:Price)#"/><!--- fallback sale price--->
+						</isif>
+					<iselse>
+						<istext key="product.price.na.text" />
+					</isif>
+				</div>
+			</isif>
+		</isif>
+	</isif>
+	
+	<!--- A Price Saving is shown if the Informational Price (the List Price) is higher then the Sale Price --->
+	<isif condition="#ShowPriceSavings EQ "true"#">
+		<isif condition="#ListPrice:Price:Available#">
+			<isif condition="#SalePrice:PriceLowerThan(ListPrice)#">
+				<isMoneyCalculator method="subtract" operand1="#ListPrice:Price#" operand2="#SalePrice:Price#" result="ActualPriceTypeSavings">
+				<isif condition="#NOT isDefined(Savings)#">
+					<isset scope="request" name="Savings" value="#ActualPriceTypeSavings#">
+				<iselse>
+					<isMoneyComparator method="lessThan" operand1="#Savings#" operand2="#ActualPriceTypeSavings#" comparisonresult="GreaterSavingFound">
+					<isif condition="#GreaterSavingFound#">
+						<isset scope="request" name="Savings" value="#ActualPriceTypeSavings#">
+					</isif>
+				</isif>
+				<span class="price-savings">
+					<isif condition="#isDefined(Savings)#">
+						<istext key="product.price.savingsFallback.text" parameter0="#getValue(Savings)#"/>
+					</isif>
+				</span>
+			</isif>
+		</isif>
+	</isif>
+	
+</isif>

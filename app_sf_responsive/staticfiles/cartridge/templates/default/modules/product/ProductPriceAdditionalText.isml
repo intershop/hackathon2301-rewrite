@@ -1,0 +1,15 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT(ProductBO:isEndOfLife)#">
+	<isCurrentUserBO currentuserbo="UserBO">
+	<isset name="PriceDisplayPreferences" value="#UserBO:Extension("PricingPreferences"):PriceDisplayPreferences#" scope="request"/>
+	<isif condition="#isDefined(PriceDisplayPreferences:AdditionalText) AND (PriceDisplayPreferences:AdditionalText NE '') AND isDefined(ProductBO:TaxClassID) AND (ProductBO:TaxClassID NE '') AND ((ProductBO:TaxClassID NE 'NoTax'))#">
+		<isif condition="#SetAsDictionaryValue EQ 'true'#">
+			<isset name="ProductPriceAdditionalText" value="#PriceDisplayPreferences:AdditionalText#" scope="request"/>
+		<iselse/>
+			<span class="price-note">
+				&nbsp;<isprint value="#PriceDisplayPreferences:AdditionalText#">
+			</span>
+		</isif>
+	</isif>
+</isif>

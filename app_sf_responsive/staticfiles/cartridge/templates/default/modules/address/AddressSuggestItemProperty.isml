@@ -1,0 +1,6 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#isDefined(highlighted) AND (highlighted EQ 'true')#">
+	<strong class="text-danger"><isprint value="#text#"> </strong>
+<iselse>
+	<span><isprint value="#text#"> </span>
+</isif>	

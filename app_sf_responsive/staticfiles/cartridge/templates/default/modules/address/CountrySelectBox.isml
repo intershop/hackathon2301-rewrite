@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import="com.intershop.component.foundation.capi.localization.LocalizedCountryNamesProvider"%>
+<%@page import="com.intershop.beehive.core.capi.naming.NamingMgr"%>
+<%@page import="java.util.Locale"%>
+<%@page import="java.util.Map"%>
+<%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+
+	String country = (String)dict.get("countrycode");
+
+    // if 'All' selected to not use it with the method getCountryNamesAndCodes
+    // otherwise it will be add to the countries map
+    if ((country != null) && ("All".equals(country)))
+    {
+        country = null;
+    }
+
+	LocalizedCountryNamesProvider namesProvider 
+                = NamingMgr.getProvider(LocalizedCountryNamesProvider.class);
+
+	Map<String,String> countries = namesProvider.getCountryNamesAndCodes((String)country);
+	dict.put("Countries", countries);
+%>
+
+	<select 
+		aria-required="true" 
+		data-validate="required" 
+		data-validate-error-message="<istext key="store.country.error.required">"
+		name="<isprint value="#formparameter#"/>" 
+		id="<isprint value="#formparameter#"/>" 
+		size="1" 
+		class="form-control"
+		<isif condition="#reloadonchange EQ 'true'#">onchange="this.form.submit();"</isif> 
+	>
+		<isif condition="#('' EQ countrycode) OR (NOT isDefined(countrycode))#">
+			<option value="" selected="selected" disabled><istext key="account.option.select.text" /></option>
+		</isif>
+		<isif condition="#isDefined(showalloption) AND (lcase(showalloption) EQ 'true')#">
+			<option value="All"<isif condition="#(countrycode EQ 'All')#"> selected = "selected"</isif>><istext key="account.option.select_all.text" /></option>
+		</isif>
+		<isloop iterator="Countries:EntrySet" alias="Country">
+			<option value="<isprint value="#Country:Value#">"<isif condition="#(Country:Value EQ countrycode)#"> selected = "selected"</isif> >
+				<isprint value="#Country:Key#">
+			</option>
+		</isloop>
+	</select>
+

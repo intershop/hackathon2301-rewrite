@@ -1,0 +1,20 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#CurrentSession:isLoggedIn#">
+	<iscache type="forbidden" />
+	<a class="my-account-link" href="#URLEX(SecureURL,'',Action('ViewUserAccount-Start'))#" data-testing-id="link-myaccount">
+		<span class="glyphicon-user glyphicon glyphicon-header-icon"></span>
+		<isif condition="#isDefined(CurrentUser:Profile:DataSheet:LastName) AND (CurrentUser:Profile:DataSheet:LastName NE '')#">
+			<span class="hidden-xs login-name"><isprint value="#CurrentUser:Profile:DataSheet:FirstName#"/> <isprint value="#CurrentUser:Profile:DataSheet:LastName#"/></span>
+		</isif>
+		<span class="hidden-xs"><istext key="account.login_status.myaccount.link"/></span>
+	</a>
+	<span class="hidden-xs seperator">&#124; </span>
+	<a class="my-account-link my-account-logout" href="#URLEX(SecureURL,'',Action('ViewUserAccount-LogoutUser'))#"><span class="hidden-xs"><istext key="account.logout.link"/></span></a>
+<iselse>
+	<iscache type="forbidden" />
+
+	<a class="my-account-links my-account-login" href="#URLEX(SecureURL,'',Action('ViewUserAccount-ShowLogin'))#" rel="nofollow"><span class="glyphicon-user glyphicon glyphicon-header-icon"></span><span class="hidden-xs"><istext key="account.login.link"/></span></a>
+	<span class="hidden-xs seperator">&#124; </span>
+	<a class="ish-siteHeader-myAccountUtilitiesMenu-myAccount-register" href="#URLEX(SecureURL,'',Action('ViewUserAccount-ShowRegister'))#" rel="nofollow"><span class="hidden-xs"><istext key="account.register.link"/></span></a>
+</isif>

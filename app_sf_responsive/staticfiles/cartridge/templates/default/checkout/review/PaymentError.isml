@@ -1,0 +1,71 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(Errors)#">
+	<isset name="CartPayment" value="#CurrentCartBO:Extension("Payment")#" scope="request"/>
+	<div role="alert" class="alert alert-danger">
+		<!--- error payment checkout validation --->
+		<isif condition="#hasLoopElements(CartPayment:PaymentInstrumentInfoBOs)#">
+			<isloop iterator="CartPayment:PaymentInstrumentInfoBOs" alias="PII">
+				<isif condition="#isDefined(Errors:get(PII:PaymentService:ID))#">
+					<isset scope="request" name="ServiceErrors" value="#Errors:get(PII:PaymentService:ID)#">
+					<!---ToDo: payment error messages --->error
+				</isif>
+			</isloop>
+		</isif>
+	</div>
+</isif>
+
+<isif condition="#(isDefined(Reverse_Gift_Card_Creation)) AND (Reverse_Gift_Card_Creation EQ 'true')#">
+	<!---  error creating gift cards, so we had to cancel order (reverse gift card creation, payment, inventory) --->
+	<div role="alert" class="alert alert-danger">
+		<p><istext key="checkout.payment.giftcardcreation.cancel_order"/></p>
+	</div>
+<iselse>
+	<!---  reverse payment authorization error message --->
+	<isif condition="#hasLoopElements(PaymentReduceResultsIterator) OR hasLoopElements(PaymentRefundResultsIterator) OR hasLoopElements(PaymentCancelResultsIterator)#">
+		<!---  payment authorization error with multiple PII, so we had to cancel order (reverse payment, inventory) --->
+		<div role="alert" class="alert alert-danger">
+			<p><istext key="checkout.payment.authorization.cancel_order"/></p>
+		</div>
+	</isif>
+</isif>
+
+<!--- error payment authorization --->
+<isif condition="#hasLoopElements(AuthorizationResultsIterator)#">
+	<isloop iterator="AuthorizationResultsIterator" alias="AuthorizationResult">
+		<isif condition="#(AuthorizationResult:ErrorCode NE '0') OR (AuthorizationResult:AuthStatus NE '0')#">
+			<isif condition="#existsTemplate(AuthorizationResult:PaymentService:Capabilities:AuthorizationErrorTemplate)#">
+				<div role="alert" class="alert alert-danger">
+					<!---ToDo: Authorization error message --->	
+				</div>
+			</isif>
+		</isif>
+	</isloop>
+</isif>
+
+<!---  error payment reduce processing --->
+<isif condition="#hasLoopElements(PaymentCancelResultsIterator)#">
+	<isloop iterator="PaymentCancelResultsIterator" alias="PaymentCancelResult">
+		<div role="alert" class="alert alert-danger">
+			<!---ToDo: Cancel error message --->
+		</div>
+	</isloop>
+</isif>
+
+<!---  error payment reduce processing --->
+<isif condition="#hasLoopElements(PaymentReduceResultsIterator)#">
+	<isloop iterator="PaymentReduceResultsIterator" alias="PaymentReduceResult">
+		<div role="alert" class="alert alert-danger">
+			<!---ToDo: Reduce error message --->
+		</div>
+	</isloop>
+</isif>
+
+<!---  error payment refund processing --->
+<isif condition="#hasLoopElements(PaymentRefundResultsIterator)#">
+	<isloop iterator="PaymentRefundResultsIterator" alias="PaymentRefundResult">
+		<div role="alert" class="alert alert-danger">
+			<!---ToDo: Refund error message --->
+		</div>
+	</isloop>
+</isif>

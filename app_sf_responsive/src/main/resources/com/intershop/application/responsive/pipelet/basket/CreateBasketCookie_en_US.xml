@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DDescriptionContainer dbo.type="com.intershop.beehive.core.rapi.common.DDescriptionContainer">
+<localeId>en_US</localeId>
+<descriptions>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletDesc" id="Pipelet1"  localeId="en_US" >
+<group>Basket</group>
+<description>Creates a cookie for the given basket. Only works if basket expiration is time-based (if default implementation of BasketCookieHandler is used); if not, no cookie will be created. Also requires a request context which supports cookies (i. e. this will not work in REST).
+
+@see BasketCookieHandler#createCookie(BasketBO)</description>
+</DDescription>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletPropertyDesc" id="dictionary-in_BasketBO"  localeId="en_US" >
+<description>Basket</description>
+</DDescription>
+</descriptions>
+</DDescriptionContainer>

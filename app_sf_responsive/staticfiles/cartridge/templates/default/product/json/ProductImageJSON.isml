@@ -1,0 +1,33 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+{
+	"src" : "<isprint value="#ImageBO:EffectiveUrl#" encoding = "JavaScript">",
+	"view" : "<isprint value="#ImageBO:ImageViewBO:ID#" encoding = "JavaScript">",
+	"size" : "<isprint value="#ImageBO:ImageTypeBO:ID#" encoding = "JavaScript">"
+	<isif condition="#isDefined(ImageBO:ActualHeight)#">
+		,"height" : "<isprint value="#ImageBO:ActualHeight#" formatter="#" encoding = "JavaScript">"
+	</isif>
+	<isif condition="#isDefined(ImageBO:ActualWidth)#">
+		,"width" : "<isprint value="#ImageBO:ActualWidth#" formatter="#" encoding = "JavaScript">"
+	</isif>
+	<isif condition="#isDefined(ImageBO:ImageTypeHeight)#">
+		,"imageTypeHeight" : "<isprint value="#ImageBO:ImageTypeHeight#" formatter="#" encoding = "JavaScript">"
+	</isif>
+	<isif condition="#isDefined(ImageBO:ImageTypeWidth)#">
+		,"imageTypeWidth" : "<isprint value="#ImageBO:ImageTypeWidth#" formatter="#" encoding = "JavaScript">"
+	</isif>
+	<isif condition="#ImageBO:PrimaryImage#">
+	,"primary" : true
+	</isif>
+	<isset name="SDIt" value="#ProductBO:Extension("Image"):ImageSetDefinitions#" scope="request" />
+    <isif condition="#hasElements(SDIt)#">
+        ,"sets" : [
+        <isset name="ImageSetID" value="" scope="request"/>
+        <isloop iterator="SDIt" alias="ImageSetDefinition">
+            <isif condition="#ImageSetDefinition:TypeViewAssignmentIncluded(ImageBO:ImageTypeBO, ImageBO:ImageViewBO)#">
+                <isif condition="#ImageSetID NE ''#">,</isif><isset name="ImageSetID" value="#ImageSetDefinition:ID#" scope="request"/>"<isprint value="#ImageSetID#" />"
+            </isif>
+        </isloop>
+        ]
+    </isif>
+}

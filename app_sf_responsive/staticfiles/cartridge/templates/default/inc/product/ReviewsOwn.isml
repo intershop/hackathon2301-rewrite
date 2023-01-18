@@ -1,0 +1,40 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isCurrentUserBO currentuserbo="UserBO">
+<ispipeline 
+	pipeline="ProcessReview-GetReviewsByAuthor"
+	params="#ParamMap(ParamEntry('BusinessObjectApprovedReviewBORepository', ProductBO:Extension("Review")), ParamEntry('UserBO', UserBO))#"
+	alias="ReviewsDict"/>
+<isset name="RichSnippetsEnabled" value="#Repository:Domain:Configuration:String("RichSnippetsEnabled")#" scope="request"/>
+
+<isloop iterator="ReviewsDict:ReviewBOs" alias="ReviewBO">
+	<isset name="ReviewApprovalBO" value="#ReviewBO:Extension("Approval"):ReviewApprovalBO#" scope="request"/>
+	<isset name="ReviewBO" value="#ReviewBO#" scope="request"/>
+	<isbreak>
+</isloop>
+
+<div class="">
+	<!--- the current user has already written a review --->
+	<isif condition="#isDefined(ReviewBO)#">
+		<p><istext key="review.current_user.title"></p>
+		
+		<isif condition="#ReviewApprovalBO:Status:Name EQ 'NEW'#">
+			<p><istext key="review.current_user.review_status.new.text"></p>
+		<iselseif condition="#ReviewApprovalBO:Status:Name EQ 'APPROVED'#">
+			<p><istext key="review.current_user.review_status.approved.text"></p>
+		<iselseif condition="#ReviewApprovalBO:Status:Name EQ 'REJECTED'#">
+			<p><istext key="review.current_user.review_status.rejected.text"></p>
+			<istext key="review.current_user.review_status.rejected.popup.text">
+		</isif>
+		
+		<ISReviewDetails 
+			ReviewBO="#ReviewBO#"
+			DomainName="#CurrentDomain:DomainName#"
+			User="#CurrentUser#"
+			RichSnippetsEnabled="#RichSnippetsEnabled#"
+		>
+	<iselse>
+		<p><istext key="review.review_this_item.text"> <a data-dialog href="#URL(Action('ViewProductReview-NewReview'), Parameter('AjaxRequestMarker', 'true'), Parameter('SKU', ProductBO:SKU))#" rel="nofollow"><istext key="review.review_this_item.link.text"></a></p>
+	</isif>
+</div>

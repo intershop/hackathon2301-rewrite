@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:webform="http://www.intershop.de/webform/2010" name="BootstrapClientValidators">
+  <clientValidators type="com.intershop.application.responsive.capi.address.BootstrapClientValidationBuilder" name="html5">
+    <clientValidatorBindings pattern="string" validator="GlobalValidators-string"/>
+    <clientValidatorBindings pattern="short" validator="GlobalValidators-short"/>
+    <clientValidatorBindings pattern="integer" validator="GlobalValidators-integer"/>
+    <clientValidatorBindings pattern="long" validator="GlobalValidators-long"/>
+    <clientValidatorBindings pattern="float" validator="GlobalValidators-float"/>
+    <clientValidatorBindings pattern="double" validator="GlobalValidators-double"/>
+    <clientValidatorBindings pattern="type='email' data-bv-emailaddress-message='The value is not a valid email address'" validator="GlobalValidators-email"/>
+    <clientValidatorBindings pattern="type='url' data-bv-uri-message='The value is not a valid url'" validator="GlobalValidators-urlstring"/>
+    <clientValidatorBindings pattern="required" validator="GlobalValidators-required"/>
+    <clientValidatorBindings pattern="pattern='${regExp}' data-bv-regexp-message='${LocalizedErrorMessage}'" validator="GlobalValidators-regexp"/>
+    <clientValidatorBindings pattern="minlength='${minLength}' data-bv-stringlength-message='${LocalizedErrorMessage}'" validator="GlobalValidators-minlength"/>
+    <clientValidatorBindings pattern="maxlength='${maxLength}' data-bv-stringlength-message='${LocalizedErrorMessage}'" validator="GlobalValidators-maxlength"/>
+    <clientValidatorBindings pattern="type='range' min='${min}' max='${max}'" validator="GlobalValidators-intrange"/>
+    <clientValidatorBindings pattern="type='range' min='${min}' max='${max}'" validator="GlobalValidators-longrange"/>
+    <clientValidatorBindings pattern="type='range' min='${min}' max='${max}'" validator="GlobalValidators-floatrange"/>
+    <clientValidatorBindings pattern="type='range' min='${min}' max='${max}'" validator="GlobalValidators-doublerange"/>
+    <clientValidatorBindings pattern="datetime day(${day}) time(${time}) dateTimePattern(${dateTimePattern})" validator="GlobalValidators-datetime"/>
+    <clientValidatorBindings pattern="money value(${value}) currency(${currency})" validator="GlobalValidators-money"/>
+    <clientValidatorBindings pattern="moneyrange value(${value}) currency(${currency}) min(${min}) max(${max})" validator="GlobalValidators-moneyrange"/>
+    <clientValidatorBindings pattern="percentage" validator="GlobalValidators-percentage"/>
+    <clientValidatorBindings pattern="quantity value(${value}) unit(${unit})" validator="GlobalValidators-quantity"/>
+    <clientValidatorBindings pattern="date datePattern(${datePattern})" validator="GlobalValidators-date"/>
+    <clientValidatorBindings pattern="datemin minDate(${minDate}) datePattern(${datePattern})" validator="GlobalValidators-datemin"/>
+    <clientValidatorBindings pattern="datemax maxDate(${maxDate}) datePattern(${datePattern})" validator="GlobalValidators-datemax"/>
+    <clientValidatorBindings pattern="dateafter date(${date})" validator="GlobalValidators-dateafter"/>
+    <clientValidatorBindings pattern="stringcompare stringToCompare(${StringToCompare})" validator="GlobalValidators-stringcompare"/>
+    <clientValidatorBindings pattern="dependency paramName(${paramName}) paramValue(${paramValue})" validator="GlobalValidators-dependency"/>
+    <clientValidatorBindings pattern="daterange minYear(${minYear}) maxYear(${maxYear}) minMonth(${minMonth}) maxMonth(${maxMonth}) minDate(${minDate}) maxDate(${maxDate}) minHour(${minHour}) maxHour(${maxHour}) minMinute(${minMinute}) maxMinute(${maxMinute}) minSecond(${minSecond}) maxSecond(${maxSecond})" validator="GlobalValidators-daterange"/>
+  	<clientValidatorBindings pattern="forbiddensymbols data-bv-forbiddensymbols-message='${LocalizedErrorMessage}'" validator="UserValidators-forbiddensymbols"/>
+  </clientValidators>
+</webform:WebForm>

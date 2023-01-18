@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessCashbackNotificationsExtension" overrideMode="Inherit"
+    type="process">
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_t1aN4NkeEemqsbRRq2xQ5A" strict="true"
+      name="NotificationCashbackCharged" callMode="Private">
+    <nodeSuccessors name="next" next="SetDictionaryValue_vXqwUNoaEema4N8m1MAx1g"/>
+    <parameters name="CashbackInformation" type="com.intershop.component.marketing.capi.cashback.CashbackInformation"/>
+    <parameters name="NotificationType" type="com.intershop.component.marketing.capi.cashback.CashbackOrderStatusChangeHandler$NotificationType"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"
+        optional="true"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_vXqwUNoaEema4N8m1MAx1g">
+    <configurationValues name="Name" value="MailTemplate"/>
+    <configurationValues name="Value" value="email/cashback/CashbackChargedEmailNotification"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_28dXcNoaEema4N8m1MAx1g"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_28dXcNoaEema4N8m1MAx1g">
+    <nodeSuccessors name="next" next="DecisionNode_t1efUNkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_t1efUNkeEemqsbRRq2xQ5A"
+      conditionKey="ApplicationBO">
+    <nodeSuccessors name="decision_yes" next="JoinNode_t1iwwNkeEemqsbRRq2xQ5A"/>
+    <nodeSuccessors name="decision_no" next="GetApplicationBO_t1cDENkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_t1iwwNkeEemqsbRRq2xQ5A">
+    <nodeSuccessors name="next" next="GetDomainPreference_t1XxoNkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference_t1XxoNkeEemqsbRRq2xQ5A">
+    <configurationValues name="DefaultPreferenceKey" value="CashbackNotificationEmailFrom"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="GetDomainPreference_wAhHoNkrEemqsbRRq2xQ5A"/>
+<!--@BendPoints 5,11 7,11-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode_wqht8NkrEemqsbRRq2xQ5A"/>
+    <parameterBindings name="PreferenceDomain" objectPath="ApplicationBO:PersistentObject:Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="MailFrom"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference_wAhHoNkrEemqsbRRq2xQ5A">
+    <configurationValues name="DefaultPreferenceKey" value="CashbackNotificationEmailSubject"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode_yCNGANlAEemqsbRRq2xQ5A"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode_wqht8NkrEemqsbRRq2xQ5A"/>
+    <parameterBindings name="PreferenceDomain" objectPath="ApplicationBO:PersistentObject:Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="MailSubject"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_yCNGANlAEemqsbRRq2xQ5A"
+      conditionKey="CashbackInformation:Email" operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_-RPoANk7EemqsbRRq2xQ5A"/>
+<!--@BendPoints 5,17-->
+    <nodeSuccessors name="decision_no" next="ProcessMail_ShusYNlBEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_-RPoANk7EemqsbRRq2xQ5A">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper_gxONwNk9EemqsbRRq2xQ5A"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CustomerBORepository"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_gxONwNk9EemqsbRRq2xQ5A">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper_OJFd0NoVEema4N8m1MAx1g"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBORepository:CustomerBOByCustomerNo(CashbackInformation:CustomerID)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CustomerBO"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_OJFd0NoVEema4N8m1MAx1g">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode_hEKAsNoVEema4N8m1MAx1g"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBO:Extension(&quot;PrivateCustomer&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CustomerBOPrivateCustomerExtension"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_hEKAsNoVEema4N8m1MAx1g"
+      conditionKey="CustomerBOPrivateCustomerExtension">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_zNfMoOnDEemxq68tkiYnRQ"/>
+<!--@BendPoints 2,25 2,31-->
+    <nodeSuccessors name="decision_no" next="JoinNode_qzM44NoVEema4N8m1MAx1g"/>
+  </nodes>
+<!--@Location 1,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_zNfMoOnDEemxq68tkiYnRQ">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="ProcessMail_t1UHQNkeEemqsbRRq2xQ5A"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBOPrivateCustomerExtension:UserBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="UserBO"/>
+  </nodes>
+<!--@Location 1,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ProcessMail_t1UHQNkeEemqsbRRq2xQ5A">
+    <configurationValues name="UseErrorConnector" value="true"/>
+    <configurationValues name="WaitForResult" value="true"/>
+    <pipelet href="enfinity:/bc_mail/pipelets/ProcessMail.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_qzM44NoVEema4N8m1MAx1g"/>
+<!--@BendPoints 4,30-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode_t1kl8NkeEemqsbRRq2xQ5A"/>
+    <parameterBindings name="MailTo" objectPath="UserBO:Email"/>
+  </nodes>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_qzM44NoVEema4N8m1MAx1g">
+    <nodeSuccessors name="next" next="EndNode_t1g7kNkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 1,16-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_t1g7kNkeEemqsbRRq2xQ5A" strict="true"/>
+<!--@Location 3,15-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_t1kl8NkeEemqsbRRq2xQ5A">
+    <nodeSuccessors name="next" next="EndNode_t1nCMNkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 3,16-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_t1nCMNkeEemqsbRRq2xQ5A" name="Error"
+      strict="true"/>
+<!--@Location 2,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ProcessMail_ShusYNlBEemqsbRRq2xQ5A">
+    <configurationValues name="UseErrorConnector" value="true"/>
+    <configurationValues name="WaitForResult" value="true"/>
+    <pipelet href="enfinity:/bc_mail/pipelets/ProcessMail.xml"/>
+<!--@BendPoints 5,31-->
+    <nodeSuccessors name="next" next="JoinNode_qzM44NoVEema4N8m1MAx1g"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode_fafHgNlBEemqsbRRq2xQ5A"/>
+    <parameterBindings name="MailTo" objectPath="CashbackInformation:Email"/>
+  </nodes>
+<!--@Location 3,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_fafHgNlBEemqsbRRq2xQ5A">
+    <nodeSuccessors name="next" next="JoinNode_t1kl8NkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_wqht8NkrEemqsbRRq2xQ5A">
+    <nodeSuccessors name="next" next="JoinNode_fafHgNlBEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO_t1cDENkeEemqsbRRq2xQ5A">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+<!--@BendPoints 5,9-->
+    <nodeSuccessors name="next" next="JoinNode_t1iwwNkeEemqsbRRq2xQ5A"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_xvYOkNoaEema4N8m1MAx1g" strict="true"
+      name="NotificationCashbackVoided" callMode="Private">
+    <nodeSuccessors name="next" next="SetDictionaryValue_2HVtUNoaEema4N8m1MAx1g"/>
+    <parameters name="CashbackInformation" type="com.intershop.component.marketing.capi.cashback.CashbackInformation"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"
+        optional="true"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_2HVtUNoaEema4N8m1MAx1g">
+    <configurationValues name="Name" value="MailTemplate"/>
+    <configurationValues name="Value" value="email/cashback/CashbackVoidedEmailNotification"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 7,5 5,5-->
+    <nodeSuccessors name="next" next="JoinNode_28dXcNoaEema4N8m1MAx1g"/>
+  </nodes>
+</pipeline:Pipeline>

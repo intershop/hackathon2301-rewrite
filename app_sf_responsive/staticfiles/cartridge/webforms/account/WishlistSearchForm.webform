@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="WishlistSearchForm">
+  <forms name="WishlistSearchForm">
+    <parameters xsi:type="webform:FormParameter" optional="true" name="FirstName" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="LastName" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Email" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+    </parameters>
+  </forms>
+</webform:WebForm>

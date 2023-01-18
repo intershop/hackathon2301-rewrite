@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" name="viewcontext.page.category.pagelet2">
+  <contextObjectRelations name="ViewContext" page="true" systemManaged="true" objectType="Category">
+    <callParameterDefinitions name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO" />
+    <callParameterDefinitions name="CatalogBO" type="com.intershop.component.catalog.capi.CatalogBO" />
+    <callParameterDefinitions name="Repository" type="com.intershop.component.mvc.capi.catalog.Repository" />
+    <callParameterDefinitions name="CurrentOrganization" type="com.intershop.component.organization.capi.Organization" />
+    <callParameterDefinitions optional="true" name="ProductBOs" type="java.util.Iterator"/>
+    <callParameterDefinitions optional="true" name="PageNumber" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="PageSize" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="SortingAttribute" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="Action" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="PageableID" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="SearchParameter" type="java.lang.String" />
+    <callParameterDefinitions optional="true" name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"/>
+    <callParameterDefinitions optional="true" name="hasParametricNavigation" type="java.lang.Boolean"/>
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.page.standard.pagelet2-Interface"/>
+    <configurationParameterDefinitions optional="true" name="SubCategoryViewContext" localizable="false" typeReference="bc_pmc:types.pagelet2-ViewContext">
+      <parameterBindings xsi:type="core:ParameterValueBinding" name="ContextObjectRelations" value="app_sf_responsive:viewcontext.page.subCategory.pagelet2-ViewContext" />
+    </configurationParameterDefinitions>
+    <pageletEntryPointPipeline referencedName="ProcessPageViewContextCategory-GetPageletEntryPoint" />
+    <contextType>Category</contextType>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion" name="PageCategory">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.category.pagelet2-Page" />
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:PageEntryPointDefinitionInclusion" name="PageFamily">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:page.family.pagelet2-Page" />
+    </contentEntryPointDefinitionInclusions>
+  </contextObjectRelations>
+</pagelet:PageletModel>

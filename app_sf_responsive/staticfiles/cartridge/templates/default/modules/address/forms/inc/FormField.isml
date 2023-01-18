@@ -1,0 +1,44 @@
+<!---[Comment]--->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<isif condition="#isDefined(formparameter)#">
+	
+	<%@page import="com.intershop.beehive.core.capi.webform.FormParameter" %>
+	<%
+		FormParameter formParameter = (FormParameter) getObject("formparameter");
+	
+		String formID = formParameter.getForm().getID();
+		String messagePrefix = (String) getObject("messageprefix");
+		
+		getPipelineDictionary().put(formID + "KeyPrefix", messagePrefix);
+	%>
+
+	<isif condition="#(NOT isDefined(fieldname)) OR (fieldname EQ '')#"><isset name="fieldname" value="#formparameter:QualifiedName#" scope="request" /></isif>
+	<isif condition="#(NOT isDefined(value)) OR (value EQ '')#"><isset name="value" value="#formparameter:Value#" scope="request" /></isif>
+	<isif condition="#NOT(isDefined(id))#"><isset name="id" value="#formparameter:QualifiedName#" scope="request" /></isif>
+
+	<div class="form-group <isif condition="#isDefined(groupclass)#"><isprint value="#groupclass#"/></isif>">
+		<label class="control-label col-sm-4" for="<isprint value="#id#"/>">
+			<isif condition="#isDefined(label)#">
+				<isprint value="#localizeText(label)#"/>
+				<isif condition="#NOT formparameter:Optional#">
+					<span class="required">*</span>
+				</isif>
+			</isif>
+		</label>
+		<div class="col-sm-8">
+			<input type="text" class="form-control"
+				name="<isprint value="#fieldname#">" 
+				<isif condition="#(id NE '')#">id="<isprint value="#id#">"</isif>
+				<isif condition="#isDefined(value)#">value="<isprint value="#value#"/>"</isif>
+				<isif condition="#isDefined(placeholder)#">placeholder="<isprint value="#placeholder#"/>"</isif>
+				<isprint value="#formparameter:ClientValidationConfig("html5")#" encoding="off"/>
+			>
+			
+			<isif condition="#isDefined(showtooltip) AND (showtooltip EQ 'true')#">
+				<isTooltip linkclass="details-tooltip" linktextkey="#tooltip_linktextkey#" headlinekey="#tooltip_headlinekey#" contentkey="#tooltip_contentkey#">
+			</isif>
+		</div>
+	</div>
+</isif>

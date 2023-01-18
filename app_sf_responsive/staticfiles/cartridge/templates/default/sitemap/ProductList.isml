@@ -1,0 +1,31 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<!--- Navigation Breadcrumbs --->
+<div class="breadcrumbs row">
+	<ISBreadcrumb showhomelink="true" link0="#URLEX(SecureURL,'',Action('ViewSitemap-Start'))#"	text0="#localizeText('sitemap.breadcrumb')#" separatetrailtext="true" trailtext0="#CategoryBO:DisplayName#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<!--- main content --->	
+<div class="col-xs-12 col-sm-9">
+	<h1><isprint value="#CategoryBO:DisplayName#"/></h1>
+	
+	<ul class="sitemap-product-list" data-testing-id="sitemap-product-list">
+		<isloop iterator="ProductBOs" alias="ProductBO" counter="ProductCount">
+			<isif condition="#NOT isDefined(CategoryBO)#">
+				<isset name="CategoryBO" value="#ProductBO:DefaultCatalogCategoryBO#" scope="request"/>
+			</isif>
+			<li><a title="#encodeValue(ProductBO:DisplayName)#" href="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', ProductBO:SKU), Parameter('CategoryName', CategoryBO:Name), Parameter('CatalogID', CategoryBO:CatalogBO:Name))#">#encodeValue(ProductBO:DisplayName)#</a></li>
+		</isloop>
+	</ul>
+</div>
+
+<!--- Marketing slot --->
+<div class="col-xs-12 col-sm-3">
+	<ISMarketingSlot id="sidePanelMarketing">
+</div>

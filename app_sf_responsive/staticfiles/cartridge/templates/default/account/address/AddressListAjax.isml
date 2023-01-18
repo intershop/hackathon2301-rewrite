@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="account/address/AddressList"/>
+
+<isif condition="#((isDefined(AddressCreationResult) AND NOT(AddressCreationResult:Success)) OR isDefined(ErrorCode))#">
+	<script type="text/javascript">
+		<isif condition="#(isDefined(ErrorCode) AND (ErrorCode EQ 'AddressNotFound'))#">
+			var p = $('<p><istext key="account.addresses.edit_address.not_found.error" /></p>');
+			$('.error-message').html(p).show().delay(10000).fadeOut();
+		<iselseif condition="#AddressCreationResult:FailureCode EQ 'DuplicateAddress'#">
+			var p = $('<p><istext key="account.addresses.create_address.duplicate.error" /></p>');
+			$('.info-message').html(p).show().delay(10000).fadeOut();
+		<iselse>
+			var p = $('<p><istext key="#'account.addresses.create_address.'.AddressCreationResult:FailureCode.'.error'#" /></p>');
+			$('.error-message').html(p).show().delay(10000).fadeOut();
+		</isif>
+	</script>
+<iselseif condition="#isDefined(NewAddress) OR isDefined(UpdateAddress)#">
+	<script type="text/javascript">
+		var p = $('<p>' +
+		<isif condition="#isDefined(NewAddress)#">
+			'<istext key="account.addresses.new_address_created.message" />' +
+		<iselseif condition="#isDefined(UpdateAddress)#">
+			'<istext key="account.addresses.update.message" />' +
+		</isif>
+		'</p>');
+		$('.success-message').html(p).show().delay(10000).fadeOut();
+	</script>
+</isif>

@@ -1,0 +1,36 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<!---
+	Returns the UserBO instance representing the current user.
+	
+	Parameters:
+		- currentuserbo:
+			The name of the dictionary key that holds the UserBO.
+	
+	Example:
+		<ISCurrentUserBO
+			currentuserbo="CurrentUserBO">
+--->
+<ismodule template = "modules/customer/CurrentUserBO.isml"
+	strict="true"
+	name="CurrentUserBO"
+	returnattribute="currentuserbo"
+>
+
+<!---
+	Returns the CustomerBO instance representing the current customer.
+	The customer may be undefined if the current user doesn't belong to
+	any customer (e.g. unregistered user).
+	
+	Parameters:
+		- currentcustomerbo:
+			The name of the dictionary key that holds the CustomerBO.
+	
+	Example:
+		<ISCurrentCustomerBO
+			currentcustomerbo="CurrentCustomerBO">
+--->
+<ismodule template = "modules/customer/CurrentCustomerBO.isml"
+	strict="true"
+	name="CurrentCustomerBO"
+	returnattribute="currentcustomerbo"
+>

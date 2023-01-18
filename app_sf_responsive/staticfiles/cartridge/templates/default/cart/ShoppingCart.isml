@@ -1,0 +1,264 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="modules/Modules">
+
+<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+
+<!--- START SHOPPING CART FORM --->
+<isform name="cartForm" method="post" action="#URLEX(SecureURL,'',Action('ViewCart-Dispatch'))#" class="bv-form">
+	<!--- CartReadonly is true, when send per mail or print basket is selected --->
+	<isif condition="#CartReadonly NE 'true'#">
+		<input type="hidden" data-form-action='true' name="submitval"/>
+		
+		<isinclude template="cart/inc/CartNavigationHead">
+	</isif>
+	<!--- BEGIN Line Items Overview--->
+	<div class="row">
+		<div class="col-sm-12 col-md-8">
+			
+			<isif condition="#CartReadonly NE 'true'#">
+				<!---isinclude global error message --->
+				<isShoppingCartGlobalErrorMsg 
+					addToBasketResults="#AddToBasketResults#"
+					removeFromBasketResultsInventory="#RemoveFromBasketResultsByInventory#"
+					removeFromBasketResultsWithoutPrice="#RemovedItemsWithoutPrice#"
+					adjustBasketResults="#AdjustBasketResults#"
+					adjustBasketResultsInventory="#AdjustBasketByInventoryStatus#"
+					updateVariationResults="#UpdateVariationResults#"
+					basketValidationResults="#BasketValidationResults#"
+					orderCreationResult="#OrderCreationResult#"
+				>
+				
+				<isif condition="#isDefined(ERROR_Basket)#">
+					<ul class="list-unstyled alert alert-danger">
+						<isif condition="#(ERROR_Basket EQ 'BasketMaxTotalValue')#">
+							<li><istext key="shopping_cart.max.total.value.error.text1" parameter0="#BasketMaxTotalPrefCurrencyValue#" parameter1="#BasketTotalAmoutDifference#"/></li>
+							<li><istext key="shopping_cart.max.total.value.error.text2" /></li>	
+						</isif>
+						<isif condition="#(ERROR_Basket EQ 'BasketMinTotalValue')#">
+							<li><istext key="shopping_cart.min.total.value.error.text1" parameter0="#encodeValue(BasketMinTotalPrefCurrencyValue)#" parameter1="#encodeValue(BasketTotalAmoutDifference)#"/></li>
+							<li><istext key="shopping_cart.min.total.value.error.text2" /></li>
+						</isif>
+					</ul>
+				</isif>
+				
+				<isif condition="#isDefined(ERROR_Warranty)#">
+					<ul class="list-unstyled alert alert-danger">
+						<li><istext key="shopping_cart.warranty.not_available" /></li>	
+					</ul>
+				</isif>
+			</isif>
+
+			<!--- Payment Error Messages --->
+			<isif condition="#isDefined(Error_Basket_IshPay ) AND (Error_Basket_IshPay EQ 'FastPayGeneralError')#">
+				<div class="alert alert-danger">
+					<istext key="shopping_cart.ishpay.fastpay.error.general1" /><br /><istext key="shopping_cart.ishpay.fastpay.error.general2" />
+				</div>
+			</isif>
+			
+			<isif condition="#isDefined(Warning_Basket_IshPay ) AND (Warning_Basket_IshPay EQ 'FastPayCanceled')#">
+				<div class="alert alert-danger">
+					<istext key="shopping_cart.ishpay.fastpay.warning.canceled" />
+				</div>
+			</isif>
+		
+			<!--- Promotion Message --->
+			<isinclude template="cart/common/DynamicOrderLevelPromotion" dictionary="Dictionary">
+
+			<isinclude extensionpoint="CartAdditionalDataExtensions"/>
+
+			<!--- BEGIN Line Items Overview---> 
+			<div class="list-header hidden-xs">
+				<div class="col-sm-8 col-lg-6 list-header-item list-header-item-descr"><istext key="shopping_cart.product_description.heading" /></div>
+				<div class="hidden-sm hidden-md col-lg-2 list-header-item text-right"><istext key="shopping_cart.qty.heading" /></div>
+				<div class="col-sm-2 list-header-item column-price"><istext key="shopping_cart.price.heading" /></div>
+				<div class="col-sm-2 list-header-item column-price"><istext key="shopping_cart.total.heading" /></div>
+			</div>
+			<div class="list-body">
+				<isset name="BasketBOInventoryExtension" value="#CurrentCartBO:Extension("Inventory")#" scope="request"/>
+				<isset name="InventoryMappings" value="#BasketBOInventoryExtension:InventoryStatusForProductsInWarehouse#" scope="request"/>
+				
+				<isloop iterator="CurrentCartBO:ProductLineItemBOs" alias="PLI" counter="pliIndex">
+					<div class="list-item-row list-item-row-big">
+						<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+						<isset name="PLIAppliedRebate" value="#PLI:Extension("AppliedRebate")#" scope="request"/>
+						
+						<!--- Retrieve adjustments from basket validation that were made for this PLI  --->
+						<isif condition="#hasElements(BasketValidationResults:Adjustments("Products"))#">
+							<isloop iterator="BasketValidationResults:Adjustments('Products')" alias="result">
+								<isif condition="#(result:getParameter("AdjustBasketResult") NE null) AND
+									(result:getParameter("AdjustBasketResult"):ProductLineItem:ID EQ PLI:ID)#">
+										<isset name="AdjustBasketValidationResult" value="#result#" scope="request" />
+								</isif>
+							</isloop>
+						</isif>
+						<isShoppingCartLineItemErrorMsg 
+							productLineItem="#PLI#" 
+							addToBasketResult="#AddToBasketResults:Adjusted:get(PLI:ID)#"
+							adjustBasketResult="#AdjustBasketResults:Adjusted:get(PLI:ID)#"
+							failedAdjustBasketResult="#AdjustBasketResults:Failed:get(PLI:ID)#"
+							adjustBasketResultByInventory="#AdjustBasketByInventoryStatus:Adjusted:get(PLI:ID)#"
+							adjustedUpdateVariationResult="#UpdateVariationResults:Adjusted:get(PLI:ID)#"
+							failedUpdateVariationResult="#UpdateVariationResults:Failed:get(PLI:ID)#"
+							adjustBasketValidationResult="#AdjustBasketValidationResult#"
+							>
+						
+						<!---Product Image --->
+						<div class="col-xs-2 list-item">
+							<a href="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', PLI:ProductSKU))#">
+								<ISProductImage ProductBO="#PLI:ProductBO#" ImageType="S">
+							</a>
+						</div>
+						<div class="col-xs-7 col-sm-6 list-item descr-container">
+								
+							<!---Product Description --->
+							<div class="col-lg-9 list-item">
+							
+								<isset name="InventoryStock" value="#InventoryMappings:get(PLI:ProductRef):InStock#" scope="request"/>
+								<isif condition="#CartReadonly EQ 'true'#">
+									<isPLIDescription BasketBOInventoryExtension="#BasketBOInventoryExtension#" InventoryMappings="#InventoryStock#" index="#pliIndex#" pli="#PLI#" variationattributes="horizontal" showstockinfo="true" editable="false" removable="false" movable="true" showimage="true" showavailability="true" owningdomain="#CurrentOrganization:OwningDomain#" showgiftinginformation="true" loggedin="#CurrentSession:LoggedIn#" showwarranty="true" showshipwindowmessage="true">
+								<iselse>
+									<isPLIDescription BasketBOInventoryExtension="#BasketBOInventoryExtension#" InventoryMappings="#InventoryStock#" index="#pliIndex#" pli="#PLI#" variationattributes="horizontal" showstockinfo="true" editable="true" removable="true" movable="true" showimage="true" showavailability="true" owningdomain="#CurrentOrganization:OwningDomain#" showgiftinginformation="true" loggedin="#CurrentSession:LoggedIn#" showwarranty="true" showshipwindowmessage="true">
+								</isif>
+								
+								<!--- pli promotion messages and free gift --->
+								<isinclude template="checkout/common/PromotionCodeList">
+								
+								<!--- Further Item Description --->
+								<isinclude extensionpoint="CartItemDescriptionExtensions"/>
+							</div>
+									
+							<div class="quantity col-lg-3 list-item text-right">
+								<div class="form-group">
+									<!---Quantity --->
+									<isinclude template="cart/quantity/ProductQuantity">
+								</div>
+							</div>
+						</div>
+								
+						<!---Price --->
+						<div class="col-sm-2 hidden-xs list-item column-price single-price">
+							<isif condition="#PriceDisplayType EQ 'net'#">
+								<isprint value="#PLI:SingleBasePriceNet#">
+							<iselse/>
+								<isprint value="#PLI:SingleBasePriceGross#">
+							</isif>
+						</div>
+						<!---Total --->
+						<div class="col-xs-3 col-sm-2 list-item column-price">
+							<div>
+								<isif condition="#PriceDisplayType EQ 'net'#">
+									<isprint value="#PLI:DiscountedPriceNet#">
+								<iselse/>
+									<isprint value="#PLI:DiscountedPriceGross#">
+								</isif>
+							</div>
+					
+							<isif condition="#PLIAppliedRebate:ItemValueRebatesTotal:Available#">
+								<div class="old-price">
+									<isif condition="#PriceDisplayType EQ 'net'#">
+										<isprint value="#PLI:PriceNet#">
+									<iselse/>
+										<isprint value="#PLI:PriceGross#">
+									</isif>
+								</div>
+							</isif>
+							<isif condition="#PLI:FreeGift#">
+								<div class="list-item-promo"><istext key="checkout.pli.freegift.text" /></div>
+							</isif>
+						</div>
+
+						<isset name="removable" value="true" scope="request">
+						<!--- Warranties --->
+						<isif condition="#PLIWarranty:WarrantyEligible#">
+							<div class="clearfix">
+								<div class="col-xs-7 col-sm-6 col-xs-offset-2 list-item form-inline">
+									<isinclude template="cart/warranty/WarrantySelectionCheckout">
+								</div>
+								<div class="col-sm-2 hidden-xs list-item column-price">
+									<isif condition="#isDefined(PLIWarranty:Warranty)#">
+										<isif condition="#PriceDisplayType EQ 'net'#">
+											<isprint value="#PLIWarranty:Warranty:SingleBasePriceNet#">
+										<iselse>
+											<isprint value="#PLIWarranty:Warranty:SingleBasePriceGross#">
+										</isif>
+									</isif>
+								</div>
+								<div class="col-xs-3 col-sm-2 list-item column-price">
+									<isif condition="#isDefined(PLIWarranty:Warranty)#">
+										<isif condition="#PriceDisplayType EQ 'net'#">
+											<isprint value="#PLIWarranty:Warranty:PriceNet#">
+										<iselse>
+											<isprint value="#PLIWarranty:Warranty:PriceGross#">
+										</isif>
+									</isif>
+								</div>
+							</div>
+						<iselse>
+							<isif condition="#isDefined(PLIWarranty:Warranty:Warranty)#">
+								<div class="clearfix">
+									<div class="col-xs-7 col-sm-6 col-xs-offset-2 list-item form-inline">
+										<isprint value="#PLIWarranty:Warranty:Warranty:DisplayName#">
+										<a href="#URL(Action('ViewWarrantyDetails-Start'), Parameter('SKU', PLIWarranty:Warranty:ProductSKU))#" class="details-link" data-dialog>
+											<istext key="shopping_cart.detail.text" />
+										</a>
+									</div>
+									<div class="col-sm-2 hidden-xs list-item text-right">
+										<isif condition="#isDefined(PLIWarranty:Warranty)#">
+											<isif condition="#PriceDisplayType EQ 'net'#">
+												<isprint value="#PLIWarranty:Warranty:SingleBasePriceNet#">
+											<iselse>
+												<isprint value="#PLIWarranty:Warranty:SingleBasePriceGross#">
+											</isif>
+										</isif>
+									</div>
+									<div class="col-xs-3 col-sm-2 list-item text-right">
+										<isif condition="#isDefined(PLIWarranty:Warranty)#">
+											<isif condition="#PriceDisplayType EQ 'net'#">
+												<isprint value="#PLIWarranty:Warranty:PriceNet#">
+											<iselse>
+												<isprint value="#PLIWarranty:Warranty:PriceGross#">
+											</isif>
+										</isif>
+									</div>
+								</div>
+							</isif>
+						</isif>
+					</div>
+				</isloop>
+			</div>
+			<isif condition="#CartReadonly NE 'true'#">
+				<isif condition="#NOT(isDefined(MoneyValue)) OR (MoneyValue:Value <= CurrentCartBO:DiscountedItemSubtotal:Value)#">
+					<button type="submit" data-testing-id="button-update-cart" class="btn btn-default pull-right" name="update" formnovalidate><istext key="shopping_cart.update.quantity.button.label" /></button>
+				<iselse>
+					<button type="submit" class="btn btn-default pull-right" name="update" disabled formnovalidate><istext key="shopping_cart.update.quantity.button.label" /></button>
+				</isif>
+				<div><isinclude extensionpoint="CartNavigationLinksExtensions"/></div>
+			</isif>
+		</div>
+	
+		<!--- END Line Items Overview --->
+		
+		<div class="col-sm-12 col-md-4 order-summary">
+			<h2><istext key="checkout.order_details.heading" /></h2>
+			
+			<isif condition="#CartReadonly NE 'true'#">
+				<isinclude extensionpoint="CartModulesExtensions"/>
+			</isif>
+			
+			<div class="cost-summary">
+				<isinclude template="cart/common/CostSummary">
+			</div>
+			
+			<!--- Extension point for cost summary box --->
+			<isinclude extensionpoint="OrderSummaryExtensions" />
+			
+			<isif condition="#CartReadonly NE 'true'#">
+				<isinclude template="cart/inc/CartCheckoutButtons">
+			</isif>
+			
+		</div>
+	</div>
+</isform>

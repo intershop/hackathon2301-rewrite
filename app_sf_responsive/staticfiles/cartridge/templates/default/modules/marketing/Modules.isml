@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<!---Contains marketing related application storefront modules.--->
+
+<!---
+ Calculates the time until the next promotion will change its active status
+  depending from the set CurrentSession:CreationTime. Either PromotionProduct
+  or ProductUUID is required.
+ Parameters:
+  - ProductUUID (optional)
+ Example:
+ <ISPromotionISCache productUUID="#productUUID#">
+ --->
+<ismodule strict = "true" 
+ template = "marketing/promotion/PromotionISCache.isml" 
+ name = "PromotionISCache"
+ attribute = "ProductUUID"
+>

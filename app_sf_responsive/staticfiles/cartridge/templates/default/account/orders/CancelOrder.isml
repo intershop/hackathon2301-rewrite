@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- cancel confirmation form --->
+<isif condition="#(OrderBO:Extension("Cancelation"):Cancelable EQ 'true') AND (NOT isDefined(CancellationStatus))#">
+	<isform action="#URL(Action('ViewOrders-Dispatch'))#" method="post" name="CancelOrderForm">
+		<div class="section form-group">
+			<input type="hidden" name="OrderID" value="<isprint value="#OrderBO:ID#">"/>
+			<button name="confirmCancel" type="submit" class="btn btn-default"><istext key="account.orderdetails.cancel.button"/></button>
+			<isTooltip 
+				linkclass="btn btn-link" 
+				linktextkey="account.orderdetails.cancel.tooltip.linktext" 
+				headlinekey="account.orderdetails.cancel.tooltip.headline" 
+				contentkey="account.orderdetails.cancel.tooltip.content" 
+				contenttype="html"
+				placement="bottom"
+			>
+		</div>
+	</isform>
+</isif>

@@ -1,0 +1,75 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+<isinclude template="modules/captcha/Modules">
+<isset name="InventoryStatus" value="#ProductBO:Extension("Inventory"):GetInventoryStatus#" scope="request" />
+
+<h1><isif condition="#RichSnippetsEnabled EQ 'true'#"><span itemprop="name"><isprint value="#ProductBO:Name#"></span><iselse><isprint value="#ProductBO:Name#"></isif></h1>
+
+<div class="product-info">
+
+	<!--- Brand --->
+	<isif condition="#isDefined(ProductBO:ManufacturerName) AND (len(ProductBO:ManufacturerName) > 0)#">
+		<div class="product-brand">
+			<a href="#URL(Action('ViewParametricSearch-SimpleOfferSearch'), Parameter('SearchTerm', ProductBO:ManufacturerName), Parameter('SearchParameter', '&@QueryTerm="' . encodeValue(ProductBO:ManufacturerName, 'url') . '"&@QueryAttribute=ManufacturerName'))#"><isif condition="#RichSnippetsEnabled EQ 'true'#"><span itemprop="brand"><isprint value="#ProductBO:ManufacturerName#"></span><iselse/><isprint value="#ProductBO:ManufacturerName#"></isif></a>
+		</div>
+	</isif>
+	
+	<!--- SKU --->
+	<div class="product-number">
+		<label><istext key="product.itemNumber.label"/></label>
+		<span <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="sku"</isif>><isprint value="#ProductBO:SKU#"></span>
+	</div>
+	
+	<ISProductGiftStatus ProductBO="#ProductBO#">
+	
+	<ISPromotionList ProductBO="#ProductBO#" MaxNumber="5" Locale="#Locale#">
+	
+	<div class="price-container" <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="offers" itemscope itemtype="http://schema.org/Offer"</isif>>
+		<ISProductPrice 
+			ProductBO="#ProductBO#"
+			Currency="#CurrentRequest:Currency#"
+			ShowInformationalPrice="true"
+			RichSnippetsEnabled="#RichSnippetsEnabled#"
+		>
+		
+		<ISProductAvailability ProductBO="#ProductBO#" InventoryStatus="#InventoryStatus#" RichSnippetsEnabled="#RichSnippetsEnabled#">
+	</div>
+	
+	<ISProductShipping ProductBO="#ProductBO#">
+	
+	<isform class="product-form bv-form form-horizontal" name="#'productExpressShopForm_'.ProductBO:SKU#" action="#URLEX(SecureURL,'',Action('ViewCart-Dispatch'))#" method="post">
+		<isif condition="#NOT(ProductBO:isRetailSet)#">
+			<input type="hidden" name="SKU" value="<isprint value="#ProductBO:SKU#">"/>
+		<iselse>
+			<isloop iterator="ProductBO:BundleInformation:BundledProductBOs" alias="RetailSetProduct">
+				<isif condition="#RetailSetProduct:Online#">
+					<input type="hidden" name="SKU" value="<isprint value="#RetailSetProduct:SKU#">"/>
+				</isif>
+			</isloop>
+		</isif>
+		
+		<ISProductVariationSelect ProductBO="#ProductBO#">
+		
+		<ISProductLifecycleStatus ProductBO="#ProductBO#">
+		
+		<ISProductQuantity ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" InventoryStatus="#InventoryStatus#">
+		
+		<isif condition="#(ProductBO:isRetailSet)#">
+			<ISAddToCart ProductBO="#ProductBO#" InventoryStatus="#InventoryStatus#" Currency="#CurrentRequest:Currency#" class="btn-lg btn-block" DataAttributes="data-click-source=RetailSetAddToCart">
+		<iselse>
+			<ISAddToCart ProductBO="#ProductBO#" InventoryStatus="#InventoryStatus#" Currency="#CurrentRequest:Currency#" addToCartBehavior="expresscart" class="btn-lg btn-block">
+		</isif>
+		
+		<ISAddToProductCompare ProductBO="#ProductBO#" class="btn-default btn-block">
+		
+		<ISAddToWishlist ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#" class="btn-default btn-block">
+		
+		<ISAddToProductNotification ProductBO="#ProductBO#" CurrentSession="#CurrentSession#" class="btn-default btn-block">
+		
+		<ISProductWarranty ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#">
+		
+	</isform>
+	
+</div>

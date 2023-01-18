@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/address/forms/inc/Modules">
+
+<isif condition="#isDefined(webform:LastName)#">
+
+	<!--- VALUE : value --->
+	<isif condition="#NOT isDefined(webform:LastName:Value)#">
+		<isif condition="#isDefined(address)#">
+			<isset name="valueLastName" value="#address:LastName#" scope="request" />
+		<iselse>
+			<isset name="valueLastName" value="#user:LastName#" scope="request" />
+		</isif>
+	</isif>
+
+	<isFormField formparameter="#webform:LastName#"
+		label="account.default_address.lastname.label" 
+		messageprefix="#addressKeyPrefix#"
+		value="#valueLastName#"
+	>
+</isif>

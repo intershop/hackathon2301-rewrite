@@ -1,0 +1,81 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false"><%
+%><isif condition="#isDefined(link) AND (link NE '')#"><%
+	
+   /**
+	* Do not add spaces in this module! Otherwise urls will end like this
+	*
+	* <a href=" http://foo.bar ">
+	*
+	* In most browsers this will not work! So be very carefull with this ISML template.
+	* 
+	*	Parameter:	link 			(required)		- URL link
+	* 			    forcesecure 	(optional)		- force usage of secure protocol
+	* 			    forceinsecure 	(optional)		- force usage of insecure protocol
+	* 			    linkparameters	(optional)		- link parameters
+	*
+	*	Hint: If both forcesecure/ forceinsecure parameters are 'true', HTTPS will be used.
+	*		  If neither forcesecure nor forceinsecure are present, no protocol switch will be done.
+	*/
+	
+%>
+<%@page import="com.intershop.sellside.pmc.capi.linkparser.StorefrontLinkParser"%>
+<%@page import="com.intershop.beehive.core.capi.url.URLComposer" %>
+
+
+<%
+    Boolean forceSecure = getObject("forcesecure") == null ? false : (Boolean)getObject("forcesecure");
+	Boolean forceInsecure = getObject("forceinsecure" )== null ? false : (Boolean)getObject("forceinsecure");
+	String href = (String)getObject("link");
+	href = ( null == href ) ? "" : href.trim();
+	// extract anchor
+	int positionOfAnchor = href.lastIndexOf("#");
+	String anchor = "";
+	if(positionOfAnchor >= 0)
+	{
+		// Link contains an anchor, extract it and cut it from the link,
+		// the anchor will be appended later as very last element of the link
+		// again
+		anchor=href.substring(positionOfAnchor); // including the starting symbol #
+		href=href.substring(0,positionOfAnchor); // shortening the href
+	}	
+	// attach link params to url - if any specified
+	String linkparams = (String)getObject("linkparameters");
+	linkparams = ( null == linkparams ) ? "" : linkparams.trim();
+	if (linkparams.length() > 0)
+    {
+	    int lh = href.indexOf("?");
+       	if (lh > 0 ) {						  // if link has a parameter-starter symbol	
+	    	linkparams = "&" + linkparams;    // set & in front of parameterstring if link contains paramter starter symbol 	
+    	}
+    	else {								// set ? if no parameterstarter symbol was found	
+			linkparams = "?" + linkparams;
+		}
+       	href = href.concat(linkparams);
+	} 
+	// append extracted anchor
+	if (anchor.length() > 0) {
+	    href = href.concat(anchor);
+	}
+	
+    String protocol = null;
+    if (Boolean.TRUE.equals(forceSecure))
+    {
+        protocol = "https";
+    }
+    else if (Boolean.TRUE.equals(forceInsecure))
+    {
+        protocol = "http";
+    }
+    
+    // setup LinkParser-component call
+    final URLComposer composer = getTemplateExecutionConfig().getURLComposer();
+    final String objectName = StorefrontLinkParser.class.getSimpleName();
+    final StorefrontLinkParser parser  = getRequest().getExecutionApplication().getApplicationType().getNamedObject(objectName);
+    getPipelineDictionary().put("linkParsed", parser.parse(href, composer, protocol, getTemplateExecutionConfig().getRequest()));
+%>
+<isif condition="#encoding eq 'off'#">
+	<isprint value="#linkParsed#" encoding="off">
+<iselse>
+	<isprint value="#linkParsed#">
+</isif>
+</isif>

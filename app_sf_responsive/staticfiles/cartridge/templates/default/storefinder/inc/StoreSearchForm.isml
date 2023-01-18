@@ -1,0 +1,60 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="form-group">
+	<div><isFieldErrorMessagePlaceholder ext_string_prefix="account.default_address.country" fieldname="#StoreFinderForm:CountryCode#"></div>
+	<label class="control-label col-sm-4" for="<isprint value="#StoreFinderForm:CountryCode:QualifiedName#"/>"><istext key="store.country.label" /></label>
+	<div class="col-sm-8">
+		<isif condition="#StoreFinderForm:isSubmitted#">
+			<isCountrySelectBox showalloption="true" formparameter="#StoreFinderForm:CountryCode:QualifiedName#" countrycode="#StoreFinderForm:CountryCode:Value#">
+		<iselse>
+			<isCountrySelectBox showalloption="true" formparameter="#StoreFinderForm:CountryCode:QualifiedName#" countrycode="All">
+		</isif>
+	</div>
+</div>
+
+<div class="form-group">
+	<label class="control-label col-sm-4" for="<isprint value="#StoreFinderForm:PostalCode:QualifiedName#"/>"><istext key="store.zip_code.label" /></label>
+	<div class="col-sm-8">
+		<input class="form-control"
+			type="text"
+			name="<isprint value="#StoreFinderForm:PostalCode:QualifiedName#"/>"
+			id="<isprint value="#StoreFinderForm:PostalCode:QualifiedName#"/>"
+			value="<isprint value="#StoreFinderForm:PostalCode:Value#"/>"
+		/>
+	</div>
+</div>
+
+<div class="form-group">
+	<label class="control-label col-sm-4" for="<isprint value="#StoreFinderForm:City:QualifiedName#"/>"><istext key="store.city.label" /></label>
+	<div class="col-sm-8">
+		<input class="form-control"
+			type="text"
+			name="<isprint value="#StoreFinderForm:City:QualifiedName#"/>"
+			id="<isprint value="#StoreFinderForm:City:QualifiedName#"/>"
+			value="<isprint value="#StoreFinderForm:City:Value#"/>"
+		/>
+	</div>
+</div>
+
+<isif condition="#isDefined(StoreFinderForm:CountryCode:Value) AND (StoreFinderForm:CountryCode:Value NE '')#">
+	<ispipeline pipeline="ProcessRegion-GetStates" alias="Result" params="#ParamMap(ParamEntry('CountryCode', StoreFinderForm:CountryCode:Value))#"/>
+	<isif condition="#hasElements(Result:StatesProvinces)#">
+		<div class="form-group">
+			<label class="control-label col-sm-4" for="<isprint value="#StoreFinderForm:State:QualifiedName#"/>"><istext key="store.state.label" /></label>
+			<div class="col-sm-8">
+				<select class="form-control" name="<isprint value="#StoreFinderForm:State:QualifiedName#"/>"	id="<isprint value="#StoreFinderForm:State:QualifiedName#"/>" size="1">
+					<option value=""> <istext key="store.state.option.search_all"> </option>
+					<isloop iterator="Result:StatesProvinces" alias="StateProvince">
+						<option value = "<isprint value="#StateProvince:Id#">" <isif condition="#(StateProvince:Id EQ StoreFinderForm:State:Value)#">selected = "selected"</isif>><isprint value="#StateProvince:DisplayName#"></option>
+					</isloop>
+				</select>
+			</div>
+		</div>
+	</isif>
+</isif>
+<div class="form-group">
+	<div class="col-sm-offset-4 col-sm-8">
+		<button class="btn btn-primary" type="submit" name="search"><istext key="store.search.button.label" /></button>
+		<button class="btn btn-default hidden" type="submit" name="reloadStates"></button>
+	</div>
+</div>

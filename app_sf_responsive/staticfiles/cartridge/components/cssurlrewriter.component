@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<components xmlns="http://www.intershop.de/component/2010">
+	
+	<contract name="RegexReplaceConfiguration" class="com.intershop.beehive.core.internal.resource.RegexReplaceConfiguration"/>
+	
+	<implementation name="RegexReplaceConfiguration"
+		implements="RegexReplaceConfiguration"
+		class="com.intershop.beehive.core.internal.resource.RegexReplaceConfiguration" >
+		<requires name="regex" contract="String" cardinality="1..1" />
+		<requires name="replacement" contract="String" cardinality="1..1" />
+	</implementation>
+	
+	<implementation name="RegexReplaceProcessor"
+		implements="ResourceProcessor"
+		class="com.intershop.beehive.core.internal.resource.RegexReplaceProcessor" >
+		<requires name="regexReplaceConfiguration" contract="RegexReplaceConfiguration" cardinality="0..n" />
+	</implementation>
+	
+	<instance name="cssurlrewriter" with="RegexReplaceProcessor" >
+		<fulfill requirement="regexReplaceConfiguration">
+			<instance name="CSSURLRewriteRegex" with="RegexReplaceConfiguration" >
+				<fulfill requirement="regex" value="(((url[\s]*[(][\s]*('|&quot;)?)|(@[Ii][Mm][Pp][Oo][Rr][Tt][\s]('|&quot;)))[\s]*)([^:*&quot;&lt;&gt;|)\s\\/]+[^:*&quot;&lt;&gt;|)\n]*?)([\s]*('|&quot;|(['|&quot;]?[\s]*[)])))" />
+				<fulfill requirement="replacement" value="$1$pathdiv$7$9" />
+			</instance>
+		</fulfill>
+	</instance>
+	
+</components>

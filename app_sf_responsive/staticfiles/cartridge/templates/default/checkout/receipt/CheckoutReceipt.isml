@@ -1,0 +1,184 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="modules/common/Modules">
+
+<isset name="OrderPayment" value="#OrderBO:Extension("Payment")#" scope="request"/>
+<isset name="OrderShippingBucket" value="#OrderBO:Extension("ShippingBucket")#" scope="request"/>	
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#OrderBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<!--- heading --->
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="cart-header">
+	<h1> 
+		<a class="btn-tool pull-right"	href="javascript:window.print()" title="<istext key="checkout.receipt.print.button.label"/>">
+			<span class="glyphicon glyphicon-print"></span>
+		</a>
+		
+		<span class="cart-header-title"><istext key="checkout.receipt.tankyou.message" /></span>
+		<span class="cart-header-note">
+			<istext key="shopping_cart.transaction.text" />&nbsp;
+			<a data-dialog class="details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.safeAndSecure.pagelet2-Include'))#"><istext key="shopping_cart.read_more.link" /></a>
+		</span>
+	</h1>
+</div>
+
+<div data-testing-id="checkout-receipt-page">
+	<div class="row">
+		<div class="col-xs-12 col-md-8">
+			<isif condition="#OrderBO:Status EQ 'PENDING'#">
+				<p class="alert alert-info"><istext key="checkout.receipt.order_pending.message" /></p>
+			</isif>
+			<!--- Receipt message --->
+			<div class="section">
+				<p>
+					<span><istext key="checkout.order.number.label" /></span> <strong data-testing-id="order-document-number"><isprint value="#OrderBO:DocumentNo#"></strong>
+				</p>
+				
+				<p>
+					<isif condition="#(CurrentSession:isLoggedIn)#">
+						<istext key="checkout.receipt.notification.mail.text" parameter0="#encodeValue(OrderBO:UserBO:Email)#" encoding="off"/>
+					<iselse>
+						<istext key="checkout.receipt.notification.mail.text" parameter0="#encodeValue(OrderBO:NotificationEmailAddress)#" encoding="off" />
+					</isif>
+				</p>
+			
+				
+			</div>
+			
+			<isinclude template="cart/ProductIsNotAvailable">
+
+			<!--- b2b: Approval Required, Message to merchant --->
+			<div class="row">
+				<isinclude extensionpoint="CheckoutReceiptStart"/>
+			</div>
+			<div class="row">
+				<isinclude extensionpoint="CheckoutReceiptAdditionalInfoBox"/>
+			</div>
+			
+			<!--- Multiple Bucket --->
+			<isif condition="#OrderShippingBucket:ShippingBuckets:Size > 1#">
+				<div class="row equal">
+					<div class="col-sm-6">
+						<!---Billing Address --->
+						<div class="infobox">
+							<h3><istext key="checkout.address.billing.label" /></h3>
+							<isaddress address="#OrderBO:InvoiceToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<!---show payment details --->	
+						<div class="infobox">
+							<h3><istext key="checkout.widget.payment_method.heading" /></h3>
+							<div>
+								<isPaymentMethodDisplay paymentBOs="#OrderPayment:PaymentBOs#">
+							</div>
+							<isinclude extensionpoint="PaymentInfoExtensions">
+						</div>
+					</div>
+				</div>
+
+				<isloop iterator="OrderShippingBucket:ShippingBuckets" alias="Bucket">
+					<!--- LineItems per bucket --->
+					<isif condition="#NOT((AuthorizationStatus EQ 'Cancel') OR (AuthorizationStatus EQ 'Failure'))#">
+						<isBucketHeader bucket="#Bucket#" bucketnumber="#OrderShippingBucket:ShippingBuckets:Size#">
+					<iselse>
+						<isBucketHeader bucket="#Bucket#" bucketnumber="#OrderShippingBucket:ShippingBuckets:Size#" displaydeliverytime="false">
+					</isif>	
+
+					<div class="row equal">
+						<div class="col-sm-6">
+							<!---Shipping Address --->
+							<div class="infobox">
+								<h3><istext key="checkout.widget.shipping-address.heading" /></h3>
+								<isaddress address="#Bucket:ShipToAddress#" showemail="#Bucket:SelectedShippingMethod:DigitalDelivery#">
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<!---Shipping Method --->
+							<div class="infobox">
+								<h3><istext key="checkout.widget.shipping_method.heading" /></h3>
+								<isinclude template="checkout/common/widgets/ShippingMethodInc">
+							</div>
+						</div>
+					</div>
+
+					<!--- Pack Slip Message --->
+					<isinclude template="checkout/gifting/PackSlipMessageView">
+					
+					<!--- Line Items --->
+					<isinclude template="checkout/review/LineItemsPerBucket">
+
+				</isloop><!--- Bucket loop --->
+			<iselse>
+				<isloop iterator="OrderShippingBucket:ShippingBuckets" alias="Bucket">
+					<div class="row equal">
+						<div class="col-sm-6">
+							<!---Billing Address --->
+							<div class="infobox" data-testing-id='address-slot-invoice-to-address'>
+								<h3><istext key="checkout.address.billing.label" /></h3>
+								<isaddress address="#OrderBO:InvoiceToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<!---Shipping Address --->
+							<div class="infobox" data-testing-id='address-slot-ship-to-address'>
+								<h3><istext key="checkout.widget.shipping-address.heading" /></h3>
+								<isaddress address="#Bucket:ShipToAddress#"  showemail="#Bucket:SelectedShippingMethod:DigitalDelivery#">
+							</div>
+						</div>
+					</div>
+					<div class="row equal">
+						<div class="col-sm-6">
+							<!---Shipping Method --->
+							<div class="infobox">
+								<h3><istext key="checkout.widget.shipping_method.heading" /></h3>
+								<isinclude template="checkout/common/widgets/ShippingMethodInc">
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<!---show payment details --->	
+							<div class="infobox">
+								<h3><istext key="checkout.widget.payment_method.heading" /></h3>
+								<isPaymentMethodDisplay paymentBOs="#OrderPayment:PaymentBOs#">
+							</div>
+						</div>
+					</div>
+					
+					<!---Pack Slip Messages --->
+					<isinclude template="checkout/gifting/PackSlipMessageView">
+					
+					<!--- expected Delivery Time --->
+					<isBucketHeader bucket="#Bucket#" bucketnumber="#OrderShippingBucket:ShippingBuckets:Size#">
+					
+					<!--- Line Items --->
+					<isinclude template="checkout/review/LineItemsPerBucket">
+				</isloop>
+			</isif>	
+		</div>
+
+		<!--- Cost Summary and Create Account Box --->
+		<div class="col-xs-12 col-md-4 order-summary">
+			<h2><istext key="checkout.order_summary.heading" /></h2>
+			<div class="cost-summary">
+				<isinclude template="checkout/common/widgets/CostSummary">
+			</div>	
+			<isinclude template="checkout/common/widgets/CreateAccountBox">
+			<a href="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#"><istext key="checkout.receipt.continue.shopping" /></a>
+		</div>
+	</div>
+</div>
+
+<ISIncludeTrackingTool template="OrderPlaced">
+
+
+
+

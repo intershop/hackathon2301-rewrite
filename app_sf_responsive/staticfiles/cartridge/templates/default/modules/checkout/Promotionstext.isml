@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+	String retName = (String)dict.get("return");
+%>
+
+<!--- takes promotions iterator and displays its Promotion:DisplayNames in a comma separated string --->
+<!---    with localized 'and' before the last element --->
+<isif condition="#isDefined(promotionids) AND hasElements(promotionids) AND isDefined(promotionsmap)#">
+	<isset scope="request" name="TempPromotionText" value="">
+	<isloop iterator="promotionids" alias="promoids" counter="promocount">
+		<isif condition="#isDefined(promotionsmap:get(promoids):Attribute("Title")) AND (promotionsmap:get(promoids):Attribute("Title") NE '')#">
+			<isset scope="request" name="PromoName" value="#replace(promotionsmap:get(promoids):Attribute("Title"),'<[^>]*>','')#">
+		<iselse>
+			<isset scope="request" name="PromoName" value="#promotionsmap:get(promoids):DisplayName(CurrentSession:Locale)#">
+		</isif>
+		<isif condition="#(promocount > 1)#">
+			<isif condition="#hasNext(promoids)#"><isset scope="request" name="TempPromotionText" value="#TempPromotionText.', '#">
+			<iselse><isset scope="request" name="TempPromotionText" value="#TempPromotionText.' '.localizeText('checkout.promotion.common.and.text').' '#"></isif>
+		</isif>
+		<isset scope="request" name="TempPromotionText" value="#TempPromotionText.'"'.PromoName.'"'#">
+	</isloop>
+	<% dict.put(retName, (String)dict.get("TempPromotionText")); %>
+</isif>

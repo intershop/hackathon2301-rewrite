@@ -1,0 +1,25 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isset name="PLIAppliedRebate" value="#PLI:Extension("AppliedRebate")#" scope="request"/>
+
+<!--- PLI Promotion Messages --->
+<isloop iterator="PLIAppliedRebate:AppliedRebates" alias="AppliedRebate">
+	<isif condition="#(NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)) OR (isDefined(PLI:FreeGift))#">
+		<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+			<br />
+			<isset name="PromoTitle" value="#AppliedRebate:RebateBO:PromotionBO:Title(OrderBO:PurchaseLocale)#" scope="request"/>
+			<isif condition="#isDefined(PromoTitle)#">
+				<isHtmlPrint value="#PromoTitle#" mode="storefront">
+			<iselse>
+				<isHtmlPrint value="#AppliedRebate:RebateBO:PromotionBO:DisplayName(OrderBO:PurchaseLocale)#" mode="storefront">	
+			</isif>
+			
+		</isif>
+	</isif>
+</isloop>
+
+<!---Free Gift --->
+<isif condition="#PLI:FreeGift#">
+	<istext key="checkout.pli.freegift.text" /></span>
+</isif>

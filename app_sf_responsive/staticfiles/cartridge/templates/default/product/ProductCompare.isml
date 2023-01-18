@@ -1,0 +1,179 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/Modules">
+<ISIncludeTrackingTool template="Impressions">
+
+<!--- internal module to create the paging buttons if necessary --->
+<ismodule template="product/ProductComparePaging.isml"
+	name="ProductComparePaging"
+	strict="true"
+	attribute="ProductBOs"
+>
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="product-list">
+	<h1>
+		<istext key="product.compare.link" />
+	</h1>
+	<isif condition="#hasElements(ProductBOs)#">
+		<h2>
+			<istext key="product.compare.selected_product_count.message" parameter0="#ProductBOs:ElementCount#" />
+		</h2>
+	</isif>
+	
+	<isif condition="#hasElements(ProductBOs)#">
+		<ISProductComparePaging ProductBOs="#ProductBOs#">
+		
+		<div class="table-responsive table-compare">
+			<table class="table">
+				<tbody>
+					<tr>
+						<th class="col-xs-6 col-sm-3">&nbsp;</th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td class="col-xs-6 col-sm-3">
+								<div class="product-image">
+									<!--- Product Image --->
+									<a href="<isprint value="#URL(Action('ViewProduct-Start'),Parameter('SKU',ProductBO:SKU))#" encoding="off">">
+										<ISProductImage ProductBO="#ProductBO#" ImageType="M">
+									</a>
+									<a class="btn-tool" title="<istext key="product.compare.remove.link" />" href="#URL(Action('ViewProductCompare-Delete'),Parameter('ProductCompareRefID', ProductBO:ProductRef))#">
+										<span class="glyphicon glyphicon-trash"></span>
+									</a>
+								</div>
+								
+								<!--- Product Title --->
+								<div>
+									<a class="product-title" href="#URL(Action('ViewProduct-Start'),Parameter('SKU',ProductBO:SKU))#">
+										<isprint value="#ProductBO:Name#">
+									</a>
+								</div>
+								
+								<!--- SKU --->
+								<div class="product-number">
+									<label><istext key="product.itemNumber.label"/></label>
+									<span <isif condition="#RichSnippetsEnabled EQ 'true'#">itemprop="sku"</isif>><isprint value="#ProductBO:SKU#"></span>
+								</div>
+								
+								<isform action="#URL(Action('ViewProductCompare-Dispatch'))#" method="post" name="#ProductBO:ID#">
+									<input type="hidden" name="SKU" value="<isprint value="#ProductBO:SKU#">" />
+									<input type="hidden" name="PageNumber" value="<isprint value="#ProductBOs:Page#">" />
+									
+									<ISAddToCart ProductBO="#ProductBO#" Currency="#CurrentRequest:Currency#">
+								</isform>
+							</td>
+						</isloop>
+					</tr>
+					<tr>
+						<th><istext key="product.compare.price.label" /></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<ISProductPrice
+									ProductBO="#ProductBO#"
+									Currency="#CurrentRequest:Currency#"
+									ShowInformationalPrice="true"
+								>
+							</td>
+						</isloop>
+					</tr>
+					<tr>
+						<th></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<ISProductAvailability ProductBO="#ProductBO#" RichSnippetsEnabled="#RichSnippetsEnabled#">
+							</td>
+						</isloop>
+					</tr>
+					<tr>
+						<th><istext key="product.compare.ratings.label" /></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<div>
+									<isProductRating
+										ProductBO="#ProductBO#"
+										SimpleRatingView="true"
+									>
+								</div>
+							</td>
+						</isloop>
+					</tr>
+					
+					<tr>
+						<th><istext key="product.short_description.label" /></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<ISHtmlPrint value="#ProductBO:ShortDescription#" mode="storefront">
+							</td>
+						</isloop>
+					</tr>
+					<tr>
+						<th><istext key="product.manufacturer_name.label" /></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<isprint value="#ProductBO:ManufacturerName#">
+							</td>
+						</isloop>
+					</tr>
+					<tr>
+						<th><istext key="product.manufacturer_sku.label" /></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<isprint value="#ProductBO:ManufacturerSKU#">
+							</td>
+						</isloop>
+					</tr>
+					
+					<isloop iterator="CommonAttributeNames" alias="common">
+						<isif condition="#isdefined(AttributeGroup:AttributeDescriptor(common))#">
+							<tr>
+								<th><isprint value="#AttributeGroup:AttributeDescriptor(common):DisplayName#"></th>
+								<isloop iterator="ProductBOs" alias="ProductBO">
+									<td>
+										<isCustomAttribute attributelabel="" attributevalue="#ProductBO:AttributeValue(common)#" attributeseparator="|">
+									</td>
+								</isloop>
+							</tr>
+						</isif>
+					</isloop>
+					
+					<tr>
+						<th><istext key="product.specific_attributes.label" /></th>
+						<isloop iterator="ProductBOs" alias="ProductBO">
+							<td>
+								<isif condition="#isDefined(AttributeGroup)#">
+									<!--- inner loop over all attributes for the current product - if current attribute matches the outer one print it --->
+									<dl class="ish-productAttributes">
+									<isloop iterator="SpecificAttributeNames" alias="specific">
+										<isif condition="#isDefined(AttributeGroup:AttributeDescriptor(specific))
+														AND isDefined(ProductBO:Attribute(specific))
+														AND isDefined(ProductBO:AttributeValue(specific))#">
+											<isCustomAttribute attributelabel="#AttributeGroup:AttributeDescriptor(specific):DisplayName#" attributevalue="#ProductBO:AttributeValue(specific)#" attributeseparator="|">
+										</isif>
+									</isloop>
+									</dl>
+								</isif>
+							</td>
+						</isloop>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<script>
+			var $table = $('.table');
+			var $fixedColumn = $table.clone().insertBefore($table).addClass('fixed-column');
+			
+			$fixedColumn.find('th:not(:first-child),td:not(:first-child)').remove();
+			
+			$fixedColumn.find('tr').each(function (i, elem) {
+				$(this).height($table.find('tr:eq(' + i + ')').height());
+			});
+		</script>
+		
+		<ISProductComparePaging ProductBOs="#ProductBOs#">
+	<iselse>
+		<p><istext key="product.compare.no_product_selected.message" /></p>
+	</isif>
+</div>

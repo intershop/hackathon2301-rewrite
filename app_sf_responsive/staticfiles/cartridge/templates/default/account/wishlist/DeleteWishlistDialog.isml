@@ -1,0 +1,56 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="account.wishlists.delete_wishlist_dialog.header" parameter0="#WishlistBO:Name#"></h2>
+		</div>
+		
+		<isform action="#URL(Action('ViewWishlist-DeleteWishlist'))#" method="post" class="form-horizontal" data-hijax="true">
+			<div class="modal-body">
+				<div class="form-group">
+					<div class="col-xs-12">
+						<p><istext key="account.wishlists.delete_wishlist_dialog.are_you_sure_paragraph"></p>
+						<isif condition="#PreferredWishlistID EQ WishlistBO:ID#"><p><istext key="account.wishlists.delete_wishlist_dialog.preferred_wishlist_paragraph"></p></isif>
+						<input type="hidden" name="WishlistID" value="<isprint value="#WishlistBO:ID#"/>" />
+						
+						<isif condition="#(Wishlists:Size > 1) AND (WishlistBO:WishlistItemBOsCount > 0)#">
+							<fieldset>
+								<div class="checkbox">
+									<label for="<isprint value="#DeleteWishlistForm:MoveItemsBeforeDeletion:QualifiedName#">">
+										<input type="checkbox" value="true" name="<isprint value="#DeleteWishlistForm:MoveItemsBeforeDeletion:QualifiedName#"/>" 
+											id="<isprint value="#DeleteWishlistForm:MoveItemsBeforeDeletion:QualifiedName#"/>" data-toggle="collapse" data-target="#'#'#targetWishlistSection"/>
+										<istext key="account.wishlists.delete_wishlist_dialog.move_products_before_deletion.label">
+									</label>
+								</div>
+							</fieldset>
+							<div id="targetWishlistSection" class="collapse row col-xs-6">
+								<select class="form-control" name="<isprint value="#DeleteWishlistForm:TargetWishlistID:QualifiedName#"/>" >
+									<isloop iterator="Wishlists" alias="CurrentWishlistBO">
+										<isif condition="#WishlistBO:ID NE CurrentWishlistBO:ID#">
+											<option value="<isprint value="#CurrentWishlistBO:ID#">">
+												<isprint value="#CurrentWishlistBO:Name#">
+											</option>
+										</isif>
+									</isloop>
+								</select>
+							</div>
+						</isif>
+					</div>
+				</div>
+				
+			</div>
+			
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" name="DeleteWishlist">
+					<istext key="account.wishlists.delete_wishlist_dialog.delete_button.text">
+				</button>
+				<button type="button" class="btn btn-default" name="cancel" data-dismiss="modal">
+					<istext key="account.wishlists.delete_wishlist_dialog.cancel_button.text">
+				</button>
+			</div>
+		</isform>
+	</div>
+</div>

@@ -1,0 +1,12 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isWishlistPropertiesForm
+	CurrentForm="#EditWishlistForm#"
+	TargetPipeline="ViewWishlist-EditWishlistProperties"
+	SubmitButtonName="EditWishlistProperties" 
+	SubmitButtonText="#localizeText("account.wishlists.edit_wishlist_form.save_button.text")#"
+	TitleText="#localizeText("account.wishlists.edit_wishlist_dialog.header")#"
+	WishlistBO="#WishlistBO#" 
+	PreferredWishlistID="#PreferredWishlistID#"
+>

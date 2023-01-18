@@ -1,0 +1,8 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+"<isprint value="#ProductAttachment:Name#">" : {
+	"name" : "<isprint value="#ProductAttachment:Name#" encoding = "JavaScript">",
+	"value" : "<isprint value="#ProductAttachment:Value#" encoding = "JavaScript">",
+	"description" : "<isprint value="#ProductAttachment:Description#" encoding = "JavaScript">",
+	"type" : "<isprint value="#ProductAttachment:Type#" encoding = "JavaScript">",
+	"key" : "<isprint value="#ProductAttachment:Key#" encoding = "JavaScript">"
+}

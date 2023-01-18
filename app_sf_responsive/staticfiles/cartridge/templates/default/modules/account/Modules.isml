@@ -1,0 +1,352 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false"><!---
+
+	Displays the my account left navigation panel
+
+	Parameters:
+		- selecteditem (optional):
+			String constant to select a menyitem. The following constants are possible:
+			'ORDERS': Orders
+			'WISHLISTS': Wish Lists
+			'GIFTCARDS&CERTIFICATES': Gift Cards & Certificates
+			'GIFTCARDBALANCELOOKUP': Gift Card Balance Lookup
+			'PAYMENT': Saved Payment Information
+			'ADDRESSES': Saved Addresses
+			'PROFILE': Profile Settings
+			'PRODUCTNOTIFICATION': Product Notification
+			
+---><ismodule template = "modules/account/AccountNavigation.isml"
+	name="AccountNavigation"
+	strict="true"
+	attribute="selecteditem"
+><!---
+
+	Displays the my account breadcrumb; All parameters are optional but you should set one parameter at least
+	
+	Parameters:
+		- trailtext (optional)
+			the trail text which is displayed at the end of the breadcrumb
+		- link (optional)
+			url in case you want to show the parent link of a submenu item
+		- text (optional)
+			link text in case you want to show the parent link of a submenu item
+		- link1 (optional)
+			url in case you want to show the parent link of a sub-submenu item
+		- text1 (optional)
+			link text in case you want to show the parent link of a sub-submenu item					
+		- wishlistBO ( optional )
+			The WishlistBO in case of wish list details page
+		- orderBO (optional)
+			The OrderBO in case of order history details page
+			
+---><ismodule template = "modules/account/AccountBreadcrumb.isml"
+	name="AccountBreadcrumb"
+	strict="true"
+	attribute="trailtext"
+	attribute="link"
+	attribute="text"
+	attribute="link1"
+	attribute="text1"
+	attribute="wishlistBO"
+	attribute="orderBO"
+><!---
+
+	SecurityQuestion select box
+
+---><ismodule template = "modules/account/SecurityQuestionSelectBox.isml"
+	name="SecurityQuestionSelectBox"
+	attribute="formparameter"
+	attribute="selectedsecurityquestion"
+	attribute="selectedsecurityquestionvalue"
+><!---
+
+	Add Element SecurityQuestionBox
+
+---><ismodule template = "modules/account/AddSecurityQuestion.isml"
+	name="AddSecurityQuestion"
+	attribute="value"
+	attribute="text"
+	attribute="selectedtext"
+	attribute="selectedvalue"
+	strict="true"
+><!---
+
+	Add Element PreferredLocale select box
+
+	Parameters:
+		- parametername (required):
+			qualified name of webform element
+		- selected (optional):
+			selected localeID
+		- currentlocale(required)
+			the locale used to show the options. Use for example CurrentSession:Locale
+
+---><ismodule template = "modules/account/PreferredLocaleSelectBox.isml"
+	name="PreferredLocaleSelectBox"
+	attribute="parametername"
+	attribute="selected"
+	attribute="currentlocale"
+><!---
+
+	birthday selectBoxes
+
+	Parameters:
+		- formparameter (required):
+			webform element
+		- birthday (optional):
+			birthday
+		- type (optional):
+			"text": input fields
+			"select": selectBoxes
+		- required
+			"true" if the birthday fields are required, "false" otherwise;
+			The default value is "false"
+		- class (optional)
+			additional css class for the input/select field	
+---><ismodule template = "modules/account/BirthdayInput.isml"
+	name="BirthdayInput"
+	attribute="formparameter"
+	attribute="birthday"
+	attribute="type"
+	attribute="required"
+    attribute="class"
+><!---
+
+	Module for rendering of required password input field,
+	that use client side validation against configured in the organization password validation rules(minlength, regex, etc.).
+	The module could render label, input password field, help message and password validation error messages.
+	Optionally module could also render password confirmation input field,
+	which value is validated to be the same as the main password input field.
+
+	Parameters:
+		- Field (required):
+			Webform field object
+		- Domain (required):
+			The domain which password validation configuration settings to use(minlength, regex, etc.)
+		- FieldName (optional):
+			name of the password input field
+		- Class (optional):
+			CSS class attribute of the DIV container wrapping the input form field.
+			If not provided input form field is not wrapped with a DIV container.
+		- ShowHint (optional)
+			if set to "false" no hint message is shown for password input field, otherwise hint message is shown;
+			The default value is "true"
+		- HintClass (optional):
+			CSS class attribute of the DIV container wrapping the hint message for input form field.
+			If not provided hint message is not wrapped with a DIV container.
+		- LabelKey (optional):
+			the localization key for the label.
+			If not provided default "Password" label will be used.
+		- LabelClass (optional):
+			CSS class attribute of the label.
+			If not provided hint message is not wrapped with a DIV container.
+		- ShowRequired (optional):
+			If set to true the required star is displayed next to password input label.
+		- ConfirmationField (optional):
+			Webform field object for password confirmation.
+			If provided an additional password confirmation input field will be rendered.
+		- ConfirmationFieldName (optional):
+			name of the password confirmation input field
+		- ConfirmationLabelKey (optional):
+			the localization key for the confirmation field label.
+			If not provided default "Confirm Password" label will be used.
+---><ismodule template = "modules/account/PasswordInput.isml"
+	name="PasswordInput"
+	attribute="Field"
+	attribute="Domain"
+	attribute="FieldName"
+	attribute="Class"
+	attribute="ShowHint"
+	attribute="HintClass"
+	attribute="LabelKey"
+	attribute="LabelClass"
+	attribute="ShowRequired"
+	attribute="ConfirmationField"
+	attribute="ConfirmationFieldName"
+	attribute="ConfirmationLabelKey"
+	strict="true"
+><!---
+
+	Component for choosing a wish list.
+
+	Parameters:
+		- Wishlists (required)
+			Collection of the available wish lists
+		- ExcludedWishlistID (optional)
+			ID of a wish list from the above collection that should be excluded
+		- PreferredWishlistID (optional)
+			ID of the preferred wish list of the user.
+			If possible this wish list will be selected by default. Otherwise - the first wish list from the collection.
+		- CurrentForm (required):
+			The current web form. It should have 'TargetWishlistID' and 'NewWishlistName' elements.
+---><ismodule template = "modules/account/ChooseWishlist.isml"
+	name="ChooseWishlist"
+	attribute="Wishlists"
+	attribute="ExcludedWishlistID"
+	attribute="PreferredWishlistID"
+	attribute="CurrentForm"
+	strict="true"
+><!---
+
+	Salutation select box
+
+---><ismodule template = "modules/account/SalutationSelectBox.isml"
+	name="SalutationSelectBox"
+	attribute="formparameter"
+	attribute="salutation"
+	attribute="salutation_enumeration_provider"
+><!---
+
+	Add Element SalutationBox
+
+---><ismodule template = "modules/account/AddSalutation.isml"
+	name="AddSalutation"
+	attribute="value"
+	attribute="text"
+	attribute="selectedtext"
+	attribute="selectedvalue"
+	strict="true"
+><!---
+	Row displaying a wishlist item.
+	The visibility of the columns is controlled by the showXXX attributes listed below.
+	By default, only the product title & details (SKU, color and qty) are displayed,
+	i.e. all showXXX attributes are false.
+
+	Parameters:
+		- WishlistItem (required):
+			the wishlist item (WishlistItemBO) that will be shown
+		- showImage (optional):
+			whether the 'Product Image' column should be displayed
+		- showQuantityControls (optional):
+			whether an input field for the desired quantity and column for the purchased quantity should be shown
+		- showQuantitiesText (optional):
+			whether the desired and purchased quantities should be shown as text
+			(for showing an input field for the desired quantity use 'showQuantityControls')
+		- showDateAdded (optional):
+			whether the 'Date Added' column should be displayed
+		- showPrice (optional):
+			whether the 'Price' column should be displayed
+		- showAddToCartButton (optional):
+			whether the 'Add to Cart' buttons should be displayed
+		- showEditItemButtons (optional):
+			whether the buttons for editing an item should be displayed
+			(Remove, Show/Hide, etc)
+		- showWishlistLink (optional):
+			whether a link to the parent wish list should be shown
+---><ismodule template = "modules/account/WishlistItem.isml"
+	name="WishlistItem"
+	attribute="WishlistItem"
+	attribute="showImage"
+	attribute="showQuantityControls"
+	attribute="showQuantitiesText"
+	attribute="showDateAdded"
+	attribute="showPrice"
+	attribute="showAddToCartButton"
+	attribute="showEditItemButtons"
+	attribute="showWishlistLink"
+	attribute="Currency"
+	strict="true"
+><!---
+	Row displaying an order in the 'Order History' list.
+	The visibility of the columns is controlled by the showXXX attributes listed below.
+	By default, only the order number is displayed,	i.e. all showXXX attributes are false.
+
+	Parameters:
+		- OrderBO (required):
+			the order that will be shown
+		- showOrderNumber (optional):
+			whether the 'Order Number' column should be displayed
+		- orderNumberColumnWidth (optional):
+			Width of the order number column (default: 2)	
+		- showNumberOfItems (optional):
+			whether the 'Number of Items' column should be displayed
+		- numberOfItemsColumnWidth (optional):
+			Width of the items number column (default: 1)	
+		- showDestination (optional):
+			whether the 'Destination' column should be displayed
+		- destinationColumnWidth (optional):
+			Width of the destination column (default: 3)	
+		- showOrderStatus (optional):
+			whether the 'Order Status' column should be displayed
+		- orderStatusColumnWidth (optional):
+			Width of the order status column (default: 1)
+---><ismodule template = "modules/account/OrderHistoryItem.isml"
+	name="OrderHistoryItem"
+	attribute="OrderBO"
+	
+	attribute="showOrderNumber"
+	attribute="orderNumberColumnWith"
+	
+	attribute="showNumberOfItems"
+	attribute="numberOfItemsColumnWith"
+	
+	attribute="showOrderStatus"
+	attribute="orderStatusColumnWith"
+	
+	attribute="showDestination"
+	attribute="destinationColumnWith"
+		
+	attribute="showPurchaser"
+	attribute="showOrderDetails"
+	
+	strict="true"
+><!---
+	Row displaying a product notification item.
+	The visibility of the columns is controlled by the showXXX attributes listed below.
+	By default, only the product title & details (SKU, color and qty) are displayed,
+	i.e. all showXXX attributes are false.
+
+	Parameters:
+		- ListItem (required):
+			the product list item that will be shown
+		- Currency (required)
+			The Currency usually the #CurrentRequest:Currency#.
+		- showImage (optional):
+			whether the 'Product Image' column should be displayed
+		- showPrice (optional):
+			whether the 'Price' column should be displayed
+			
+---><ismodule template = "modules/account/ProductNotificationItem.isml"
+	name="ProductNotificationItem"
+	strict="true"
+	attribute="ProductBO"
+	attribute="ListItem"
+	attribute="Currency"
+	attribute="showImage"
+	attribute="showPrice"
+><!---
+	Form for editing a wish list's properties.
+
+	Parameters:
+		- CurrentForm (required):
+			the order web form
+		- TargetPipeline (required):
+			the name of the pipeline for the form action
+		- SubmitButtonName (required):
+			the name of the submit button
+		- SubmitButtonText (required):
+			the text of the submit button
+		- TitleText (required):
+			the text of the dialog title
+		- WishlistBO (optional):
+			a WishlistBO to use to initialize the form fields; 
+			useful if editing an existing wish list
+		- PreferredWishlistID (optional):
+			the id of the preferred wish list of the current user
+---><ismodule template = "modules/account/WishlistPropertiesForm.isml"
+	name="WishlistPropertiesForm"
+	attribute="CurrentForm"
+	attribute="TargetPipeline"
+	attribute="SubmitButtonName"
+	attribute="SubmitButtonText"
+	attribute="TitleText"
+	attribute="WishlistBO"
+	attribute="PreferredWishlistID"
+	strict="true"
+>
+
+<ismodule template = "modules/account/WishlistPublicTitle.isml"
+	strict="true"
+	name="WishlistPublicTitle"
+	attribute="wishlistBO"
+	returnattribute="title"
+>

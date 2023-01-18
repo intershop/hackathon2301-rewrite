@@ -1,0 +1,87 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- jQuery 3 needs to be directly included using the minimized version since the YUICompressor cannot process the code anymore --->
+<script src="#webRoot().'/js/vendor/jquery-3.6.0.min.js'#"></script>
+<script type="text/javascript">
+//cwv: Does not use passive listeners to improve scrolling performance
+jQuery.event.special.touchstart = {
+    setup: function( _, ns, handle ) {
+        this.addEventListener("touchstart", handle, { passive: !ns.includes("noPreventDefault") });
+    }
+};
+jQuery.event.special.touchmove = {
+    setup: function( _, ns, handle ) {
+        this.addEventListener("touchmove", handle, { passive: !ns.includes("noPreventDefault") });
+    }
+};
+jQuery.event.special.wheel = {
+    setup: function( _, ns, handle ){
+        this.addEventListener("wheel", handle, { passive: true });
+    }
+};
+jQuery.event.special.mousewheel = {
+    setup: function( _, ns, handle ){
+        this.addEventListener("mousewheel", handle, { passive: true });
+    }
+};
+</script>
+
+<isfilebundle name="/js/theme.min.js" processors="JSCompressor">
+	<isrender><script defer src="#webRoot().'/'.File:Name.'?lastModified='#<ISPRINT value="#File:LastModified#" formatter="0">"></script></isrender>
+	
+	<!--- 3RD PARTY JAVASCRIPT --->
+	<!--- Reactivate JQuery file bundle after platform with closure compiler is consumed --->
+	<!---<isfile name="/js/vendor/jquery-3.5.1.min.js" />--->
+	
+	<!--- the jquery migrate plugin can be used to keep using javascript that is not yet adapted for jQuery 3 --->
+	<!---<isfile name="/js/vendor/jquery-migrate-3.0.1.min.js" />--->
+	
+	<!--- Modernizr - feature detection --->
+	<isfile name="/js/vendor/modernizr-custom-3.6.0.js" />
+	<!--- Enables bootstrap JS components --->
+	<isfile name="/js/vendor/bootstrap-3.4.1.js" />
+	<!--- Additional Bootstrap Form Validation plugin --->
+	<isfile name="/js/vendor/bootstrapValidator-0.5.2.light.js" />
+	<!--- Add touch events / swipe gesture support for touch devices --->
+	<isfile name="/js/vendor/jquery.mobile.touch-1.5.0-pre.js" />
+	<!--- forcing fixed width inputs to follow a certain pattern --->
+	<isfile name="/js/vendor/jquery.maskedinput-1.4.1.js" />
+	<!--- JavaScript API for handling browser cookies --->
+	<isfile name="/js/vendor/js.cookie-2.2.0.js"/>
+	
+	<!--- CUSTOM JAVASCRIPT --->
+	<isfile name="/js/dialog.js"/>
+	<isfile name="/js/captcha.js"/>
+	<isfile name="/js/validation.js"/>
+	<isfile name="/js/global.js"/>
+	<isfile name="/js/mobile.js"/>
+	<isfile name="/js/category.js"/>
+	<isfile name="/js/productdetail.js"/>
+	<isfile name="/js/checkout.js"/>
+	<isfile name="/js/account.js"/>
+	<isfile name="/js/wishlist.js"/>
+	<isfile name="/js/search.js"/>
+	<isfile name="/js/tracking.js"/>
+	<isfile name="/js/navigation.js"/>
+	<isfile name="/js/video.js"/>
+</isfilebundle>
+
+<isinclude template="inc/UserClientValidators.isml">
+
+<ispipeline
+	pipeline="ProcessRESTConfiguration-GetRestConfiguration" alias="properties"
+	params="#ParamMap(ParamEntry('CurrentRequest', CurrentRequest), ParamEntry('CurrentDomain', CurrentDomain))#"
+ />
+ 
+<script type="text/javascript">
+	if (typeof RetailShop === 'undefined') {var RetailShop = {}};
+	RetailShop.URLs = {};
+	RetailShop.URLs.getProductComponents = "#URL(Action('ViewProduct-RenderProductComponents'), Parameter('CatalogID', CategoryBO:CatalogBO:Name), Parameter('CategoryName', CategoryBO:Name))#"; // additional params: SKU, cid, [cid, cid, ...]
+	RetailShop.URLs.getRecommendedProducts = "#URL(Action('ViewProductRecommendation-Start'))#"; // params: SKU, ContextViewId
+	RetailShop.URLs.getRecommendationSession = "#URL(Action('ViewProductRecommendation-GetSessionData'))#"; // no params
+	RetailShop.URLs.loginPage = "#URLEX(SecureURL,'',Action('ViewUserAccount-ShowLogin'))#";
+	const REST_WEB_ADAPTER = '<isprint value="#properties:URLMappingRESTWebadapter#" encoding="off">';
+	const CURRENT_DOMAIN = '<isprint value="#CurrentDomain:DisplayName#"/>';
+	const SERVER_GROUP = '<isprint value="#properties:ServerGroup#"/>';
+	const LOCALE = '<isprint value="#Locale:LocaleID#" encoding="off">';
+</script>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="viewcontext.include.product.multiple.pagelet2">
+  <contextObjectRelations name="ViewContext" objectType="Product">
+    <callParameterDefinitions name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+    <callParameterDefinitions name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO" optional="true"/>
+    <callParameterDefinitions name="OwningDomain" type="com.intershop.beehive.core.capi.domain.Domain" optional="true"/>
+    <pageletEntryPointPipeline referencedName="ProcessIncludeViewContextProductMultiple-GetPageletEntryPoint"/>
+    <contextType>Product</contextType>
+    <contextType>Category</contextType>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:ComponentEntryPointDefinitionInclusion" name="IncludeProduct">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:include.product.standard.pagelet2-Include"/>
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:ComponentEntryPointDefinitionInclusion" name="IncludeBundle">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:include.product.standard.pagelet2-Include"/>
+    </contentEntryPointDefinitionInclusions>
+    <contentEntryPointDefinitionInclusions xsi:type="pagelet:ComponentEntryPointDefinitionInclusion" name="IncludeRetailset">
+      <contentEntryPointDefinition referencedName="app_sf_responsive:include.product.standard.pagelet2-Include"/>
+    </contentEntryPointDefinitionInclusions>
+  </contextObjectRelations>
+</pagelet:PageletModel>

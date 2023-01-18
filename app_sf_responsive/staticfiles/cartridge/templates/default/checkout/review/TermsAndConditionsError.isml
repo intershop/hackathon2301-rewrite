@@ -1,0 +1,8 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(TermsAndConditionsError) OR 
+			(isDefined(BasketValidationResults) AND hasElements(BasketValidtionResults:getParameterValues("TermsAndConditionsError")))#">
+	<div class="alert alert-danger" role="alert">
+		<p><istext key="checkout.tac.error" /></p>
+	</div>
+</isif>

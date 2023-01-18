@@ -1,0 +1,40 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false"><!---
+  
+place a created paging link in the dictionary under "result" 
+---><%
+	URLParameterSet parameterSet = new URLParameterSet();
+	
+	String pageNumber = context.getFormattedValue(getObject("pagenumber"),null);
+	if (pageNumber != null) {
+	    parameterSet.addURLParameter("PageNumber", pageNumber);
+	}
+	
+	String pageSize = context.getFormattedValue(getObject("pagesize"),null);
+	if (pageSize != null) {
+		parameterSet.addURLParameter("PageSize", pageSize);
+	}
+	
+	String sortingAttribute = context.getFormattedValue(getObject("sortvalue"),null);
+	if ((sortingAttribute != null) && (!sortingAttribute.isEmpty())) {
+	    parameterSet.addURLParameter("SortingAttribute", sortingAttribute);
+	}
+	
+	String viewType = context.getFormattedValue(getObject("viewtype"),null);
+	if (viewType != null) {
+		parameterSet.addURLParameter("ViewType", viewType);
+	}
+	
+	// add params
+	%><isif condition="#isDefined(params)#"><isloop iterator="params:EntrySet" alias="map"><%
+        String key = (String)getObject("map:Key");
+		String value = context.getFormattedValue(getObject("map:Value"), null);
+		if (key == null || value == null) {
+			// skip
+		} else {
+			parameterSet.addURLParameter(key, value);
+		}
+	%></isloop></isif><%
+	String url = this.url(true, new URLPipelineAction(context.getFormattedValue(getObject("pipelinename"),null)), parameterSet);
+	// place created link in dictionary
+	getPipelineDictionary().put("result", url);
+%>

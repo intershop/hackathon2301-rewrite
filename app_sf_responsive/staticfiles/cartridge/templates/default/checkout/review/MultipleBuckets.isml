@@ -1,0 +1,110 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<isset name="CartShippingMethod" value="#CurrentCartBO:Extension("ShippingMethod")#" scope="request"/>
+
+<!---error messages --->
+<isinclude template="checkout/review/PaymentError">		
+<isinclude template="checkout/review/ContinueCheckoutIfTaxServiceUnavailableError">
+<isinclude template="checkout/review/TermsAndConditionsError">
+<isinclude template="cart/ProductIsNotAvailable">
+<isinclude template="checkout/common/RestrictedItems">
+
+<!---ToDo: Include CVC and other payment stuff ? --->
+
+<div class="row">
+	<p class="col-sm-9">
+		<isif condition="#RecurringBasket:Recurring#">
+			<istext key="checkout.order_review.heading.subscription.text" />
+		<iselse>
+			<istext key="checkout.order_review.heading.text" />
+		</isif>
+	</p>
+	<p class="col-sm-3 text-right"><isinclude template="checkout/common/widgets/ReturnToCartLink"></p>
+</div>
+
+
+<!--- b2b: Approval Required, Message to merchant --->
+<div class="row">
+	<isinclude extensionpoint="CheckoutReviewStart"/>
+</div>
+	
+<div class="row<isif condition="#RecurringBasket:Recurring#"> equal</isif>">
+	<!--- b2b: purchaser info --->
+	<isinclude extensionpoint="CheckoutReviewAdditionalInfoBox"/>
+
+	<!--- Subscription Info --->
+	<isinclude template="checkout/common/widgets/SubscriptionInfo">
+</div>
+
+<!--- Multiple Bucket --->
+<isif condition="#CartShippingMethod:BasketShippingMethodSelectionBucketBOs:Size > 1#">
+	<div class="row equal">
+		<div class="col-sm-6">
+			<isinclude template="checkout/common/widgets/BillingAddress">
+		</div>
+		<div class="col-sm-6">
+			<isinclude template="checkout/common/widgets/PaymentMethod">
+		</div>
+	</div>
+	
+	<isinclude extensionpoint="AdditionalCheckoutWidget"/>
+
+	<isloop iterator="CartShippingMethod:BasketShippingMethodSelectionBucketBOs" alias="Bucket">
+		
+		<!--- expected Delivery Time --->
+		<isset scope="request" name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#">
+		<isBucketHeader bucket="#Bucket#" bucketnumber="#CartShippingMethod:BasketShippingMethodSelectionBucketBOs:Size#" recurringbasketextension="#RecurringBasket#">
+		
+		<!---Shipping Address and Method --->
+		<div class="row equal">
+			<div class="col-sm-6">
+				<isinclude template="checkout/common/widgets/ShippingAddress">
+			</div>
+			<div class="col-sm-6">
+				<isinclude template="checkout/common/widgets/ShippingMethod">
+			</div>
+		</div>
+		
+		<!---pack slip message --->
+		<isinclude template="checkout/gifting/PackSlipMessageView">
+		
+		<!--- Line Items --->
+		<isinclude template="checkout/review/LineItemsPerBucket">
+	</isloop><!--- Bucket loop --->
+	
+<!---Single Bucket --->
+<iselse>
+	<isloop iterator="CartShippingMethod:BasketShippingMethodSelectionBucketBOs" alias="Bucket">
+		<div class="row equal">
+			<div class="col-sm-6">
+				<isinclude template="checkout/common/widgets/BillingAddress">
+			</div>
+			<div class="col-sm-6">
+				<isinclude template="checkout/common/widgets/ShippingAddress">
+			</div>
+		</div>
+		
+		<div class="row equal">
+			<div class="col-sm-6">
+				<isinclude template="checkout/common/widgets/ShippingMethod">
+			</div>
+			<div class="col-sm-6">
+				<isinclude template="checkout/common/widgets/PaymentMethod">
+			</div>
+		</div>
+		
+		<isinclude extensionpoint="AdditionalCheckoutWidget"/>
+		
+		<!---pack slip message --->
+		<isinclude template="checkout/gifting/PackSlipMessageView">
+		
+		<!--- expected Delivery Time --->
+		<isset scope="request" name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#">
+		<isBucketHeader bucket="#Bucket#" bucketnumber="#CartShippingMethod:BasketShippingMethodSelectionBucketBOs:Size#" recurringbasketextension="#RecurringBasket#">
+		
+		<!--- Line Items --->
+		<isinclude template="checkout/review/LineItemsPerBucket">
+	</isloop>	
+</isif>
+
+	

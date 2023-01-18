@@ -1,0 +1,69 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+"<isprint value="#VariableVariationAttr:Name#" encoding = "JavaScript">" : {
+		"displayName" : "<isprint value="#VariableVariationAttr:DisplayName#" encoding = "JavaScript">",
+	<isif condition="#(VariableVariationAttr:Name EQ 'size') OR (VariableVariationAttr:Name EQ 'Attr_Size')#">
+		"hasProductImagery" : false, //this is temporary until the feature is supported in the backoffice
+	</isif>
+	<isif condition="#isDefined(VariableVariationAttr:PresentationOption)#">
+		"presentationOption" : "<isprint value="#VariableVariationAttr:PresentationOption#" encoding = "JavaScript">",
+	</isif>
+	<isif condition="#isDefined(VariableVariationAttr:PresentationProductAttributeName)#">
+		"presentationProductAttributeName" : "<isprint value="#VariableVariationAttr:PresentationProductAttributeName#" encoding = "JavaScript">",
+	</isif>
+	"variations" : {
+		<isif condition="#hasElements(ProductBO:ProductVariationInformationBO:VariationValues(VariableVariationAttr))#">
+			<isloop iterator="ProductBO:ProductVariationInformationBO:VariationValues(VariableVariationAttr)" alias="VariationValue">
+				<isif condition="#hasLoopElements(VariationValue)#">
+					<isset name="VariationValues" value="" scope="request"/>
+					<isloop iterator="VariationValue" alias="attrValue">
+						<isset name="VariationValues" value="#VariationValues.attrValue#" scope="request"/>
+						<isif condition="#hasNext(attrValue)#"><isset name="VariationValues" value="#VariationValues.'|'#" scope="request"/></isif>
+					</isloop>
+				<iselse/>
+					<isset name="VariationValues" value="#VariationValue#" scope="request"/>
+				</isif>
+				"<isprint value="#VariationValues#" encoding = "JavaScript">" : {
+					"variationName" : "<isprint value="#VariationValues#" encoding = "JavaScript">",
+					"productUUIDs" : [
+						<isset scope="request" name="FilteredVariationProducts" value="#ProductBO:ProductVariationInformationBO:FilteredVariationProductsByVariationAttributeAndValue(VariableVariationAttr, VariationValue)#" />
+						<isif condition="#hasElements(FilteredVariationProducts)#">
+							<isloop iterator="FilteredVariationProducts" alias="FilterVariationProduct">
+								<iscachekey object="#FilterVariationProduct#">
+								"<isprint value="#FilterVariationProduct:UUID#" encoding = "JavaScript">"<isif condition="#hasNext(FilterVariationProduct)#">, </isif>
+							</isloop>
+						</isif>
+					],
+					"productSKUs" : [
+						<isif condition="#hasElements(FilteredVariationProducts)#">
+							<isloop iterator="FilteredVariationProducts" alias="FilterVariationProduct">
+								"<isprint value="#FilterVariationProduct:SKU#" encoding = "JavaScript">"<isif condition="#hasNext(FilterVariationProduct)#">, </isif>
+							</isloop>
+						</isif>
+					]
+					<isif condition="#(VariableVariationAttr:PresentationOption EQ 'swatchImage')#">
+					, "swatchImage":
+						<isset scope="request" name="SwatchVariationProducts" value="#ProductBO:ProductVariationInformationBO:FilteredVariationProductsByVariationAttributeAndValue(VariableVariationAttr, VariationValue)#" />
+						<isif condition="#hasElements(SwatchVariationProducts)#">
+							<isloop iterator="SwatchVariationProducts" alias="SwatchVariationProduct">
+								<iscachekey object="#SwatchVariationProduct#">
+								<isif condition="#isDefined(SwatchVariationProduct:getString(VariableVariationAttr:PresentationProductAttributeName)) AND (SwatchVariationProduct:getString(VariableVariationAttr:PresentationProductAttributeName) NE "")#">
+								{
+									"src" : "<isprint value="#ContentURL(SwatchVariationProduct:getString(VariableVariationAttr:PresentationProductAttributeName))#" encoding = "JavaScript">",
+									"alt" : "<isprint value="#SwatchVariationProduct:getString(VariableVariationAttr:PresentationProductAttributeName)#" encoding = "JavaScript">"
+								}
+								<iselse>
+								{
+									"src" : "#WebRoot()#/img/not_available.png",
+									"alt" : "<isprint value="#VariationValue#" encoding = "JavaScript">"
+								}
+								</isif>
+								<isbreak/>
+							</isloop>
+						</isif>
+				  </isif>
+				}<isif condition="#hasNext(VariationValue)#">, </isif>
+			</isloop>
+		</isif>
+	}
+}

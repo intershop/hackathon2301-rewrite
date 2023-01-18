@@ -1,0 +1,81 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/hbs/Modules">	<!--- Needed for using the hbs (Handlebars) module --->
+<isinclude template="modules/rest/Modules">
+
+<ISCurrentUserBO currentuserbo="CurrentUserBO">
+<ISCurrentCustomerBO currentcustomerbo="CurrentCustomerBO">
+<ISUserPermissionMap User="#CurrentUserBO#" UserPermissionMap="UserPermissionMap">
+
+<ishbsJavscriptLibraries>
+<ISRESTConfiguration>
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb 
+		trailtext="#localizeText('account.subscription.details.link')#"
+		link="#URL(Action('ViewSubscriptions-List'))#"
+		text="#localizeText('account.subscriptions.link')#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="account-subscription-details-page">
+	
+    <div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+	    	<isAccountNavigation selecteditem="SUBSCRIPTIONS">
+		</div>
+		<div class="col-md-9">
+			
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<script type="text/javascript">
+				$(document).ready(function(){
+					subscriptionsLocalizationProperties = {};
+					subscriptionsLocalizationProperties[RESTConfiguration.getLocale()] = {
+						"subscription.period.days": "<istext key="subscription.period.days"/>",
+						"subscription.period.weeks": "<istext key="subscription.period.weeks"/>",
+						"subscription.period.months": "<istext key="subscription.period.months"/>",
+						"subscription.period.years": "<istext key="subscription.period.years"/>"
+					};
+				});
+			</script>
+			
+		 	<!--- Renders the subscription details template per REST and Handlebars --->
+			<ishbs folder="account/subscriptions" name="subscriptionDetails">
+			
+			<div class="modal fade" id="confirmDeactivateModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeactivateModalLabel">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<ishbs folder="account/subscriptions" name="subscriptionDeactivateDialog">
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal fade" id="confirmActivateModal" tabindex="-1" role="dialog" aria-labelledby="confirmActivateModalLabel">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<ishbs folder="account/subscriptions" name="subscriptionActivateDialog">
+					</div>
+				</div>
+			</div>
+			
+			<div class="section clearfix">
+				<isif condition="#isDefined(OrderID)#">
+					<a href="#URL(Action("ViewOrders-Detail"), Parameter('OrderID', OrderID))#"><istext key="account.subscription.details.link.back_to_order"></a>
+				<iselse>
+					<a href="#URL(Action("ViewSubscriptions-List"))#"><istext key="account.subscription.details.link.back_to_subscriptions"></a>
+				</isif>	
+				
+				<a class="pull-right" href="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#"><istext key="account.subscription.details.link.continue_shopping"></a>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,121 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- This file is a variant of Filter.siml intended to be displayed in Master Product Detail Page --->
+<%
+    String paramsName = (String)getObject("params");
+    Object params = getObject(paramsName);
+    if(params != null)
+    {
+        getPipelineDictionary().put("TmpParams", params);
+    }
+%>
+
+<!--- fetch parameters which trigger filter visualization --->
+<isif condition="#NOT isDefined(showcount)#">
+    <isset scope="request" name="showcount" value="true">
+</isif>
+<isif condition="#isDefined(filter:ConfigurationAttribute:FilterOptions:DisplayType)#">
+    <isset scope="request" name="displayType" value="#filter:ConfigurationAttribute:FilterOptions:DisplayType#">
+<iselse>
+    <isset scope="request" name="displayType" value="text">
+</isif>
+<isset scope="request" name="displayClass" value="filter-list">
+
+<isif condition="#isDefined(filter:ConfigurationAttribute:FilterOptions:SelectionType)#">
+    <isset scope="request" name="selectionType" value="#filter:ConfigurationAttribute:FilterOptions:SelectionType#">
+<iselse>
+    <isset scope="request" name="selectionType" value="single">
+</isif>
+<isif condition="#NOT(isDefined(showselected))#">
+    <isset scope="request" name="showselected" value="true" />
+</isif>
+
+<isif condition="#isDefined(sortvalue)#">
+    <isset scope="request" name="tmp_sortvalue" value="#sortvalue#" />
+</isif>
+<!---  end fetch parameters --->
+
+<isif condition="#isDefined(filter) AND hasElements(filter:FilterAttributeEntry)#">
+    <isif condition="#(showselected EQ 'true') OR (HasUnselectedValues EQ 'true')#" >
+
+		<!--- attribute filter values --->
+		<ul class="<isprint value="#displayClass#"/> clearfix" id="#filter:ConfigurationAttribute:Name.'_id'#">
+
+			<!--- initialize form --->
+			<form name="myForm" data-submit-form-handler="change" method="post" action="#URL(Action(pipeline))#" >
+
+			<isloop iterator="TmpParams:EntrySet" alias="map">
+			    <isif condition="#map:Key NE 'SearchParameter'#">
+			        <input type="hidden" name="<isprint value="#map:Key#">" value="<isprint value="#map:Value#">" />
+			    </isif>
+			</isloop>
+
+			<input type="hidden" name="PageSize" value="<isprint value="#query:PageSize#">">
+
+	        <!---- We need to determine if there is only one element --->
+	        <isset name="singleFilterElement" value="#hasElements(filter:FilterAttributeEntry)#" scope="request">
+	        <isloop iterator="filter:FilterAttributeEntry" alias="entry" counter="cpt">
+	            <isif condition="#cpt > 1#">
+	                <isset name="singleFilterElement" value="#NOT singleFilterElement#" scope="request">
+	                <isbreak>
+	            </isif>
+	        </isloop>
+	        <select name="SearchParameter"
+	            class="ws-submit-search-param form-control"
+	            <isif condition="#singleFilterElement#"> disabled</isif>
+	        >
+	            <option value="">
+	                <isprint value="#filter:ConfigurationAttribute:DisplayName#">
+	                <isif condition="#singleFilterElement#">:&nbsp;
+	                    <isloop iterator="filter:FilterAttributeEntry" alias="entry" counter="cpt">
+	                        #entry:Value#
+	                    </isloop>
+	                </isif>
+	            </Option>
+
+		        <isloop iterator="filter:FilterAttributeEntry" alias="entry" counter="cpt">
+	
+		            <isif condition="#singleFilterElement#">
+		                <isbreak>
+		            </isif>
+	
+		            <!--- set css class in order to indent (category level) --->
+		            <isset scope="request" name="CssParametricClass" value="" />
+		            <isif condition="#entry:Level > 0#">
+		                <isset scope="request" name="CssParametricClass" value="#'filter-layer'.entry:Level#" />
+		            </isif>
+	
+		            <!--- Selected attribute value --->
+		            <isif condition="#(NOT entry:isSelected)#">
+
+						<li  class="filter-item <isprint value="#CssParametricClass#">">
+							<isif condition="#entry:Value NE 'SHOWLESS'#">
+								<option value="<isprint value="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#">" style="background-color: #eeeeee;">
+									<isprint value="#entry:DisplayValue#">
+								</option>
+			
+			                        <a class="filter-item-name"
+			                            href="<isfilterlink pipelinename="#pipeline#"
+			                                searchparameter="#query:ExtendedCondition(entry:Name,entry:Value,selectionType)#"
+			                                pagesize="#query:PageSize#"
+			                                params="TmpParams"
+			                                sortvalue="#tmp_sortvalue#"
+			                            >"
+			                        >
+			                             <span class="icon-notselected"></span><isprint value="#entry:DisplayValue#">
+			                        </a>
+		                    	<span class="filter-count">(<isprint value="#entry:Count#">)</span>
+	                    	</isif>
+						</li>
+
+		            </isif>
+		        </isloop>
+	        </select>
+
+	        <noscript>
+	            <button type="submit"><istext key="search.filter.filter.button" /></button>
+	        </noscript>
+
+	        </form>
+        </ul>
+    </isif>
+</isif>

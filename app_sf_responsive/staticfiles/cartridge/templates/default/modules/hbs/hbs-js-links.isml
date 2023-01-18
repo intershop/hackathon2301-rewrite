@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div style="display: none;"> <!--- necessary for cart pdf --->
+<!--- External Libraries --->
+<isif condition="#(not(isDefined(excludeHandlebarsLib))) OR (excludeHandlebarsLib EQ 'false')#">
+	<isplacement placeholderid="JSWebLibraries">vendor/handlebars-4.7.6.js</isplacement>				<!--- Includes the Handlebars Template Engine library --->
+</isif>
+<isif condition="#(not(isDefined(excludeRSVPLib))) OR (excludeRSVPLib EQ 'false')#">
+	<isplacement placeholderid="JSWebLibraries">vendor/rsvp-4.8.4.js</isplacement>						<!--- Includes the RSVP library --->
+</isif>
+<isif condition="#(not(isDefined(excludeAccountingLib))) OR (excludeAccountingLib EQ 'false')#">
+	<isplacement placeholderid="JSWebLibraries">vendor/accounting-0.4.2.js</isplacement>				<!--- Includes a JavaScript library for formatting money values --->
+</isif>
+<isif condition="#(not(isDefined(excludeDateFormatLib))) OR (excludeDateFormatLib EQ 'false')#">
+	<isplacement placeholderid="JSWebLibraries">vendor/dateFormat-1.0.2.js</isplacement>				<!--- Includes a JavaScript library for formatting date values --->
+</isif>
+
+<!--- jQuery plugin "i18n" --->
+<isif condition="#(not(isDefined(excludeI18nLib))) OR (excludeI18nLib EQ 'false')#">
+	<isplacement placeholderid="JSWebLibraries">vendor/jquery.i18n/jquery.i18n.js</isplacement>					<!--- Includest the jquery i18n plugin for localizations --->
+	<isplacement placeholderid="JSWebLibraries">vendor/jquery.i18n/jquery.i18n.messagestore.js</isplacement>	<!--- Includest a plugin for jquery i18n plugin --->
+	<isplacement placeholderid="JSWebLibraries">vendor/jquery.i18n/jquery.i18n.fallbacks.js</isplacement>		<!--- Includest a plugin for jquery i18n plugin --->
+	<isplacement placeholderid="JSWebLibraries">vendor/jquery.i18n/jquery.i18n.parser.js</isplacement>			<!--- Includest a plugin for jquery i18n plugin --->
+	<isplacement placeholderid="JSWebLibraries">vendor/jquery.i18n/jquery.i18n.emitter.js</isplacement>			<!--- Includest a plugin for jquery i18n plugin --->
+	<isplacement placeholderid="JSWebLibraries">vendor/jquery.i18n/jquery.i18n.language.js</isplacement>		<!--- Includest a plugin for jquery i18n plugin --->
+	<isplacement placeholderid="JS_head">
+		<script type="text/javascript">
+			$(function() {
+			    
+			    // Initialization the jquery.i18n plugin and set the current locale. (e.g. 'en_US')
+			    if (typeof $.i18n !== 'undefined') {
+					$.i18n({
+			            locale: RESTConfiguration.getLocale()
+				    });
+			    }
+			    
+			});
+		</script>
+	</isplacement>
+</isif>
+
+<!--- Intershop JavaScript REST Client Classes --->
+<isplacement placeholderid="JSWebLibraries">ishREST.js</isplacement>							<!--- Includes the Intershop REST client javascript class --->
+<isplacement placeholderid="JSWebLibraries">ishHbsController.js</isplacement>					<!--- Includes the Intershop handlebars javascript controller class --->			
+<isif condition="#(not(isDefined(excludeIshHbsHelpers))) OR (excludeIshHbsHelpers EQ 'false')#">
+	<isplacement placeholderid="JSWebLibraries">ishHbsHelpers.js</isplacement>						<!--- Includes a file with custom Intershop handlebars helpers --->
+</isif>
+</div>

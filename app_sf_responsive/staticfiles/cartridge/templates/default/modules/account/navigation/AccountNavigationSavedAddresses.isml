@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<li class="<isif condition="#selecteditem EQ 'ADDRESSES'#">active</isif>">
+	<a href="#URL(Action('ViewUserAddressList-List'))#"><istext key="account.saved_addresses.link"/></a>
+</li>

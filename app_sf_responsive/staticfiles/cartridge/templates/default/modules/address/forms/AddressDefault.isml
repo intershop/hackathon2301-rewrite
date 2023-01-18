@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+<isinclude template="modules/account/Modules">
+
+<isinclude template="modules/address/forms/inc/SetSuffix.isml">
+
+<div data-address-form="data-address-form">
+
+	<ismodule name="hiddenfields" template="modules/address/forms/inc/HiddenFieldsStateAddress.isml" attribute="usetitle" attribute="usestate" attribute="useaddress3" attribute="useshippingaddress">
+	<ishiddenfields usetitle="true" useaddress3="true" useshippingaddress="true" usestate="false">
+	
+	<isinclude template="modules/address/forms/inc/FormHeader.isml">
+	
+	<p class="indicates-required"><span class="required">*</span><istext key="account.required_field.message" /></p>
+
+	<fieldset>
+		<isinclude template="modules/address/forms/inc/CountrySelect.isml">
+	</fieldset>
+
+	<isinclude extensionpoint="AddressDefaultExtensions"/>
+
+	<fieldset>
+		<isinclude template="modules/address/forms/inc/FirstNameInput.isml">
+		<isinclude template="modules/address/forms/inc/LastNameInput.isml">
+	</fieldset>
+	
+	<fieldset>
+		<isinclude template="modules/address/forms/inc/Address1Input.isml">
+		<isinclude template="modules/address/forms/inc/Address2Input.isml">
+	</fieldset>
+	
+	<fieldset>
+		<ismodule name="cityinput" template="modules/address/forms/inc/CityInput.isml" attribute="showtooltip">
+		<iscityinput showtooltip="false">
+		<isinclude template="modules/address/forms/inc/PostalCodeInput.isml">
+		<isinclude template="modules/address/forms/inc/StateSelect.isml">
+	</fieldset>
+	<isinclude template="modules/address/forms/inc/PhoneInput.isml">
+	
+	<isif condition="#isDefined(isRegistration)#">
+		<isinclude template="modules/address/forms/RegistrationAddition">
+	</isif>
+</div>

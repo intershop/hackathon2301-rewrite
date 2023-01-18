@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(ProductBO)#">
+	<!--- Label Prio 1 - New --->
+	<isif condition="#(isDefined(ProductBO:Attribute("new"))) AND (ProductBO:Attribute("new") EQ 'true')#">
+		<span class="product-label product-label-new"></span>
+		
+	<!--- Label Prio 2 - TopSeller --->
+	<iselseif condition="#(isDefined(ProductBO:Attribute("topseller"))) AND (ProductBO:Attribute("topseller") EQ 'true')#">
+		<span class="product-label product-label-topseller"></span>
+		
+	<!--- Label Prio 3 - Sale --->
+	<iselseif condition="#(isDefined(ProductBO:Attribute("sale"))) AND (ProductBO:Attribute("sale") EQ 'true')#">
+		<span class="product-label product-label-sale"></span>
+		
+	</isif>
+</isif>

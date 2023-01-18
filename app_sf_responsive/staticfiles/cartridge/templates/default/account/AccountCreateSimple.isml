@@ -1,0 +1,12 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isif condition="#(CacheAccountCreationSimplePage EQ 'true')#">
+	<iscache type="relative" hour="24">
+</isif>
+
+<isinclude template="modules/common/Modules">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<isinclude extensionpoint="ExtendAccountCreateSimplePage"/>

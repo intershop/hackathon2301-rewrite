@@ -1,0 +1,199 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset name="CartShippingMethod" value="#CurrentCartBO:Extension("ShippingMethod")#" scope="request"/>
+<isset name="GiftWrapSwitchFlag" value="#isDefined(GiftWrap_Switch) AND (GiftWrap_Switch EQ 'true')#" scope="request"/>
+<isset name="GiftMessageSwitchFlag" value="#isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true')#" scope="request"/>
+
+<div class="section">
+	<div class="form-group clearfix">
+		<isif condition="#GiftWrapSwitchFlag#">
+			<isif condition="#isDefined(GiftWrapsIterator) AND hasLoopElements(GiftWrapsIterator)#">
+				<div class="clearfix">
+					<isloop iterator="GiftWrapsIterator" alias="GiftWrap">
+						<ISUUID name="GiftWrapUUID">
+						<isset name="ImageContainerBO" value="#GiftWrap:Extension("Image"):ImageContainerBO#" scope="request"/>
+						<div class="col-xs-6 col-sm-4">
+							<a data-dialog href="[data-local-modal-content-#GiftWrapUUID#]">
+								<div><img src="<isprint value = "#ImageContainerBO:ImageBO("S","front"):EffectiveUrl#">" alt="<isprint value="#GiftWrap:Name#">"/></div>
+								<div><isprint value="#GiftWrap:Name#"></div>
+								<p>
+									<isset name="ProductPrice" value="#GiftWrap:Extension("Pricing")#" scope="request">
+									<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+									<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+									<isprint value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext):Price#">
+									<ISProductPriceAdditionalText ProductBO="#GiftWrap#">
+								</p>
+							</a>
+							
+							<div class="hidden" data-local-modal-content-#GiftWrapUUID#>
+								<div class="modal-dialog">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+											<h2 class="modal-title"><isprint value="#GiftWrap:Name#"></h2>
+										</div>
+										<div class="modal-body">
+											<div class="dialog-giftwrap-content"><img src="<isprint value = "#ImageContainerBO:ImageBO("L","front"):EffectiveUrl#">" alt="<isprint value="#GiftWrap:Name#">" /></div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						
+					</isloop>
+				</div>
+			</isif>	
+		</isif>
+		
+		<isif condition="#GiftMessageSwitchFlag AND isDefined(GiftMessagesIterator) AND hasLoopElements(GiftMessagesIterator)#">
+			<isloop iterator="GiftMessagesIterator" alias="GiftMessage">
+				<ISUUID name="GiftWrapUUID">
+				<isset name="ImageContainerBO" value="#GiftMessage:Extension("Image"):ImageContainerBO#" scope="request"/>
+					
+				<div class="col-xs-6 col-sm-4">
+					<a data-dialog href="[data-local-modal-content-#GiftWrapUUID#]">
+						<div><img src="<isprint value = "#ImageContainerBO:ImageBO("S","front"):EffectiveUrl#">" alt="<isprint value="#GiftMessage:Name#">" /></div>
+						<div><isprint value="#GiftMessage:Name#"></div>
+						<p>
+							<isset name="ProductPrice" value="#GiftMessage:Extension("Pricing")#" scope="request">
+							<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+							<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+							<isprint value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext):Price#">
+							<ISProductPriceAdditionalText ProductBO="#GiftMessage#">
+						</p>
+					</a>
+					
+					<div class="hidden" data-local-modal-content-#GiftWrapUUID#>
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+									<h2 class="modal-title"><isprint value="#GiftMessage:Name#"></h2>
+								</div>
+								<div class="modal-body">
+									<div class="dialog-giftwrap-content"><img src="<isprint value = "#ImageContainerBO:ImageBO("L","front"):EffectiveUrl#">" alt="<isprint value="#GiftMessage:Name#">" /></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</isloop>
+		</isif>
+	</div>
+
+	<isif condition="#GiftWrapSwitchFlag AND (isDefined(GiftWrapsIterator) AND hasLoopElements(GiftWrapsIterator))#">
+		<small class="help-block">
+			<istext key="checkout.gifting.giftwrap.description.header"/><br/>
+			<istext key="checkout.gifting.giftwrap.description.text.0"/>
+			<isif condition="#isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true')#">
+				&nbsp;<istext key="checkout.gifting.giftwrap.description.text.1"/>
+			</isif>
+		</small>
+	</isif>
+</div>
+
+<isif condition="#isDefined(CartShippingMethod)#">
+	<div class="section">
+	
+		<isset name="NonDigitalBucketsIterator" value="#CartShippingMethod:NonDigitalBasketShippingMethodSelectionBucketBOs#" scope="request"/>
+		<isset name="index" value="#1#" scope="request"/>
+		
+		<isloop iterator="NonDigitalBucketsIterator" alias="Bucket">
+			
+			<!--- Check if the bucket contains plis which might have gift options --->
+			<isset name="GiftingProduct" value="false" scope="request"/>
+			<isloop iterator="Bucket:ProductLineItemBOs" alias="PliBO">
+				<isset name="PliBOGifting" value="#PliBO:Extension("Gifting")#" scope="request"/>
+				<isif condition="#(PliBOGifting:isGiftMessagable) OR (PliBOGifting:isGiftWrappable)#">
+					<isset name="GiftingProduct" value="true" scope="request"/>
+					<input type="hidden" name="giftOption_<isprint value="#PliBO:ID#">" value="true" />
+				</isif>
+			</isloop>
+			
+			<isif condition="#GiftingProduct EQ "true"#">
+				<isset name="ShipToAddressBO" value="#Bucket:ShipToAddressBO#" scope="request"/>
+				
+				<h3>
+					<istext key="checkout.gifting.bucket.header"/> 
+					<isif condition="#(ShipToAddressBO:CompanyName1 NE '') AND (ShipToAddressBO:CompanyName1 NE 'none')#"><isprint value="#ShipToAddressBO:CompanyName1#">, </isif>
+					<isif condition="#(ShipToAddressBO:CompanyName2 NE '') AND (ShipToAddressBO:CompanyName2 NE 'none')#"><isprint value="#ShipToAddressBO:CompanyName2#">, </isif>
+					<isif condition="#(ShipToAddressBO:FirstName NE '')#"><isprint value="#ShipToAddressBO:FirstName#"> </isif>
+					<isif condition="#(ShipToAddressBO:LastName NE '')#"><isprint value="#ShipToAddressBO:LastName#"></isif>
+					<isif condition="#(ShipToAddressBO:AddressLine1 NE '')#">, <isprint value="#ShipToAddressBO:AddressLine1#"></isif>
+				</h3>
+					
+				<isloop iterator="Bucket:ProductLineItemBOs" alias="PliBO">
+					<isset name="PliBOGifting" value="#PliBO:Extension("Gifting")#" scope="request"/>
+					
+					<isif condition="#(PliBOGifting:isGiftMessagable) OR (PliBOGifting:isGiftWrappable)#">
+						<isloop iterator="PLISplitInfoMap:get(PliBO)" alias="SplitInfo">
+							
+							<isset name="Subform" value="#GiftingForm:get(SplitInfo:ID)#" scope="request"/>
+							<isset name="GiftOptionMarked" value="#isDefined(SplitInfo:get("GiftOptionMarked")) AND (SplitInfo:get("GiftOptionMarked") EQ 'true')#" scope="request"/>
+							<isset name="GiftingSelected" value="#(not(Subform:Gifting:ValueMissing) AND (Subform:Gifting:Value EQ 'true')) OR 
+																  (GiftOptionMarked AND (Subform:Gifting:ValueMissing OR (isDefined(ID) AND (ID EQ PliBO:ID))))#" scope="request"/>
+							
+							<div class="pliGiftingWrapper row">
+								<div class="col-sm-5">
+									<isPLIDescription pli="#PliBO#" showimage="false" variationattributes="vertical" showid="true" owningdomain="#CurrentOrganization:OwningDomain#" showwarranty="true">
+								</div>
+								<div class="col-sm-7">
+								<isset name="PliBOGiftWrappable" value="#(PliBOGifting:GiftWrappable EQ 'true')#" scope="request"/>
+								<isset name="PliBOGiftMessagable" value="#(PliBOGifting:GiftMessagable EQ 'true')#" scope="request"/>
+								
+								<isif condition="#PliBOGiftWrappable OR PliBOGiftMessagable#">
+								
+									<isset name="QualifiedName" value="#Subform:Gifting:QualifiedName#" scope="request"/>
+									
+									<div class="form-group section">
+										<div class="radio col-sm-12">
+											<label>
+												<input type="radio" class="giftRadioYes" name="<isprint value="#QualifiedName#">" value="true" <isif condition="#GiftingSelected EQ 'true'#">checked="checked"</isif> />
+												<isif condition="#PliBOGiftWrappable AND PliBOGiftMessagable#">
+													<istext key="checkout.gifting.both.yes"/>
+												<iselseif condition="#PliBOGiftWrappable#">
+													<istext key="checkout.gifting.giftwrap.yes"/>
+												<iselse>
+													<istext key="checkout.gifting.giftmessage.yes"/>
+												</isif>
+											</label>
+										</div>
+										<div class="radio col-sm-12">
+											<label>
+												<input type="radio" class="giftRadioNo" name="<isprint value="#QualifiedName#">" value="false" <isif condition="#GiftingSelected NE 'true'#">checked="checked"</isif> />
+												<istext key="checkout.gifting.no"/>
+											</label>
+										</div>
+									</div>
+									
+									<div class="giftOptions" <isif condition="#GiftingSelected NE 'true'#">style="display: none;"</isif>>
+										
+										<p class="indicates-required"><span class="required">*</span> <istext key="checkout.gifting.required_field.text"/></p>
+										
+										<isif condition="#PliBOGiftWrappable#">
+											<isinclude template="checkout/gifting/GiftWrap">
+										</isif>
+										
+										<isif condition="#GiftMessageSwitchFlag AND PliBOGiftMessagable#">
+											<isinclude template="checkout/gifting/GiftMessage">
+										</isif>
+									</div>
+									
+								</isif>
+								</div>
+								
+							</div>
+							
+						</isloop>
+					</isif>
+				
+				</isloop>
+					
+				<isset name="index" value="#index+1#" scope="request"/>	
+			</isif>
+			
+		</isloop><!--- Bucket loop --->
+	</div>
+</isif>

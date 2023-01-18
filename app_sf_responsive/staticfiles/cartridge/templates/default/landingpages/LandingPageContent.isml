@@ -1,0 +1,14 @@
+<iscontent charset="UTF-8" compact="true">
+<%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary" %>
+<%@page import="com.intershop.component.foundation.capi.upload.FileUtil" %>
+<%
+	if (getPipelineDictionary().getFormValue("FullPath", false) != null)
+	{
+		throw new SecurityException("Parameter FullPath was injected as form parameter.");
+	}
+
+	String fileName = ( (String) getPipelineDictionary().get("FullPath") ).replace("%20"," ");
+	String mimeType = FileUtil.getMimeType(fileName);
+	response.setHeader("Content-Type", mimeType);
+	getPipelineDictionary().put("FullPath",fileName);
+%><isbinary file="#FullPath#"/>

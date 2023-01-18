@@ -1,0 +1,5 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div>
+	<a href="#URL(Action('ViewCheckoutPayment-Review'), Parameter('PromoCodeEntry','true'))#"><istext key="checkout.widget.promo_code.link" /></a>
+</div>

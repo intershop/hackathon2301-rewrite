@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<isif condition="#isDefined(webform:Title)#">
+	
+	<%@page import="com.intershop.beehive.core.capi.webform.FormParameter" %>
+	<%
+		FormParameter formParameter = (FormParameter) getObject("webform:Title");
+	
+		String formID = formParameter.getForm().getID();
+		String messagePrefix = (String) getObject("addressKeyPrefix");
+		
+		getPipelineDictionary().put(formID + "KeyPrefix", messagePrefix);
+	%>
+
+	<div class="form-group">
+		<label class="control-label col-sm-4" for="<isprint value = "#webform:Title:QualifiedName.idSuffix#">">
+			<istext key="account.default_address.title.label" />
+			<isif condition="#NOT webform:Title:Optional#"><span class="required">*</span></isif>	
+		</label>
+		<isseq-next name="tabcount">
+		<div class="col-sm-8">
+			<select class="form-control"
+				name="<isprint value = "#webform:Title:QualifiedName#">" 
+				id="<isprint value = "#webform:Title:QualifiedName.idSuffix#">" 
+				<isprint value="#webform:Title:ClientValidationConfig("html5")#" encoding="off"/>
+			>
+				<option value=""><istext key="account.option.select.text" /></option>
+				<isloop iterator="salutation_enumeration_provider:AllKeys" alias="CurrentKey">
+					<option value="#encodeValue(CurrentKey)#"
+						<isif condition="#isDefined(webform:Title:Value)#">
+							<!--- The localized check is a patch in case that this webform is --->
+							<!--- slightly misused in update scenarios. --->
+							<isif condition="#(webform:Title:Value eq CurrentKey) OR (webform:Title:Value eq localizeText(CurrentKey))#">selected</isif>
+						<iselseif condition="#isDefined(address)#">
+							<isif condition="#address:Title eq localizeText(CurrentKey)#">selected</isif>
+						</isif>
+					>
+						<istext key="#CurrentKey#" />
+					</option>
+				</isloop>
+			</select>
+		</div>
+	</div>
+</isif>	

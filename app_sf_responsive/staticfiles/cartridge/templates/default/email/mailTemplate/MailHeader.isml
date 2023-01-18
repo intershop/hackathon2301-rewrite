@@ -1,0 +1,70 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	
+	<isinclude template="email/mailTemplate/MailStyle"/>
+</head>
+
+<body yahoo bgcolor="#ffffff" bottommargin="0" topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" rightmargin="0">
+	
+	<isinclude template="email/mailTemplate/MailStyle"/>
+
+	<!--- Start - Table replaces body tag if extracted by client --->
+	<table width="100%" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0" class="emailContainer">
+		<tr>
+			<td align="center"> 
+				
+				<!--- Outlook doesn't support max-width, fixed width necessary --->
+				<!--[if (gte mso 9)|(IE)]>
+				<table width="600" cellpadding="0" cellspacing="0" border="0">
+					<tr>
+						<td>
+				<![endif]-->
+				
+				<!--- Start Email Content --->
+				<table width="100%" class="emailContent" cellpadding="0" cellspacing="0" border="0">
+					<!--- Start Email Header --->
+					<tr>
+						<td class="emailHeader">
+							<table width="100%" border="0" cellpadding="0" cellspacing="0">
+								<!--- Start Email Logo --->
+								<tr>
+									<td class="logo" valign="top" style="padding: 0 20px 20px 0;">
+										<ispipeline pipeline="IncludeBranding-GetBrandingInstallation" params="#ParamMap(ParamEntry('Hook_Image_Name', 'logoEmail.png'))#" alias="dict" />
+										<isif condition="#isDefined(dict:BrandingInstallation:UUID)#">
+											<!--- display: block avoids a space below the image in outlook --->
+											<img style="display:block;" src="#WebRootEx('','','','','')#/branding/<isprint value="#dict:CurrentOrganization:OrganizationDomain:DomainName#">/img/<isprint value="#dict:Hook_Image_Name#">?brandid=#dict:BrandingInstallation:UUID#" alt="Logo" border="0" alt="" />
+										<iselse>
+											<img style="display:block;" src="#WebRootEx('','','','','')#/img/<isprint value = "#dict:Hook_Image_Name#">" alt="Logo" border="0" alt="" />
+										</isif>
+									</td>
+								</tr>
+								<!--- End Email Logo --->
+								
+								<!--- Start Header Navigation --->
+								<tr>
+									<td class="headerNav">
+										<a href="#URL(Action('ViewHomepage-Start', '', '', LocaleID, Currency, AppID))#"><isprint value="#ChannelName#"/></a>&nbsp;
+										<isif condition="#ShowMyAccountLink EQ 'true'#">
+											<istext key="email.my_account.text" parameter0="#encodeValue(URLEX(SecureURL,'',Action('ViewUserAccount-Start', '', '', LocaleID, Currency, AppID)))#" encoding="off" />
+										</isif>
+										<!--- TODO: get customer information if possible
+										<isif condition="#ShowCustomerInformation EQ 'true'#">
+											<br />
+											<istext key="email.customer_id.text" parameter0="[TODO_CUSTOMER_NUMBER]" encoding="off" />
+										</isif>
+										--->
+									</td>
+								</tr>
+								<!--- End Header Navigation --->
+							</table>
+						</td>
+					</tr>
+					<!--- End Email Header --->
+					
+					<!--- Start Email Body --->
+					<tr>
+						<td class="emailBody">

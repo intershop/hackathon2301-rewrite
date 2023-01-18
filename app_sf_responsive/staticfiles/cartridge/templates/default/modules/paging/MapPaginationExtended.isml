@@ -1,0 +1,61 @@
+<iscontent compact="true" charset="UTF-8">
+<%@page import="com.intershop.sellside.storefront.base.internal.paging.PagingGroupedByInterval"%>
+<%@page import="com.intershop.sellside.storefront.base.capi.paging.AbstractPagingCalculator"%>
+<%
+	Object cp =  getObject("currentpage");
+	Object pc =  getObject("pagecount");
+	
+	AbstractPagingCalculator paging = new PagingGroupedByInterval(cp, pc, 14,10);
+	getPipelineDictionary().put("barEntries", paging.createCalculatedPagingIterator());
+	
+%>
+<isinclude template="modules/paging/elements/TotalItems.isml">
+<div class="ws-product-listing-pagination">
+	<span class="ws-product-listing-filter-label"><istext key="common.module.pagination.pages.text"/></span>
+	<ul class="ws-product-listing-pagination-list">
+	<!--- start of previous arrow --->
+	<isif condition="#currentpage > 0#">
+		<li class="ws-product-listing-pagination-list-item"><a href="<ispaginglink 
+									pipelinename="#pipeline#"
+									pagenumber="#getValue( currentpage - 1, '0')#" 
+									pagesize = "#ListNavigationVO:PageSize#"
+									params="#params#"
+									sortvalue="#ListNavigationVO:SortingAttribute#"
+									>" title="<istext key="common.module.pagination.previous.title.link">">&#'#'#171; <istext key="common.module.pagination.previous.link"></a></li>
+	<iselse>
+		<li class="ws-product-listing-pagination-list-item">&#'#'#171; <istext key="common.module.pagination.previous.link"></li>
+	</isif>
+	<!--- end of previous arrow --->
+	<!--- start of outputting pagenumbers --->
+	<isloop iterator="barEntries" alias="e">
+		<li class="ws-product-listing-pagination-list-item<isif condition="#e:Value EQ getValue( currentpage, '0')#"> ws-product-listing-pagination-list-item-active</isif>">
+		<isif condition="#e:Value EQ getValue( currentpage, '0')#">
+		<isprint value="#e:Key#" >
+		<iselse>
+					<a href="<ispaginglink 
+						pipelinename="#pipeline#"
+						pagenumber="#e:Value#" 
+						pagesize = "#ListNavigationVO:PageSize#"
+						params="#params#"
+						sortvalue="#ListNavigationVO:SortingAttribute#"
+						>" title="to page <isprint value="#e:Key#">">
+					<span class="ws-hide"><istext key="common.module.pagination.topage.text"> </span><isprint value="#e:Key#"><span class="ws-hide"> <istext key="common.module.pagination.of.text"> <isprint value="#pagecount#"></span>
+					</a></li>
+		</isif>
+	</isloop>
+	<!--- end of outputting pagenumbers --->
+	<!--- start of next arrow --->
+	<isif condition="#currentpage < ( pagecount - 1 )#">
+		<li class="ws-product-listing-pagination-list-item ws-product-listing-pagination-list-item-last"><a href="<ispaginglink 
+									pipelinename="#pipeline#"
+									pagenumber="#getValue( currentpage + 1, '0')#" 
+									pagesize = "#ListNavigationVO:PageSize#"
+									params="#params#"
+									sortvalue="#ListNavigationVO:SortingAttribute#"
+								>" title="<istext key="common.module.pagination.next.title.link">"><istext key="common.module.pagination.next.link"> &#'#'#187;</a></li>
+	<iselse>
+		<li class="ws-product-listing-pagination-list-item ws-product-listing-pagination-list-item-last"><istext key="common.module.pagination.next.link"> &#'#'#187;</li>
+	</isif>
+	<!--- end of next arrow --->
+	</ul>
+</div>

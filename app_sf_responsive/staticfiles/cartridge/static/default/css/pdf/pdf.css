@@ -1,0 +1,77 @@
+@page { 
+	size: 29.7cm 42.0cm;
+	margin: 17mm; 
+	marks: none;
+}
+
+.print-cart .details-link,
+.print-cart .details-tooltip {
+	display: none;
+}
+
+.print-cart .order-summary{
+	display: inline-block;
+	width: 100% !important;
+}
+
+.print-cart .order-summary h2 {
+	font-size: 18px;
+	float: right !important;
+	margin-right: 30px;
+}
+
+.print-cart .cost-summary {
+	background: #efefef !important;
+	border-top: 1px solid #ccc;
+	clear: both;
+	float: right;
+	width: 30%;
+	margin-right: 30px;
+}
+
+.print-cart .cost-summary .total-price {
+	font-weight: bold;
+}
+
+.print-cart .list-header .list-header-item {
+	display: inline-block !important;
+	width: 10%;
+}
+
+.print-cart .list-header .list-header-item.list-header-item-descr{
+	width: 65% ;
+}
+
+.print-cart .list-body .descr-container {
+	width: 60%;
+	position: relative;
+}
+
+.print-cart .list-body .pli-description {
+	width: 70%;
+}
+
+.print-cart .list-body .quantity {
+	width: 15%;
+	position: absolute;
+	right: 0px !important;
+	top: 10px !important;
+}
+
+.print-cart .list-body .list-item {
+	display: inline !important;
+}
+
+.print-cart .list-body .list-item.column-price {
+	width: 10%;
+	float: left !important;
+}
+
+.print-cart .list-body .clearfix {
+	clear: both !important;
+}
+
+.print-cart .list-body .clearfix .warranty,
+.print-cart .list-body .clearfix .column-price.single-price {
+	margin-left: 10px;
+}

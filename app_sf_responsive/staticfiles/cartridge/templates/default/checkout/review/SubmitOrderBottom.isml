@@ -1,0 +1,35 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#BasketTermsAndConditionsValue EQ 'on'#">
+	<div class="form-group form-group-tc<isif condition="#isDefined(TermsAndConditionsError) OR 
+			(isDefined(BasketValidationResults) AND hasElements(BasketValidtionResults:getParameterValues("TermsAndConditionsError")))#"> has-error</isif>">
+		<div class="checkbox form-control">
+			<label for="terms-conditions-agree">
+				<input id="terms-conditions-agree" type="checkbox" name="termsAndConditions" value="on"
+					required
+					data-bv-notempty-message="<istext key="checkout.tac.error.tip"/>"
+				/> <istext key="checkout.tac" /> 
+					<a href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.termsAndConditions.pagelet2-Include'))#" data-dialog=""><istext key="checkout.tac.link" /></a>
+			</label>
+		</div>
+		<isif condition="#isDefined(TermsAndConditionsError) OR 
+			(isDefined(BasketValidationResults) AND hasElements(BasketValidtionResults:getParameterValues("TermsAndConditionsError")))#"><!---server side error message --->
+			<small class="help-block"><istext key="checkout.tac.error.tip"></small>
+		</isif>
+	</div>
+</isif>
+
+<button 
+	type="submit" 
+	class="btn btn-lg btn-block btn-primary" 
+	name="sendOrder" 
+	<isif condition="#isDefined(ERROR_Basket) AND (ERROR_Basket EQ 'BasketMaxTotalValue')#">
+		disabled="disabled" title="<istext key="checkout.order_summary.max.total.value.error.text2" />"
+	</isif>
+>
+	<isif condition="#RecurringBasket:Recurring#">
+		<istext key="checkout.order_review.send.subscription.button" />
+	<iselse>
+		<istext key="checkout.order_review.send.button" />
+	</isif>	
+</button>

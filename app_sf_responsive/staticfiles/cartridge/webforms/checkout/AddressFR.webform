@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="AddressFR">
+  <forms name="address">
+    <parameters xsi:type="webform:FormParameter" name="CountryCode" type="java.lang.String" message="account.address.country">
+      <validatorBindings validator="CountryStateProvince-CountryValidator"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Title" optional="true" type="java.lang.String">
+      <validatorBindings validator="Enumeration-LocalizedValidatorEnumeration">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="EnumerationKeyProviderCtnrName" value="salutationEnumerationKeyProviderCtnr"/>
+		<parameterBindings xsi:type="core:ParameterValueBinding" name="countryParamName" value="FR"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="FirstName" type="java.lang.String" message="account.firstname">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+      <validatorBindings validator="UserValidators-forbiddensymbols" >
+       	<parameterBindings xsi:type="core:ParameterValueBinding" name="LocalizedErrorMessage" value="error.forbiddensymbols"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="LastName" type="java.lang.String" message="account.lastname">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+      <validatorBindings validator="UserValidators-forbiddensymbols" >
+       	<parameterBindings xsi:type="core:ParameterValueBinding" name="LocalizedErrorMessage" value="error.forbiddensymbols"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Address1" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="60"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Address2" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="60"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="State" type="java.lang.String">
+      <validatorBindings validator="CountryStateProvince-StateProvinceValidator">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="countryParamName" value="CountryCode"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="City" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="PostalCode" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-regexp">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="regExp" value="[0-9]{5}"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="PhoneHome" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+    </parameters>
+	<parameters xsi:type="webform:FormParameter" optional="true" name="UseAsBillingAddress" type="java.lang.Boolean"/>
+	<parameters xsi:type="webform:FormParameter" optional="true" name="PreferredBillingAddress" type="java.lang.Boolean"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="UseAsShippingAddress" type="java.lang.Boolean"/>
+	<parameters xsi:type="webform:FormParameter" optional="true" name="PreferredShippingAddress" type="java.lang.Boolean"/>
+  </forms>
+</webform:WebForm>

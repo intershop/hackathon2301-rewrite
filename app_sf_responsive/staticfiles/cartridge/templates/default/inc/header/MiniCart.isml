@@ -1,0 +1,50 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- After AddToCart from ExpressShop Overlay only minicart part of the page is reloaded, so next lines add tracking code for add product event --->
+<isinclude template="modules/Modules">
+<ISIncludeTrackingTool template="BasketChangeAdd">
+
+<div class="mini-cart collapse" id="miniCart">
+	<isif condition="#hasElements(AddToBasketResults:Failures)#">
+		<ul class="list-unstyled alert alert-danger">
+			<isloop iterator="AddToBasketResults:Failures" alias="addToBasketResult">
+				<li><istext key="#'checkout.error.'.addToBasketResult:FailureCode#"></li>
+			</isloop>
+		</ul>
+	</isif>
+	<isif condition="#(isDefined(CurrentCartBO)) AND (CurrentCartBO:ProductLineItemsCount > 0)#">
+		<isif condition="#CurrentCartBO:ProductLineItemsCount > 2#">
+			<div class="btn-scroll-up disabled"><span class="glyphicon glyphicon-chevron-up"></span></div>
+		</isif>
+		<div class="product-rows-block">
+			<div class="slider">
+				<isloop iterator="CurrentCartBO:ProductLineItems" alias="pli">
+					<div class="product-row">
+						<div class="mini-product-img">
+							<a href="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', pli:ProductBO:SKU))#">
+								<isinclude url="#URL(Action('ViewMiniCart-ProductImage'), Parameter('ProductID', pli:ProductBO:ID))#">
+							</a>
+						</div>
+						<div class="mini-product-info">
+							<a href="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', pli:ProductBO:SKU))#" title="<isprint value="#pli:ProductBO:Name#"/>"><isprint value="#pli:ProductBO:Name#"/></a>
+							<div class="product-price">
+								<isif condition="#PriceDisplayType EQ 'net'#">
+									<isprint value="#pli:DiscountedPriceNet#">
+								<iselse/>
+									<isprint value="#pli:DiscountedPriceGross#">
+								</isif>
+							</div>
+							<div class="cart-pli-data"><span><istext key="shopping_cart.pli.qty.label" /></span> <isprint value="#pli:Quantity#"/></div>
+						</div>
+					</div>
+				</isloop>
+			</div>
+		</div>
+		<isif condition="#CurrentCartBO:ProductLineItemsCount > 2#">
+			<div class="btn-scroll-down"><span class="glyphicon glyphicon-chevron-down"></span></div>
+		</isif>
+		<a class="view-cart btn btn-primary btn-lg btn-block" href="#URLEX(SecureURL,'',Action('ViewCart-View'))#"><istext key="shopping_cart.ministatus.view_cart.link"/></a>
+	<iselse>
+		<istext key="shopping_cart.ministatus.empty_cart.text" />
+	</isif>
+</div>	

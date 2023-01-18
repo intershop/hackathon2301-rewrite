@@ -1,0 +1,30 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false">
+
+<%@ page import="java.util.HashMap" %>
+<%
+	String input = (String)getPipelineDictionary().get("configparameterstring");
+	String resultName = (String)getPipelineDictionary().get("resultmapname");
+	
+	HashMap<String,String> hash = new HashMap<String,String>();
+	
+	if (null != input && "" != input) {
+		if (input.contains(";")) {
+			String[] lines = input.split(";");
+			
+			for(int i=0; i<lines.length; i++) {
+				String[] pair = lines[i].split("=");
+				
+				if (null != pair && pair.length>1) {
+					hash.put(pair[0],pair[1]);
+				}
+			}
+		} else {
+			String[] pair =input.split("=");
+			if (null != pair && pair.length>1) {
+				hash.put(pair[0],pair[1]);
+			}
+		}
+	}
+
+	getPipelineDictionary().put(resultName, hash);
+%>

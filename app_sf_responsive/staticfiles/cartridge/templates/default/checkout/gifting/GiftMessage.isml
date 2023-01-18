@@ -1,0 +1,138 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset name="It" value="#PliBO:ProductBO:Extension("Gifting"):ApplicableGiftMessages#" scope="request" />
+
+<isif condition="#not(It:Size EQ '0')#">
+	<isif condition="#It:Size NE '1'#">
+
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="<isprint value="#Subform:GiftMessageSelection:QualifiedName#">">
+				<istext key="checkout.gifting.giftmessage.message"/>
+			</label>
+			<div class="col-sm-8">
+				<select class="form-control" id="<isprint value="#Subform:GiftMessageSelection:QualifiedName#">" name="<isprint value="#Subform:GiftMessageSelection:QualifiedName#">">
+					<isloop iterator="It" alias="message">
+						<isset name="ProductPrice" value="#message:Extension("Pricing")#" scope="request">
+						<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+						<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+						<isset name="salePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext)#" scope="request"/>
+
+						<option value="<isprint value = "#message:ID#">"
+							<isif condition="#not(Subform:GiftMessageSelection:ValueMissing) AND (message:ID EQ Subform:GiftMessageSelection:Value)#">
+								selected="selected"
+							<iselseif condition="#(Subform:GiftMessageSelection:ValueMissing) AND isDefined(SplitInfo:get("GiftMessageProduct")) AND (message:ID EQ SplitInfo:get("GiftMessageProduct"):ID)#">
+								selected="selected"
+							</isif>
+						><isprint value="#message:Name#"> - <isprint value="#salePrice:Price#">
+							<ISProductPriceAdditionalText ProductBO="#message#">
+						</option>
+					</isloop>
+				</select>
+			</div>
+		</div>
+	<iselse>
+		<div class="form-group">
+			<label class="col-sm-4 control-label" for="<isprint value="#Subform:GiftMessageSelection:QualifiedName#">">
+				<istext key="checkout.gifting.giftmessage.message"/>
+			</label>
+
+			<isloop iterator="It" alias="message">
+				<isset name="ProductPrice" value="#message:Extension("Pricing")#" scope="request">
+				<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+				<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+				<isset name="salePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency, ProductPriceContext)#" scope="request"/>
+
+				<span><isprint value="#message:Name#"> - <isprint value="#salePrice:Price#">
+					<ISProductPriceAdditionalText ProductBO="#message#">
+				</span>
+
+				<input type="hidden" name="<isprint value="#Subform:GiftMessageSelection:QualifiedName#">" value="<isprint value = "#message:ID#">" />
+			</isloop>
+		</div>
+
+	</isif>
+
+	<!--- error behavior to input --->
+	<isif condition="#Subform:GiftMessageTo:isInvalid#">
+		<div role="alertdialog" class="alert alert-danger">
+			<isif condition="#Subform:GiftMessageTo:isError("error.maxlength")#" >
+				<istext key="checkout.gifting.maxlength.error" />
+			<iselse>
+				<istext key="checkout.gifting.profanitycheck.error" />
+			</isif>
+		</div>
+	</isif>
+
+	<!--- to input --->
+	<div class="form-group <isif condition="#Subform:GiftMessageTo:isInvalid#">has-error</isif>">
+		<label class="col-sm-4 control-label" for="<isprint value="#Subform:GiftMessageTo:QualifiedName#">">
+			<istext key="checkout.gifting.to"/>
+		</label>
+		<div class="col-sm-8">
+			<input class="form-control" type="text" maxlength="35" name="<isprint value="#Subform:GiftMessageTo:QualifiedName#">"
+			value="<isif condition="#not(Subform:GiftMessageTo:ValueMissing)#" ><isprint value = "#Subform:GiftMessageTo:Value#"><iselse><isprint value = "#SplitInfo:get("GiftMessageMessage"):To#"></isif>"/>
+		</div>
+	</div>
+
+	<!--- error behavior from input --->
+	<isif condition="#Subform:GiftMessageFrom:isInvalid#">
+		<div role="alertdialog" class="alert alert-danger">
+			<isif condition="#Subform:GiftMessageFrom:isError("error.maxlength")#" >
+				<istext key="checkout.gifting.maxlength.error" />
+			<iselse>
+				<istext key="checkout.gifting.profanitycheck.error" />
+			</isif>
+		</div>
+	</isif>
+
+	<!--- from input --->
+	<div class="form-group <isif condition="#Subform:GiftMessageFrom:isInvalid#">has-error</isif>">
+		<label class="col-sm-4 control-label" for="<isprint value="#Subform:GiftMessageFrom:QualifiedName#">">
+			<istext key="checkout.gifting.from"/>
+		</label>
+		<div class="col-sm-8">
+			<input class="form-control" type="text" maxlength="35" name="<isprint value="#Subform:GiftMessageFrom:QualifiedName#">"
+			value="<isif condition="#not(Subform:GiftMessageFrom:ValueMissing)#"><isprint value = "#Subform:GiftMessageFrom:Value#"><iselse><isprint value = "#SplitInfo:get("GiftMessageMessage"):From#"></isif>"/>
+		</div>
+	</div>
+
+	<!--- error behavior message box --->
+	<isif condition="#Subform:GiftMessageText:isInvalid#">
+		<div role="alertdialog" class="alert alert-danger">
+			<isif condition="#Subform:GiftMessageText:isError("error.maxlength")#" >
+				<istext key="checkout.gifting.maxlength.error" />
+			<iselseif condition="#Subform:GiftMessageText:isValueMissing#" >
+				<istext key="checkout.gifting.message.required.error" />
+			<iselse>
+				<istext key="checkout.gifting.profanitycheck.error" />
+			</isif>
+
+			<isset name = "errorcheck" value="true" scope = "request">
+			<isset name = "errorindex" value="#(index-1)#" scope = "request">
+		</div>
+	</isif>
+
+	<!--- message box --->
+	<div class="form-group <isif condition="#Subform:GiftMessageText:isInvalid#">has-error</isif>">
+
+		<label class="col-sm-4 control-label" for="<isprint value="#Subform:GiftMessageText:QualifiedName#">">
+			<istext key="checkout.gifting.message"/><span class="required">*</span>
+		</label>
+		<div class="col-sm-8">
+			<textarea 
+				class="form-control"
+				required
+				maxlength="<isprint value="#GiftMessage_Form_MessageLength#" formatter="0">" 
+				data-charactercounter="cCounter<isprint value = "#replace(SplitInfo:ID, '\\.', '')#">" 
+				name="<isprint value="#Subform:GiftMessageText:QualifiedName#">" id="<isprint value="#Subform:GiftMessageText:QualifiedName#">"
+				data-bv-notempty-message="<istext key="checkout.gifting.message.required.error"/>"
+			>
+				<isif condition="#not(Subform:GiftMessageText:ValueMissing)#" ><isprint value = "#Subform:GiftMessageText:Value#"><iselse><isprint value = "#SplitInfo:get("GiftMessageMessage"):Message#"></isif>
+			</textarea>
+
+			<small class="input-help">
+				<istext key="checkout.gifting.entered.1"/> <span id="cCounter<isprint value = "#replace(SplitInfo:ID, '\\.', '')#">"></span> <istext key="checkout.gifting.entered.2"/>
+			</small>
+		</div>
+	</div>
+</isif>

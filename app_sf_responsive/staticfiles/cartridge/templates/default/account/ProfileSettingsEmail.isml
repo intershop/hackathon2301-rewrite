@@ -1,0 +1,52 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+<isGetLoginPreferenceReader>
+<isset name="breadcrumbTrailTextKey" value="#'account.update_'.UserLoginType.'.heading'#" scope="request"/>
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb
+		link="#URLEX(SecureURL,'',Action('ViewProfileSettings-ViewProfile'))#"
+		text="#localizeText('account.profile.link')#"
+		trailtext="#localizeText(breadcrumbTrailTextKey)#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+
+<div class="account-wrapper" data-testing-id="profile-settings-email-page">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="PROFILE">
+		</div>
+
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			<h1><istext key="#'account.update_'.UserLoginType.'.heading'#"/></h1>
+			<isif condition="#isDefined(ERROR_EmailValidation)#">
+				<div role="alert" class="alert alert-danger">
+					<p><istext key="account.update_email.email.error.email"/></p>
+				</div>
+			</isif>
+			<p><istext key="account.update_email.description"/></p>
+			<div class="section">
+			<isif condition="#UserLoginType EQ 'email'#">
+				<isinclude template="account/profile/EmailEdit">
+			</isif>
+			<isif condition="#UserLoginType EQ 'username'#">
+				<isinclude template="account/profile/UsernameEdit">
+			</isif>
+			</div>
+			<h4 class="help-block"><istext key="account.help.heading"/></h4>
+			<p class="help-block">
+				<istext key="#'account.update_'.UserLoginType.'.question.text'#"/><br />
+				<istext key="#'account.update_'.UserLoginType.'.answer.text'#"/>
+			</p>
+		</div>
+	</div>
+</div>

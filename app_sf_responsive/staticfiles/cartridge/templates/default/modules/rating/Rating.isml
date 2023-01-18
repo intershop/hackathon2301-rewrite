@@ -1,0 +1,38 @@
+<iscontent charset="UTF-8" compact="true">
+
+<isif condition="#(NOT isDefined(AverageRating)) OR (AverageRating < 0.5)#">
+	<isset name="RatingStarsImageClass" value="rating-zero" scope="request">
+<iselseif condition="#(AverageRating >= 0.5) AND (AverageRating < 1.5)#">
+	<isset name="RatingStarsImageClass" value="rating-one" scope="request">
+<iselseif condition="#(AverageRating >= 1.5) AND (AverageRating < 2.5)#">
+	<isset name="RatingStarsImageClass" value="rating-two" scope="request">
+<iselseif condition="#(AverageRating >= 2.5) AND (AverageRating < 3.5)#">
+	<isset name="RatingStarsImageClass" value="rating-three" scope="request">
+<iselseif condition="#(AverageRating >= 3.5) AND (AverageRating < 4.5)#">
+	<isset name="RatingStarsImageClass" value="rating-four" scope="request">
+<iselseif condition="#(AverageRating >= 4.5)#">
+	<isset name="RatingStarsImageClass" value="rating-five" scope="request">
+</isif>
+
+<ul class="rating-display clearfix <isprint value="#RatingStarsImageClass#">">
+	<li class="star-one"><span class="glyphicon glyphicon-star"></span></li>
+	<li class="star-two"><span class="glyphicon glyphicon-star"></span></li>
+	<li class="star-three"><span class="glyphicon glyphicon-star"></span></li>
+	<li class="star-four"><span class="glyphicon glyphicon-star"></span></li>
+	<li class="star-five"><span class="glyphicon glyphicon-star"></span></li>
+	
+	<isif condition="#isDefined(TotalRatingCount)#">
+		<li class="rating-total" <isif condition="#(TotalRatingCount > 0) AND (RichSnippetsEnabled EQ 'true')#">itemprop="reviewCount"</isif>>
+			(<isprint value="#TotalRatingCount#">)
+		</li>
+	</isif>
+	
+	<li class="rating-average hidden" <isif condition="#(AverageRating > 0) AND (RichSnippetsEnabled EQ 'true')#">itemprop="ratingValue"</isif>>
+		<isif condition="#AverageRating > 0#">
+			<isprint value="#AverageRating#"> <istext key="product.rating.out_of_five.text" />
+		<iselse>
+			<istext key="product.rating.not_rated"/>
+		</isif>
+	</li>
+	
+</ul>

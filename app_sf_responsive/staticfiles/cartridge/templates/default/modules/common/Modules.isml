@@ -1,0 +1,605 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Garbles a string that is longer than the passed length using the passed character. 
+	Nothing is done if the passed string length is smaller than the passed length.
+	
+	Parameters:
+		- text (required)
+			The string to garble.
+		- direction (optional) [begin|end] - default: end
+			"begin" to garble at the beginning, otherwise "end".
+		- length (required):
+			Number of characters to remain unchanged.
+		- character (required):
+			The character used to replace in string.
+		- output (required):
+			The name of the dictionary key that holds the garbled string.
+	
+	Example:
+		<ISGarbleString
+			text="12345678"
+			direction="begin"
+			length="4"
+			character="*"
+			output="garbled">
+			
+	Output: garbled="****5678"
+--->
+<ismodule template = "modules/common/GarbleString.isml"
+	name="GarbleString"
+	attribute="text"
+	attribute="direction"
+	attribute="length"
+	attribute="character"
+	attribute="output"
+>
+
+<!---
+	Calculator for money objects.
+	
+	Parameters:
+		- method (required) [add|subtract|multiply|divide]
+			The calculation method to use.
+		- operand1 (required):
+			Left money operand for the calculation.
+		- operand2 (required):
+			Right money operand for the calculation.
+		- result (required):
+			The name of the key under which the result is stored in the dictionary.
+	
+	Example:
+		<ISMoneyCalculator
+			method="add"
+			operand1="#ProductLineItem:GrossPricePC#"
+			operand2="#SubTotalPC#"
+			result="SubTotalPC">
+--->
+<ismodule template = "modules/common/MoneyCalculator.isml"
+	name="MoneyCalculator"
+	attribute="method"
+	attribute="operand1"
+	attribute="operand2"
+	attribute="result"
+>
+
+<!--- 
+	Comparator for money objects.
+	
+	Parameters:
+		- method (required) [lessThan|greaterThan]
+			The comparison method to use.
+		- operand1 (required):
+			Left money operand for the comparison.
+		- operand2 (required):
+			Right money operand for the comparison.
+		- comparisonresult (required):
+			The name of the key under which the result is stored in the dictionary.
+	
+	Example:
+		<isMoneyComparator
+			method="lessThan"
+			operand1="#Savings#"
+			operand2="#ActualPriceTypeSavings#"
+			comparisonresult="GreaterSavingFound">
+--->
+<ismodule template="modules/common/MoneyComparator.isml"
+	name="MoneyComparator"
+	attribute="method"
+	attribute="operand1"
+	attribute="operand2"
+	attribute="comparisonresult"
+>
+
+<!---
+	Returns the current domain (e.g. to use in strict ISML modules).
+	
+	Parameters:
+		- CurrentDomain (required):
+			The dictionary key that will hold the current domain.
+	Example:
+		<ISGetCurrentDomain CurrentDomain="CurrentDomain">
+--->
+<ismodule template = "modules/common/GetCurrentDomain.isml"
+	name="GetCurrentDomain"
+	strict="true"
+	returnattribute="CurrentDomain"
+>
+
+<!---
+	Returns the current application (e.g. to use in strict ISML modules).
+	
+	Parameters:
+		- ApplicationBO (required):
+			The dictionary key that will hold the current application.
+	Example:
+		<ISGetCurrentApplication ApplicationBO="ApplicationBO">
+--->
+<ismodule template = "modules/common/GetCurrentApplication.isml"
+	name="GetCurrentApplication"
+	strict="true"
+	returnattribute="ApplicationBO"
+>
+
+<!---
+	Returns a preference for a domain given by name.
+	
+	Parameters:
+		- preferencekey (required):
+			The key name of the preference to be looked up.
+		- domainname (required):
+			The domain to which the preference belongs.
+		- type (optional) [String|Int|Double]
+			Type of the preference value. If not defined returns the preference object.
+		- return (required):
+			The pipeline dictionary name to hold the resulting preference value.
+			Returns the preference object or null if the specified preference does not exist.
+			But for a given type the default value defined by the associated preference definition is returned.
+	
+	Example:
+		<ISGetPreference
+			preferencekey="BasketDisplayTaxes"
+			domainname="#CurrentUser:Profile:Domain:Site:DomainName#"
+			type="String"
+			return="Preference">
+--->
+<ismodule template = "modules/common/GetPreference.isml"
+	name="GetPreference"
+	attribute="preferencekey"
+	attribute="domainname"
+	attribute="type"
+	attribute="return"
+>
+
+<!---
+	This module renders a links href="..." attribute.
+	
+	valid links are:
+		- http://www.external.com
+		- https://www.external.com
+		- page://<pageid> e.g. page://systempage.homepage.pagelet2-Page
+		- product://<SKU> e.g. product://12345678
+		- category://<CatalogCategoryID> e.g. category://PCSystems@PrimeTech-Computers
+		- pipeline://<pipelename-startnode>?<parameter1>=<value1>&<parameter2>=<value2> e.g. pipeline://ViewHomepage-Start
+	
+	Parameters:
+		- link (required)
+			The links described above.
+		- linkparameters (optional)
+			The url-parameters for the link (e.g. for tracking).
+			Valid values for input field are '<parameter1>=<value1>&<parameter2>=<value2>' without leading '?' or '&'.
+			The module detects the the first parameter-delimiter ('?' or '&') by itself.
+		- forcesecure (optional) [true|false]
+			Force usage of secure protocol.
+		- forceinsecure (optional) [true|false]
+			Force usage of insecure protocol.
+		- encoding (optional) [off]
+			Switch off standard encoding behavior of internally used isprint (should be turned off)
+		
+		If both parameter (forcesecure/forceinsecure) are given, secure protocol will be used.
+		If neither forcesecure nor forceinsecure are present, protocol of current request will be used.
+	
+	Example:
+		<a <ishref link="page://systempage.browsingHistory.pagelet2-Page" encoding="off">><istext key="common.view_all.link" /></a>
+ --->
+<ismodule template="modules/common/Link.isml"
+	name="href"
+	attribute="link"
+	attribute="linkparameters"
+	attribute="forcesecure"
+	attribute="forceinsecure"
+	attribute="encoding"
+>
+
+<!---
+	This module renders a link. Output is the link only (without href attribute).
+	
+	valid links are:
+		- http://www.external.com
+		- https://www.external.com
+		- page://<pageid> e.g. page://systempage.homepage.pagelet2-Page
+		- product://<SKU> e.g. product://12345678
+		- category://<CatalogCategoryID> e.g. category://PCSystems@PrimeTech-Computers 
+		- pipeline://<pipelename-startnode>?<parameter1>=<value1>&<parameter2>=<value2> e.g. pipeline://ViewHomepage-Start
+	 
+	Parameters:
+		- link (required)
+			The links described above.
+		- linkparameters (optional)
+			The url-parameters for the link (e.g. for tracking).
+			Valid values for input field are '<parameter1>=<value1>&<parameter2>=<value2>' without leading '?' or '&'.
+			The module detects the the first parameter-delimiter ('?' or '&') by itself.
+		- forcesecure (optional, java.lang.Boolean) [true|false]
+			Force usage of secure protocol.
+		- forceinsecure (optional, java.lang.Boolean) [true|false]
+			Force usage of insecure protocol.
+		- encoding (optional) [off]
+			Switch off standard encoding behavior of internally used isprint (should be turned off)
+		
+		If both parameter (forcesecure/forceinsecure) are given, secure protocol will be used.
+		If neither forcesecure nor forceinsecure are present, protocol of current request will be used.
+	
+	Example:
+		<islink link="pipeline://ViewHomepage-Start" forceinsecure="#true#" encoding="off">
+ --->
+<ismodule template="modules/common/LinkURL.isml"
+	name="link"
+	attribute="link"
+	attribute="linkparameters"
+	attribute="forcesecure"
+	attribute="forceinsecure"
+	attribute="encoding"
+>
+
+<!--- 
+	This module merges meta data from a custom map with given default values.
+	The meta data map can contain values for Title, Description and Keywords which are
+	used if they are not empty. Otherwise the according given default value is used.
+	Once the module is called the following dictionary keys hold the merged values and
+	can be used for the according html elements.
+	- metaTitle			--> <title><isprint value="#metaTitle#"></title>
+	- metaDescription	--> <meta name="description" content="<isprint value="#metaDescription#">" />
+	- metaKeywords		--> <meta name="keywords" content="<isprint value="#metaKeywords#">" />
+	
+	Parameters:
+		- custommetadatamap (optional)
+			Map with values for Title, Description and Keywords.
+			This usually comes from a parametertype.pagevariationmeta.pagelet2-PageVariationMeta configuration parameter.
+		- defaulttitle (optional)
+			A default value for the html title.
+		- defaultdescription (optional)
+			A default value for the html description.
+		- defaultkeywords (optional)
+			A default value for the html keywords.
+	
+	Example:
+		<isMetaDataSetup
+			custommetadatamap="#PageletConfigurationParameters:metaInfo#"
+			defaulttitle="#ConTitle#"
+			defaultdescription="#ConDescription#"
+			defaultkeywords="#ConKeywords#">
+ --->
+<ismodule template = "modules/common/MetaDataSetup.isml"
+	name="MetaDataSetup"
+	attribute="custommetadatamap"
+	attribute="defaulttitle"
+	attribute="defaultdescription"
+	attribute="defaultkeywords"
+>
+
+<!--- 
+	Module to create the different breadcrumbs of a storefront.
+	It will create breadcrumbs for categories, products, or a given set
+	of links and texts.
+	Also the last not linked elements (trail text) can be given.
+	Whether to show the Home link or not can be configured too.
+	
+	Parameters:
+		- separator (optional) [string] - default: "/" (slash)
+			Controls whether the 'separator' should be displayed or set another 'separator' value.
+		- showhomelink (optional) [true|false] - default: false
+			Controls whether the 'Home' link should be displayed or not.
+		- categorybo (optional) [CategoryBO]
+			Prints the category path if given.
+		- categoryoffset (optional) [Integer]
+			Configures the number of categories to be hidden at the beginning of the category path.
+		- product [ProductBO]
+			Prints the product name if given.
+		- link0-4 (optional)
+			Links to manually create breadcrumb links (0-4).
+		- text0-4 (optional)
+			Texts to manually create breadcrumb links (0-4).
+		- separatetrailtext (optional) [true|false]
+			Controls whether to insert a separator before the trail text or not.
+		- trailtext0-4 (optional)
+			Additional trail text (0-4).
+	
+	Example:
+		<ISBreadcrumb showhomelink="true" trailtext0="#localizeText('store.store_finder.breadcrumb')#">
+		
+		<ISBreadcrumb
+			showhomelink="#PageletConfigurationParameters:showHomeLink#"
+			categorybo="#CategoryBO#"
+			product="#ProductBO#"
+			separator=">"
+			categoryoffset="#PageletConfigurationParameters:categoryOffset#">
+--->
+<ismodule template = "modules/common/Breadcrumb"
+name="Breadcrumb"
+strict="true"
+attribute="separator"
+attribute="showhomelink"
+attribute="categorybo"
+attribute="categoryoffset"
+attribute="product"
+attribute="searchresult"
+attribute="searchterm"
+attribute="link0"
+attribute="text0"
+attribute="link1"
+attribute="text1"
+attribute="link2"
+attribute="text2"
+attribute="link3"
+attribute="text3"
+attribute="link4"
+attribute="text4"
+attribute="separatetrailtext"
+attribute="trailtext0"
+attribute="trailtext1"
+attribute="trailtext2"
+attribute="trailtext3"
+attribute="trailtext4"
+attribute="class"
+>
+
+<!--- 
+	Module to print custom attribute values. 
+	The module determines the right attribute value type to print the value.
+	
+	Parameter:
+		- attributelabel (required)
+			The label for the printed custom attribute.
+		- attributevalue (required)
+			The value of the printed custom attribute.
+		- attributeseparator (optional)
+			Seperator string for multiple values.
+		- twolined (optional) [true|false] - default: false
+			If twolined is true then label and value are on seperate lines
+			(done through different CSS classes with "display: block;").
+	
+	Example:
+		<isCustomAttribute
+			attributelabel="#AttDesc:DisplayName#"
+			attributevalue="#ProductBO:AttributeValue(AttDesc:ID)#"
+			attributeseparator=",&nbsp;">
+--->
+<ismodule template="modules/common/CustomAttribute"
+	name="CustomAttribute"
+	attribute="attributelabel"
+	attribute="attributevalue"
+	attribute="attributeseparator"
+	attribute="twolined"
+>
+
+<!---
+	This module renders an image for an image container depending on the imagetype.
+	It is able to perform a fall back and shows a standard no image picture if no image is available.
+	
+	Parameters:
+		- product (required)
+			The Product or ProductBO whos image should be shown.
+		- imagetypeid (required)
+			The image type to use.
+		- imagetypeid2 (optional)
+			The image type to use if no image is available for imagetypeid.
+		- imageView: (optional)
+			The image view to use, if empty use the primary view.
+		- class (optional)
+			CSS class for img tag.
+		- alttext (optional)
+			The alt text for the img tag.
+		- RichSnippetsEnabled (optional)
+			If the rich snippets are enabled and will be added to the <img> tag.
+		- datatestingid (optional)
+			Adds a data-testing-id attribute to the <img> tag.			
+
+	Example:
+		<isImage
+			imagecontainer="#product:Extension("Image"):ImageContainerBO#"
+			imagetypeid="#imagetypeid#"
+			imageview="#imageview#"
+			class="#class#"
+			alttext="#AltText#"
+			richsnippetsenabled="#RichSnippetsEnabled#">
+			datatestingid="imageOFCategoryXYZ"
+ --->
+<ismodule template="modules/common/Image.isml"
+	name="Image"
+	attribute="imagecontainer"
+	attribute="imagetypeid"
+	attribute="imagetypeid2"
+	attribute="imageview"
+	attribute="class"
+	attribute="alttext"
+	attribute="richsnippetsenabled"
+	attribute="datatestingid"
+	attribute="sourcesetmedia"
+>
+
+<!---
+	Creates a tooltip link with a configurable link text, headline and content.
+	The values can either be given as string values or as localization key references.
+	If both are given the string value is used instead of the key.
+	In addition the contenttyp can be used for html rendering. 
+	
+	Parameters:
+		- linkclass (optional)
+			Additional link CSS class.
+		- linktext (optional)
+			The link text as string value.
+		- linktextkey (optional)
+			The localization key name of the link text.
+		- headline (optional)
+			The headline as string value. (displayed in <strong>...</strong>)
+		- headlinekey (optional)
+			The localization key name of the headline. (displayed in <strong>...</strong>)
+		- content (optional)
+			The content as string value.
+		- contentkey (optional)
+			The localization key name of the content.
+		- contenttype (optional) [html]
+			Set to "html" if the value needs to be rendered as html.
+		-placement (optional)
+			Placement of the tooltip ("top", "bottom", "right", "left")
+			default: "top"
+	
+	Example:
+		<isTooltip
+			linktextkey="shopping_cart.read_more.link"
+			headlinekey="shopping_cart.item.delivery.text"
+			contentkey="shopping_cart.delivery_date_info.text">
+--->
+<ismodule template = "modules/common/Tooltip.isml"
+	name="Tooltip"
+	attribute="linkclass"
+	attribute="linktext"
+	attribute="linktextkey"
+	attribute="headline"
+	attribute="headlinekey"
+	attribute="content"
+	attribute="contentkey"
+	attribute="contenttype"
+	attribute="placement"
+	strict="true"
+>
+
+<!---
+	Gets a dict value with the given name in the key or stores the value under the given name in entry.
+
+	Parameters:
+		- key;
+			name of the keyholder.
+		- entry;
+			the value. if the parameter empty or not exists the entry is print
+		- print;
+			print=false - the value is not print out
+			print=true or not exists - the value is print out with IsPrint
+	Example:
+		<isset name="CartShippingMethod" value="#CurrentCartBO:Extension("ShippingMethod")#" scope="request"/>
+		
+		<isloop iterator="CartShippingMethod:BasketShippingMethodSelectionBucketBOs" alias="Bucket" counter="BucketNo">
+		 	...
+			<isGetIndirectValue key="#'ShippingInstruction_'.BucketNo#">
+			...
+
+			...
+			<isGetIndirectValue key="#'ShippingForm:ShippingInstruction_'.BucketNo.':isInvalid'#" entry="Condition" print="false">
+			<isif condition="#ShippingForm:isSubmitted AND Condition#">
+				...
+			</isif>
+		</isloop>
+--->
+<ismodule template = "modules/common/GetIndirectValue.isml"
+	name="GetIndirectValue"
+	attribute="key"
+	attribute="entry"
+>
+
+<!---
+
+	Field Error Message Placeholder
+
+---><ismodule template = "modules/common/FieldErrorMessagePlaceholder.isml"
+	name="FieldErrorMessagePlaceholder"
+	attribute="class"
+	attribute="fieldname"
+	attribute="ext_string_prefix"
+	attribute="error_message_override"
+	attribute="name_override"
+	attribute="is_error"
+>
+
+<!---
+
+	Field Error Message List
+
+---><ismodule template = "modules/common/FieldErrorList.isml"
+	name="FieldErrorList"
+	attribute="fieldname"
+	attribute="ext_string_prefix"
+	attribute="error_message_override"
+>
+
+<!--- 
+
+	helper modules for handling number sequences with modulo 
+
+--->
+<ismodule template = "modules/common/isseq-init.isml"
+	name="seq-init"
+	attribute="name"
+	attribute="modulo"
+>
+<ismodule template = "modules/common/isseq-next.isml"
+	name="seq-next"
+	attribute="name"
+>
+
+<!---
+	DatePicker: modifies the specified input to act as a DatePicker and 
+	creates a hidden input with the specified name {input_name} and ID "hidden{input_name}" containing
+	the selected date in format dd/MM/yyyy (hardcoded) which can be parsed e.g. with pipelet VerifyDate 
+
+	Parameters:
+	 - language and format are used from session locale settings
+	 - dates must be in specified format e.g. if specified format is dd/MM/yyyy 
+	   then dates_disabled must be in the same format "['30/12/2016','31/12/2016']"
+
+	Example: 
+
+	<isDatePicker locale="#CurrentSession:Locale#" input_id="desiredDeliveryDate" dates_disabled="['02/06/2016','03/06/2016']" start_date="-3d" end_date="06/10/2016">
+
+	$('.dtPicker').datepicker({
+		autoclose: true,
+		language: 'de',
+		format: "MM/dd/yyyy",
+		datesDisabled: ['06/02/2016','06/03/2016'],/*disable 02,03 june 2016*/
+		startDate: '-3d',
+		endDate: '06/10/2016'
+		todayHighlight: true
+	});
+--->	
+<ismodule template = "modules/common/DatePicker.isml"
+	name="DatePicker"
+	attribute="locale"
+	attribute="input_id"
+	attribute="dates_disabled"
+	attribute="start_date"
+	attribute="end_date"
+	attribute="select_month"
+	attribute="days_of_week_disabled"
+>
+
+<!--- 
+	creates a map or add values to a map
+	mapname required; name to store or retrieve the map in dictionary
+	mode optional; add | new add values or create a new map
+	key0-9 
+	value0-9 
+--->
+<ismodule template = "modules/common/CreateMap" 
+	name="CreateMap" 
+	attribute="mapname" 
+	attribute="mode"
+	attribute="key0"
+	attribute="value0"
+	attribute="key1"
+	attribute="value1"
+	attribute="key2"
+	attribute="value2"
+	attribute="key3"
+	attribute="value3"
+	attribute="key4"
+	attribute="value4"
+	attribute="key5"
+	attribute="value5"
+	attribute="key6"
+	attribute="value6"
+	attribute="key7"
+	attribute="value7"
+	attribute="key8"
+	attribute="value8"
+	attribute="key9"
+	attribute="name"
+>
+
+<!---
+	Retrieve the login preference reader for the provided channel repository.
+
+	Return:
+		- LoginPreferenceReader providing access to the following login preferences: LoginType, LoginMinLength, LoginMaxLength, LoginExpression
+		  Possible values: email, username
+---><ismodule template = "modules/common/GetLoginPreferenceReader.isml"
+	name="GetLoginPreferenceReader"
+>

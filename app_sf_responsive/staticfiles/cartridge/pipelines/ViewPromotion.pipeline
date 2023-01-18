@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Displays a promotion.
+@Group OnlineMarketing-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewPromotion" type="view">
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Browse">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="PromotionIDs">
+    <nodeSuccessors name="decision_yes" next="SplitString1"/>
+<!--@BendPoints 11,3-->
+    <nodeSuccessors name="decision_no" next="JoinNode5"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SplitString1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/SplitString.xml"/>
+    <nodeSuccessors name="next" next="VerifyInteger2"/>
+    <parameterBindings name="Delimeter" constant=","/>
+    <parameterBindings name="ValuesString" objectPath="PromotionIDs"/>
+    <returnValueBindings name="ValuesIterator" objectPath="PromotionIDIter"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+    <nodeSuccessors name="next" next="LoopNode2"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode5"/>
+    <parameterBindings name="LocalizedString" constant="0"/>
+    <returnValueBindings name="IntegerObject" objectPath="PromotionCount"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode2" loop="PromotionIDIter">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <entry key="PromotionID">
+      <nodeSuccessors name="loop_entry_next" next="GetPromotionBOByID3"/>
+    </entry>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPromotionBOByID3">
+    <pipelet href="enfinity:/bc_promotion/pipelets/GetPromotionBOByID.xml"/>
+    <nodeSuccessors name="next" next="GetAdditionalContents1"/>
+<!--@BendPoints 9,11-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="ID" objectPath="PromotionID"/>
+    <parameterBindings name="PromotionBORepository" objectPath="ApplicationBO:Repository(&quot;PromotionBORepository&quot;)"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetAdditionalContents1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetAdditionalContents.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="ContentType" constant="all"/>
+    <parameterBindings name="ExtensibleObject" objectPath="Promotion:Extension(&quot;PersistentObjectBOExtension&quot;):PersistentObject"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+    <returnValueBindings name="AdditionalContentIterator" objectPath="Additionals"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="CalculateInteger1"/>
+    <parameterBindings name="InMap" objectPath="Promotion2Attachments"/>
+    <parameterBindings name="Key" objectPath="Promotion"/>
+    <parameterBindings name="Value" objectPath="Additionals"/>
+    <returnValueBindings name="Keys" objectPath="Promotions"/>
+    <returnValueBindings name="OutMap" objectPath="Promotion2Attachments"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CalculateInteger1">
+    <configurationValues name="Operand2" value="1"/>
+    <configurationValues name="Operation" value="+"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/CalculateInteger.xml"/>
+    <nodeSuccessors name="next" next="JoinNode14"/>
+    <parameterBindings name="Operand1" objectPath="PromotionCount"/>
+    <returnValueBindings name="Result" objectPath="PromotionCount"/>
+  </nodes>
+<!--@Location 3,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode14">
+<!--@BendPoints 6,19 6,9-->
+    <nodeSuccessors name="next" next="LoopNode2_Entry"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+<!--@BendPoints 9,19-->
+    <nodeSuccessors name="next" next="JoinNode14"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+<!--@BendPoints 11,14-->
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="marketing/BrowsePromotionDetails"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+</pipeline:Pipeline>

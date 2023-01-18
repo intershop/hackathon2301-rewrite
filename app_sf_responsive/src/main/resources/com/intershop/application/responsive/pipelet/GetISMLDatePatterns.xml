@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DPipelet dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipelet" id="Pipelet1" >
+<pipeletName>GetISMLDatePatterns</pipeletName>
+<pipeletClass>com.intershop.application.responsive.pipelet.GetISMLDatePatterns</pipeletClass>
+<errorConnector>false</errorConnector>
+<properties>
+<DPipeletProperty dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletProperty" id="dictionary-in_LocaleInformation" >
+<key>LocaleInformation</key>
+<input>required</input>
+<propertyClass>com.intershop.beehive.core.capi.localization.LocaleInformation</propertyClass>
+<group>dictionary-in</group>
+</DPipeletProperty>
+<DPipeletProperty dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletProperty" id="dictionary-out_ISMLDatePatterns" >
+<key>ISMLDatePatterns</key>
+<propertyClass>java.util.Map&lt;String,String&gt;</propertyClass>
+<group>dictionary-out</group>
+</DPipeletProperty>
+</properties>
+</DPipelet>

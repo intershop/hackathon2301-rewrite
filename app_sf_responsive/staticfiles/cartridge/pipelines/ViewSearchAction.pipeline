@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Triggers the viewing pipeline for the given search actions.
+@Group SearchIndex-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewSearchAction" overrideMode="Inherit" type="view">
+<!--@Location 12,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="GetProductBO"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+    <parameters name="ProductID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 12,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 12,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <startNode referencedName="ProcessProduct-GetProductBOByID"/>
+  </nodes>
+<!--@Location 12,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="ProductBO" type="com.intershop.component.product.capi.ProductBO"
+        optional="true"/>
+  </nodes>
+<!--@Location 7,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="ProductDetailRedirect"
+      callMode="Private">
+<!--@BendPoints 15,4-->
+    <nodeSuccessors name="next" next="DecisionNode6"/>
+  </nodes>
+<!--@Location 7,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="ProductBO:DefaultCatalogCategory">
+<!--@BendPoints 15,6-->
+    <nodeSuccessors name="decision_yes" next="KeyMapper2"/>
+<!--@BendPoints 17,5 17,6-->
+    <nodeSuccessors name="decision_no" next="KeyMapper3"/>
+  </nodes>
+<!--@Location 7,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="InValue_1" constant="ViewProduct-Start"/>
+    <parameterBindings name="InValue_2" constant="SKU"/>
+    <parameterBindings name="InValue_3" objectPath="ProductBO:SKU"/>
+    <parameterBindings name="InValue_4" constant="CategoryName"/>
+    <parameterBindings name="InValue_5" objectPath="ProductBO:DefaultCatalogCategory:Name"/>
+    <parameterBindings name="InValue_6" constant="CategoryDomainName"/>
+    <parameterBindings name="InValue_7" objectPath="ProductBO:DefaultCatalogCategory:Domain:DomainName"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_3" objectPath="Parameter1_Value"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter2_Name"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter2_Value"/>
+    <returnValueBindings name="OutValue_6" objectPath="Parameter3_Name"/>
+    <returnValueBindings name="OutValue_7" objectPath="Parameter3_Value"/>
+  </nodes>
+<!--@Location 7,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 15,10-->
+    <nodeSuccessors name="next" next="JumpNode6"/>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode6">
+    <startNode referencedName="ViewSearchAction-RedirectToTarget"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 17,9-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="InValue_1" constant="ViewProduct-Start"/>
+    <parameterBindings name="InValue_2" constant="SKU"/>
+    <parameterBindings name="InValue_3" objectPath="ProductBO:SKU"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_3" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Redirect">
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameters name="SearchAction" type="com.intershop.component.search.capi.searchaction.SearchAction"/>
+<!--The current organization.-->
+    <parameters name="CurrentOrganization" type="com.intershop.component.organization.capi.Organization"
+        optional="true"/>
+<!--The current product repository.-->
+    <parameters name="CurrentProductRepository" type="com.intershop.component.mvc.capi.catalog.Repository"
+        optional="true"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="SearchAction:RedirectType"
+      operator="str_eq" conditionValue="category">
+    <nodeSuccessors name="decision_yes" next="GetCategoryByUUID0"/>
+<!--@BendPoints 5,5 5,6-->
+    <nodeSuccessors name="decision_no" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCategoryByUUID0">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetCategoryByUUID.xml"/>
+<!--@BendPoints 1,11-->
+    <nodeSuccessors name="next" next="KeyMapper9"/>
+    <nodeSuccessors name="pipelet_error" next="KeyMapper0"/>
+    <parameterBindings name="CatalogCategoryID" objectPath="SearchAction:RedirectTarget"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper9">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;CatalogBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CatalogBORepository"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="KeyMapper8"/>
+    <parameterBindings name="CatalogRepositoryBOID" objectPath="Category:Domain:UUID"/>
+    <startNode referencedName="ProcessCatalog-GetCatalogBOByCatalogRepositoryBOID"/>
+  </nodes>
+<!--@Location 0,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper8">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 1,18-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+    <parameterBindings name="InValue_1" constant="ViewStandardCatalog-Browse"/>
+    <parameterBindings name="InValue_2" constant="CatalogID"/>
+    <parameterBindings name="InValue_3" constant="CategoryName"/>
+    <parameterBindings name="InValue_4" objectPath="Category:Name"/>
+    <parameterBindings name="InValue_5" objectPath="CatalogBO:Name"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Parameter2_Name"/>
+    <returnValueBindings name="OutValue_3" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Value"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter2_Value"/>
+  </nodes>
+<!--@Location 0,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewSearchAction-RedirectToTarget"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 3,18-->
+    <nodeSuccessors name="next" next="JumpNode0"/>
+    <parameterBindings name="InValue_1" constant="ViewStandardCatalog-Error"/>
+    <parameterBindings name="InValue_2" constant=""/>
+    <parameterBindings name="InValue_3" constant=""/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewSearchAction-RedirectToTarget"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="SearchAction:RedirectType"
+      operator="str_eq" conditionValue="product">
+    <nodeSuccessors name="decision_yes" next="GetApplicationBO1"/>
+<!--@BendPoints 7,7 7,8-->
+    <nodeSuccessors name="decision_no" next="DecisionNode4"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO1">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="JumpNode2"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <parameterBindings name="ProductID" objectPath="SearchAction:RedirectTarget"/>
+    <startNode referencedName="ProcessProduct-GetProductBOByID"/>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewSearchAction-ProductDetailRedirect"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="SearchAction:RedirectType"
+      operator="str_eq" conditionValue="page">
+    <nodeSuccessors name="decision_yes" next="KeyMapper1"/>
+<!--@BendPoints 9,9 9,10-->
+    <nodeSuccessors name="decision_no" next="DecisionNode3"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="InValue_1" objectPath="SearchAction:RedirectTargetObject(Repository:RepositoryDomain)"/>
+    <returnValueBindings name="OutValue_1" objectPath="PageletEntryPoint"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="PageletEntryPoint">
+    <nodeSuccessors name="decision_yes" next="KeyMapper7"/>
+<!--@BendPoints 8,13 8,21-->
+    <nodeSuccessors name="decision_no" next="KeyMapper6"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper7">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 7,18-->
+    <nodeSuccessors name="next" next="JumpNode3"/>
+    <parameterBindings name="InValue_1" constant="ViewContent-Start"/>
+    <parameterBindings name="InValue_3" constant="PageletEntryPointID"/>
+    <parameterBindings name="InValue_4" objectPath="PageletEntryPoint:Id"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_3" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 3,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="ViewSearchAction-RedirectToTarget"/>
+  </nodes>
+<!--@Location 3,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper6">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JumpNode8"/>
+    <parameterBindings name="InValue_1" constant="PipelineNotFound"/>
+    <returnValueBindings name="OutValue_1" objectPath="ErrorCode"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode8">
+    <startNode referencedName="Error-Page"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="SearchAction:RedirectType"
+      operator="str_eq" conditionValue="url">
+    <nodeSuccessors name="decision_yes" next="KeyMapper4"/>
+<!--@BendPoints 11,11 11,12-->
+    <nodeSuccessors name="decision_no" next="DecisionNode5"/>
+  </nodes>
+<!--@Location 4,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 9,18-->
+    <nodeSuccessors name="next" next="JumpNode5"/>
+    <parameterBindings name="InValue_1" objectPath="SearchAction:RedirectTarget"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetURL"/>
+  </nodes>
+<!--@Location 4,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode5">
+    <startNode referencedName="ViewSearchAction-RedirectToTarget"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="SearchAction:RedirectType"
+      operator="str_eq" conditionValue="search">
+    <nodeSuccessors name="decision_yes" next="KeyMapper5"/>
+    <nodeSuccessors name="decision_no" next="StopNode1"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper5">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JumpNode4"/>
+    <parameterBindings name="InValue_1" objectPath="SearchAction:RedirectTarget"/>
+    <returnValueBindings name="OutValue_1" objectPath="RedirectSearchTerm"/>
+  </nodes>
+<!--@Location 5,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode4">
+    <startNode referencedName="ViewParametricSearch-SimpleOfferSearch"/>
+  </nodes>
+<!--@Location 6,8-->
+  <nodes xsi:type="pipeline:StopNode" nodeID="StopNode1"/>
+<!--@Location 10,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="RedirectToTarget">
+<!--@BendPoints 21,4-->
+    <nodeSuccessors name="next" next="InteractionNode5"/>
+  </nodes>
+<!--@Location 10,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode5">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+</pipeline:Pipeline>

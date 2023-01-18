@@ -1,0 +1,33 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<!--- order summary for checkout payment page --->
+<isinclude template="modules/Modules">
+<isinclude template="webcontrols/Modules"/>
+<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+
+<h2><istext key="checkout.order_details.heading" /></h2>
+
+<!--- include additional module for promo code --->
+<isform method="post" action="#URL(Action('ViewCheckoutPayment-Dispatch'))#" class="form-horizontal" name="PaymentFormModules">
+	<!--- 
+		Extension Point shown in the order summary (above address section) in context of the payment step<br/> 
+		Input parameters:
+		<ul>
+			<li><b>ApplicationBO</b>: com.intershop.component.application.capi.ApplicationBO</li>
+			<li><b>CurrentCartBO</b>:com.intershop.component.basket.capi.BasketBO</li>
+			<li><b>CartPayment</b>:com.intershop.component.payment.capi.BasketBOPaymentExtension</li>
+			<li><b>UserBO</b>:com.intershop.component.user.capi.UserBO</li>
+		</ul> 
+	--->
+	<isinclude extensionpoint="CheckoutPaymentModulesExtensions"/>
+</isform>
+
+<isinclude template="checkout/common/widgets/AddressesBox">
+<isinclude template="checkout/common/widgets/ItemsInCart">
+<isinclude template="checkout/common/widgets/SubscriptionBox">
+<div class="cost-summary">
+	<isinclude template="checkout/common/widgets/CostSummary">
+	<button form="form-payment" class="btn btn-lg btn-block btn-primary" name="continue" type="submit"><istext key="checkout.button.label" /></button>
+</div>
+	
+<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink">

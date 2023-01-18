@@ -1,0 +1,91 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false">
+
+<!---
+	This module renders the bucket header on checkout pages
+
+	Parameters:
+		bucket (required)			: bucket
+		bucketnumber (required)		: number of buckets 
+		displaydeliverytime			: "true"(default) or "false"
+ --->
+
+<ismodule template = "modules/checkout/BucketHeader.isml"
+	name="BucketHeader"
+	attribute="bucket"
+	attribute="bucketnumber"
+	attribute="displaydeliverytime"
+	attribute="recurringbasketextension"
+	strict="true"
+>
+
+<!--- Module-PromotionsText: 
+      - retrieves promotion short title to be displayed when promotions become invalid or new promotions are become active
+      - It uses given promotionIDs to extract promotions from given promotionMap.
+      - The 'Title' or 'DisplayName' of the promotions found is then combined in a comma separated string. 
+      - The last two elements are combined with an 'and'.
+      - Output-Example: "1% off", "2% off" and "3% off"  
+      
+	Parameters: 
+		- promotionids (optional):
+			iterator of promotionIDs.
+		- promotionsmap (optional):
+			the promotionID, Promotion Map
+			iterator IDs are used to get Promotion Objects  
+		- return (required):
+		    the name of the return parameter
+		    the name under which the resulting string will be placed in the pipeline dictionary 
+	Example: 
+	    <isPromotionsText 
+	        promotionids="#RemovedPromotionsIDs#" 
+	        promotionsmap="#PromotionIDPromotionMap#" 
+	        return="promotiontext">
+ --->
+<ismodule template="modules/checkout/Promotionstext" 
+		name="PromotionsText" 
+		attribute="promotionids" 
+		attribute="promotionsmap" 
+		attribute="return"
+>
+
+
+<!---
+	This Module prints messages from basket validation
+
+	Parameters:
+	    - basketValidationResults
+	    	results of the basket validation
+			
+	Example:
+		...
+		<isBasketValidationMessages
+			basketValidationResults="#BasketValidationResults#"
+		>
+		...
+ --->
+<ismodule template = "modules/checkout/BasketValidationMessages.isml"
+	name="BasketValidationMessages"
+	attribute="basketValidationResults"
+	strict="true"
+>
+
+<!---
+	This Module prints messages from order creation
+
+	Parameters:
+	    - orderCreationResult
+	    	result of the order creation
+			
+	Example:
+		...
+		<isOrderCreationMessages
+			orderCreationResult="#OrderCreationResult#"
+			basketValidationResults="#BasketValidationResults#"
+		>
+		...
+ --->
+<ismodule template = "modules/checkout/OrderCreationMessages.isml"
+	name="OrderCreationMessages"
+	attribute="orderCreationResult"
+	attribute="basketValidationResults"
+	strict="true"
+>

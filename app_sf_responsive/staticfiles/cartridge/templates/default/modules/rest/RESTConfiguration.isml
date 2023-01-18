@@ -1,0 +1,205 @@
+<!---Generates a token used for REST calls.--->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+<isinclude template="modules/customer/Modules">
+<ISGetCurrentDomain CurrentDomain="CurrentDomain">
+<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+
+<ispipeline
+	pipeline="ProcessRESTConfiguration-GetProperties" alias="properties"
+	params="#ParamMap(ParamEntry('CurrentRequest', CurrentRequest), ParamEntry('CurrentDomain', CurrentDomain))#"
+ />
+<ispipeline
+	pipeline="ProcessRESTConfiguration-CreateToken" alias="token"
+	params="#ParamMap(ParamEntry('CurrentUser', CurrentUser))#"
+/>
+
+<isplacement placeholderid="JS_head">
+
+	<script type="text/javascript">
+		if (typeof RESTConfiguration === 'undefined')
+		{
+		    var RESTConfiguration = {}
+
+			RESTConfigurationClass = function() {
+
+		        var http = location.protocol.concat("//").concat(window.location.hostname);
+
+		        this.AuthenticationToken = null;
+				this.BusinessPartnerNo = null;
+				this.CustomerNo = null;
+				this.Login = null;
+				this.WebServerSecureURL = null;
+				this.WebServerURL = null;
+				this.URLMappingRESTWebadapter = null;
+				this.URLMappingPipelineWebadapter = null;
+				this.Domain = null;
+				this.ServerGroup = null;
+				this.URLIdentifier = null;
+				this.LocaleID = null;
+				this.CurrencyCode = null;
+				this.CustomerTypeID = null;
+				this.URLMappingStaticWebadapter = null;
+			};
+
+			RESTConfigurationClass.prototype = {
+
+			    get: function(index) {
+				    return this[index];
+				},
+
+				set: function(index, value) {
+				    this[index] = value;
+				},
+
+				getCurrentHost: function() {
+				    return window.location.origin;
+				},
+
+				getWebUrl: function() {
+				    return this.getCurrentHost() + this.URLMappingPipelineWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/' + this.LocaleID + '/' + this.URLIdentifier + '/' + this.CurrencyCode + '/';
+				},
+
+				getRESTUrl: function() {
+				    return this.getCurrentHost() + this.URLMappingRESTWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/' + this.URLIdentifier;
+				},
+
+				getBaseRESTUrl: function() {
+				    return this.getCurrentHost() + this.URLMappingRESTWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/-;loc=' + this.LocaleID + '/';
+				},
+
+				getStaticUrl: function() {
+				    return this.URLMappingStaticWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/' + this.URLIdentifier + '/-/' + this.LocaleID + '/';
+				},
+
+				getRESTClientHost: function() {
+				    return this.URLMappingRESTWebadapter + '/' + this.ServerGroup;
+				},
+
+				getRESTClientPrefix: function() {
+				    return this.Domain + '/' + this.URLIdentifier;
+				},
+
+				getAuthenticationToken: function() {
+				    return this.AuthenticationToken;
+				},
+
+				getCustomerUrlPart: function(accountAdmin) {
+				    if (this.CustomerTypeID === 'PRIVATE' || accountAdmin === true) {
+				        return 'customers/' + this.CustomerNo;
+				    }else{
+						return 'customers/' + this.CustomerNo + '/users/' + this.Login;
+				    }
+				},
+
+				getLocale: function(rewrite) {
+				    if (typeof rewrite === 'undefined') {
+				        return this.LocaleID;
+				    }else{
+				    	return this.LocaleID.replace('_','-');
+				    }
+				},
+
+				getLang: function() {
+				    return this.LocaleID.split('_')[0];
+				},
+
+				getLocalizationsUrl: function(id) {
+
+				    if (typeof id !== 'undefined' && typeof id === 'string') {
+					    return this.getStaticUrl() + 'js/localizations/' + id + '-' + RESTConfiguration.LocaleID + '.json'
+				    }
+
+				    return this.getStaticUrl() + 'js/localizations/'
+
+				},
+
+				getLocalizationProperties: function(topic, locale) {
+
+				    if (typeof locale === 'undefined') {
+				    	var locale = this.getLocale();
+				    }
+
+			        var promise = $.getJSON(this.getWebUrl() + 'ViewLocalization-Get?topic='+topic+'&locale='+locale).then(function(data) {
+
+				    	var localizationProperties = {};
+				    	localizationProperties[RESTConfiguration.getLocale()] = data;
+
+				    	return localizationProperties;
+
+				    });
+
+			        return promise;
+
+				}
+
+			};
+
+		};
+
+
+		RESTConfiguration = new RESTConfigurationClass();
+		<isif condition="#isDefined(token:Token)#">
+			RESTConfiguration.set('AuthenticationToken', '<isprint value="#token:Token:Token#" encoding="off">');
+		</isif>
+		<isif condition="#isDefined(CurrentUser:Profile:BusinessPartnerNo)#">
+			RESTConfiguration.set('BusinessPartnerNo', '<isprint value="#CurrentUser:Profile:BusinessPartnerNo#">');
+		</isif>
+		<isif condition="#isDefined(CurrentUser:Profile:Credentials:Login)#">
+			RESTConfiguration.set('Login', '<isprint value="#CurrentUser:Profile:Credentials:Login#">');
+		</isif>
+		<isif condition="#isDefined(CustomerBO:CustomerNo)#">
+			RESTConfiguration.set('CustomerNo', '<isprint value="#CustomerBO:CustomerNo#" encoding="off">')
+		</isif>
+		<isif condition="#isDefined(properties:WebServerSecureURL)#">
+			RESTConfiguration.set('WebServerSecureURL', '<isprint value="#properties:WebServerSecureURL#" encoding="off">')
+		</isif>
+		<isif condition="#isDefined(properties:WebServerURL)#">
+			RESTConfiguration.set('WebServerURL', '<isprint value="#properties:WebServerURL#" encoding="off">')
+		</isif>
+		<isif condition="#isDefined(properties:URLMappingRESTWebadapter)#">
+			RESTConfiguration.set('URLMappingRESTWebadapter', '<isprint value="#properties:URLMappingRESTWebadapter#" encoding="off">')
+		</isif>
+		<isif condition="#isDefined(properties:URLMappingPipelineWebadapter)#">
+			RESTConfiguration.set('URLMappingPipelineWebadapter', '<isprint value="#properties:URLMappingPipelineWebadapter#" encoding="off">')
+		</isif>
+		<isif condition="#isDefined(CurrentDomain)#">
+			RESTConfiguration.set('Domain', '<isprint value="#CurrentDomain:DomainName#">')
+		</isif>
+		<isif condition="#isDefined(properties:ServerGroup)#">
+			RESTConfiguration.set('ServerGroup', '<isprint value="#properties:ServerGroup#">')
+		</isif>
+		<isif condition="#isDefined(ApplicationBO)#">
+			RESTConfiguration.set('URLIdentifier', '<isprint value="#ApplicationBO:UrlIdentifier#">')
+		</isif>
+		<isif condition="#isDefined(CurrentRequest)#">
+			RESTConfiguration.set('LocaleID', '<isprint value="#CurrentRequest:Locale:LocaleID#">')
+		</isif>
+		<isif condition="#isDefined(CurrentRequest)#">
+			RESTConfiguration.set('CurrencyCode', '<isprint value="#CurrentRequest:CurrencyCode#">')
+		</isif>
+		<isif condition="#isDefined(CustomerBO:CustomerType:CustomerTypeID)#">
+			RESTConfiguration.set('CustomerTypeID', '<isprint value="#CustomerBO:CustomerType:CustomerTypeID#">')
+		</isif>
+		<isif condition="#isDefined(properties:URLMappingStaticWebadapter)#">
+			RESTConfiguration.set('URLMappingStaticWebadapter', '<isprint value="#properties:URLMappingStaticWebadapter#" encoding="off">')
+		</isif>
+		<isif condition="#isDefined(properties:AccountingJSMoneyFormats)#">
+		    RESTConfiguration.set("MoneyFormat", {
+				<isloop iterator="properties:AccountingJSMoneyFormats:EntrySet" alias="Entry">
+					"<isprint value="#Entry:Key#" encoding="off"/>": <isprint value="#Entry:Value#" encoding="off"/>
+					<isif condition="#hasNext(Entry)#">,</isif>
+				</isloop>
+		    });
+		</isif>
+		<isif condition="#isDefined(properties:ISMLDatePatterns)#">
+	    	RESTConfiguration.set("DateFormat", {
+				<isloop iterator="properties:ISMLDatePatterns:EntrySet" alias="Entry">
+					"<isprint value="#Entry:Key#" encoding="off"/>": "<isprint value="#Entry:Value#" encoding="off"/>"
+					<isif condition="#hasNext(Entry)#">,</isif>
+				</isloop>
+	    	});
+		</isif>
+	</script>
+
+</isplacement>

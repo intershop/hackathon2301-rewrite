@@ -1,0 +1,31 @@
+<iscontent compact="true" charset="UTF-8" templatemarker="false">
+
+<!--- Custom Meta Data Setup --->
+<isif condition="#(isDefined(custommetadatamap)) AND (custommetadatamap NE '')#">
+	<isset name="metaTitle" value="#custommetadatamap:Title#" scope="request">
+	<isset name="metaDescription" value="#custommetadatamap:Description#" scope="request">
+	<isset name="metaKeywords" value="#custommetadatamap:Keywords#" scope="request">
+</isif>
+
+<!--- Default data setup if custom meta data are not set or empty. --->
+<isif condition="#(NOT isDefined(metaTitle)) OR (metaTitle EQ '')#">
+	<isif condition="#isDefined(defaulttitle)#">
+		<isset name="metaTitle" value="#defaulttitle#" scope="request">
+	<iselse>
+		<isset name="metaTitle" value="#""#" scope="request">
+	</isif>
+</isif>
+<isif condition="#(NOT isDefined(metaDescription)) OR (metaDescription EQ '')#">
+	<isif condition="#isDefined(defaultdescription)#">
+		<isset name="metaDescription" value="#defaultdescription#" scope="request">
+	<iselse>
+		<isset name="metaDescription" value="#""#" scope="request">
+	</isif>
+</isif>
+<isif condition="#(NOT isDefined(metaKeywords)) OR (metaKeywords EQ '')#">
+	<isif condition="#isDefined(defaultkeywords)#">
+		<isset name="metaKeywords" value="#defaultkeywords#" scope="request">
+	<iselse>
+		<isset name="metaKeywords" value="#""#" scope="request">
+	</isif>
+</isif>

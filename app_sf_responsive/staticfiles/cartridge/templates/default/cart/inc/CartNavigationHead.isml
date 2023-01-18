@@ -1,0 +1,4 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude extensionpoint="CartNavigationHeadLinksExtensions">
+<!--- Placeholder template for additional head elements --->

@@ -1,0 +1,36 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isset name="ProductWarranties" value="#PLI:ProductBO:Extension("Warranty"):WarrantyBOs#" scope="request" />
+<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request" />
+<isset name="WarrantyIsOnline" value="#PLI:ProductBO:Extension("Warranty"):isAnyWarrantyOnline#" scope="request" />
+
+<isif condition="#hasLoopElements(ProductWarranties)#">
+	<isif condition="#((isDefined(WarrantyIsOnline)) AND (WarrantyIsOnline EQ 'true'))#">
+		<div class="warranty">
+			<isif condition="#CartReadonly EQ 'true'#">
+				<isif condition="#(PLIWarranty:hasWarranty)#">
+					<isprint value="#PLIWarranty:Warranty:Warranty:DisplayName#">
+				<iselse>
+					<istext key="product.warranty.nowarranty"/>
+				</isif>
+			<iselse>
+				<select class="form-control js-warrantySelection" data-testing-id="checkout-pli-warranty-selection" data-form-action-key="update" name="<isprint value="#'DependentSKU_'.PLI:ID#">">
+					<option value="NoWarranty" <isif condition="#NOT(PLIWarranty:hasWarranty)#">selected="selected" </isif>>
+						<istext key="product.warranty.nowarranty"/>
+					</option>
+					<isloop iterator="ProductWarranties" alias="Warranty">
+						<option value="<isprint value="#'Warranty_'.Warranty:ProductRef:ProductSKU#">"
+							<isif condition="#PLIWarranty:hasWarranty#">
+								<isif condition="#(PLIWarranty:Warranty:ProductSKU) EQ (Warranty:ProductRef:ProductSKU)#">selected="selected" </isif>
+							</isif>><isprint value="#Warranty:DisplayName#">
+						</option>
+					</isloop>
+				</select>
+				<isif condition="#isDefined(PLIWarranty:Warranty:ProductSKU)#">
+					<a href="#URL(Action('ViewWarrantyDetails-Start'), Parameter('SKU', PLIWarranty:Warranty:ProductSKU))#" data-dialog class="details-link"><istext key="checkout.detail.text"></a>
+				</isif>	
+			</isif>
+		</div>
+	</isif>
+</isif>

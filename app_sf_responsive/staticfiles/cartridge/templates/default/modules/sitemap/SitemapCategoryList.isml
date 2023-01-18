@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/sitemap/Modules">
+
+<isif condition="#hasElements(CategoryBOs)#">
+	<ul class="sitemap-category-list" data-testing-id="sitemap-category-list">
+		<isloop iterator="CategoryBOs" alias="CategoryBO" counter="CategoryCount">
+			<iscachekey object="#CategoryBO#">
+			<li>
+				<!--- Depends on implementation but most likely more performant... --->
+				<isset name="AccessibleSubCatalogCategoryBOs" value="#CategoryBO:AccessibleSubCatalogCategoryBOs#" scope="request"/>
+				<isif condition="#hasLoopElements(AccessibleSubCatalogCategoryBOs)#">
+					<a href="#URL(Action('ViewStandardCatalog-Browse'), Parameter('CatalogID', CategoryBO:CatalogBO:Name), Parameter('CategoryName', CategoryBO:Name))#"><isprint value="#CategoryBO:DisplayName#"></a>
+				<iselse>
+					<a href="#URL(Action('ViewSitemap-ProductList'), Parameter('CatalogID', CategoryBO:CatalogBO:Name), Parameter('CategoryName', CategoryBO:Name))#"><isprint value="#CategoryBO:DisplayName#"></a>
+				</isif>
+				<ISSitemapCategoryList CategoryBOs="#AccessibleSubCatalogCategoryBOs#">
+			</li>
+		</isloop>
+	</ul>
+</isif>
+

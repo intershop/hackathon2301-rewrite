@@ -1,0 +1,69 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+
+{
+	"crossSells" : {
+  	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_CrossSelling"))#">
+  	  <isset name="crossSellingIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_CrossSelling")#" scope="request"/>
+		<isloop iterator="crossSellingIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>
+	},
+	"followUps" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_FollowUp"))#">
+	  <isset name="followUpIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_FollowUp")#" scope="request"/>
+		<isloop iterator="followUpIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>
+	},
+	"replacements" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_Replacement"))#">
+	  <isset name="replacementIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_Replacement")#" scope="request"/>
+		<isloop iterator="replacementIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>
+	},
+	"otherProducts" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_Other"))#">
+	  <isset name="otherIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_Other")#" scope="request"/>
+		<isloop iterator="otherIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>
+	},
+	"differentOrderUnits" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_DifferentOrderUnit"))#">
+	  <isset name="differentOrderUnitIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_DifferentOrderUnit")#" scope="request"/>
+		<isloop iterator="differentOrderUnitIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	</isif>
+	},
+	"accessories" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_Accessory"))#">
+	  <isset name="accessoryIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_Accessory")#" scope="request"/>
+		<isloop iterator="accessoryIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>
+	},
+	"upSells" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_UpSelling"))#">
+	  <isset name="upSellingIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_UpSelling")#" scope="request"/>
+		<isloop iterator="upSellingIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>	
+	},
+	"spareParts" : {
+	  <isif condition="#hasElements(ProductBO:SortedOutgoingProductBOLinks("ES_SpareParts"))#">
+	  <isset name="sparePartsIter" value="#ProductBO:SortedOutgoingProductBOLinks("ES_SpareParts")#" scope="request"/>
+		<isloop iterator="sparePartsIter" alias="RelatedProductBO">
+			<isinclude template="product/json/RelatedProductJSON"><isif condition="#hasNext(RelatedProductBO)#">, </isif>
+		</isloop>
+	  </isif>	
+	}
+}

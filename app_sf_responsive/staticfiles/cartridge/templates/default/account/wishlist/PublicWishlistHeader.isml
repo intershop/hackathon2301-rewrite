@@ -1,0 +1,37 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isWishlistPublicTitle wishlistBO="#WishlistBO#" title="wishlistTitle">
+
+<div class="row">
+	<div class="col-sm-8">
+		<h1><isprint value="#wishlistTitle#"/></h1>
+	</div>
+	<div class="col-sm-4">
+		<isTooltip 
+			linkclass="pull-right"
+			linktext="#localizeText('account.wishlists.heading.tooltip.link')#" 
+			headline="#localizeText('account.wishlists.heading.tooltip.headline')#"
+			content="#localizeText('account.wishlists.heading.tooltip.content')#"
+			contenttype="html"
+			placement="bottom"
+		>
+	</div>
+</div>
+
+<isif condition="#hasElements(WishlistBO:PublicWishlistItemBOs)#">
+
+	<isif condition="#isDefined(WishlistBO:UserBO:PreferredBillingAddressBO)#"> 
+		<isset name="PreferredAddressBO" value="#WishlistBO:UserBO:PreferredBillingAddressBO#" scope="request"/>
+	<iselseif condition="#isDefined(WishlistBO:UserBO:PreferredShippingAddressBO)#">
+		<isset name="PreferredAddressBO" value="#WishlistBO:UserBO:PreferredShippingAddressBO#" scope="request"/>
+	</isif>
+	<isif condition="#isDefined(PreferredAddressBO:State) AND (PreferredAddressBO:State NE '')#">
+		<p><isprint value="#PreferredAddressBO:City.', '.PreferredAddressBO:State#"/></p>
+	<iselse>
+		<p><isprint value="#PreferredAddressBO:City#"/></p>
+	</isif>
+
+	<p><istext key="account.wishlist.header.last_updated_label"/> <isprint value="#WishlistBO:LastModifiedDate#" /></p>
+
+</isif>

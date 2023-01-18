@@ -1,0 +1,30 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+
+<isif condition="#ProductBO:isProductMaster#">
+	<isset name="productMaster" value="#ProductBO#" scope="request" >
+<iselseif condition="#ProductBO:isMastered#">
+	<isset name="productMaster" value="#ProductBO:ProductBOMaster#" scope="request" >
+</isif>
+	
+"VariationProduct" : {
+	"displayName" : "VariationProduct",
+  <isif condition="#(VariableVariationAttr:Name EQ 'size') OR (VariableVariationAttr:Name EQ 'Attr_Size')#">	
+	"hasProductImagery" : false, //this is temporary until the feature is supported in the backoffice
+  </isif>
+	"variations" : {
+	  <isif condition="#hasElements(productMaster:MasteredProducts)#" >
+		<isloop iterator="productMaster:MasteredProducts" alias="VariationValue" >
+			"<isprint value="#VariationValue:ID#" encoding = "JavaScript">" : {
+				"variationName" : "<isprint value="#VariationValue:ID#" encoding = "JavaScript">",
+				"productUUIDs" : ["<isprint value="#VariationValue:ID#" encoding = "JavaScript">"
+						
+                ],
+                "productSKUs" : ["<isprint value="#VariationValue:SKU#" encoding = "JavaScript">"
+						
+                ]
+			}<isif condition="#hasNext(VariationValue)#">, </isif>
+		</isloop>
+	  </isif>
+	}
+}

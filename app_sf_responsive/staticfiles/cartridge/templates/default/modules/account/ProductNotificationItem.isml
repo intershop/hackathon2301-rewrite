@@ -1,0 +1,81 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+
+<isset name="ColorAttributeName" value="Miscellaneous / Color" scope="request" />
+<isset name="SizeAttributeName" value="Attr_Size" scope="request" />
+
+
+<div class="list-item-row">
+	<isif condition="#ProductBO:Online#">
+		<!-- Product Image -->
+		<isif condition="#showImage EQ 'true'#">
+		<div class="col-sm-2 list-item">
+			
+			<!--- Product Image --->
+			<isif condition="#showImage EQ 'true'#">
+				<a href="#URL(Action('ViewProduct-Start'),Parameter('SKU',ProductBO:SKU))#">
+					<ISProductImage ProductBO="#ProductBO#" ImageType="S" Class="img-responsive">
+				</a>
+			</isif>
+		</div>
+		</isif>
+		
+		<!-- Product Title and Details -->
+		<div class="col-sm-4 list-item">
+			<a class="product-title" href="#URL(Action('ViewProduct-Start'),Parameter('SKU',ProductBO:SKU))#">
+				<isprint value="#ProductBO:Name#">
+			</a><br />
+			<isif condition="#isDefined(ProductBO:String(ColorAttributeName))#">
+				<istext key="account.productnotification.table.item.color"/> <isprint value="#ProductBO:String(ColorAttributeName)#" formatter="#"/><br/>
+			</isif>
+			<isif condition="#isDefined(ProductBO:String(SizeAttributeName))#">
+				<istext key="account.productnotification.table.item.size"/>  <isprint value="#ProductBO:String(SizeAttributeName)#" formatter="#"/><br/>
+			</isif>
+
+			<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+			<isCurrentUserBO currentuserbo="UserBO">
+			<isGetProductPriceContext CustomerBO="#CustomerBO#" UserBO="#UserBO#" AddressSpecificPrice="true" ProductPriceContext="ProductPriceContext">
+
+			<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+			<isset name="SalePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request"/>
+			
+			<isif condition="#SalePrice:Range#">
+				<span><isprint value="#getValue(SalePrice:PriceRange:MinimumPrice)#"></span>
+			<iselseif condition="#SalePrice:Price:Available#">
+				<span><isprint value="#getValue(SalePrice:Price)#"></span>
+			<iselse>
+				<span><isprint value="#getValue(ProductBO:Price)#"></span>
+			</isif>
+			<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+		</div>
+	<iselse>
+		<div class="col-sm-4 list-item">
+			<istext key="account.productnotification.table.item.product_unavailable">
+		</div>
+	</isif>
+	
+	<!-- Notification -->
+	<div class="col-sm-4 list-item">
+		<isif condition="#ListItem:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.PriceConditionHandler'#">
+			<ISProductPriceAdditionalText 
+				ProductBO="#ProductBO#" 
+				SetAsDictionaryValue="true"
+				ProductPriceAdditionalText="ProductPriceAdditionalText"
+			>
+			<istext key="account.productnotification.table.item.price_notification" parameter0="#encodeValue(ListItem:NotificationMailAddress)#" parameter1="#encodeValue(ListItem:Value).' '.encodeValue(ProductPriceAdditionalText)#" encoding="off"/>
+		<iselse>
+			<istext key="account.productnotification.table.item.stock_notification" parameter0="#encodeValue(ListItem:NotificationMailAddress)#" encoding="off"/>
+		</isif>
+	</div>
+	
+	<!-- Buttons -->
+	<div class="col-sm-2 list-item text-right text-left-xs">
+
+		<!-- Edit -->
+		<isif condition="#ProductBO:Online#">
+			<a class="btn btn-tool" title="<istext key="account.productnotification.table.item.edit"/>" data-dialog href="#URL(Action('ViewProductNotification-ViewAlertForm'), Parameter('AjaxRequestMarker', 'true'), Parameter('SKU',ProductBO:SKU), Parameter('AlertUUID', ListItem:UUID))#"><span class="glyphicon glyphicon-pencil"></span></a>
+		</isif>
+		<!-- Remove -->
+		<a class="btn btn-tool" title="<istext key="account.wishlist.table.options.remove"/>" data-dialog href="#URL(Action('ViewProductNotification-GetRemoveAlertConfirmation'), Parameter('AjaxRequestMarker', 'true'), Parameter('SKU',ProductBO:SKU), Parameter('AlertUUID', ListItem:UUID))#"><span class="glyphicon glyphicon-trash"></span></a>
+
+	</div>
+</div>

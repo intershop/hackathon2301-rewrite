@@ -1,0 +1,6 @@
+<!---Provides localizations in JSON format.--->
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+{<isloop iterator="LocalizationTexts" alias="Text">
+	"<isprint value="#Text:Key#" encoding="off"/>": "<isprint value="#Text:CartridgeValue#" encoding="off"/>"<isif condition="#hasNext(Text)#">,</isif>
+</isloop>
+}

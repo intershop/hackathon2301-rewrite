@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Gift Certificates in consumer app.
+@Group OnlineMarketing-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewGiftCertificates" type="view">
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="DispatchFormAction0"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewGiftCertificates-UpdateGiftCertificateForm"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,6-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+<!--@BendPoints 3,5 3,6-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode3"/>
+    <parameterBindings name="Key_0" objectPath="addProduct"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="ViewCart-View"/>
+  </nodes>
+<!--@Location 13,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="ListAll">
+    <nodeSuccessors name="next" next="CallNode_nuq3wDKCEeip6KN4VvIgdg"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_nuq3wDKCEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="CheckUserLoggedIn0"/>
+    <parameterBindings name="PageName" constant="giftcard-list"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 13,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn0">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper6"/>
+    <nodeSuccessors name="pipelet_error" next="RemoveDictionaryValue0"/>
+  </nodes>
+<!--@Location 13,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper6">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetRegisteredGiftCardService1"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;ServiceConfigurationBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="ServiceConfigurationBORepository"/>
+  </nodes>
+<!--@Location 13,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRegisteredGiftCardService1">
+    <pipelet href="enfinity:/bc_giftcard/pipelets/GetRegisteredGiftCardService.xml"/>
+    <nodeSuccessors name="next" next="PrepareUserAccountViewOfGiftCards1"/>
+<!--@BendPoints 29,11-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+  </nodes>
+<!--@Location 13,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="PrepareUserAccountViewOfGiftCards1">
+    <pipelet href="enfinity:/bc_giftcard/pipelets/PrepareUserAccountViewOfGiftCards.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="GiftCardServiceID" objectPath="GiftCardService:ServiceID"/>
+  </nodes>
+<!--@Location 13,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+  </nodes>
+<!--@Location 13,8-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.giftCertificates.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/giftcertificate/GiftCertificateList.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 14,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 29,15-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 15,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="TargetURL"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 15,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode8"/>
+    <parameterBindings name="InValue_1" constant="ViewUserAccount-ShowLogin"/>
+    <parameterBindings name="InValue_2" constant="https"/>
+    <parameterBindings name="InValue_4" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_5" constant="ViewGiftCertificates-ListAll"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Protocol"/>
+    <returnValueBindings name="OutValue_3" objectPath="TargetSite"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter1_Value"/>
+  </nodes>
+<!--@Location 15,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode8">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+<!--Puts the values of the GC forms in a map. The key in the map is the qualified name of the parameter while the value is the submitted user value.
+@Location 4,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="PrepareGCFormParams"
+      callMode="Private">
+    <nodeSuccessors name="next" next="AddEntryToMap4"/>
+<!--The gift certificate form.-->
+    <parameters name="GiftCertificateForm" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap4">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap2"/>
+    <parameterBindings name="InMap" objectPath="GiftCertificateFormParams"/>
+    <parameterBindings name="Key" objectPath="GiftCertificateForm:RecipientEmail:QualifiedName"/>
+    <parameterBindings name="Value" objectPath="GiftCertificateForm:RecipientEmail:Value"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCertificateFormParams"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap2">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap3"/>
+    <parameterBindings name="InMap" objectPath="GiftCertificateFormParams"/>
+    <parameterBindings name="Key" objectPath="GiftCertificateForm:RecipientName:QualifiedName"/>
+    <parameterBindings name="Value" objectPath="GiftCertificateForm:RecipientName:Value"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCertificateFormParams"/>
+  </nodes>
+<!--@Location 4,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap3">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap0"/>
+    <parameterBindings name="InMap" objectPath="GiftCertificateFormParams"/>
+    <parameterBindings name="Key" objectPath="GiftCertificateForm:UserEmail:QualifiedName"/>
+    <parameterBindings name="Value" objectPath="GiftCertificateForm:UserEmail:Value"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCertificateFormParams"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap0">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap1"/>
+    <parameterBindings name="InMap" objectPath="GiftCertificateFormParams"/>
+    <parameterBindings name="Key" objectPath="GiftCertificateForm:UserName:QualifiedName"/>
+    <parameterBindings name="Value" objectPath="GiftCertificateForm:UserName:Value"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCertificateFormParams"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap1">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="InMap" objectPath="GiftCertificateFormParams"/>
+    <parameterBindings name="Key" objectPath="GiftCertificateForm:Greeting:QualifiedName"/>
+    <parameterBindings name="Value" objectPath="GiftCertificateForm:Greeting:Value"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCertificateFormParams"/>
+  </nodes>
+<!--@Location 4,7-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+<!--A map with the GC form parameters.-->
+    <returnValues name="GiftCertificateFormParams" type="java.util.Map"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="UpdateGiftCertificateForm">
+    <nodeSuccessors name="next" next="CallNode9"/>
+    <parameters name="SKU" type="java.lang.String"/>
+    <parameters name="PLIID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="GC_NOT_FOUND" next="InteractionNode2"/>
+    <nodeSuccessors name="INVALID GC FORM" next="InteractionNode2"/>
+    <nodeSuccessors name="VALID GC FORM" next="DecisionNode0"/>
+    <startNode referencedName="ViewGiftCertificates-ValidateGCWebForm"/>
+  </nodes>
+<!--@Location 9,3-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="account/giftcertificate/GiftCertificateForm"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="PLIID">
+    <nodeSuccessors name="decision_yes" next="CallNode5"/>
+    <nodeSuccessors name="decision_no" next="CallNode2"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+<!--@BendPoints 15,15-->
+    <nodeSuccessors name="NOT_FOUND" next="InteractionNode5"/>
+    <startNode referencedName="ProcessGiftCertificates-GetGCDataByPLIID"/>
+  </nodes>
+<!--@Location 8,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="InValue_1" objectPath="GiftCertificateFormParams"/>
+    <returnValueBindings name="OutValue_1" objectPath="GiftCardParameters"/>
+  </nodes>
+<!--@Location 8,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="JumpNode4"/>
+    <parameterBindings name="AddressBO" objectPath="BasketProductLineItemBO:ShipToAddressBO"/>
+    <parameterBindings name="Greeting" objectPath="GiftCardParameters:get(&quot;GiftCertificateForm_Greeting&quot;)"/>
+    <parameterBindings name="RecipientEmail" objectPath="GiftCardParameters:get(&quot;GiftCertificateForm_RecipientEmail&quot;)"/>
+    <parameterBindings name="RecipientName" objectPath="GiftCardParameters:get(&quot;GiftCertificateForm_RecipientName&quot;)"/>
+    <parameterBindings name="UserEmail" objectPath="GiftCardParameters:get(&quot;GiftCertificateForm_UserEmail&quot;)"/>
+    <parameterBindings name="UserName" objectPath="GiftCardParameters:get(&quot;GiftCertificateForm_UserName&quot;)"/>
+    <startNode referencedName="ProcessGiftCertificates-UpdateGCData"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode4">
+    <startNode referencedName="ViewCart-View"/>
+  </nodes>
+<!--@Location 7,8-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode5">
+    <template referencedName="cart/LineItemNotFound"/>
+  </nodes>
+<!--@Location 9,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="JumpNode2"/>
+    <nodeSuccessors name="NOT_FOUND" next="JumpNode0"/>
+    <nodeSuccessors name="NOT_VISIBLE" next="JumpNode0"/>
+    <startNode referencedName="ProcessGiftCertificates-GetGCProductDataBySKU"/>
+  </nodes>
+<!--@Location 9,9-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewCart-AddProduct"/>
+  </nodes>
+<!--@Location 10,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="Error-ProductNotFound"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" strict="true" name="ValidateGCWebForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode8"/>
+    <parameters name="SKU" type="java.lang.String"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+    <parameters name="CurrentProductRepository" type="com.intershop.component.mvc.capi.catalog.Repository"/>
+    <parameters name="CurrentOrganization" type="com.intershop.component.organization.capi.Organization"/>
+    <parameters name="GiftCertificateForm_RecipientEmail" type="java.lang.String"
+        optional="true"/>
+    <parameters name="GiftCertificateForm_RecipientName" type="java.lang.String" optional="true"/>
+    <parameters name="GiftCertificateForm_UserEmail" type="java.lang.String" optional="true"/>
+    <parameters name="GiftCertificateForm_UserName" type="java.lang.String" optional="true"/>
+    <parameters name="GiftCertificateForm_Greeting" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CreateForm0"/>
+    <nodeSuccessors name="NOT_FOUND" next="EndNode5"/>
+    <nodeSuccessors name="NOT_VISIBLE" next="EndNode5"/>
+    <startNode referencedName="ProcessGiftCertificates-GetGCProductDataBySKU"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm0">
+    <configurationValues name="FormName" value="GiftCertificateForm"/>
+    <configurationValues name="FormResource" value="GiftCertificateForm"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm0"/>
+    <parameterBindings name="FormAlias" objectPath="GiftCertificateForm"/>
+    <parameterBindings name="FormName" objectPath="GiftCertificateForm"/>
+    <parameterBindings name="FormResource" objectPath="GiftCertificateForm"/>
+    <returnValueBindings name="Form" objectPath="GiftCertificateForm"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm0">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <nodeSuccessors name="pipelet_error" next="EndNode2"/>
+    <parameterBindings name="Form" objectPath="GiftCertificateForm"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="EndNode4"/>
+    <startNode referencedName="ViewGiftCertificates-PrepareGCFormParams"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4" name="VALID GC FORM" strict="true">
+    <returnValues name="GiftCertificateFormParams" type="java.util.Map"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" name="INVALID GC FORM" strict="true">
+    <returnValues name="ProductBO" type="com.intershop.component.product.capi.ProductBO"
+        optional="true"/>
+    <returnValues name="GiftCertificateForm" type="com.intershop.beehive.core.capi.webform.Form"
+        optional="true"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" name="GC_NOT_FOUND" strict="true"/>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" name="ViewGiftCertificateForm">
+    <nodeSuccessors name="next" next="CallNode_zWGREDKGEeip6KN4VvIgdg"/>
+    <parameters name="SKU" type="java.lang.String"/>
+    <parameters name="PLIID" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_zWGREDKGEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="CreateForm3"/>
+    <parameterBindings name="PageName" constant="giftcard-detail"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm3">
+    <configurationValues name="FormName" value="GiftCertificateForm"/>
+    <configurationValues name="FormResource" value="GiftCertificateForm"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameterBindings name="FormAlias" objectPath="GiftCertificateForm"/>
+    <parameterBindings name="FormName" objectPath="GiftCertificateForm"/>
+    <parameterBindings name="FormResource" objectPath="GiftCertificateForm"/>
+    <returnValueBindings name="Form" objectPath="GiftCertificateForm"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="PLIID">
+    <nodeSuccessors name="decision_yes" next="CallNode4"/>
+    <nodeSuccessors name="decision_no" next="CallNode0"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="GetCustomAttributes0"/>
+    <nodeSuccessors name="NOT_FOUND" next="InteractionNode4"/>
+    <startNode referencedName="ProcessGiftCertificates-GetGCDataByPLIID"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCustomAttributes0">
+    <pipelet href="enfinity:/core/pipelets/GetCustomAttributes.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap5"/>
+    <parameterBindings name="ExtensibleObject" objectPath="ProductLineItem"/>
+    <returnValueBindings name="AttributeValuesMap" objectPath="GiftCardParameters"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap5">
+    <pipelet href="enfinity:/core/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <parameterBindings name="InMap" objectPath="GiftCardParameters"/>
+    <parameterBindings name="Key" constant="GIFTCARD_RecipientEmail"/>
+    <parameterBindings name="Value" objectPath="BasketProductLineItemBO:ShipToAddressBO:EMail"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCardParameters"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="BasketProductLineItemBO:ShipToAddressBO:FirstName">
+    <nodeSuccessors name="decision_yes" next="AddEntryToMap7"/>
+    <nodeSuccessors name="decision_no" next="JoinNode5"/>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap7">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <parameterBindings name="InMap" objectPath="GiftCardParameters"/>
+    <parameterBindings name="Key" constant="GIFTCARD_RecipientName"/>
+    <parameterBindings name="Value" objectPath="BasketProductLineItemBO:ShipToAddressBO:FirstName"/>
+    <returnValueBindings name="OutMap" objectPath="GiftCardParameters"/>
+  </nodes>
+<!--@Location 2,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="GetCurrencies4"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCurrencies4">
+    <configurationValues name="Method" value="Active Currencies"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetCurrencies.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OrganizationDomain"/>
+  </nodes>
+<!--@Location 2,12-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="account/giftcertificate/GiftCertificateForm"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode4">
+    <template referencedName="cart/LineItemNotFound"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <nodeSuccessors name="NOT_FOUND" next="JumpNode7"/>
+    <nodeSuccessors name="NOT_VISIBLE" next="JumpNode7"/>
+    <startNode referencedName="ProcessGiftCertificates-GetGCProductDataBySKU"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode7">
+    <startNode referencedName="Error-ProductNotFound"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,122 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<div class="section" data-testing-id="subscriptionsList-section">
+	<div class="row">
+		<div class="col-md-12">
+			{{#'#'#if error}}
+				<p class="alert alert-danger"><istext key="subscription.rest.general.error"/></p>
+			{{else}}
+
+				{{#'#'#if loading}}
+					<p>
+						<span class="loader loader-inline"></span>
+					</p>
+				{{else}}
+
+					{{#'#'#if elements}}
+
+						<div class="table-responsive">
+							<table class="table" data-testing-id="subscriptionsList">
+								<thead>
+									<tr>
+										<th data-column-id="subscription-creationDate"><istext key="account.subscriptions.list.head.date" /></th>
+										<th data-column-id="subscription-details"><istext key="account.subscriptions.list.head.details" /></th>
+										<th data-column-id="subscription-recurrence"><istext key="account.subscriptions.list.head.recurrence" /></th>
+										<th data-column-id="subscription-lastDate"><istext key="account.subscriptions.list.head.lastorder" /></th>
+										<th data-column-id="subscription-status"><istext key="account.subscriptions.list.head.status" /></th>
+										<th class="text-right"><istext key="account.subscriptions.list.head.ordertotal" /></th>
+										<th></th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									{{#'#'#each elements}}
+										<tr{{#'#'#if active}}{{else}} class="inactive"{{/if}}>
+											<td>
+												{{dateFormatter creationDate "DATE_SHORT"}}
+											</td>
+											<td>
+												<istext key="account.subscriptions.list.number" /> <a href="{{url 'ViewSubscriptions-Details' SubscriptionID=link.title}}" data-testing-id="subscription-number-link">{{number}}</a><br/>
+												<istext key="account.subscriptions.list.items" /> {{itemCount}}<br/>
+												{{#'#'#if showBuyer}}
+													{{#'#'#if ownUser}}
+														<istext key="account.subscriptions.list.buyer" /> <strong>{{formattedBuyer buyer}}</strong><br/>
+													{{else}}
+														<istext key="account.subscriptions.list.buyer" /> {{formattedBuyer buyer}}<br/>
+													{{/if}}
+												{{/if}}
+											</td>
+											<td>
+												{{intervalFormatter interval}}
+											</td>
+											<td>{{dateFormatter lastOrderDate "DATE_SHORT"}}</td>
+											<td>
+												{{#'#'#if expired}}
+													<istext key="account.subscriptions.list.expired" />
+												{{else}}
+													{{#'#'#if active}}
+														<istext key="account.subscriptions.list.active" />
+													{{else}}
+														<istext key="account.subscriptions.list.deactivated" />
+													{{/if}}
+												{{/if}}
+											</td>
+											<td class="text-right">{{moneyFormatter this "MONEY_LONG" "gross"}}</td>
+											<td class="text-right">
+												{{#'#'#unless expired}}
+													{{#'#'#if active}}
+														<a href=""
+															class="btn-tool"
+															data-subscription-id="{{link.title}}"
+															data-line-items="{{itemCount}}"
+															data-toggle="modal"
+															data-target="#'#'#confirmDeactivateModal"
+															title="<istext key="account.subscriptions.list.deactivate">"
+															data-dialog
+															data-quick-title="<istext key="account.subscriptions.list.deactivate">"
+														>
+															<span class="glyphicon glyphicon-ban-circle"></span>
+														</a>
+													{{else}}
+														<a href=""
+															class="btn-tool"
+															data-subscription-id="{{link.title}}"
+															data-line-items="{{itemCount}}"
+															data-toggle="modal"
+															data-target="#'#'#confirmActivateModal"
+															title="<istext key="account.subscriptions.list.activate">"
+															data-dialog
+															data-quick-title="<istext key="account.subscriptions.list.activate">"
+														>
+															<span class="glyphicon glyphicon-ok-circle"></span>
+														</a>
+													{{/if}}
+												{{/unless}}
+											</td>
+											<td class="text-right">
+												<a href="{{url 'ViewSubscriptions-Details' SubscriptionID=link.title}}" title="<istext key="account.subscriptions.list.link.details.text">" class="btn-tool">
+													<istext key="account.subscriptions.list.link.details.text" />
+												</a>
+											</td>
+										</tr>
+									{{/each}}
+								</tbody>
+							</table>
+						</div>
+
+					{{else}}
+
+						{{#'#'#if filterNotEmpty}}
+							<p><istext key="account.subscriptions.list.nofilterdata" /></p>
+						{{else}}
+							<p><istext key="account.subscriptions.list.nodata" /></p>
+						{{/if}}
+
+					{{/if}}
+
+				{{/if}}
+
+			{{/if}}
+		</div>
+	</div>
+</div>

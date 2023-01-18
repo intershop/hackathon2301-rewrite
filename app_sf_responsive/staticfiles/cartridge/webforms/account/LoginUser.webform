@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:webform="http://www.intershop.de/webform/2010" name="LoginUser">
+  <forms name="ShopLoginForm">
+    <parameters xsi:type="webform:FormParameter" optional="false" name="Login" type="java.lang.String">
+    	<formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="false" name="Password" type="java.lang.String"/>
+  </forms>
+</webform:WebForm>

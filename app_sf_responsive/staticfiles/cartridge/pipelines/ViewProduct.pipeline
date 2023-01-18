@@ -1,0 +1,1176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--provides functions to display a product
+@Group Product-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewProduct" type="view">
+<!--Pipeline Rework:
+Still needed by FireTrackingEvents
+@Location 10,2-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text0"/>
+<!--Default sorting by product
+variation position if no sort
+attribute is set in the dictionary.
+@Location 17,31-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text_mz7KAI4vEeegB6F5A5OFnw"/>
+<!--@Location 14,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode15" name="Browse">
+    <nodeSuccessors name="next" next="JumpNode6"/>
+  </nodes>
+<!--@Location 14,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode6">
+    <startNode referencedName="ViewProduct-Start"/>
+  </nodes>
+<!--@Location 17,12-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode13" name="CheckProductVariationHandling"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetDomainPreference2"/>
+  </nodes>
+<!--@Location 17,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference2">
+    <configurationValues name="DefaultPreferenceKey" value="EnableAdvancedVariationHandling"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode31"/>
+<!--@BendPoints 37,27-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode23"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="EnableAdvancedVariationHandling"/>
+  </nodes>
+<!--@Location 17,14-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode31" conditionKey="EnableAdvancedVariationHandling"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 35,30-->
+    <nodeSuccessors name="decision_yes" next="EndNode20"/>
+    <nodeSuccessors name="decision_no" next="JoinNode23"/>
+  </nodes>
+<!--@Location 17,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode20" name="ShowMasterProduct"/>
+<!--@Location 18,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode23">
+    <nodeSuccessors name="next" next="EndNode19"/>
+  </nodes>
+<!--@Location 18,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode19" name="ShowVariationProduct"/>
+<!--@Location 9,22-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="GetCatalogCategoryBO"
+      callMode="Private">
+    <nodeSuccessors name="next" next="DecisionNode17"/>
+  </nodes>
+<!--@Location 9,23-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode17" conditionKey="CatalogID"
+      operator="str_empty">
+<!--@BendPoints 21,47-->
+    <nodeSuccessors name="decision_yes" next="JoinNode18"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper_BperQP3lEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@Location 10,26-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode18">
+    <nodeSuccessors name="next" next="JoinNode17"/>
+  </nodes>
+<!--@Location 10,28-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode17">
+    <nodeSuccessors name="next" next="KeyMapper_A41RcP3lEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@Location 10,29-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_A41RcP3lEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 21,61-->
+    <nodeSuccessors name="next" next="JoinNode19"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:DefaultCatalogCategoryBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="CategoryBO"/>
+  </nodes>
+<!--@Location 9,30-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode19">
+    <nodeSuccessors name="next" next="DecisionNode23"/>
+  </nodes>
+<!--@Location 9,31-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode23" conditionKey="CategoryBO:Accessible"
+      operator="str_eq" conditionValue="false">
+<!--@BendPoints 21,63-->
+    <nodeSuccessors name="decision_yes" next="RemoveDictionaryValue0"/>
+    <nodeSuccessors name="decision_no" next="JoinNode6"/>
+  </nodes>
+<!--@Location 10,32-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="CategoryBO"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="CallNode5"/>
+  </nodes>
+<!--@Location 10,33-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+<!--@BendPoints 21,69-->
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <startNode referencedName="This:GetFirstAccessibleCatalogCategoryBO"/>
+  </nodes>
+<!--@Location 9,34-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="EndNode0"/>
+  </nodes>
+<!--@Location 9,35-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0"/>
+<!--@Location 9,24-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_BperQP3lEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode19"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;CatalogBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CatalogBORepository"/>
+  </nodes>
+<!--@Location 9,25-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode19">
+    <nodeSuccessors name="next" next="DecisionNode18"/>
+    <parameterBindings name="CatalogName" objectPath="CatalogID"/>
+    <startNode referencedName="ProcessCatalog-GetCatalogBOByName"/>
+  </nodes>
+<!--@Location 9,26-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode18" conditionKey="CatalogBO">
+    <nodeSuccessors name="decision_yes" next="CallNode7"/>
+    <nodeSuccessors name="decision_no" next="JoinNode18"/>
+  </nodes>
+<!--@Location 9,27-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="DecisionNode16"/>
+    <parameterBindings name="CatalogBO" objectPath="CatalogBO"/>
+    <parameterBindings name="CatalogCategoryID" objectPath="CategoryID"/>
+    <parameterBindings name="CatalogCategoryName" objectPath="CategoryName"/>
+    <startNode referencedName="ProcessCatalog-GetCatalogCategoryBO"/>
+    <returnValueBindings name="CatalogCategoryBO" objectPath="CategoryBO"/>
+  </nodes>
+<!--@Location 9,28-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode16" conditionKey="CategoryBO">
+    <nodeSuccessors name="decision_yes" next="JoinNode19"/>
+    <nodeSuccessors name="decision_no" next="JoinNode17"/>
+  </nodes>
+<!--@Location 15,12-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" strict="true" name="GetDefaultProductAttributes"
+      callMode="Private">
+<!--@BendPoints 31,26-->
+    <nodeSuccessors name="next" next="GetProductByUUID1"/>
+    <parameters name="ProductID" type="java.lang.String"/>
+    <parameters name="ProductDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 15,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProductByUUID1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetProductByUUID.xml"/>
+<!--@BendPoints 31,30-->
+    <nodeSuccessors name="next" next="EndNode1"/>
+<!--@BendPoints 29,27-->
+    <nodeSuccessors name="pipelet_error" next="EndNode9"/>
+    <parameterBindings name="ProductUUID" objectPath="ProductID"/>
+  </nodes>
+<!--@Location 15,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="Product" type="com.intershop.beehive.xcs.capi.product.Product"
+        optional="true"/>
+  </nodes>
+<!--@Location 14,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode9" name="Error"/>
+<!--@Location 17,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="GetDefaultVariationProduct"
+      callMode="Private">
+    <nodeSuccessors name="next" next="KeyMapper_1ZVkwP3jEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@Location 17,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_1ZVkwP3jEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:DefaultVariationProductBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="DefaultVariationProductBO"/>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="DefaultVariationProductBO:isAccessible"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_66SE0P3jEeaqV8mXKoF9Gw"/>
+<!--@BendPoints 37,5-->
+    <nodeSuccessors name="decision_no" next="KeyMapper_7bJ9QP3jEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@Location 17,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_66SE0P3jEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <parameterBindings name="InValue_1" objectPath="DefaultVariationProductBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBO"/>
+  </nodes>
+<!--@Location 17,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2"/>
+<!--@Location 18,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_7bJ9QP3jEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="EndNode8"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:DefaultAccessibleVariation"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBO"/>
+  </nodes>
+<!--@Location 18,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode8"/>
+<!--@Location 12,22-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode10" name="GetFirstAccessibleCatalogCategoryBO"
+      callMode="Private">
+    <nodeSuccessors name="next" next="KeyMapper13"/>
+    <parameters name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+  </nodes>
+<!--@Location 12,23-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper13">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="LoopNode0"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:CatalogCategoryBOs"/>
+    <returnValueBindings name="OutValue_1" objectPath="CatalogCategoryBOs"/>
+  </nodes>
+<!--@Location 12,24-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode0" loop="CatalogCategoryBOs">
+<!--@BendPoints 27,49 27,55-->
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <entry key="CatalogCategoryBO">
+      <nodeSuccessors name="loop_entry_next" next="DecisionNode22"/>
+    </entry>
+  </nodes>
+<!--@Location 12,25-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode22" conditionKey="CatalogCategoryBO:Accessible"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="KeyMapper0"/>
+<!--@BendPoints 24,51 24,49-->
+    <nodeSuccessors name="decision_no" next="LoopNode0_Entry"/>
+  </nodes>
+<!--@Location 12,26-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <parameterBindings name="InValue_1" objectPath="CatalogCategoryBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="CategoryBO"/>
+  </nodes>
+<!--@Location 12,27-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="EndNode12"/>
+  </nodes>
+<!--@Location 12,28-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode12">
+    <returnValues name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO"
+        optional="true"/>
+  </nodes>
+<!--@Location 6,22-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode9" name="GetSortedVariationProducts"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode35"/>
+  </nodes>
+<!--@Location 6,23-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode35">
+    <nodeSuccessors name="ShowMasterProduct" next="DecisionNode_d5WvMIBEEeiqLKPXPe7kDg"/>
+    <nodeSuccessors name="ShowVariationProduct" next="DecisionNode_EtQIkP6FEeaJ-MQsK_scaA"/>
+    <startNode referencedName="ViewProduct-CheckProductVariationHandling"/>
+  </nodes>
+<!--@Location 7,24-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_d5WvMIBEEeiqLKPXPe7kDg"
+      conditionKey="SearchParameter" operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="DecisionNode__2RA8P6DEeaJ-MQsK_scaA"/>
+<!--@BendPoints 16,49 16,52-->
+    <nodeSuccessors name="decision_no" next="JoinNode_LAh4oIQhEeiqLKPXPe7kDg"/>
+  </nodes>
+<!--@Location 7,25-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode__2RA8P6DEeaJ-MQsK_scaA"
+      conditionKey="ProductBO:isProductMaster" operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="JoinNode_LAh4oIQhEeiqLKPXPe7kDg"/>
+<!--@BendPoints 17,51-->
+    <nodeSuccessors name="decision_no" next="JoinNode_IWHiIP6EEeaJ-MQsK_scaA"/>
+  </nodes>
+<!--@Location 7,26-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_LAh4oIQhEeiqLKPXPe7kDg">
+    <nodeSuccessors name="next" next="CallNode8"/>
+  </nodes>
+<!--@Location 7,27-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="JoinNode_IWHiIP6EEeaJ-MQsK_scaA"/>
+    <nodeSuccessors name="ERROR" next="JoinNode_5C72sP6pEeaJ-MQsK_scaA"/>
+    <startNode referencedName="ViewProduct-GetVariationProductsBySearchIndex"/>
+  </nodes>
+<!--@Location 8,27-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_IWHiIP6EEeaJ-MQsK_scaA">
+    <nodeSuccessors name="next" next="EndNode13"/>
+  </nodes>
+<!--@Location 8,28-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode13"/>
+<!--@Location 7,29-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_5C72sP6pEeaJ-MQsK_scaA">
+    <nodeSuccessors name="next" next="EndNode11"/>
+  </nodes>
+<!--@Location 8,29-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode11" name="Error"/>
+<!--@Location 6,26-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_EtQIkP6FEeaJ-MQsK_scaA"
+      conditionKey="ProductBO:isMastered" operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="GetLocale_w8288P3kEeaqV8mXKoF9Gw"/>
+    <nodeSuccessors name="decision_no" next="EndNode_58igMAMzEeeDoOGbs7x2gA"/>
+  </nodes>
+<!--@Location 6,27-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocale_w8288P3kEeaqV8mXKoF9Gw">
+    <configurationValues name="LocaleFallback" value="Lead Locale"/>
+    <pipelet href="enfinity:/core/pipelets/GetLocale.xml"/>
+    <nodeSuccessors name="next" next="UpdateDictionary1"/>
+  </nodes>
+<!--@Location 6,28-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="UpdateDictionary1">
+    <configurationValues name="Name_01" value="Product"/>
+    <configurationValues name="Name_02" value="SortDirection"/>
+    <configurationValues name="Name_03" value="SortAttribute"/>
+    <configurationValues name="Name_04" value="LocaleInformation"/>
+    <pipelet href="enfinity:/core/pipelets/UpdateDictionary.xml"/>
+    <nodeSuccessors name="next" next="ExecutePageableQuery2"/>
+    <parameterBindings name="Value_01" objectPath="MasterProduct"/>
+    <parameterBindings name="Value_02" objectPath="SortDirection"/>
+    <parameterBindings name="Value_03" objectPath="SortAttribute"/>
+    <parameterBindings name="Value_04" objectPath="Locale"/>
+    <returnValueBindings name="OutDictionary" objectPath="Parameters"/>
+  </nodes>
+<!--@Location 6,29-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExecutePageableQuery2">
+    <configurationValues name="DefaultPageSize" value="15"/>
+    <configurationValues name="QueryName" value="product/SortVariationProductsByAttribute"/>
+    <pipelet href="enfinity:/core/pipelets/ExecutePageableQuery.xml"/>
+<!--@BendPoints 13,60-->
+    <nodeSuccessors name="next" next="LoopNode2"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode_5C72sP6pEeaJ-MQsK_scaA"/>
+    <returnValueBindings name="SearchResult" objectPath="MasteredProducts"/>
+  </nodes>
+<!--@Location 6,30-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode2" loop="MasteredProducts">
+<!--@BendPoints 15,61 15,62-->
+    <nodeSuccessors name="next" next="KeyMapper__ct4wP3kEeaqV8mXKoF9Gw"/>
+    <entry key="MasteredProduct">
+      <nodeSuccessors name="loop_entry_next" next="DecisionNode15"/>
+    </entry>
+  </nodes>
+<!--@Location 6,31-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode15" conditionKey="ProductBO:Accessible"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="AddObjectToVector1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode14"/>
+  </nodes>
+<!--@Location 6,32-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddObjectToVector.xml"/>
+<!--@BendPoints 11,65-->
+    <nodeSuccessors name="next" next="JoinNode14"/>
+    <parameterBindings name="InVector" objectPath="FilteredMasteredProductsVector"/>
+    <parameterBindings name="Object" objectPath="MasteredProduct"/>
+    <returnValueBindings name="Iterator" objectPath="FilteredMasteredProducts"/>
+    <returnValueBindings name="OutVector" objectPath="FilteredMasteredProductsVector"/>
+  </nodes>
+<!--@Location 5,31-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode14">
+<!--@BendPoints 11,61-->
+    <nodeSuccessors name="next" next="LoopNode2_Entry"/>
+  </nodes>
+<!--@Location 7,31-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper__ct4wP3kEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 15,64-->
+    <nodeSuccessors name="next" next="EndNode14"/>
+    <parameterBindings name="InValue_1" objectPath="FilteredMasteredProducts"/>
+    <returnValueBindings name="OutValue_1" objectPath="MasteredProducts"/>
+  </nodes>
+<!--@Location 7,32-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode14"/>
+<!--@Location 5,26-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_58igMAMzEeeDoOGbs7x2gA"/>
+<!--@Location 15,22-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode12" strict="true" name="GetVariationProductsBySearchIndex"
+      callMode="Private">
+<!--@BendPoints 31,46-->
+    <nodeSuccessors name="next" next="CallNode26"/>
+    <parameters name="PageSize" type="java.lang.String" optional="true"/>
+    <parameters name="PageNumber" type="java.lang.String" optional="true"/>
+    <parameters name="CurrentOrganization" type="java.lang.Object"/>
+    <parameters name="SortingAttribute" type="java.lang.String" optional="true"/>
+    <parameters name="SearchParameter" type="java.lang.String" optional="true"/>
+    <parameters name="HandlerPipeline" type="java.lang.String" optional="true"/>
+    <parameters name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+    <parameters name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO"
+        optional="true"/>
+  </nodes>
+<!--@Location 15,23-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode26">
+<!--@BendPoints 31,48-->
+    <nodeSuccessors name="next" next="CallNode31"/>
+    <parameterBindings name="Key" constant="PageSize.Category.ProductList"/>
+    <startNode referencedName="Paging-GetPageSize"/>
+  </nodes>
+<!--@Location 15,24-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode31">
+    <nodeSuccessors name="next" next="KeyMapper_KL6wwAKjEeeDoOGbs7x2gA"/>
+    <startNode referencedName="Paging-GetPageNumber"/>
+  </nodes>
+<!--@Location 15,25-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_KL6wwAKjEeeDoOGbs7x2gA">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode25"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentOrganization:OwningDomain"/>
+    <returnValueBindings name="OutValue_1" objectPath="PreferenceDomain"/>
+  </nodes>
+<!--@Location 15,26-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode25">
+    <nodeSuccessors name="next" next="DecisionNode_lLzXMIBGEeiqLKPXPe7kDg"/>
+    <startNode referencedName="ProcessCatalogSorting-PrepareProductSorting"/>
+  </nodes>
+<!--@Location 15,27-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_lLzXMIBGEeiqLKPXPe7kDg"
+      conditionKey="ProductBO:isProductMaster" operator="str_eq" conditionValue="true">
+<!--@BendPoints 30,56-->
+    <nodeSuccessors name="decision_yes" next="CallNode_YBU7gKVJEeipjqt4Ey-M_A"/>
+    <nodeSuccessors name="decision_no" next="CallNode_wZUYgIBGEeiqLKPXPe7kDg"/>
+  </nodes>
+<!--@Location 15,28-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_YBU7gKVJEeipjqt4Ey-M_A">
+    <nodeSuccessors name="next" next="JoinNode_9N7VAKVJEeipjqt4Ey-M_A"/>
+<!--@BendPoints 29,60 29,66-->
+    <nodeSuccessors name="NO_SEARCHINDEX" next="JoinNode_MPsdYI4vEeegB6F5A5OFnw"/>
+    <nodeSuccessors name="ERROR" next="EndNode15"/>
+    <parameterBindings name="DefaultSortAttribute" objectPath="sort_attribute_1"/>
+    <parameterBindings name="DefaultSortDirection" objectPath="sort_direction_1"/>
+    <parameterBindings name="MasterUUID" objectPath="ProductBO:ID"/>
+    <parameterBindings name="PageSize" objectPath="PageSizeInteger"/>
+    <parameterBindings name="ProductDomain" objectPath="PreferenceDomain"/>
+    <startNode referencedName="GetProductVariationsBySearchIndex-GetVariationsByMaster"/>
+  </nodes>
+<!--@Location 15,30-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_9N7VAKVJEeipjqt4Ey-M_A">
+    <nodeSuccessors name="next" next="DecisionNode_8JZvQI4uEeegB6F5A5OFnw"/>
+  </nodes>
+<!--@Location 15,31-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_8JZvQI4uEeegB6F5A5OFnw"
+      conditionKey="sort_attribute_1">
+    <nodeSuccessors name="decision_yes" next="JoinNode_MPsdYI4vEeegB6F5A5OFnw"/>
+<!--@BendPoints 33,63-->
+    <nodeSuccessors name="decision_no" next="DecisionNode_JC04wI4vEeegB6F5A5OFnw"/>
+  </nodes>
+<!--@Location 15,33-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_MPsdYI4vEeegB6F5A5OFnw">
+    <nodeSuccessors name="next" next="CallNode34"/>
+  </nodes>
+<!--@Location 15,34-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode34">
+<!--@BendPoints 31,69-->
+    <nodeSuccessors name="next" next="JoinNode16"/>
+    <nodeSuccessors name="NOPRODUCTBOS" next="DecisionNode11"/>
+    <nodeSuccessors name="ONEPRODUCT" next="AddObjectToCollection_Xz9b4AM0EeeDoOGbs7x2gA"/>
+    <startNode referencedName="ProcessStandardCatalog-GetProductBOs"/>
+  </nodes>
+<!--@Location 15,37-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode16">
+    <nodeSuccessors name="next" next="DecisionNode28"/>
+  </nodes>
+<!--@Location 15,38-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode28" conditionKey="HandlerPipeline"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_aGsyoP3mEeaqV8mXKoF9Gw"/>
+<!--@BendPoints 32,77 32,81-->
+    <nodeSuccessors name="decision_no" next="JoinNode22"/>
+  </nodes>
+<!--@Location 15,39-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_aGsyoP3mEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode22"/>
+    <parameterBindings name="InValue_1" constant="ViewProduct"/>
+    <returnValueBindings name="OutValue_1" objectPath="HandlerPipeline"/>
+  </nodes>
+<!--@Location 15,40-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode22">
+<!--@BendPoints 31,82-->
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap_a6V2EP3mEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@Location 15,41-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap_a6V2EP3mEeaqV8mXKoF9Gw">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="CreateSearchIndexCategoryNavigationList0"/>
+    <parameterBindings name="Key1" constant="CatalogID"/>
+    <parameterBindings name="Key2" constant="CategoryName"/>
+    <parameterBindings name="Key3" constant="SKU"/>
+    <parameterBindings name="Value1" objectPath="CategoryBO:CatalogBO:Name"/>
+    <parameterBindings name="Value2" objectPath="CategoryBO:Name"/>
+    <parameterBindings name="Value3" objectPath="ProductBO:SKU"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 15,42-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateSearchIndexCategoryNavigationList0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateSearchIndexCategoryNavigationList.xml"/>
+    <nodeSuccessors name="next" next="EndNode18"/>
+  </nodes>
+<!--@Location 15,43-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode18" strict="true">
+    <returnValues name="ProductBOs" type="java.util.Iterator"/>
+    <returnValues name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"/>
+  </nodes>
+<!--@Location 16,36-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode11" conditionKey="HandlerPipeline"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="KeyMapper2"/>
+<!--@BendPoints 34,73 34,77-->
+    <nodeSuccessors name="decision_no" next="JoinNode4"/>
+  </nodes>
+<!--@Location 16,37-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="InValue_1" constant="ViewProduct"/>
+    <returnValueBindings name="OutValue_1" objectPath="HandlerPipeline"/>
+  </nodes>
+<!--@Location 16,38-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+<!--@BendPoints 33,78-->
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap0"/>
+  </nodes>
+<!--@Location 16,39-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap0">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="CreateSearchIndexCategoryNavigationList1"/>
+    <parameterBindings name="Key1" constant="CatalogID"/>
+    <parameterBindings name="Key2" constant="CategoryName"/>
+    <parameterBindings name="Key3" constant="SKU"/>
+    <parameterBindings name="Value1" objectPath="CategoryBO:CatalogBO:Name"/>
+    <parameterBindings name="Value2" objectPath="CategoryBO:Name"/>
+    <parameterBindings name="Value3" objectPath="ProductBO:SKU"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 16,40-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateSearchIndexCategoryNavigationList1">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateSearchIndexCategoryNavigationList.xml"/>
+    <nodeSuccessors name="next" next="EndNode16"/>
+  </nodes>
+<!--@Location 16,41-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode16" name="NOPRODUCTBOS" strict="true">
+    <returnValues name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO"
+        optional="true"/>
+  </nodes>
+<!--@Location 14,35-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToCollection_Xz9b4AM0EeeDoOGbs7x2gA">
+    <pipelet href="enfinity:/core/pipelets/AddObjectToCollection.xml"/>
+    <nodeSuccessors name="next" next="CreatePageableFromCollection_DAq9sAM1EeeDoOGbs7x2gA"/>
+    <parameterBindings name="InCollection" nullBinding="true"/>
+    <parameterBindings name="InObject" objectPath="ProductBO"/>
+    <returnValueBindings name="OutCollection" objectPath="ProductBOCollection"/>
+  </nodes>
+<!--@Location 14,36-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePageableFromCollection_DAq9sAM1EeeDoOGbs7x2gA">
+    <configurationValues name="Pagesize" value="1"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/CreatePageableFromCollection.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper_LnmEwP3mEeaqV8mXKoF9Gw"/>
+    <parameterBindings name="Collection" objectPath="ProductBOCollection"/>
+    <returnValueBindings name="Pageable" objectPath="ProductBOs"/>
+  </nodes>
+<!--@Location 14,37-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_LnmEwP3mEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 30,75-->
+    <nodeSuccessors name="next" next="JoinNode16"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:ProductBOMaster"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBO"/>
+  </nodes>
+<!--@Location 16,32-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_JC04wI4vEeegB6F5A5OFnw"
+      conditionKey="Products" operator="has_elements">
+<!--@BendPoints 35,65-->
+    <nodeSuccessors name="decision_yes" next="SortIteratorByComparator_n-pioI4tEeegB6F5A5OFnw"/>
+    <nodeSuccessors name="decision_no" next="JoinNode_PymjcI4vEeegB6F5A5OFnw"/>
+  </nodes>
+<!--@Location 17,33-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SortIteratorByComparator_n-pioI4tEeegB6F5A5OFnw">
+    <configurationValues name="DefaultSortingAttribute" value="ProductVariationPosition"/>
+    <configurationValues name="DefaultSortingOrder" value="true"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SortIteratorByComparator.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_PymjcI4vEeegB6F5A5OFnw"/>
+    <parameterBindings name="Comparator" nullBinding="true"/>
+    <parameterBindings name="Iterator" objectPath="Products"/>
+    <parameterBindings name="SortingAttribute" nullBinding="true"/>
+    <parameterBindings name="SortingOrder" nullBinding="true"/>
+    <returnValueBindings name="SortedIterator" objectPath="Products"/>
+  </nodes>
+<!--@Location 16,33-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_PymjcI4vEeegB6F5A5OFnw">
+    <nodeSuccessors name="next" next="JoinNode_MPsdYI4vEeegB6F5A5OFnw"/>
+  </nodes>
+<!--@Location 16,29-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode15" name="ERROR" strict="true"/>
+<!--@Location 17,28-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_wZUYgIBGEeiqLKPXPe7kDg">
+<!--@BendPoints 34,60-->
+    <nodeSuccessors name="next" next="JoinNode_9N7VAKVJEeipjqt4Ey-M_A"/>
+    <nodeSuccessors name="NO_SEARCHINDEX" next="JoinNode_MPsdYI4vEeegB6F5A5OFnw"/>
+    <nodeSuccessors name="ERROR" next="EndNode15"/>
+    <parameterBindings name="DefaultSortAttribute" objectPath="sort_attribute_1"/>
+    <parameterBindings name="DefaultSortDirection" objectPath="sort_direction_1"/>
+    <parameterBindings name="MasterUUID" objectPath="ProductBO:ProductBOMaster:ID"/>
+    <parameterBindings name="PageSize" objectPath="PageSizeInteger"/>
+    <parameterBindings name="ProductDomain" objectPath="PreferenceDomain"/>
+    <startNode referencedName="GetProductVariationsBySearchIndex-GetVariationsByMaster"/>
+  </nodes>
+<!--@Location 13,12-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" strict="true" name="GetVariationTypeValues"
+      callMode="Private">
+<!--@BendPoints 27,26-->
+    <nodeSuccessors name="next" next="DetermineLocales2"/>
+<!--The Variation Type to select the values.-->
+    <parameters name="VariationType" type="com.intershop.beehive.xcs.capi.productvariation.VariationType"/>
+  </nodes>
+<!--@Location 13,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineLocales2">
+    <pipelet href="enfinity:/core/pipelets/DetermineLocales.xml"/>
+<!--@BendPoints 27,28-->
+    <nodeSuccessors name="next" next="GetVariationTypeValueData2"/>
+  </nodes>
+<!--@Location 13,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetVariationTypeValueData2">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetVariationTypeValueData.xml"/>
+<!--@BendPoints 27,30-->
+    <nodeSuccessors name="next" next="EndNode5"/>
+  </nodes>
+<!--@Location 13,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" name="" strict="true">
+    <returnValues name="VariationTypeValueData" type="com.intershop.component.mvc.capi.variation.VariationTypeValueData"/>
+  </nodes>
+<!--@Location 10,12-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" strict="true" name="GetVariationTypes"
+      callMode="Private">
+<!--@BendPoints 21,26-->
+    <nodeSuccessors name="next" next="ExecuteObjectsQuery1"/>
+    <parameters name="ProductDomain" type="com.intershop.beehive.core.capi.domain.Domain"
+        optional="true"/>
+  </nodes>
+<!--@Location 10,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExecuteObjectsQuery1">
+    <configurationValues name="Datasource" value="current ORM connection"/>
+    <configurationValues name="ParameterName_01" value="Domain"/>
+    <configurationValues name="QueryName" value="productvariation/GetVariationTypesByDomain"/>
+    <pipelet href="enfinity:/core/pipelets/ExecuteObjectsQuery.xml"/>
+<!--@BendPoints 21,28-->
+    <nodeSuccessors name="next" next="DecisionNode5"/>
+<!--@BendPoints 25,27-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode12"/>
+    <parameterBindings name="ParameterValue_01" objectPath="ProductDomain"/>
+    <returnValueBindings name="SearchResult" objectPath="VariationTypes"/>
+  </nodes>
+<!--@Location 10,14-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="VariationTypes">
+    <nodeSuccessors name="decision_yes" next="JoinNode7"/>
+<!--@BendPoints 23,29 23,30-->
+    <nodeSuccessors name="decision_no" next="ExecuteObjectsQuery2"/>
+  </nodes>
+<!--@Location 10,16-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+<!--@BendPoints 21,34-->
+    <nodeSuccessors name="next" next="EndNode6"/>
+  </nodes>
+<!--@Location 10,17-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode6" strict="true">
+    <returnValues name="VariationTypes" type="java.util.Iterator" optional="true"/>
+  </nodes>
+<!--@Location 11,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExecuteObjectsQuery2">
+    <configurationValues name="Datasource" value="current ORM connection"/>
+    <configurationValues name="ParameterName_01" value="Domain"/>
+    <configurationValues name="QueryName" value="productvariation/GetVariationTypesByDomain"/>
+    <pipelet href="enfinity:/core/pipelets/ExecuteObjectsQuery.xml"/>
+<!--@BendPoints 23,33-->
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode12"/>
+    <parameterBindings name="ParameterValue_01" objectPath="ProductDomain:ParentSite:Domain"/>
+    <returnValueBindings name="SearchResult" objectPath="VariationTypes"/>
+  </nodes>
+<!--@Location 12,15-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode12">
+<!--@BendPoints 25,34-->
+    <nodeSuccessors name="next" next="EndNode10"/>
+  </nodes>
+<!--@Location 12,17-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode10" name="Error"/>
+<!--@Location 11,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" name="Prefix" callMode="Private">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+  </nodes>
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 11,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CallNode20"/>
+<!--@BendPoints 25,5-->
+    <nodeSuccessors name="ERROR" next="EndNode4"/>
+    <parameterBindings name="ProductDomain" objectPath="CurrentProductRepository:RepositoryDomain"/>
+    <startNode referencedName="ProcessB2CProduct-GetProduct"/>
+  </nodes>
+<!--@Location 11,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode20">
+    <nodeSuccessors name="next" next="EndNode3"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:Repository(&quot;ProductBORepository&quot;)"/>
+    <parameterBindings name="ProductSKU" objectPath="Product:SKU"/>
+    <startNode referencedName="ProcessProduct-GetProductBOBySKU"/>
+  </nodes>
+<!--@Location 11,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode3"/>
+<!--@Location 12,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4" name="ERROR"/>
+<!--@Location 15,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode14" name="ProductPaging">
+    <nodeSuccessors name="next" next="SetDictionaryValue0"/>
+  </nodes>
+<!--@Location 15,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="Action"/>
+    <configurationValues name="Value" value="ProductPaging"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JumpNode5"/>
+  </nodes>
+<!--@Location 15,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode5">
+    <startNode referencedName="ViewProduct-Start"/>
+  </nodes>
+<!--@Location 8,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="RenderProductComponents">
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="DecisionNode21"/>
+<!--@BendPoints 19,3-->
+    <nodeSuccessors name="ERROR" next="JoinNode11"/>
+    <startNode referencedName="ViewProduct-Prefix"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode21" conditionKey="ProductBO:Online"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode17"/>
+    <nodeSuccessors name="decision_no" next="JoinNode11"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="DecisionNode19"/>
+    <startNode referencedName="This:GetCatalogCategoryBO"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode19" conditionKey="EditInCart">
+<!--@BendPoints 21,13-->
+    <nodeSuccessors name="decision_yes" next="CallNode12"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode12"/>
+  </nodes>
+<!--@Location 10,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+<!--@BendPoints 21,16-->
+    <nodeSuccessors name="next" next="GetBasketProductLineItemBO0"/>
+    <startNode referencedName="ViewCart-Prefix"/>
+  </nodes>
+<!--@Location 10,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketProductLineItemBO0">
+    <pipelet href="enfinity:/sld_ch_b2c_base/pipelets/GetBasketProductLineItemBO.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode2"/>
+    <parameterBindings name="BasketBO" objectPath="CurrentCartBO"/>
+    <parameterBindings name="PLIID" objectPath="LineItemUUID"/>
+    <returnValueBindings name="BasketProductLineItemBO" objectPath="ProductLineItemBO"/>
+  </nodes>
+<!--@Location 10,9-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="cart/EditProductInCart"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode12" conditionKey="RetailSetProduct">
+<!--@BendPoints 19,14-->
+    <nodeSuccessors name="decision_yes" next="KeyMapper3"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper1"/>
+  </nodes>
+<!--@displayNearNode@used to redirect to default variation product page
+@Location 9,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="BundledProductBO"/>
+  </nodes>
+<!--@Location 9,9-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="inc/product/RetailSetProduct"/>
+  </nodes>
+<!--@displayNearNode@used to redirect to default variation product page
+@Location 8,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 17,18-->
+    <nodeSuccessors name="next" next="GetDomainByUUID0"/>
+    <parameterBindings name="InValue_1" objectPath="Product:UUID"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductUUID"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainByUUID0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainByUUID.xml"/>
+    <nodeSuccessors name="next" next="CallNode13"/>
+    <parameterBindings name="DomainUUID" objectPath="Product:Domain:UUID"/>
+    <returnValueBindings name="Domain" objectPath="ProductDomain"/>
+  </nodes>
+<!--@Location 8,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode13">
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+    <parameterBindings name="PageletUUID" objectPath="CID"/>
+    <startNode referencedName="Render-GetRenderObjects"/>
+  </nodes>
+<!--@Location 8,11-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="product/RenderProductComponents"/>
+  </nodes>
+<!--@Location 9,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode11">
+    <nodeSuccessors name="next" next="InteractionNode4"/>
+  </nodes>
+<!--@Location 9,3-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode4">
+    <template referencedName="Empty"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+<!--@BendPoints 3,2-->
+    <nodeSuccessors name="next" next="PutValueToRequest1"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="PutValueToRequest1">
+    <configurationValues name="Namespace" value="Tracking"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/PutValueToRequest.xml"/>
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <parameterBindings name="Key" constant="PipelineName"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+<!--@BendPoints 3,6-->
+    <nodeSuccessors name="next" next="KeyMapper_jkrFwP3iEeaqV8mXKoF9Gw"/>
+<!--@BendPoints 7,5-->
+    <nodeSuccessors name="ERROR" next="JoinNode15"/>
+    <startNode referencedName="ViewProduct-Prefix"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_jkrFwP3iEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 3,8-->
+    <nodeSuccessors name="next" next="CallNode15"/>
+    <parameterBindings name="InValue_1" objectPath="Product"/>
+    <parameterBindings name="InValue_2" objectPath="ApplicationBO:Extension(&quot;Catalog&quot;):CatalogBORepository"/>
+    <parameterBindings name="InValue_3" objectPath="CurrentOrganization:OwningDomain"/>
+    <returnValueBindings name="OutValue_1" objectPath="MasterProduct"/>
+    <returnValueBindings name="OutValue_2" objectPath="CatalogBORepository"/>
+    <returnValueBindings name="OutValue_3" objectPath="OwningDomain"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+<!--@BendPoints 3,10-->
+    <nodeSuccessors name="next" next="CallNode28"/>
+    <startNode referencedName="FireTrackingEvents-ViewProduct"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode28">
+<!--@BendPoints 3,12-->
+    <nodeSuccessors name="next" next="DecisionNode13"/>
+    <startNode referencedName="DetermineRepositories-Channel"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode13" conditionKey="Product:DomainID"
+      operator="str_eq" conditionItem="Repository:RepositoryDomain:DomainID">
+    <nodeSuccessors name="decision_yes" next="DecisionNode4"/>
+    <nodeSuccessors name="decision_no" next="JoinNode15"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="ProductBO:Accessible"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="DecisionNode8"/>
+    <nodeSuccessors name="decision_no" next="RenderSystemPage__7k0UF9UEem-fNwoFQZzUA_Input"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode8" conditionKey="ProductBO:isProductMaster"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode36"/>
+<!--@BendPoints 5,17 5,19-->
+    <nodeSuccessors name="decision_no" next="JoinNode13"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode36">
+    <nodeSuccessors name="ShowMasterProduct" next="JoinNode13"/>
+    <nodeSuccessors name="ShowVariationProduct" next="CallNode9"/>
+    <startNode referencedName="ViewProduct-CheckProductVariationHandling"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode13">
+<!--@BendPoints 5,25-->
+    <nodeSuccessors name="next" next="JoinNode9"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 1,13-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="ProductBO:Online"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode2"/>
+<!--@BendPoints 9,27 9,28-->
+    <nodeSuccessors name="decision_no" next="DecisionNode9"/>
+  </nodes>
+<!--@Location 1,14-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="DecisionNode20"/>
+    <startNode referencedName="This:GetCatalogCategoryBO"/>
+  </nodes>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode20" conditionKey="OmitCategoryOnlineCheck"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="JoinNode10"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode7"/>
+  </nodes>
+<!--@Location 1,18-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+    <nodeSuccessors name="next" next="CallNode16"/>
+  </nodes>
+<!--@Location 1,19-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <startNode referencedName="ViewProduct-GetSortedVariationProducts"/>
+  </nodes>
+<!--@Location 1,20-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="KeyMapper_CYmF8P3jEeaqV8mXKoF9Gw"/>
+    <startNode referencedName="ProcessUser-GetCurrentUserBOAndCustomerBO"/>
+  </nodes>
+<!--@Location 1,21-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_CYmF8P3jEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode14"/>
+    <parameterBindings name="InValue_1" objectPath="CustomerBO:CustomerType:CustomerTypeID"/>
+    <returnValueBindings name="OutValue_1" objectPath="CustomerTypeID"/>
+  </nodes>
+<!--@Location 1,22-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <startNode referencedName="ViewProduct-Start_BottomHook"/>
+  </nodes>
+<!--@Location 1,23-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="ViewContext">
+<!--@BendPoints 3,50-->
+    <nodeSuccessors name="decision_yes" next="CallNode18"/>
+<!--@BendPoints 7,47-->
+    <nodeSuccessors name="decision_no" next="CallNode11"/>
+  </nodes>
+<!--@Location 1,25-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode18">
+    <nodeSuccessors name="NOT_PUBLIC" next="InteractionNode3"/>
+    <nodeSuccessors name="PUBLIC" next="JumpNode0"/>
+    <startNode referencedName="ProcessPageletACL-CheckViewContextIsPublic"/>
+  </nodes>
+<!--@Location 0,27-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode3">
+    <template referencedName="application/Error"/>
+  </nodes>
+<!--@Location 1,27-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewViewContext-Start"/>
+  </nodes>
+<!--@Location 3,24-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="DecisionNode26"/>
+    <parameterBindings name="ProductUUID" objectPath="ProductBO:ID"/>
+    <startNode referencedName="DetermineMetaTags-ProductMetaTags"/>
+  </nodes>
+<!--@Location 3,27-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode26" conditionKey="ProductBO:AttributeValue(&quot;RobotsNoIndex&quot;):BooleanValue"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="DecisionNode25"/>
+<!--@BendPoints 5,55-->
+    <nodeSuccessors name="decision_no" next="DecisionNode24"/>
+  </nodes>
+<!--@Location 3,28-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode25" conditionKey="ProductBO:AttributeValue(&quot;RobotsNoFollow&quot;):BooleanValue"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode21"/>
+    <nodeSuccessors name="decision_no" next="CallNode10"/>
+  </nodes>
+<!--@Location 3,30-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode21">
+    <nodeSuccessors name="next" next="JoinNode_YaaJgN8-EeekPcc8c3a6aQ"/>
+    <startNode referencedName="ProcessSearchEngineAttributes-CreateRobotsNoindexNofollowMetaTag"/>
+  </nodes>
+<!--@Location 3,31-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_YaaJgN8-EeekPcc8c3a6aQ">
+    <nodeSuccessors name="next" next="GetDomainPreference0"/>
+  </nodes>
+<!--@Location 3,32-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference0">
+    <configurationValues name="DefaultPreferenceKey" value="HRefLangEnabled"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode_f1orIN8hEeekPcc8c3a6aQ"/>
+<!--@BendPoints 8,65 8,67-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode_f1orIN8hEeekPcc8c3a6aQ"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="PreferenceKey" nullBinding="true"/>
+    <returnValueBindings name="Preference" objectPath="PreferenceHRefLangEnabled"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="HRefLangEnabled"/>
+  </nodes>
+<!--@Location 3,33-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_f1orIN8hEeekPcc8c3a6aQ">
+    <nodeSuccessors name="next" next="CreateProductHRefLangList0"/>
+  </nodes>
+<!--@Location 3,34-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateProductHRefLangList0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateProductHRefLangList.xml"/>
+    <nodeSuccessors name="next" next="PipelineNodeNode0_Input"/>
+    <parameterBindings name="Locales" objectPath="ApplicationBO:Locales"/>
+  </nodes>
+<!--@Location 3,35-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="PipelineNodeNode0">
+    <configurationValues name="ContextObjectRelationReference" value="app_sf_responsive:viewcontext.page.product.pagelet2-ViewContext"/>
+    <pipelet href="enfinity:/sld_pmc/pipelets/com.intershop.sellside.pmc.capi.pipeline.RenderSystemViewContext.pipelinenode"/>
+    <inConnectors name="Input"/>
+  </nodes>
+<!--@Location 4,30-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="JoinNode_YaaJgN8-EeekPcc8c3a6aQ"/>
+    <startNode referencedName="ProcessSearchEngineAttributes-CreateRobotsNoindexFollowMetaTag"/>
+  </nodes>
+<!--@Location 2,29-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode24" conditionKey="ProductBO:AttributeValue(&quot;RobotsNoFollow&quot;):BooleanValue"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode22"/>
+    <nodeSuccessors name="decision_no" next="CallNode23"/>
+  </nodes>
+<!--@Location 2,30-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode22">
+    <nodeSuccessors name="next" next="JoinNode_YaaJgN8-EeekPcc8c3a6aQ"/>
+    <startNode referencedName="ProcessSearchEngineAttributes-CreateRobotsIndexNofollowMetaTag"/>
+  </nodes>
+<!--@Location 1,30-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode23">
+    <nodeSuccessors name="next" next="JoinNode_YaaJgN8-EeekPcc8c3a6aQ"/>
+    <startNode referencedName="ProcessSearchEngineAttributes-CreateRobotsIndexFollowMetaTag"/>
+  </nodes>
+<!--@Location 2,15-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="CategoryBO">
+    <nodeSuccessors name="decision_yes" next="DecisionNode3"/>
+<!--@BendPoints 7,31-->
+    <nodeSuccessors name="decision_no" next="JoinNode_K2CzIP6CEeaJ-MQsK_scaA"/>
+  </nodes>
+<!--@Location 2,16-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="CategoryBO:Online"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="JoinNode_K2CzIP6CEeaJ-MQsK_scaA"/>
+    <nodeSuccessors name="decision_no" next="CallNode4"/>
+  </nodes>
+<!--@Location 3,16-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_K2CzIP6CEeaJ-MQsK_scaA">
+<!--@BendPoints 7,37-->
+    <nodeSuccessors name="next" next="JoinNode_PY23AP6CEeaJ-MQsK_scaA"/>
+  </nodes>
+<!--@Location 2,18-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_PY23AP6CEeaJ-MQsK_scaA">
+    <nodeSuccessors name="next" next="JoinNode10"/>
+  </nodes>
+<!--@Location 2,17-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+<!--@BendPoints 4,35-->
+    <nodeSuccessors name="next" next="JoinNode10"/>
+    <nodeSuccessors name="ERROR" next="JoinNode_PY23AP6CEeaJ-MQsK_scaA"/>
+    <parameterBindings name="OfflineCategoryBO" objectPath="CategoryBO"/>
+    <startNode referencedName="ProcessChannelCatalog-GetFallbackCategory"/>
+    <returnValueBindings name="ParentCategoryBO" objectPath="CategoryBO"/>
+  </nodes>
+<!--@Location 4,14-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode9" conditionKey="ProductBO:isMastered"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 9,30-->
+    <nodeSuccessors name="decision_yes" next="KeyMapper_ErANcP3jEeaqV8mXKoF9Gw"/>
+<!--@BendPoints 13,29-->
+    <nodeSuccessors name="decision_no" next="JoinNode8"/>
+  </nodes>
+<!--@Location 4,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_ErANcP3jEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 9,32-->
+    <nodeSuccessors name="next" next="DecisionNode10"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:ProductBOMaster:DefaultVariationProductBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="DefaultVariationProduct"/>
+  </nodes>
+<!--@Location 4,16-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode10" conditionKey="ProductBO:ID"
+      operator="str_neq" conditionItem="DefaultVariationProduct:ID">
+<!--@BendPoints 9,34-->
+    <nodeSuccessors name="decision_yes" next="RemoveDictionaryValue_Fk8tMP3jEeaqV8mXKoF9Gw"/>
+    <nodeSuccessors name="decision_no" next="JoinNode8"/>
+  </nodes>
+<!--@Location 4,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue_Fk8tMP3jEeaqV8mXKoF9Gw">
+    <configurationValues name="Key" value="SKU"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+<!--@BendPoints 9,36-->
+    <nodeSuccessors name="next" next="KeyMapper_Hb0vQP3jEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@Location 4,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_Hb0vQP3jEeaqV8mXKoF9Gw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 9,38-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+    <parameterBindings name="InValue_1" objectPath="DefaultVariationProduct:SKU"/>
+    <returnValueBindings name="OutValue_1" objectPath="SKU"/>
+  </nodes>
+<!--@Location 4,19-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewProduct-Start"/>
+  </nodes>
+<!--@Location 6,16-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+<!--@BendPoints 13,34-->
+    <nodeSuccessors name="next" next="KeyMapper_GKfqQP3jEeaqV8mXKoF9Gw"/>
+  </nodes>
+<!--@displayNearNode@use NextPage as PageNumber
+@Location 6,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_GKfqQP3jEeaqV8mXKoF9Gw">
+    <configurationValues name="ValueType" value="Form Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 13,36-->
+    <nodeSuccessors name="next" next="JumpNode2"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:DefaultCatalogCategoryBO:ID"/>
+    <parameterBindings name="InValue_2" objectPath="ProductBO:DefaultCatalogCategoryBO:Name"/>
+    <parameterBindings name="InValue_3" objectPath="ProductBO:DefaultCatalogCategoryBO:CatalogBO:Name"/>
+    <returnValueBindings name="OutValue_1" objectPath="CategoryID"/>
+    <returnValueBindings name="OutValue_2" objectPath="CategoryName"/>
+    <returnValueBindings name="OutValue_3" objectPath="CatalogID"/>
+  </nodes>
+<!--@Location 6,18-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <parameterBindings name="CatalogCategoryID" objectPath="DefaultCatalogCategory:UUID"/>
+    <startNode referencedName="ViewStandardCatalog-Browse"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="JoinNode9"/>
+    <startNode referencedName="ViewProduct-GetDefaultVariationProduct"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPage__7k0UF9UEem-fNwoFQZzUA">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.product.notaccessible.pagelet2-Page"/>
+    <pipelet href="enfinity:/sld_pmc/pipelets/com.intershop.sellside.pmc.capi.pipeline.RenderSystemPage.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode15">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="JumpNode3"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="Error-ProductNotFound"/>
+  </nodes>
+<!--@Location 8,14-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode8" name="Start_BottomHook"
+      callMode="Private">
+<!--@BendPoints 17,34-->
+    <nodeSuccessors name="next" next="EndNode7"/>
+  </nodes>
+<!--@Location 8,17-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode7"/>
+</pipeline:Pipeline>

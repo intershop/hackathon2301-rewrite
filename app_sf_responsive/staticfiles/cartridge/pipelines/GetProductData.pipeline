@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@deprecated since ICM 7.10.5.1
+Please use REST API to search for product variations.
+
+This pipeline is used to asynchronously get product data in different formats like JSON, XML, etc.
+@Group Product-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="GetProductData" type="view">
+<!--@deprecated
+Please use REST API to search for product variations.
+@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="FormatProduct">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+    <parameters name="ProductID" type="java.lang.String" optional="true"/>
+    <parameters name="SKU" type="java.lang.String" optional="true"/>
+    <parameters name="Format" type="java.lang.String"/>
+    <parameters name="Reviews" type="java.lang.Integer" optional="true"/>
+<!--If set to true a different template is returned that allows for setting the JSON as variable-->
+    <parameters name="ReturnVariable" type="java.lang.String" optional="true"/>
+<!--Pass the current request-->
+    <parameters name="CurrentRequest" type="com.intershop.beehive.core.capi.request.Request"/>
+    <parameters name="CurrentProductRepository" type="com.intershop.component.mvc.capi.catalog.Repository"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <startNode referencedName="ProcessProduct-GetProductBOByID"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <startNode referencedName="ProcessPromotion-GetProductPromotions"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="Format"
+      operator="str_eq" conditionValue="JSON">
+    <nodeSuccessors name="decision_yes" next="DecisionNode6"/>
+<!--@BendPoints 4,9 4,8 7,8-->
+    <nodeSuccessors name="decision_no" next="DecisionNode3"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="ReturnVariable"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 3,12-->
+    <nodeSuccessors name="decision_yes" next="InteractionNode1"/>
+<!--@BendPoints 5,11 5,12-->
+    <nodeSuccessors name="decision_no" next="InteractionNode0"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="product/json/ProductJSONAsVariable"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="product/json/ProductJSON"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="Format"
+      operator="str_eq" conditionValue="XML">
+<!--@BendPoints 7,10-->
+    <nodeSuccessors name="decision_yes" next="InteractionNode2"/>
+<!--@BendPoints 9,9-->
+    <nodeSuccessors name="decision_no" next="InteractionNode3"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="product/xml/ProductXML"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode3">
+    <template referencedName="Empty"/>
+  </nodes>
+<!--@deprecated
+Please use REST API to search for product variations.
+@Location 6,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="FormatProducts">
+    <nodeSuccessors name="next" next="GetApplicationBO1"/>
+    <parameters name="ProductID" type="java.lang.String" optional="true"/>
+    <parameters name="SKU" type="java.lang.String" optional="true"/>
+    <parameters name="Format" type="java.lang.String"/>
+    <parameters name="Reviews" type="java.lang.Integer" optional="true"/>
+<!--Indicates whether the JSON is returned as variable.-->
+    <parameters name="ReturnVariable" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO1">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="ProductID">
+    <nodeSuccessors name="decision_yes" next="GetFormSelection1"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode1"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetFormSelection1">
+    <configurationValues name="DefaultParameterName" value="ProductID"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetFormSelection.xml"/>
+    <nodeSuccessors name="next" next="LoopNode0"/>
+    <returnValueBindings name="Selection" objectPath="ProductIDIterator"/>
+  </nodes>
+<!--@Location 6,4-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode0" loop="ProductIDIterator">
+<!--@BendPoints 15,9-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <entry key="ProductID">
+      <nodeSuccessors name="loop_entry_next" next="CallNode2"/>
+    </entry>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="AddObjectToVector0"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <startNode referencedName="ProcessProduct-GetProductBOByID"/>
+  </nodes>
+<!--@Location 6,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddObjectToVector.xml"/>
+<!--@BendPoints 13,14 12,14 12,9-->
+    <nodeSuccessors name="next" next="LoopNode0_Entry"/>
+    <parameterBindings name="InVector" objectPath="ProductBOsVector"/>
+    <parameterBindings name="Object" objectPath="ProductBO"/>
+    <parameterBindings name="Objects" nullBinding="true"/>
+    <returnValueBindings name="Iterator" objectPath="ProductBOs"/>
+    <returnValueBindings name="OutVector" objectPath="ProductBOsVector"/>
+  </nodes>
+<!--@Location 7,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="DecisionNode5"/>
+  </nodes>
+<!--@Location 7,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="Format"
+      operator="str_eq" conditionValue="JSON">
+<!--@BendPoints 15,18 13,18-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode7"/>
+<!--@BendPoints 16,17 16,16 17,16-->
+    <nodeSuccessors name="decision_no" next="DecisionNode4"/>
+  </nodes>
+<!--@Location 6,9-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="ReturnVariable"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 13,20-->
+    <nodeSuccessors name="decision_yes" next="InteractionNode7"/>
+<!--@BendPoints 15,19 15,20-->
+    <nodeSuccessors name="decision_no" next="InteractionNode4"/>
+  </nodes>
+<!--@Location 6,10-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode7">
+    <template referencedName="product/json/ProductsJSONAsVariable"/>
+  </nodes>
+<!--@Location 7,10-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode4">
+    <template referencedName="product/json/ProductsJSON"/>
+  </nodes>
+<!--@Location 8,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="Format"
+      operator="str_eq" conditionValue="XML">
+<!--@BendPoints 17,18-->
+    <nodeSuccessors name="decision_yes" next="InteractionNode5"/>
+<!--@BendPoints 19,17 19,18-->
+    <nodeSuccessors name="decision_no" next="InteractionNode6"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode5">
+    <template referencedName="product/xml/ProductsXML"/>
+  </nodes>
+<!--@Location 9,9-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode6">
+    <template referencedName="Empty"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="SKU">
+<!--@BendPoints 17,6-->
+    <nodeSuccessors name="decision_yes" next="GetFormSelection0"/>
+<!--@BendPoints 19,5-->
+    <nodeSuccessors name="decision_no" next="JoinNode1"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetFormSelection0">
+    <configurationValues name="DefaultParameterName" value="SKU"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetFormSelection.xml"/>
+<!--@BendPoints 17,8-->
+    <nodeSuccessors name="next" next="LoopNode1"/>
+    <returnValueBindings name="Selection" objectPath="SKUIterator"/>
+  </nodes>
+<!--@Location 8,4-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode1" loop="SKUIterator">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <entry key="SKU">
+      <nodeSuccessors name="loop_entry_next" next="CallNode3"/>
+    </entry>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="AddObjectToVector1"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:getRepository(&quot;ProductBORepository&quot;)"/>
+    <parameterBindings name="ProductSKU" objectPath="SKU"/>
+    <startNode referencedName="ProcessProduct-GetProductBOBySKU"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddObjectToVector.xml"/>
+<!--@BendPoints 17,14 16,14 16,9-->
+    <nodeSuccessors name="next" next="LoopNode1_Entry"/>
+    <parameterBindings name="InVector" objectPath="ProductBOsVector"/>
+    <parameterBindings name="Object" objectPath="ProductBO"/>
+    <parameterBindings name="Objects" nullBinding="true"/>
+    <returnValueBindings name="Iterator" objectPath="ProductBOs"/>
+    <returnValueBindings name="OutVector" objectPath="ProductBOsVector"/>
+  </nodes>
+<!--@Location 9,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 19,15-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+</pipeline:Pipeline>

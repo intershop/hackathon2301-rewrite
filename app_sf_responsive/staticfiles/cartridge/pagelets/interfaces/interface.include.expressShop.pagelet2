@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="interface.include.expressShop.pagelet2">
+  <callParameterInterfaces name="Interface">
+    <callParameterDefinitions name="ProductBO" type="com.intershop.component.product.capi.ProductBO" />
+  </callParameterInterfaces>
+</pagelet:PageletModel>

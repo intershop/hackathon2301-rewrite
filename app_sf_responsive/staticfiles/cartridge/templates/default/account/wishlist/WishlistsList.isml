@@ -1,0 +1,33 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div class="section">
+	<isif condition="#hasElements(WishlistBOs)#">
+		<div class="list-body">
+			<isloop counter="Counter" iterator="WishlistBOs" alias="WishlistBO">
+				<div class="list-item-row">
+					<div class="col-xs-4 list-item">
+						<a href="#URLEX(SecureURL,'',Action('ViewWishlist-View'), Parameter('WishlistID', WishlistBO:ID))#">
+							<isprint value="#WishlistBO:Name#">
+						</a>
+						<isif condition="#PreferredWishlistID EQ WishlistBO:ID#">
+							 &nbsp;<istext key="account.wishlists.table.preferred" />
+						</isif>
+					</div>
+					<div class="col-xs-2 list-item"> <isprint value="#WishlistBO:WishlistItemBOsCount#"> <istext key="account.wishlists.items"/> </div>
+					<div class="col-xs-3 list-item">
+						<isif condition="#WishlistBO:Public#">
+							<istext key="account.wishlists.table.public" />
+						<iselse>
+							<istext key="account.wishlists.table.private" />
+						</isif>
+					</div>
+					<div class="col-xs-3 list-item text-right">
+						<a class="btn-tool" data-dialog href="#URL(Action('ViewWishlist-ShowDeleteWishlistDialog'), Parameter('AjaxRequestMarker', 'true'), Parameter('WishlistID', WishlistBO:ID))#" title="<istext key="account.wishlist.list.remove"/>"><span class="glyphicon glyphicon-trash"></span></a>
+					</div>
+				</div>
+			</isloop>
+		</div>
+	<iselse>
+		<p class="flush"><istext key="account.wishlists.no_wishlists"/></p>
+	</isif>
+</div>

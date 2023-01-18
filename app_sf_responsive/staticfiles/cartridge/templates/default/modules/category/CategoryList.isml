@@ -1,0 +1,24 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<isif condition="#hasElements(CategoryBOs)#">
+
+	<ul class="category-list row <isprint value="#cssClass#">">
+		<isloop iterator="CategoryBOs" alias="CategoryBO" counter="CategoryCount">
+			<isif condition="#CategoryBO:Accessible#">
+		
+				<iscachekey object="#CategoryBO#">
+				<isset name="CategoryBO" value="#CategoryBO#" scope="request">
+				
+				<li class="category-list-item <isprint value="#listItemCssClass#">">
+					
+					<ISUUID name="RenderEntityID">
+					<ISRenderEntityRenderingStart RenderEntityRenderObject="#CategoryBO#" RenderEntityID="#RenderEntityID#">
+						<ISViewContext ViewContext="#viewContext#">
+					<ISRenderEntityRenderingEnd RenderEntityRenderObject="#CategoryBO#" RenderEntityID="#RenderEntityID#">
+					
+				</li>
+			</isif>
+		</isloop>
+	</ul>
+
+</isif>

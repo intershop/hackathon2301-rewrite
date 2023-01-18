@@ -1,0 +1,496 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!--- 
+	This module renders a product image. It is able to perform a fall back 
+	and shows a standard "no image" picture if no image is available.
+	
+	Parameter:
+		- ProductBO (required)
+			The ProductBO whose image should be shown.
+		- ImageType (required)
+			The image type to use (size).
+		- ImageView (optional)
+			The image view to use, if empty use the primary view.
+		- Class (optional)
+			The CSS class for the <img> tag.
+		- AltText (optional)
+			The alt value for the <img> tag.
+		- RichSnippetsEnabled (optional)
+			If the rich snippets are enabled and will be added to the product image module.
+		- locale (Optional):
+			Locale information which will be used to search for a file 				
+	Example:
+		<ISProductImage ProductBO="#ProductBO#" ImageType="L" Class="ish-product-image" Locale="#Locale#">
+--->
+<ismodule template="modules/product/ProductImage.isml"
+	name="ProductImage"
+	strict="true"
+	attribute="ProductBO"
+	attribute="ImageType"
+	attribute="ImageView"
+	attribute="Class"
+	attribute="AltText"
+	attribute="Locale"
+	attribute="RichSnippetsEnabled"
+	attribute="SourceSetMedia"
+>
+
+<!--- 
+	This module renders all alternate images for an image type.
+	
+	Parameter:
+		- ProductBO (required)
+			The ProductBO whose price should be shown.
+		- ImageType (required)
+			The image type to use (size).
+		- IncludePrimaryImage (optional) [true|false] - default: true
+			Include the primary image in the alternate images or not. 
+		- RichSnippetsEnabled (optional)
+			If the rich snippets are enabled and will be added to the product alternate image module.
+
+	Example:
+		<ISProductAlternateImages
+			ProductBO="#ProductBO#"
+			ImageType="S"
+		>
+--->
+<ismodule template="modules/product/ProductAlternateImages.isml"
+	name="ProductAlternateImages"
+	strict="true"
+	attribute="ProductBO"
+	attribute="ImageType"
+	attribute="IncludePrimaryImage"
+	attribute="RichSnippetsEnabled"
+>
+
+<!--- 
+	This module renders all product images for carousel.
+--->
+<ismodule template="inc/product/ProductImagesCarousel.isml" 
+	name="ProductImagesCarousel"
+	strict="true"
+	attribute="ProductBO"
+	attribute="ImageType"
+	attribute="RichSnippetsEnabled"
+	attribute="ExpressShop"
+	attribute="UseSourceSet"
+>
+
+<!--- 
+	This module renders the product price for a given product.
+	
+	Parameter:
+		- ProductBO (required)
+			The ProductBO whose price should be shown.
+		- Currency (required)
+			The Currency usually the #CurrentRequest:Currency#.
+		- ShowInformationalPrice (optional) [true|false] - only work
+			Set to "true" if a List Price higher then the Sales Price should be shown. 
+		- ShowPriceSavings (optional) [true|false]
+			Set to "true" if the price have to show the saved amount (in case of special price).
+		- RichSnippetsEnabled (optional)
+			If the rich snippets are enabled and will be added to the product price module.
+	
+	Example:
+		<ISProductPrice
+			ProductBO="#ProductBO#"
+			Currency="#CurrentRequest:Currency#"
+			ShowInformationalPrice="true"
+			ShowPriceSavings="true"
+			RichSnippetsEnabled=#RichSnippetsEnabled#
+		>
+--->
+<ismodule template = "modules/product/ProductPrice.isml"
+	name="ProductPrice"
+	strict="true"
+	attribute="ProductBO"
+	attribute="Currency"
+	attribute="ShowInformationalPrice"
+	attribute="ShowPriceSavings"
+	attribute="RichSnippetsEnabled"
+>
+
+<!--- 
+	This module renders the additional text (if configured) for the given products price.
+	
+	Parameter:
+		- ProductBO (required)
+			The ProductBO whose prices additional text should be shown.
+		- SetAsDictionaryValue (optional) [true|false] default: false
+			Set the additional text for the price as dictionary value for later use instead of direct rendering.
+		- ProductPriceAdditionalText (optional)
+			The dictionary key under which the additional text value is set if SetAsDictionaryValue="true".
+	Example:
+		<ISProductPriceAdditionalText ProductBO="#ProductBO#">
+--->
+<ismodule template = "modules/product/ProductPriceAdditionalText.isml"
+	name="ProductPriceAdditionalText"
+	strict="true"
+	attribute="ProductBO"
+	attribute="SetAsDictionaryValue"
+	returnattribute="ProductPriceAdditionalText"
+>
+
+<!--- 
+	This module renders information about the products last order date and end of lifetime. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+ --->
+<ismodule template = "modules/product/ProductLifecycleStatus.isml"
+	name="ProductLifecycleStatus"
+	strict="true"
+	attribute="ProductBO"
+>
+
+<!--- 
+	This module renders information about the products availability. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+		- RichSnippetsEnabled (optional)
+			If the rich snippets are enabled and will be added to the product availabitlity module.
+
+ --->
+<ismodule template = "modules/product/ProductAvailability.isml"
+	name="ProductAvailability"
+	strict="true"
+	attribute="ProductBO"
+	attribute="RichSnippetsEnabled"
+	attribute="InventoryStatus"
+>
+
+<!--- 
+	This module renders an Express Shop trigger for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+		label         : If the label needs to be different from the system default.
+ --->
+<ismodule template = "modules/product/ExpressShopTrigger.isml"
+	name="ExpressShopTrigger"
+	strict="true"
+	attribute="ProductBO"
+	attribute="label"
+>
+
+<!--- 
+	This module renders an Add To Cart button for a given product. 
+	
+	Parameters:
+		ProductBO        : The ProductBO.
+		addToCartBehavior: expresscart or default/none - expresscart shows a dialog with the add to cart information, else the cart page is shown
+		class            : addidtional CSS classes for the add to cart button
+		DisplayType      : (optional) - [glyphicon]
+		DataAttributes   : (optional) - add additional data attributes to the button
+ --->
+<ismodule template = "modules/product/AddToCart.isml"
+	name="AddToCart"
+	strict="true"
+	attribute="ProductBO"
+	attribute="addToCartBehavior"
+	attribute="Currency"
+	attribute="class"
+	attribute="DisplayType"
+	attribute="DataAttributes"
+	attribute="InventoryStatus"
+>
+
+<ismodule template = "modules/product/ChooseVariation.isml"
+	name="ChooseVariation"
+	strict="true"
+	attribute="ProductBO"
+	attribute="class"
+>
+
+<!--- 
+	This module renders an Add To Wishlist link for a given product. 
+	
+	Parameters:
+		ProductBO		: The ProductBO.
+		Currency		: Currency
+		class			: CSS class for button
+		DisplayType		: (optional) - [glyphicon | share-tool]
+		DataAttributes	: (optional) - add additional data attributes to the button
+ --->
+<ismodule template = "modules/product/AddToWishlist.isml"
+	name="AddToWishlist"
+	strict="true"
+	attribute="ProductBO"
+	attribute="Currency"
+	attribute="class"
+	attribute="DisplayType"
+	attribute="DataAttributes"
+>
+
+<!--- 
+	This module renders a Compare link for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+		class			: CSS class for button
+		DisplayType		: (optional) - [glyphicon | share-tool]
+ --->
+<ismodule template = "modules/product/AddToProductCompare.isml"
+	name="AddToProductCompare"
+	strict="true"
+	attribute="ProductBO"
+	attribute="class"
+	attribute="DisplayType"
+>
+
+<!--- 
+	This module renders a Notification link for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+		CurrentSession: The CurrentSession (for Login check)
+		class	      : css class for button.
+ --->
+<ismodule template = "modules/product/AddToProductNotification.isml"
+	name="AddToProductNotification"
+	strict="true"
+	attribute="ProductBO"
+	attribute="CurrentSession"
+	attribute="class"
+	attribute="InventoryStatus"
+>
+
+<!---
+	This module renders the variation handling for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+ --->
+<ismodule template = "modules/product/ProductVariationSelect.isml"
+	name="ProductVariationSelect"
+	strict="true"
+	attribute="ProductBO"
+	attribute="page"
+>
+
+
+<!--- 
+	This module renders a quantity input field for a given product.
+	
+	Parameters:
+		- ProductBO (required)
+			The ProductBO.
+		- ProductLineItemBO (optional)
+			The ProductLineItemBO if the Product is also a ProductLineItem.
+		- type (optional) [input|dropdown] - default: input
+			The display style for the quantity input as input field or dropdown (selectbox).
+		- initialQuantity (optional):
+			Define the initial quantity for the product between or equal to the minimum quantity and the maximum quantity being displayed for text input fields or dropdown options, otherwise the the minimum quantity is used
+		- maxQuantity (optional):
+			Define the maximum quantity for the product.
+		- nullQuantity (optional):
+			Defines if the quantity of a product can be set to "0".
+		- customStyle (optional):
+			Defines custom style for the quantity design and alignment.
+		- ShowLabel (optional):
+			Controls whether the label should be rendered or not. By default it will be rendered (default: true).
+--->
+<ismodule template = "modules/product/ProductQuantity.isml"
+	name="ProductQuantity"
+	strict="true"
+	attribute="ProductBO"
+	attribute="ProductLineItemBO"
+	attribute="type"
+	attribute="initialQuantity"
+	attribute="displayQuantity"
+	attribute="maxQuantity"
+	attribute="nullQuantity"
+	attribute="Currency"
+	attribute="customStyle"
+	attribute="InventoryStatus"
+	attribute="ShowLabel"
+>
+
+<!--- 
+	This module renders the shipping information for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+ --->
+<ismodule template = "modules/product/ProductShipping.isml"
+	name="ProductShipping"
+	strict="true"
+	attribute="ProductBO"
+>
+
+<!--- 
+	This module renders the gifting information for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+ --->
+<ismodule template = "modules/product/ProductGiftStatus.isml"
+	name="ProductGiftStatus"
+	strict="true"
+	attribute="ProductBO"
+>
+
+<!--- 
+	This module renders the warranty information for a given product. 
+	
+	Parameters:
+		ProductBO     : The ProductBO.
+		Currency      : The Currency that is used to display the prices.
+		DisplayType	  : dropdown or radio
+ --->
+<ismodule template = "modules/product/ProductWarranty.isml"
+	name="ProductWarranty"
+	strict="true"
+	attribute="ProductBO"
+	attribute="Currency"
+	attribute="DisplayType"
+>
+
+<!--- 
+	Module that renders the assigned promotion info for a given product.
+	
+	Parameter:
+		- ProductBO (required)
+			The ProductBO whose promotions should be shown.
+		- DisplayType (optional) [full|simple] - default: full
+			The way the promotions should be displayed:
+			- full: Icon, Title, Long Title, Detail Link
+			- simple: Title
+		- MaxNumber (optional)
+			Maximum number of Promotions that should be listed.
+			If no MaxNumber is given all Promotions will be listed.
+		- Locale (required)
+			The LocaleInformation
+	
+	Example:
+		<isPromotionList
+			ProductBO="#ProductBO#"
+			DisplayType="simple"
+			MaxNumber="5"
+			Locale="#Locale#">
+--->
+<ismodule template = "modules/product/PromotionList.isml"
+	name="PromotionList"
+	strict="true"
+	attribute="ProductBO"
+	attribute="DisplayType"
+	attribute="MaxNumber"
+	attribute="Locale"
+>
+
+<!--- 
+	Renders a product attachment list. Each attachment has a brief description and a link to view its content.
+	
+	Parameter:
+		- ProductBO (required)
+			The ProductBO whose attachments should be shown.
+		- Type (optional) [All|Information|Contract|Manual|Other] - default: All
+			The type of product attachments that should be listed.
+		- ShowDescription (optional) [true|false] - default: true
+			Show attachment description.
+		- MaxNumber (optional)
+			Maximum number of of attachments to show.
+			If no MaxNumber is given all attachments will be listed.
+	
+	Example:
+		<isProductAttachments
+			ProductBO="#ProductBO#"
+			MaxNumber="5">
+--->
+<ismodule template = "modules/product/ProductAttachments.isml"
+	name="ProductAttachments"
+	strict="true"
+	attribute="ProductBO"
+	attribute="Type"
+	attribute="ShowDescription"
+	attribute="MaxNumber"
+>
+
+<!--- 
+	Create a file from a content descriptor 
+
+	Parameters: 
+		- contentdescriptor (Required):
+			The key the dictionary value which contains content descriptor
+		- locale (Optional):
+			Locale information which will be used to search for a file 			
+		- file (Required):
+			The target dictionary key for the found file 
+	Example: 
+		... 
+		<ISContentDescriptorFile contentdescriptor="Attachment:Value" file="File">
+		...
+--->
+<ismodule template="modules/product/ContentDescriptorFile.isml"
+	name="ContentDescriptorFile"
+	attribute="contentdescriptor"
+	attribute="file"
+>
+
+<!--- 
+	Returns the product price context object which tells what a price should be used - customer type specific OR customer address specific
+
+	Parameters: 
+		- CustomerBO: the current customer or null if anonymous user has to see prices
+		- InvoiceToAddressBO: invoice to address, if null was received - control is taken by 'AddressSpecificPrice' parameter
+		- ShipToAddressBO: ship to address, if null was received - control is taken by 'AddressSpecificPrice' parameter
+		- ShipFromAddressBO: ship from address, if null was received - nothing happens
+		- ContextProductBO: context product if the price depends on another product (e.g. warranty prices)
+		- AddressSpecificPrice: true if address (ShipTo, InvoiceTo) have to be considered for price calculation. That means 
+									if no addresses are provided to the dictionary (passed to the module) and 
+									this parameter is true, then get preferred Billing/Shipping address from the customer
+	
+	Return Parameter:
+		- ProductPriceContext: the price context containing information for the customer, addresses and a context product
+
+	Examples: 
+		1. get customer address specific price context
+		... 
+		<ISGetProductPriceContext CustomerBO="#CustomerBO#" AddressSpecificPrice="true" ProductPriceContext="ProductPriceContext">
+		...
+		
+		... 
+		<ISGetProductPriceContext CustomerBO="#CustomerBO#" InvoiceToAddressBO="#SomeAddressBO#" ShipToAddressBO="#CustomerBO:PreferredShippingAddressBO#" ShipFromAddressBO="#AnotherAddressBO#" ProductPriceContext="ProductPriceContext">
+		...
+		
+		2. get customer type specific price context
+		... 
+		<ISGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+		...
+		
+		Note: Mean that 
+						<ISGetProductPriceContext CustomerBO="#CustomerBO#" AddressSpecificPrice="false" InvoiceToAddressBO="#SomeAddressBO#" ShipToAddressBO="#AddressBO#" ProductPriceContext="ProductPriceContext">
+						where InvoiceToAddressBO is NOT NULL, ShipToAddressBO is NOT NULL, ...
+			will NOT return a customer type specific price but a customer address specific
+--->
+<ismodule template="modules/product/GetProductPriceContext.isml"
+	name="GetProductPriceContext"
+	attribute="CustomerBO"
+	attribute="UserBO"
+	attribute="InvoiceToAddressBO"
+	attribute="ShipToAddressBO"
+	attribute="ShipFromAddressBO"
+	attribute="ContextProductBO"
+	attribute="AddressSpecificPrice"
+	returnattribute="ProductPriceContext"
+	strict="true"
+>
+
+<!---
+	This module renders a label image (through a CSS class) over a product image
+	based on certain product attributes.
+	
+	Parameters:
+		- ProductBO (required)
+			The ProductBO whose image should be shown.
+			
+	Example:
+		<ISProductLabel
+			ProductBO="#ProductBO#">
+ --->
+<ismodule template="modules/product/ProductLabel.isml"
+	name="ProductLabel"
+	strict="true"
+	attribute="ProductBO"
+>

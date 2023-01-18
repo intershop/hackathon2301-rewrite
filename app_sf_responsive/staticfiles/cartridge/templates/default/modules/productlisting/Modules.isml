@@ -1,0 +1,82 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Renders a product list with the given ProductBOs and the given ViewContext.
+	
+	Parameters:
+		- ProductBOs (required)
+			The ProductBOs to be rendered as product list.
+		- CategoryBO (optional)
+			The CategoryBO as context used as call parameter for the ViewContext.
+		- viewContext (required | or a combination of viewContextID + viewContextResourceSet)
+			The ViewContext instance to render each ProductBO.
+		- viewContextID (optional) - e.g. "viewcontext.systemInclude.product.pagelet2-ViewContext"
+			Instead of giving a ViewContext instance a ViewContextID and a ViewContextResourceSet can be given to retrieve the ViewContext that should be used.
+		- viewContextResourceSet (optional) - e.g. "app_sf_responsive"
+			Instead of giving a ViewContext instance a ViewContextID and a ViewContextResourceSet can be given to retrieve the ViewContext that should be used.
+		- maxNumberOfProducts (optional)
+			Maximum number of products to display. If not given all the products of ProductBOs are rendered.
+		- listBehavior (optional) [carousel|none] - default: none
+			Determines if the list is completely rendered as product list or if it is rendered as carousel.
+		- numberOfProductsPerSlide (optional) [1|2|3|4] - default: 4 (only relevant if listBehavior="carousel")
+			Number of items per carousel slide.
+		- listItemCssClass (optional)
+			Set an additional CSS class for the product-list-item divs. E.g. to use the Bootstrap Grid system classes to define the display of the list items.
+	
+	Example:
+		<ISProductList 
+			ProductBOs="#ProductBOs#"
+			viewContext="#PageletConfigurationParameters:ProductView1#"
+			listItemCssClass="col-md-4 col-xs-6 grid-view"
+		>
+--->
+<ismodule template="modules/productlisting/ProductList.isml"
+	name="ProductList"
+	strict="true"
+	attribute="ProductBOs"
+	attribute="ListNavigationVO"
+	attribute="CategoryBO"
+	attribute="viewContext"
+	attribute="viewContextID"
+	attribute="viewContextResourceSet"
+	attribute="maxNumberOfProducts"
+	attribute="listBehavior"
+	attribute="numberOfProductsPerSlide"
+	attribute="listItemCssClass"
+	attribute="list_name"
+>
+
+<!---
+renders the sorting, tile/list display, paging bar
+--->
+<ismodule template="modules/productlisting/ProductListFilters.isml"
+	name="ProductListFilters"
+	strict="true"
+	attribute="ListNavigationVO"
+	attribute="ViewType"
+	attribute="sortings"
+	attribute="showViewType"
+>
+
+<!---
+
+--->
+<ismodule template="modules/productlisting/SortBy.isml"
+	name="SortBy"
+	strict="true"
+	attribute="ListNavigationVO"
+	attribute="sortings"
+>
+
+<!---
+
+--->
+<ismodule template="modules/productlisting/ItemsPerPage.isml"
+	name="ItemsPerPage"
+	strict="true"
+	attribute="ListNavigationVO"
+	attribute="displayType"
+	attribute="pageSizes"
+	attribute="showViewAll"
+>
+

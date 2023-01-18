@@ -1,0 +1,29 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<iscache type="relative" hour="24">
+<iscachekey object="#CategoryFilterEntry:CatalogCategoryBO#">
+
+<isif condition="#(CategoryFilterEntry:CatalogCategory:Online) AND (CategoryFilterEntry:CatalogCategoryBO:VisibleInMenu)#">
+	<ISUUID name="RenderEntityID">
+	<ISRenderEntityRenderingStart RenderEntityRenderObject="#CategoryFilterEntry:CatalogCategoryBO#" RenderEntityID="#RenderEntityID#">
+		<li class="dropdown">
+			<a href="#URLEX(InsecureURL,'',Action('ViewStandardCatalog-Browse'), Parameter('CatalogID', CategoryFilterEntry:CatalogCategoryBO:CatalogBO:Name), Parameter('CategoryName', CategoryFilterEntry:CatalogCategory:Name))#" data-testing-id="<isprint value="#CategoryFilterEntry:CatalogCategory:Name#">-link">
+				<isprint value="#CategoryFilterEntry:CatalogCategory:DisplayName#">
+			</a>
+			
+			<!--- Mobile Dropdown Anchor --->
+			<isif condition="#(CategoryFilterEntry:Count > 0) AND (MaxSubCategoryiesDepth > CategoryFilterEntry:Level)#">
+				<a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+			<iselse/>
+				<a class="dropdown-toggle visible-xs"><span class="glyphicon"></span></a>
+			</isif>
+			
+			<ISSubCategoriesIndex
+				CategoryFilterEntry="#CategoryFilterEntry#"
+				RootCategoryFilterEntry="#CategoryFilterEntry#"
+				CategoryFilterEntries="#CategoryFilterEntries#"
+				MaxSubCategoryiesDepth="#MaxSubCategoryiesDepth#"
+			>
+		</li>
+	<ISRenderEntityRenderingEnd RenderEntityRenderObject="#CategoryFilterEntry:CatalogCategoryBO#" RenderEntityID="#RenderEntityID#">
+</isif>

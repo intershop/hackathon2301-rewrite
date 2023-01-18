@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.order_history.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="orders-history-page">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="ORDERS">
+		</div>
+		
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<h1>
+				<isif condition="#isDefined(MyOrderSearch)#">
+					<istext key="account.order_history.myOrders.heading"/>
+				<iselse>
+					<istext key="account.order_history.heading"/>
+				</isif>
+			</h1>
+			<isif condition="#isDefined(ERROR_CODE) AND (ERROR_CODE EQ 'CONNECTION_FAIL')#">
+				<div class="alert alert-danger"><istext key="order.orderstateservice.error"/></div>
+			<iselse>
+				<p class="section"><istext key="account.order.subtitle"/></p>
+				<!--- Orders list --->
+				<isinclude template="account/orders/OrderList">
+			</isif>
+			
+			<!--- Note --->
+			<h4 class="help-block"><istext key="account.order.questions.title"></h4>
+			<p class="help-block">
+				<istext key="account.order.questions.note" 
+					parameter0="#url(action('ViewContent-Start'), Parameter('PageletEntryPointID','systempage.helpdesk.index.pagelet2-Page'))#" 
+					parameter1="#url(action('ViewContact-Start'))#"
+					encoding="off">
+			</p>
+			
+		</div>
+	</div>
+</div>

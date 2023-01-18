@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="RESTConfiguration" overrideMode="Inherit" type="view">
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_lsa4cBr7EemGv7xl-5ccbg" name="Start"
+      callMode="Include">
+    <nodeSuccessors name="next" next="InteractionNode_lsZDQBr7EemGv7xl-5ccbg"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode_lsZDQBr7EemGv7xl-5ccbg">
+    <template referencedName="modules/rest/RESTConfiguration"/>
+  </nodes>
+</pipeline:Pipeline>

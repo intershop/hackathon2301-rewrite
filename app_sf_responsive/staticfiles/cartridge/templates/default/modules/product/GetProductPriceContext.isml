@@ -1,0 +1,23 @@
+<!---[Comment]--->
+<%@page import="com.intershop.component.product.pricing.capi.DefaultProductPriceContextImpl"%>
+<%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%@page import="com.intershop.component.product.pricing.capi.ProductPriceContext"%>
+<%@page import="com.intershop.component.product.capi.ProductBO"%>
+<%@page import="com.intershop.component.address.capi.AddressBO"%>
+<%@page import="com.intershop.component.customer.capi.CustomerBO"%>
+<%@page import="com.intershop.component.user.capi.UserBO"%>
+
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%
+	PipelineDictionary dictionary = getPipelineDictionary();
+	CustomerBO customerBO = dictionary.get("CustomerBO");
+	UserBO userBO = dictionary.get("UserBO");
+	boolean isAddressSpecificPrice = "true".equals(dictionary.get("AddressSpecificPrice"));
+	AddressBO shipFrom = dictionary.get("ShipFromAddressBO");
+	ProductBO contextProduct = dictionary.get("ContextProductBO");
+
+  	ProductPriceContext productPriceContext = (new DefaultProductPriceContextImpl.Builder()).setCustomerBO(customerBO).setUserBO(userBO)
+  	                .setShipFromAddressBO(shipFrom).setContextProductBO(contextProduct).setAddressSpecificPrice(isAddressSpecificPrice).build();
+	
+	getPipelineDictionary().put("ProductPriceContext", productPriceContext);
+%>

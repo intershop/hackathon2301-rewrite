@@ -1,0 +1,81 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset name="CartAppliedRebate" value="#CurrentCartBO:Extension("AppliedRebate")#" scope="request"/>
+
+<!--- BEGIN Cart Utilities --->
+<a href="#'#'#promoentry" data-toggle="collapse"><istext key="shopping_cart.promotional_code.heading" /></a>
+
+<!--- Messages --->
+
+<!--- Find out if the given code is valid but still not applicable to the current basket --->
+<isif condition="#NOT isDefined(ERROR_PromotionCode) AND isDefined(promotionCode) AND (promotionCode NE '')#">
+	<isif condition="#(isDefined(CartAppliedRebate:AppliedRebates(promotionCode)) AND hasElements(CartAppliedRebate:AppliedRebates(promotionCode)))
+					 OR (isDefined(CartAppliedRebate:AppliedCashbackRebates(promotionCode)) AND hasElements(CartAppliedRebate:AppliedCashbackRebates(promotionCode)))#">
+	
+		<isset scope="request" name="SUCCESS_PromotionCode" value="qualified_promo">	
+	<iselseif condition="#isDefined(applyPromotion)#">
+		<isset scope="request" name="ERROR_PromotionCode" value="unqualified_promo">
+	</isif>
+</isif>
+
+<!--- BEGIN Promotion ERROR MESSAGE --->	<!---ToDo: styling promotion code messages --->
+<isif condition="#isDefined(ERROR_PromotionCode)#">
+	<div class="alert alert-danger">
+		<isset scope = "request" name = "PromoCodeBOs" value = "#PromotionCodeBO:AssignedPromotionBOs#">
+		<isset scope = "request" name = "PromotionIDs" value = "">
+		<isif condition="#hasElements(PromoCodeBOs)#">
+			<isloop iterator = "PromoCodeBOs" alias = "PromoCodeBO" counter = "promoCounter">
+				<isif condition = "#CurrentCartBO:PurchaseCurrencyCode EQ PromoCodeBO:Currency:Mnemonic#">
+					<isif condition = "#PromotionIDs EQ ''#">
+						<isset scope = "request" name = "PromotionIDs" value = "#PromotionIDs.PromoCodeBO:PromotionID#">
+						<isset scope = "request" name = "firstID" value = "false">
+					<iselse>
+						<isset scope = "request" name = "PromotionIDs" value = "#PromotionIDs.','.PromoCodeBO:PromotionID#">
+					</isif>
+				</isif>
+			</isloop>
+		</isif>
+		<isPromotionError promotionCode="#promotionCode#" maxCodeRedemption="#MaxCodeRedemption#" errorCode="#ERROR_PromotionCode#" promotionIDs="#PromotionIDs#">
+	</div>
+</isif>
+<!--- END Promotion ERROR MESSAGE --->
+
+<!--- BEGIN Promotion SUCCESS MESSAGE --->
+<isif condition="#isDefined(SUCCESS_PromotionCode)#">
+	<div class="alert alert-success">
+		<p><istext key="shopping_cart.promotion.qualified_promo.text"/></p>
+	</div>
+</isif>
+<!--- END Promotion SUCCESS MESSAGE --->
+
+<!-- script for enter key -->
+<script>
+$(document).ready(function(){
+    $('input[id=promotionCode]').keydown(function(event){     
+        if (event.which == 13) //13 == enter key
+        {
+            $(this).parent().find('button[id=applyPromotion]').trigger('click');
+            return false;
+        }
+    });
+});
+</script>
+
+<div id="promoentry" class="collapse<isif condition="#(isDefined(promotionCode) AND (promotionCode NE '')) AND NOT (isDefined(SUCCESS_PromotionCode))#"> in</isif>">
+	<div class="form-inline">
+		<input 
+			id="promotionCode"
+			name="promotionCode" 
+			class="form-control" 
+			type="text" maxlength="128"  
+			placeholder="<istext key="shopping_cart.promotional_code.label" />" 
+			<isif condition="#(isDefined(promotionCode)) AND NOT (isDefined(SUCCESS_PromotionCode))#">value="<isprint value="#promotionCode#">"</isif>
+		/>
+		
+		<button id="applyPromotion" name="applyPromotion" type="submit" class="btn btn-default"><istext key="shopping_cart.promotion.apply.button.label" /></button>
+		
+	</div>
+</div>
+
+<!--- END Cart Utilities --->
+

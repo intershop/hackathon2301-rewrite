@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Review-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewProductReview" type="view">
+<!--@Location 8,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" name="CreateReview">
+    <nodeSuccessors name="next" next="CheckUserLoggedIn1"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn1">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="CreateForm2"/>
+<!--@BendPoints 19,3-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode1"/>
+  </nodes>
+<!--@Location 8,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm2">
+    <configurationValues name="FormName" value="CreateProductReview"/>
+    <configurationValues name="FormResource" value="CreateReview"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <parameterBindings name="FormAlias" constant="CreateProductReviewForm"/>
+    <returnValueBindings name="Form" objectPath="CreateProductReviewForm"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper2"/>
+<!--@BendPoints 23,7-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode13"/>
+    <parameterBindings name="Form" objectPath="CreateProductReviewForm"/>
+  </nodes>
+<!--@Location 8,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetProductBOBySKU1"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Customer&quot;):CurrentUserBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="UserBO"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProductBOBySKU1">
+    <pipelet href="enfinity:/bc_product/pipelets/GetProductBOBySKU.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode13"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:Extension(&quot;Product&quot;):ProductBORepository(CurrentProductRepository:Domain:UUID)"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+<!--@BendPoints 17,15-->
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <parameterBindings name="BusinessObjectApprovedReviewBORepository" objectPath="ProductBO:Extension(&quot;Review&quot;)"/>
+    <parameterBindings name="UserBO" objectPath="UserBO"/>
+    <startNode referencedName="ProcessReview-GetReviewsByAuthor"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="ReviewBOs"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="JoinNode7"/>
+    <nodeSuccessors name="decision_no" next="GetDomainPreference2"/>
+  </nodes>
+<!--@Location 10,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 10,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 10,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 10,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+<!--@BendPoints 21,22-->
+    <nodeSuccessors name="next" next="InteractionNode6"/>
+  </nodes>
+<!--@Location 10,11-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode6">
+    <template referencedName="product/review/NewReviewDialog"/>
+  </nodes>
+<!--@Location 9,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference2">
+    <configurationValues name="DefaultPreferenceKey" value="RequireReviewApproval"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode6"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentProductRepository:Domain:Site"/>
+    <parameterBindings name="PreferenceKey" nullBinding="true"/>
+    <returnValueBindings name="Preference" nullBinding="true"/>
+    <returnValueBindings name="PreferenceDoubleValue" nullBinding="true"/>
+    <returnValueBindings name="PreferenceIntValue" nullBinding="true"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="RequireReviewApproval"/>
+  </nodes>
+<!--@Location 9,9-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="InteractionNode7"/>
+    <nodeSuccessors name="ERROR" next="JoinNode8"/>
+    <parameterBindings name="Author" objectPath="UserBO"/>
+    <parameterBindings name="AuthorName" objectPath="CreateProductReviewForm:AuthorName:Value"/>
+    <parameterBindings name="BusinessObjectReviewBORepository" objectPath="ProductBO:Extension(&quot;Review&quot;)"/>
+    <parameterBindings name="MainLocale" objectPath="CurrentRequest:Locale"/>
+    <parameterBindings name="RatingValue" objectPath="CreateProductReviewForm:Rating:Value"/>
+    <parameterBindings name="ReviewContent" objectPath="CreateProductReviewForm:ReviewContent:Value"/>
+    <parameterBindings name="ReviewTitle" objectPath="CreateProductReviewForm:ReviewTitle:Value"/>
+    <parameterBindings name="ShowAuthorNameEnabled" objectPath="CreateProductReviewForm:ShowAuthorName:Value"/>
+    <startNode referencedName="ProcessReview-CreateReview"/>
+  </nodes>
+<!--@Location 9,11-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode7">
+    <template referencedName="product/review/ReviewConfirmation"/>
+  </nodes>
+<!--@Location 11,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode13">
+<!--@BendPoints 23,21-->
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 9,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="This:LoginOrRegister"/>
+  </nodes>
+<!--@Location 13,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode8" name="DeleteReview">
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 13,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetReviewByID1"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;Review&quot;, CurrentProductRepository:Domain:UUID)"/>
+    <returnValueBindings name="OutValue_1" objectPath="ReviewBORepository"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetReviewByID1">
+    <pipelet href="enfinity:/bc_rating/pipelets/GetReviewByID.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+  </nodes>
+<!--@Location 13,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Customer&quot;):CurrentUserBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="UserBO"/>
+  </nodes>
+<!--@Location 13,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="Review:AuthorBO:ID"
+      operator="str_eq" conditionItem="UserBO:ID">
+    <nodeSuccessors name="decision_yes" next="StartSafeChangesBlock0"/>
+<!--@BendPoints 28,9 28,17-->
+    <nodeSuccessors name="decision_no" next="JoinNode4"/>
+  </nodes>
+<!--@Location 13,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock0">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.DeleteReview"/>
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="DeleteReview1"/>
+  </nodes>
+<!--@Location 13,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DeleteReview1">
+    <pipelet href="enfinity:/bc_rating/pipelets/DeleteReview.xml"/>
+    <nodeSuccessors name="next" next="EndSafeChangesBlock0"/>
+    <parameterBindings name="ReviewBORepository" objectPath="ApplicationBO:Repository(&quot;Review&quot;, CurrentProductRepository:Domain:UUID)"/>
+  </nodes>
+<!--@Location 13,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock0">
+    <configurationValues name="SafeChangeOverrideProperty" value="intershop.CSRFGuard.overrideSafeBlock.DeleteReview"/>
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 13,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="InteractionNode5"/>
+  </nodes>
+<!--@Location 13,9-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode5">
+    <template referencedName="product/review/RemoveReviewConfirmation"/>
+  </nodes>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction1"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction1">
+    <configurationValues name="OutValue_0" value="ViewProductReview-CreateReview"/>
+    <configurationValues name="OutValue_1" value="ViewProductReview-DeleteReview"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="JumpNode2"/>
+    <parameterBindings name="Key_0" objectPath="rate"/>
+    <parameterBindings name="Key_1" objectPath="deleteReview"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 17,4-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" strict="true" visibility="Private"
+      name="GetProductBO" callMode="Private">
+    <nodeSuccessors name="next" next="GetProductBOByID0"/>
+    <parameters name="ProductBORepository" type="com.intershop.component.product.capi.ProductBORepository"/>
+    <parameters name="ProductID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 17,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProductBOByID0">
+    <pipelet href="enfinity:/bc_product/pipelets/GetProductBOByID.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="ID" objectPath="ProductID"/>
+  </nodes>
+<!--@Location 17,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+  </nodes>
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="LoginOrRegister"
+      callMode="Private">
+    <nodeSuccessors name="next" next="RemoveDictionaryValue0"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue0">
+    <configurationValues name="Key" value="TargetURL"/>
+    <configurationValues name="RemoveFormValues" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper4"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 11,6-->
+    <nodeSuccessors name="next" next="KeyMapper5"/>
+    <parameterBindings name="InValue_1" constant="ViewUserAccount-ShowLogin"/>
+    <parameterBindings name="InValue_2" constant="https"/>
+    <parameterBindings name="InValue_4" constant="TargetPipeline"/>
+    <parameterBindings name="InValue_5" constant="ViewProduct-Start"/>
+    <parameterBindings name="InValue_6" constant="Parameter2_Name"/>
+    <parameterBindings name="InValue_7" constant="ClickHistory"/>
+    <parameterBindings name="InValue_8" constant="Parameter2_Value"/>
+    <parameterBindings name="InValue_9" constant="new-review"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetPipeline"/>
+    <returnValueBindings name="OutValue_2" objectPath="Protocol"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter1_Name"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter1_Value"/>
+    <returnValueBindings name="OutValue_6" objectPath="Parameter2_Name"/>
+    <returnValueBindings name="OutValue_7" objectPath="Parameter2_Value"/>
+    <returnValueBindings name="OutValue_8" objectPath="Parameter3_Name"/>
+    <returnValueBindings name="OutValue_9" objectPath="Parameter3_Value"/>
+  </nodes>
+<!--@Location 5,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper5">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 11,8-->
+    <nodeSuccessors name="next" next="DecisionNode6"/>
+    <parameterBindings name="InValue_1" constant="Parameter4_Name"/>
+    <parameterBindings name="InValue_2" constant="SKU"/>
+    <parameterBindings name="InValue_3" constant="Parameter4_Value"/>
+    <parameterBindings name="InValue_4" objectPath="SKU"/>
+    <parameterBindings name="InValue_5" constant="LoginToUse"/>
+    <parameterBindings name="InValue_6" constant="review"/>
+    <returnValueBindings name="OutValue_1" objectPath="Parameter4_Name"/>
+    <returnValueBindings name="OutValue_2" objectPath="Parameter4_Value"/>
+    <returnValueBindings name="OutValue_3" objectPath="Parameter5_Name"/>
+    <returnValueBindings name="OutValue_4" objectPath="Parameter5_Value"/>
+    <returnValueBindings name="OutValue_5" objectPath="Parameter6_Name"/>
+    <returnValueBindings name="OutValue_6" objectPath="Parameter6_Value"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="AjaxRequestMarker">
+<!--@BendPoints 11,10-->
+    <nodeSuccessors name="decision_yes" next="InteractionNode9"/>
+<!--@BendPoints 13,9-->
+    <nodeSuccessors name="decision_no" next="InteractionNode8"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode9">
+    <template referencedName="account/RedirectToLogin"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode8">
+    <template referencedName="application/Redirect"/>
+  </nodes>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="NewReview">
+    <nodeSuccessors name="next" next="CheckUserLoggedIn0"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn0">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode4"/>
+<!--@BendPoints 7,3-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode0"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="CreateProductReviewForm"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="CreateForm8"/>
+<!--@BendPoints 6,5 6,9-->
+    <nodeSuccessors name="decision_no" next="JoinNode12"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm8">
+    <configurationValues name="FormName" value="CreateProductReview"/>
+    <configurationValues name="FormResource" value="CreateReview"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="JoinNode12"/>
+    <parameterBindings name="FormAlias" constant="CreateProductReviewForm"/>
+    <returnValueBindings name="Form" objectPath="CreateProductReviewForm"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode12">
+<!--@BendPoints 5,10-->
+    <nodeSuccessors name="next" next="GetProductBOBySKU2"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetProductBOBySKU2">
+    <pipelet href="enfinity:/bc_product/pipelets/GetProductBOBySKU.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+<!--@BendPoints 6,11 6,15-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode10"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:Extension(&quot;Product&quot;):ProductBORepository(CurrentProductRepository:Domain:UUID)"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JoinNode10"/>
+    <parameterBindings name="BusinessObjectApprovedReviewBORepository" objectPath="ProductBO:Extension(&quot;Review&quot;)"/>
+    <parameterBindings name="UserBO" objectPath="ApplicationBO:Extension(&quot;Customer&quot;):CurrentUserBO"/>
+    <startNode referencedName="ProcessReview-GetReviewsByAuthor"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+<!--@BendPoints 5,16-->
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="product/review/NewReviewDialog"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="This:LoginOrRegister"/>
+  </nodes>
+<!--@Location 19,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="OwnProductRating">
+    <nodeSuccessors name="next" next="CallNode4"/>
+  </nodes>
+<!--@Location 19,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="InteractionNode2"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:Repository(&quot;ProductBORepository&quot;)"/>
+    <startNode referencedName="ViewProductReview-GetProductBO"/>
+  </nodes>
+<!--@Location 19,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="modules/rating/ProductRatingOwn"/>
+  </nodes>
+<!--@Location 17,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" name="OwnProductReview">
+    <nodeSuccessors name="next" next="CallNode5"/>
+  </nodes>
+<!--@Location 17,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="InteractionNode4"/>
+    <parameterBindings name="ProductBORepository" objectPath="ApplicationBO:Repository(&quot;ProductBORepository&quot;)"/>
+    <startNode referencedName="ViewProductReview-GetProductBO"/>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode4">
+    <template referencedName="inc/product/ReviewsOwn"/>
+  </nodes>
+<!--@Location 15,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode11" name="Paging">
+    <nodeSuccessors name="next" next="CallNode10"/>
+  </nodes>
+<!--@Location 15,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="CallNode11"/>
+    <startNode referencedName="Paging-GetPageableByID"/>
+    <returnValueBindings name="Pageable" objectPath="Reviews"/>
+  </nodes>
+<!--@Location 15,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap1"/>
+    <startNode referencedName="Paging-GetPageNumber"/>
+  </nodes>
+<!--@Location 15,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap1">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/core/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="SetPage1"/>
+    <parameterBindings name="InMap" nullBinding="true"/>
+    <parameterBindings name="Key1" constant="SKU"/>
+    <parameterBindings name="Key2" constant="CategoryDomainName"/>
+    <parameterBindings name="Key3" constant="CategoryName"/>
+    <parameterBindings name="Value1" objectPath="SKU"/>
+    <parameterBindings name="Value2" objectPath="CategoryDomainName"/>
+    <parameterBindings name="Value3" objectPath="CategoryName"/>
+    <returnValueBindings name="OutMap" objectPath="ReviewPagingHandlerParametersMap"/>
+  </nodes>
+<!--@Location 15,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetPage1">
+    <configurationValues name="DefaultPageNumber" value="0"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetPage.xml"/>
+    <nodeSuccessors name="next" next="CreateNavigationList0"/>
+    <parameterBindings name="Pageable" objectPath="Reviews"/>
+  </nodes>
+<!--@Location 15,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateNavigationList0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateNavigationList.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue0"/>
+    <parameterBindings name="CurrentPage" objectPath="PageNumber"/>
+    <parameterBindings name="ElementCount" objectPath="Reviews:ElementCount"/>
+    <parameterBindings name="GenericHandlerPipelineParams" objectPath="ReviewPagingHandlerParametersMap"/>
+    <parameterBindings name="HandlerPipeline" constant="ViewProductReview"/>
+    <parameterBindings name="Iterator" objectPath="Reviews"/>
+    <parameterBindings name="PageCount" objectPath="Reviews:PageCount"/>
+    <parameterBindings name="PageSize" objectPath="Reviews:PageSize"/>
+    <parameterBindings name="PageableID" objectPath="Reviews:ID"/>
+  </nodes>
+<!--@Location 15,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="ActiveProductTab"/>
+    <configurationValues name="Value" value="reviews"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="RemoveDictionaryValue_SjhRgPuAEeeRAcNZEMjszA"/>
+  </nodes>
+<!--@Location 15,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveDictionaryValue_SjhRgPuAEeeRAcNZEMjszA">
+    <configurationValues name="Key" value="PageNumber"/>
+    <pipelet href="enfinity:/core/pipelets/RemoveDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JumpNode8"/>
+  </nodes>
+<!--@Location 15,8-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode8">
+    <startNode referencedName="ViewProduct-Start"/>
+  </nodes>
+<!--@Location 11,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode10" name="RemoveReview">
+<!--@BendPoints 23,2-->
+    <nodeSuccessors name="next" next="InteractionNode3"/>
+  </nodes>
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode3">
+    <template referencedName="product/review/RemoveReviewDialog"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,50 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- BEGIN Line Item specific error --->
+
+<isif condition="#isDefined(failedAdjustBasketResult)#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="#'shopping_cart.warning.'.failedAdjustBasketResult:FailureCode#"></li>
+		<li><istext key="shopping_cart.quantity.invalid.error.w.correction" /></li>
+	</ul>
+</isif>
+
+<!--- ResultCode shows if quantity was adjusted, 
+					like AddToBasketConstants.PRODUCT_ADDED_TO_NEW_LINE_ITEM_WITH_ADJUSTED_QUANTITY = 4 
+					AddToBasketConstants.PRODUCT_ADDED_TO_EXISTING_LINE_ITEM_WITH_ADJUSTED_QUANTITY = 2 --->
+<isif condition="#isDefined(addToBasketResult) and 
+	((addToBasketResult:ResultCode EQ '4') OR (addToBasketResult:ResultCode EQ '2'))#">
+	<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+		<istext key="shopping_cart.quantity.invalid.error.w.correction" />
+	</div>
+</isif>
+
+<isif condition="#isDefined(adjustBasketResult)#">
+	<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+		<istext key="#'shopping_cart.warning.'.adjustBasketResult:AdjustmentReasonCode#">
+	</div>
+</isif>
+
+<isif condition="#isDefined(adjustBasketResultByInventory)#">
+	<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+		<istext key="#'shopping_cart.warning.'.adjustBasketResultByInventory:AdjustmentReasonCode#">
+	</div>
+</isif>
+
+<isif condition="#isDefined(failedUpdateVariationResult)#">
+	<ul class="list-unstyled alert alert-danger">
+		<li><istext key="#'shopping_cart.warning.'.failedUpdateVariationResult:FailureCode#"></li>
+	</ul>
+</isif>
+
+<isif condition="#isDefined(adjustedUpdateVariationResult)#">
+	<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+		<istext key="#'shopping_cart.warning.'.adjustedUpdateVariationResult:AdjustmentReasonCode#">
+	</div>
+</isif>
+
+<isif condition="#isDefined(adjustBasketValidationResult)#">
+	<div class="alert alert-info <isprint value="#cssClass#">" role="alert">
+		<istext key="#'shopping_cart.warning.'.adjustBasketValidationResult:AdjustmentCode#">
+	</div>
+</isif>
+<!--- END Line Item specific error --->

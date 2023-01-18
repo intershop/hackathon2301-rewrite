@@ -1,0 +1,25 @@
+<iscontent charset="UTF-8" compact="true">
+
+<!--- Conditions to show gifting option indicator --->
+
+<isif condition="#(isDefined(giftwrappingenabled) AND (giftwrappingenabled EQ 'true')) OR (isDefined(giftmessagingenabled) AND (giftmessagingenabled EQ 'true')) OR (isDefined(packslipmessagingenabled) AND (packslipmessagingenabled EQ 'true'))#">
+
+	<!--- GiftWrap --->
+	<isif condition="#isDefined(giftwrappingenabled) AND (giftwrappingenabled EQ 'true')#">
+		<isif condition="#isDefined(giftwraps) AND (giftwraps NE '0')#">
+			<div class="giftWrap">
+				<isif condition="#giftwraps EQ '1'#"><istext key="gifting.giftwrap.indicator_text.standard" /><iselse><istext key="gifting.giftwrap.indicator_text.signature" /></isif><a data-dialog class=" details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.giftWrap.pagelet2-Include'))#"><istext key="shopping_cart.gift_option_indicator_detail.text" /></a>
+			</div>
+		</isif>
+	</isif>
+
+	<!--- GiftMessaging --->
+	<isif condition="#isDefined(giftmessagingenabled) AND (giftmessagingenabled EQ 'true')#">
+		<isif condition="#isDefined(giftmessages) AND (giftmessages NE '0')#">
+			<div class="giftMessage">
+				<isif condition="#giftmessages EQ '1'#"><istext key="gifting.giftmessage.indicator_text.standard" /><iselse><istext key="gifting.giftmessage.indicator_text.signature" /></isif><a data-dialog class=" details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.giftMessage.pagelet2-Include'))#"><istext key="shopping_cart.gift_option_indicator_detail.text" /></a>
+			</div>
+		</isif>
+	</isif>
+
+</isif>

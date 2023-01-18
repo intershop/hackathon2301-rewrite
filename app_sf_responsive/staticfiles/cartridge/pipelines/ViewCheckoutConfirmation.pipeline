@@ -1,0 +1,724 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline includes the pipelines for the confirmation(last) \-step of the checkout process. 
+@Group Checkout-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewCheckoutConfirmation" type="view">
+<!--@Location 11,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Cancel">
+    <nodeSuccessors name="next" next="KeyMapper3"/>
+  </nodes>
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <parameterBindings name="InValue_1" constant="ViewCheckoutConfirmation-Cancel"/>
+    <parameterBindings name="InValue_2" constant="OrderID"/>
+    <parameterBindings name="InValue_3" objectPath="OrderBO:ID"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterName1"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+<!--@Location 11,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 11,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+<!--@BendPoints 23,8-->
+    <nodeSuccessors name="next" next="CallNode5"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@displayNearNode@determine CredentialForm
+@Location 11,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="SetDictionaryValue2"/>
+    <startNode referencedName="ViewUserAccount-GetRegistrationSimpleForm"/>
+    <returnValueBindings name="RegisterUserForm" objectPath="CredentialForm"/>
+  </nodes>
+<!--@Location 11,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="TargetPipeline"/>
+    <configurationValues name="Value" value="ViewCheckoutConfirmation-Dispatch"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="VerifyInteger2"/>
+  </nodes>
+<!--@Location 11,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode4"/>
+    <parameterBindings name="LocalizedString" constant="5"/>
+    <returnValueBindings name="IntegerObject" objectPath="CurrentStep"/>
+  </nodes>
+<!--@Location 11,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="OrderBO">
+    <nodeSuccessors name="decision_yes" next="CallNode13"/>
+    <nodeSuccessors name="decision_no" next="DetermineOrderByID0"/>
+  </nodes>
+<!--@Location 11,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode13">
+    <nodeSuccessors name="next" next="JoinNode8"/>
+<!--@BendPoints 25,17 25,19-->
+    <nodeSuccessors name="Error" next="JoinNode8"/>
+    <startNode referencedName="ViewCheckoutConfirmation-RollbackLimitedTenderTransaction"/>
+  </nodes>
+<!--@Location 11,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="JumpNode10"/>
+  </nodes>
+<!--@Location 11,10-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode10">
+    <startNode referencedName="ViewCheckoutPayment-Review"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineOrderByID0">
+    <configurationValues name="CurrentUserOnly" value="true"/>
+    <pipelet href="enfinity:/bts/pipelets/DetermineOrderByID.xml"/>
+    <nodeSuccessors name="next" next="CallNode17"/>
+<!--@BendPoints 17,15 17,19-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode8"/>
+    <parameterBindings name="OrderIDs" nullBinding="true"/>
+    <parameterBindings name="OrderRefID" nullBinding="true"/>
+    <parameterBindings name="OrderRefIDs" nullBinding="true"/>
+    <returnValueBindings name="Orders" nullBinding="true"/>
+  </nodes>
+<!--@Location 9,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="CallNode13"/>
+    <parameterBindings name="OrderBORepository" objectPath="ApplicationBO:Repository(&quot;OrderBORepository&quot;)"/>
+    <startNode referencedName="ProcessOrders-GetOrderBO"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" name="Dispatch">
+<!--@BendPoints 3,2-->
+    <nodeSuccessors name="next" next="DispatchFormAction0"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction0">
+    <configurationValues name="OutValue_0" value="ViewCheckoutConfirmation-RegisterAccount"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="Jump1"/>
+<!--@BendPoints 5,3 5,4-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode4"/>
+    <parameterBindings name="Key_0" objectPath="register"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode4">
+    <startNode referencedName="ViewHomepage-Start"/>
+  </nodes>
+<!--@Location 9,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Failed">
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 9,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="InValue_1" constant="ViewCheckoutConfirmation-Failed"/>
+    <parameterBindings name="InValue_2" constant="OrderID"/>
+    <parameterBindings name="InValue_3" objectPath="OrderBO:ID"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterName1"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+<!--@Location 9,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 17,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode13" name="FromRedirect" callMode="Private">
+    <nodeSuccessors name="next" next="CallNode14"/>
+    <parameters name="AuthorizationStatus" type="java.lang.String"/>
+    <parameters name="Order" type="com.intershop.beehive.bts.capi.orderprocess.fulfillment.Order"/>
+  </nodes>
+<!--@Location 17,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="next" next="DecisionNode19"/>
+    <startNode referencedName="Prefix-Start"/>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode19" conditionKey="AuthorizationStatus"
+      operator="str_eq" conditionValue="Success">
+    <nodeSuccessors name="decision_yes" next="JoinNode35"/>
+<!--@BendPoints 37,5 37,6-->
+    <nodeSuccessors name="decision_no" next="DecisionNode11"/>
+  </nodes>
+<!--@Location 17,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode35">
+    <nodeSuccessors name="next" next="DecisionNode20"/>
+  </nodes>
+<!--@Location 17,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode20" conditionKey="OrderBO:Status"
+      operator="str_neq" conditionValue="CANCELLED">
+    <nodeSuccessors name="decision_yes" next="StartSafeChangesBlock0"/>
+    <nodeSuccessors name="decision_no" next="JoinNode36"/>
+  </nodes>
+<!--@Location 17,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock0">
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+  </nodes>
+<!--@Location 17,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="Result:State"
+      operator="str_eq" conditionValue="Pending">
+    <nodeSuccessors name="decision_yes" next="CallNode16"/>
+    <nodeSuccessors name="decision_no" next="CallNode0"/>
+  </nodes>
+<!--@Location 16,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessOrderCreation-AfterCheckoutProcessingPromotions"/>
+  </nodes>
+<!--@Location 17,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="EndSafeChangesBlock0"/>
+  </nodes>
+<!--@Location 17,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock0">
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="JumpNode6"/>
+  </nodes>
+<!--@Location 17,11-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode6">
+    <startNode referencedName="ViewCheckoutConfirmation-Start"/>
+  </nodes>
+<!--@Location 18,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <startNode referencedName="ProcessOrderCreation-AfterCheckoutProcessing"/>
+  </nodes>
+<!--@Location 21,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode36">
+    <nodeSuccessors name="next" next="CallNode12"/>
+  </nodes>
+<!--@Location 21,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+    <nodeSuccessors name="next" next="CallNode11"/>
+    <startNode referencedName="ProcessUserGroups-GetCurrentUserUserGroups"/>
+  </nodes>
+<!--@Location 21,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="JumpNode8"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ProcessPromotionCodeForBasket-RemoveOrderAssignments"/>
+  </nodes>
+<!--@Location 21,8-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode8">
+    <startNode referencedName="ViewCheckoutConfirmation-Cancel"/>
+  </nodes>
+<!--@Location 18,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode11" conditionKey="AuthorizationStatus"
+      operator="str_eq" conditionValue="PrepaymentSuccess">
+<!--@BendPoints 37,9-->
+    <nodeSuccessors name="decision_yes" next="JoinNode35"/>
+<!--@BendPoints 39,7 39,8-->
+    <nodeSuccessors name="decision_no" next="DecisionNode13"/>
+  </nodes>
+<!--@Location 19,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode13" conditionKey="AuthorizationStatus"
+      operator="str_eq" conditionValue="Failure">
+    <nodeSuccessors name="decision_yes" next="CallNode8"/>
+<!--@BendPoints 43,9-->
+    <nodeSuccessors name="decision_no" next="JoinNode36"/>
+  </nodes>
+<!--@Location 19,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode9"/>
+    <startNode referencedName="ProcessUserGroups-GetCurrentUserUserGroups"/>
+  </nodes>
+<!--@Location 19,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="JumpNode7"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ProcessPromotionCodeForBasket-RemoveOrderAssignments"/>
+  </nodes>
+<!--@Location 19,8-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode7">
+    <startNode referencedName="ViewCheckoutConfirmation-Failed"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="RegisterAccount">
+    <nodeSuccessors name="next" next="CallNode_X9yT4LLKEem4aduwgRpT7w"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_X9yT4LLKEem4aduwgRpT7w">
+    <nodeSuccessors name="LOGINISEMAIL" next="CreateForm_UBL7cLLKEem4aduwgRpT7w"/>
+    <nodeSuccessors name="LOGINANDEMAIL" next="CreateForm0"/>
+    <startNode referencedName="ProcessUserAccount-GetLoginType"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm_UBL7cLLKEem4aduwgRpT7w">
+    <configurationValues name="FormName" value="PostCheckoutRegisterForm"/>
+    <configurationValues name="FormResource" value="RegisterUser"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm0"/>
+    <returnValueBindings name="Form" objectPath="CredentialForm"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm0">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="GetOrderBO0"/>
+<!--@BendPoints 11,11-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="Form" objectPath="CredentialForm"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetOrderBO0">
+    <pipelet href="enfinity:/bc_order/pipelets/GetOrderBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <parameterBindings name="OrderBORepository" objectPath="ApplicationBO:Repository(&quot;OrderBORepository&quot;)"/>
+  </nodes>
+<!--@Location 4,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="No" next="JoinNode0"/>
+    <nodeSuccessors name="Yes" next="CallNode1"/>
+    <startNode referencedName="ProcessOrders-CheckOrderBelongsToCurrentUser"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JumpNode0"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewCheckoutConfirmation-ViewHook"/>
+  </nodes>
+<!--@Location 4,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="KeyMapper2"/>
+    <nodeSuccessors name="ERROR" next="JumpNode0"/>
+    <parameterBindings name="Login" objectPath="CredentialForm:Login:FormattedValue"/>
+    <parameterBindings name="Password" objectPath="CredentialForm:Password:Value"/>
+    <startNode referencedName="ProcessUserAccount-RegisterUserAfterFirstOrder"/>
+  </nodes>
+<!--@Location 4,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 9,20-->
+    <nodeSuccessors name="next" next="JumpNode1"/>
+    <parameterBindings name="InValue_1" constant="RegistrationSuccessful"/>
+    <parameterBindings name="InValue_2" constant="true"/>
+    <returnValueBindings name="OutValue_1" objectPath="AdditionalParameterName2"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterValue2"/>
+  </nodes>
+<!--@Location 4,10-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewCheckoutConfirmation-Start"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm0">
+    <configurationValues name="FormName" value="RegisterUserUsernameForm"/>
+    <configurationValues name="FormResource" value="RegisterUser"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm0"/>
+    <returnValueBindings name="Form" objectPath="CredentialForm"/>
+  </nodes>
+<!--@Location 2,25-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="RollbackLimitedTenderTransaction"
+      callMode="Private">
+    <nodeSuccessors name="next" next="StartSafeChangesBlock1"/>
+    <parameters name="OrderBO" type="com.intershop.component.order.capi.OrderBO"/>
+  </nodes>
+<!--@Location 2,26-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="StartSafeChangesBlock1">
+    <pipelet href="enfinity:/core/pipelets/StartSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="LoopNode0"/>
+  </nodes>
+<!--@Location 2,27-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode0" loop="OrderBO:Extension(&quot;Payment&quot;):PaymentBOs">
+    <nodeSuccessors name="next" next="EndSafeChangesBlock1"/>
+    <entry key="PaymentBO">
+      <nodeSuccessors name="loop_entry_next" next="IsOpenTender0_Input"/>
+    </entry>
+  </nodes>
+<!--@Location 2,28-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="IsOpenTender0">
+    <pipelet href="enfinity:/bc_payment/pipelets/com.intershop.component.payment.pipelet.IsOpenTender.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="PaymentServiceBO" objectPath="PaymentBO:PaymentServiceBO"/>
+    </inConnectors>
+    <outConnectors name="yes">
+      <nodeSuccessors next="JoinNode7"/>
+    </outConnectors>
+    <outConnectors name="no">
+      <nodeSuccessors next="CallNode15" action="begin"/>
+    </outConnectors>
+  </nodes>
+<!--@Location 1,28-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+<!--@BendPoints 3,55-->
+    <nodeSuccessors name="next" next="LoopNode0_Entry"/>
+  </nodes>
+<!--@Location 2,29-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+<!--@BendPoints 5,61 3,61-->
+    <nodeSuccessors name="next" next="JoinNode7" action="commit"/>
+    <nodeSuccessors name="Error" next="EndSafeChangesBlock2" action="rollback"/>
+    <startNode referencedName="ProcessPayment-Rollback"/>
+  </nodes>
+<!--@Location 3,29-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock2">
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+  </nodes>
+<!--@Location 4,29-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" name="Error" strict="true">
+    <returnValues name="Result" type="com.intershop.api.service.common.v1.Result&lt;T>"/>
+  </nodes>
+<!--@Location 3,27-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="EndSafeChangesBlock1">
+    <pipelet href="enfinity:/core/pipelets/EndSafeChangesBlock.xml"/>
+    <nodeSuccessors name="next" next="EndNode1"/>
+  </nodes>
+<!--@Location 4,27-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true"/>
+<!--@Location 7,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+    <nodeSuccessors name="next" next="DecisionNode_CS9OgPgxEeaK6Kvb6OOE6Q"/>
+  </nodes>
+<!--@Location 7,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_CS9OgPgxEeaK6Kvb6OOE6Q"
+      conditionKey="OrderCreationResult">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_FN4ukPgxEeaK6Kvb6OOE6Q"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper0"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_FN4ukPgxEeaK6Kvb6OOE6Q">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <parameterBindings name="InValue_1" objectPath="OrderCreationResult:Order"/>
+    <returnValueBindings name="OutValue_1" objectPath="OrderBO"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+<!--@Location 7,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <parameterBindings name="InValue_1" constant="ViewCheckoutConfirmation-Start"/>
+    <parameterBindings name="InValue_2" constant="OrderID"/>
+    <parameterBindings name="InValue_3" objectPath="OrderBO:ID"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterName1"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+<!--@Location 7,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+<!--@BendPoints 15,8-->
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@displayNearNode@determine CredentialForm
+@Location 7,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="SetDictionaryValue0"/>
+    <startNode referencedName="ViewUserAccount-GetRegistrationSimpleForm"/>
+    <returnValueBindings name="RegisterUserForm" objectPath="CredentialForm"/>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="TargetPipeline"/>
+    <configurationValues name="Value" value="ViewCheckoutConfirmation-Dispatch"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="VerifyInteger0"/>
+  </nodes>
+<!--@Location 7,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+<!--@BendPoints 15,14-->
+    <nodeSuccessors name="next" next="JumpNode5"/>
+    <parameterBindings name="LocalizedString" constant="5"/>
+    <returnValueBindings name="IntegerObject" objectPath="CurrentStep"/>
+  </nodes>
+<!--@Location 7,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode5">
+    <startNode referencedName="ViewCheckoutConfirmation-ViewHook"/>
+  </nodes>
+<!--@Location 13,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" name="ViewHook" callMode="Private">
+<!--@BendPoints 27,2-->
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+  </nodes>
+<!--@Location 13,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="OrderBO"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="DetermineOrderByID1"/>
+<!--@BendPoints 30,3 30,13-->
+    <nodeSuccessors name="decision_no" next="JoinNode12"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineOrderByID1">
+    <configurationValues name="CurrentUserOnly" value="true"/>
+    <pipelet href="enfinity:/bts/pipelets/DetermineOrderByID.xml"/>
+    <nodeSuccessors name="next" next="GetDomainPreference2"/>
+<!--@BendPoints 29,5 29,8-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode2"/>
+    <parameterBindings name="OrderIDs" nullBinding="true"/>
+    <parameterBindings name="OrderRefID" nullBinding="true"/>
+    <parameterBindings name="OrderRefIDs" nullBinding="true"/>
+    <returnValueBindings name="Orders" nullBinding="true"/>
+  </nodes>
+<!--@Location 13,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference2">
+    <configurationValues name="DefaultPreferenceKey" value="PriceType"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode9"/>
+<!--@BendPoints 28,7 28,9-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode9"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="PriceType"/>
+  </nodes>
+<!--@Location 13,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+    <nodeSuccessors name="next" next="KeyMapper4"/>
+  </nodes>
+<!--@Location 13,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;OrderBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="OrderBORepository"/>
+  </nodes>
+<!--@Location 13,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="JoinNode12"/>
+    <startNode referencedName="ProcessOrders-GetOrderBO"/>
+  </nodes>
+<!--@Location 13,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode12">
+    <nodeSuccessors name="next" next="GetApplicationPreference0"/>
+  </nodes>
+<!--@Location 13,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationPreference0">
+    <configurationValues name="DefaultApplicationPreferenceKey" value="BasketEmailOptIn"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/core/pipelets/GetApplicationPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode31"/>
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue5"/>
+    <parameterBindings name="Application" objectPath="CurrentApplication"/>
+    <parameterBindings name="DomainPreference" objectPath="CurrentOrganization:OrganizationDomain"/>
+    <returnValueBindings name="ApplicationPreferenceStringValue" objectPath="BasketEmailOptIn"/>
+  </nodes>
+<!--@Location 13,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode31">
+<!--@BendPoints 27,20-->
+    <nodeSuccessors name="next" next="CheckUserLoggedIn1"/>
+  </nodes>
+<!--@Location 13,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn1">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="JoinNode11"/>
+    <nodeSuccessors name="pipelet_error" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 13,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode11">
+    <nodeSuccessors name="next" next="KeyMapper5"/>
+  </nodes>
+<!--@Location 13,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper5">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode10"/>
+    <parameterBindings name="InValue_1" objectPath="OrderBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="CurrentCartBO"/>
+  </nodes>
+<!--@Location 13,16-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="SetDictionaryValue3"/>
+    <parameterBindings name="Application" objectPath="ApplicationBO:PersistentObject"/>
+    <parameterBindings name="DomainPreference" objectPath="CurrentOrganization:OwningDomain"/>
+    <startNode referencedName="ProcessGiftingPreferences-GetGiftingPreferences"/>
+  </nodes>
+<!--@Location 13,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue3">
+    <configurationValues name="Name" value="TargetPipeline"/>
+    <configurationValues name="Value" value="ViewCheckoutConfirmation-Dispatch"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO0"/>
+  </nodes>
+<!--@Location 13,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO0">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="CheckUserLoggedIn0"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <parameterBindings name="UserID" objectPath="CurrentUser:ID"/>
+  </nodes>
+<!--@Location 13,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckUserLoggedIn0">
+    <pipelet href="enfinity:/core/pipelets/CheckUserLoggedIn.xml"/>
+    <nodeSuccessors name="next" next="GetCustomerBO0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+  </nodes>
+<!--@Location 13,20-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetCustomerBO0">
+    <pipelet href="enfinity:/bc_customer/pipelets/GetCustomerBO.xml"/>
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <parameterBindings name="CustomerBORepository" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+  </nodes>
+<!--@Location 13,21-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="CreateGrossNetHelper0"/>
+  </nodes>
+<!--@Location 13,22-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateGrossNetHelper0">
+    <pipelet href="enfinity:/sld_ch_b2c_base/pipelets/CreateGrossNetHelper.xml"/>
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <parameterBindings name="Basket" objectPath="BasketBO"/>
+    <parameterBindings name="Order" objectPath="OrderBO"/>
+  </nodes>
+<!--@Location 13,23-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.checkout.receipt.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="checkout/receipt/CheckoutReceipt.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 14,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="OrderBO:NotificationEmailAddress">
+    <nodeSuccessors name="decision_yes" next="DecisionNode0"/>
+<!--@BendPoints 31,21-->
+    <nodeSuccessors name="decision_no" next="JoinNode4"/>
+  </nodes>
+<!--@Location 14,11-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="OrderBO:NotificationEmailAddress"
+      operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="JoinNode4"/>
+    <nodeSuccessors name="decision_no" next="GetUserByLogin1"/>
+  </nodes>
+<!--@Location 15,11-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="JoinNode13"/>
+  </nodes>
+<!--@Location 15,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode13">
+<!--@BendPoints 31,29-->
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 14,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="JoinNode11"/>
+  </nodes>
+<!--@Location 14,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserByLogin1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetUserByLogin.xml"/>
+    <nodeSuccessors name="next" next="SetDictionaryValue1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode13"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OrganizationDomain"/>
+    <parameterBindings name="Login" objectPath="OrderBO:NotificationEmailAddress"/>
+  </nodes>
+<!--@Location 14,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="knownEMail"/>
+    <configurationValues name="Value" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 14,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue5">
+    <configurationValues name="Name" value="BasketEmailOptIn"/>
+    <configurationValues name="Value" value="'no'"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 30,17 30,19-->
+    <nodeSuccessors name="next" next="JoinNode31"/>
+  </nodes>
+<!--@Location 14,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewCart-View"/>
+  </nodes>
+<!--@Location 24,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" name="ViewSubscriptionConfirmation">
+    <nodeSuccessors name="next" next="DecisionNode5"/>
+  </nodes>
+<!--@Location 24,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="BasketBO"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="KeyMapper7"/>
+<!--@BendPoints 53,3-->
+    <nodeSuccessors name="decision_no" next="KeyMapper6"/>
+  </nodes>
+<!--@Location 24,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper7">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetBasketByID0"/>
+    <parameterBindings name="InValue_1" constant="ViewCheckoutConfirmation-ViewSubscriptionConfirmation"/>
+    <parameterBindings name="InValue_2" constant="BasketID"/>
+    <parameterBindings name="InValue_3" objectPath="BasketID"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterName1"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+<!--@Location 24,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketByID0">
+    <configurationValues name="CurrentUserOnly" value="true"/>
+    <pipelet href="enfinity:/bts/pipelets/GetBasketByID.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode6"/>
+<!--@BendPoints 51,7-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode3"/>
+  </nodes>
+<!--@Location 24,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="Basket">
+    <nodeSuccessors name="decision_yes" next="GetApplicationBO0"/>
+    <nodeSuccessors name="decision_no" next="JumpNode3"/>
+  </nodes>
+<!--@Location 24,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="GetBasketBO0"/>
+  </nodes>
+<!--@Location 24,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketBO0">
+    <pipelet href="enfinity:/bc_basket/pipelets/GetBasketBO.xml"/>
+    <nodeSuccessors name="next" next="JoinNode10"/>
+    <parameterBindings name="BasketBORepository" objectPath="ApplicationBO:Repository(&quot;BasketBORepository&quot;)"/>
+  </nodes>
+<!--@Location 24,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+    <nodeSuccessors name="next" next="CallNode19"/>
+  </nodes>
+<!--@Location 24,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode19">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate1_Input"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 24,9-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate1">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.checkout.receipt.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="checkout/receipt/CheckoutReceiptSubscription.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 25,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="Error-Page"/>
+  </nodes>
+<!--@Location 26,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper6">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 53,13 53,15-->
+    <nodeSuccessors name="next" next="JoinNode10"/>
+    <parameterBindings name="InValue_1" constant="ViewCheckoutConfirmation-ViewSubscriptionConfirmation"/>
+    <parameterBindings name="InValue_2" constant="BasketID"/>
+    <parameterBindings name="InValue_3" objectPath="BasketBO:ID"/>
+    <returnValueBindings name="OutValue_1" objectPath="JumpTarget"/>
+    <returnValueBindings name="OutValue_2" objectPath="AdditionalParameterName1"/>
+    <returnValueBindings name="OutValue_3" objectPath="AdditionalParameterValue1"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#isDefined(ProductBO:AttributeValue(VariationAttribute:Name))#">
+	<isset name="defaultValue" value="#ProductBO:AttributeValue(VariationAttribute:Name):Object#" scope="request" />
+<iselse>
+	<isset name="defaultValue" value="" scope="request" />
+</isif>
+<isset name="defaultValues" value="" scope="request">
+<isif condition="#hasLoopElements(defaultValue)#">
+	<isloop iterator="defaultValue" alias="defValue">
+	   <isset name="defaultValues" value="#defaultValues.defValue#" scope="request"/>
+	   <isif condition="#hasNext(defValue)#"><isset name="defaultValues" value="#defaultValues.'|'#" scope="request"/></isif>
+	</isloop>
+<iselse/>
+    <isset name="defaultValues" value="#defaultValue#" scope="request">
+</isif>
+<isprint value="#defaultValues#">

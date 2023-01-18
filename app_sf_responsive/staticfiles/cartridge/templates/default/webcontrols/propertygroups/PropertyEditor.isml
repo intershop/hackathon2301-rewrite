@@ -1,0 +1,126 @@
+<%@page import="com.intershop.ui.web.internal.property.mapping.UIMapper"%>
+<%@page import="com.intershop.ui.web.internal.property.mapping.UIMapperConfiguration"%>
+<%@page import="com.intershop.ui.web.internal.property.mapping.UIPropertyGroup"%>
+<%@page import="com.intershop.platform.property.capi.model.PropertyGroupDescriptor"%>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- owner, propertydescriptor, hidetitle, validationresult, formfieldname, stylesheet, displaymode --->
+
+<div class="propertyeditor <isif condition="#(isDefined(displaymode)) AND (displaymode NE 'edit')#"> propertyeditor-<isprint value="#displaymode#"></isif>">
+
+	<isif condition="#isDefined(validationresult) AND (validationresult:ID EQ propertydescriptor:ID)#">
+		<isset name="UIPropertyGroup" value="#validationresult#" scope="request"/>
+	<iselse>
+		<%
+		UIMapper mapper = UIMapper.getApplicationInstance();
+		UIPropertyGroup uiPropertyGroup = mapper.getUIPropertyGroup(getObject("owner"), (PropertyGroupDescriptor)getObject("propertydescriptor"));
+		getPipelineDictionary().put("UIPropertyGroup", uiPropertyGroup);
+		%>
+	</isif>
+
+	<%
+	UIPropertyGroup uiPropertyGroup = (UIPropertyGroup)getObject("UIPropertyGroup");
+	String json = UIMapper.toJSON(uiPropertyGroup);
+	getPipelineDictionary().put("json", json);
+	%>
+
+	<isif condition="#hidetitle NE 'true'#">
+		<h2 class="propertyeditor-title"><isprint value="#UIPropertyGroup:DisplayName#" /></h2>
+	</isif>
+
+	<isif condition="#NOT isDefined(formfieldname)#">
+		<isset name="formfieldname" value="PropertyGroupConfiguration" scope="request"/>
+	</isif>
+	
+	<isplacement placeholderid="JSWebLibraries">jquery.js</isplacement>
+	<isplacement placeholderid="JSWebLibraries">propertygroups/utils.js</isplacement>
+	<isplacement placeholderid="JSWebLibraries">propertygroups/controller.js</isplacement>
+	<isplacement placeholderid="JSWebLibraries">propertygroups/container/property.js</isplacement>
+	<isplacement placeholderid="JSWebLibraries">propertygroups/container/propertygroup.js</isplacement>
+	<isplacement placeholderid="CSSWebLibraries">propertygroups/propertygroups.css</isplacement>
+	<isif condition="#isDefined(stylesheet)#">
+		<isplacement placeholderid="CSSWebLibraries"><isprint value="#stylesheet#"></isplacement>
+	</isif>
+
+	<isloop iterator="UIPropertyGroup:ErrorMessages" alias="ErrorMessage">
+		<isif condition="#ErrorMessage NE ''#">
+			<div class="alert alert-danger">
+				<span><isprint value="#ErrorMessage#"></span>
+			</div>
+		</isif>
+	</isloop>
+
+	<!--- ExtensionPoint webcontrols/propertygroups/PropertyEditor-Editors--->
+	<isinclude extensionpoint="Editors"/>
+
+	<div id="<isprint value="#UIPropertyGroup:ID#" />" class="propertyeditor-content"></div>
+
+	<script type="text/javascript">
+		'use strict';
+		!function ($) {
+			function id$(id) {
+				// escape id selectors
+				return $('#'#'#' + id.replace(/(:|\.|\[|\])/g, '\\\$1'));
+			}
+
+			var groupID = '<isprint value="#UIPropertyGroup:ID#" encoding="javascript" />',
+				$el = id$(groupID),
+				$form = $el.closest('form'),
+				json = JSON.parse("<isprint value="#json#" encoding="javascript">"),
+				Controller = intershop.propertygroups.ui.Controller,
+				propertyGroup = Controller.fromJSON(json),
+				propertyGroupHandlerName= 'propertygroups_'+'<isprint value="#formfieldname#" encoding="javascript"/>';
+
+			Controller.getContainer('PropertyGroup').validationError = '<istext key="webcontrols.PropertyEditor.PropertyGroup.ValidationError" encoding="javascript"/>';
+			
+			// add rendered editor to DOM
+			$el.append(propertyGroup.render());
+			
+			
+			<isif condition="#(isDefined(displaymode)) AND (displaymode EQ 'disabled')#">
+				propertyGroup.disable();
+			</isif>
+			
+			<isif condition="#(isDefined(displaymode)) AND (displaymode EQ 'view')#">
+				propertyGroup.view();					
+			<iselse>
+				// store PropertyGroup at form
+				var propertyGroups = $form.data(propertyGroupHandlerName) || [];
+				propertyGroups.push({
+					json: json,
+					propertyGroup: propertyGroup
+				});
+				$form.data(propertyGroupHandlerName, propertyGroups);
+							
+				// add serialized values to surrounding form before submit
+				$form
+					.off('submit.'+ propertyGroupHandlerName)
+					.on('submit.' + propertyGroupHandlerName, function onSubmit() {
+						var $form = $(this),
+							propertyGroups = $form.data(propertyGroupHandlerName) || [],
+							allGroups = {};
+						
+						propertyGroups.forEach(function eachPropertyGroup(group) {
+							var updatedJSON = Controller.toJSON(group.json, group.propertyGroup);
+							allGroups[group.propertyGroup.id] = updatedJSON;
+						});
+	
+						// remove existing serialized field
+						$form.find('input[name="<isprint value="#formfieldname#" encoding="javascript"/>"]').remove();
+						$($.parseHTML('<input type="hidden" name="<isprint value="#formfieldname#" encoding="javascript"/>" />'))
+							.val(JSON.stringify(allGroups))
+							.prependTo($form);
+					});
+					
+				$('.propertygroup-editor-value')
+					.focus(function () {
+						$('.propertygroup-property-helptext').stop(true).hide();
+						$(this).closest('.propertygroup-property').find('.propertygroup-property-helptext:not(:empty)').fadeIn(400);
+					})
+					.blur(function() {
+						$(this).closest('.propertygroup-property').find('.propertygroup-property-helptext:not(:empty)').hide();
+					});
+			</isif>	
+				
+		}(jQuery);
+	</script>
+</div>

@@ -1,0 +1,149 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!--- BEGIN create account simple --->
+<h2><istext key="account.new_user.heading"/></h2>
+<isGetLoginPreferenceReader>
+<isif condition="#(RegisterUserForm:isSubmitted AND RegisterUserForm:isInvalid) OR isDefined(ERROR_User)#">
+	<!--- BEGIN error handling --->
+	<div class="alert alert-danger">
+		<isif condition="#isDefined(RegistrationLoginType) AND (RegistrationLoginType EQ "username")#">
+			<isif condition="#RegisterUserForm:Login:isError("error.required")#">
+				<div><istext key="account.username.empty.error"/></div>
+			</isif>
+			<isif condition="#(RegisterUserForm:Email:isError("error.required") OR RegisterUserForm:Email:isError("error.email"))#">
+				<div><istext key="account.email.error.email"/></div>
+			</isif>
+			<isif condition="#isDefined(ERROR_User) AND (ERROR_User	EQ 'LoginAlreadyInUse')#">
+				<div><istext key="account.username.already_exist.error"/></div>
+			</isif>
+		<iselse>
+			<isif condition="#(RegisterUserForm:Login:isError("error.required") OR RegisterUserForm:Login:isError("error.email"))#">
+				<div><istext key="account.email.error.email"/></div>
+			</isif>
+			<isif condition="#isDefined(ERROR_User) AND (ERROR_User	EQ 'LoginAlreadyInUse')#">
+				<div><istext key="account.email.already_exist.error"/></div>
+			</isif>
+		</isif>
+		<isif condition="#RegisterUserForm:Password:isError("error.required")#">
+			<div><istext key="account.create_user.password.error.required"/></div>
+		</isif>
+		<isif condition="#RegisterUserForm:Password:isError("invalid.password")#">
+			<div><istext key="account.form.invalid.error"/></div>
+		</isif>
+		<isif condition="#RegisterUserForm:RetypedPassword:isError("error.required")#">
+			<div><istext key="account.create_user.password_confirmation.invalid.error"/></div>
+		</isif>
+		<isif condition="#RegisterUserForm:RetypedPassword:isError("error.stringcompare")#">
+			<div><istext key="account.password.not_match.error"/></div>
+		</isif>
+	</div>
+	<!--- END error handling --->
+</isif>
+<isform action="#URLEX('https','',Action('ViewUserAccount-ProcessRegisterUserSimple'))#" method="post" name="#RegisterUserForm:Alias#" class="form-horizontal bv-form">
+	<isif condition="#isDefined(Dictionary:TargetPipeline)#">
+		<input type="hidden" name="TargetPipeline" value="<isprint value="#Dictionary:TargetPipeline#">">
+	
+		<isif condition="#isDefined(Dictionary:Parameter1_Name)#">
+			<input type="hidden" name="Parameter1_Name" value="<isprint value="#Dictionary:Parameter1_Name#">">
+			<input type="hidden" name="Parameter1_Value" value="<isprint value="#Dictionary:Parameter1_Value#">">
+		</isif>
+	
+		<isif condition="#isDefined(Dictionary:Parameter2_Name)#">
+			<input type="hidden" name="Parameter2_Name" value="<isprint value="#Dictionary:Parameter2_Name#">">
+			<input type="hidden" name="Parameter2_Value" value="<isprint value="#Dictionary:Parameter2_Value#">">
+		</isif>
+	
+		<isif condition="#isDefined(Dictionary:Parameter3_Name)#">
+			<input type="hidden" name="Parameter3_Name" value="<isprint value="#Dictionary:Parameter3_Name#">">
+			<input type="hidden" name="Parameter3_Value" value="<isprint value="#Dictionary:Parameter3_Value#">">
+		</isif>
+	</isif>
+	
+	<div>
+		<p><istext key="account.create.benefit.text"/></p>
+		<ul>
+			<li><istext key="account.create.benefit1.text" /></li>
+			<li><istext key="account.create.benefit2.text" /></li>
+			<li><istext key="account.create.benefit3.text" /></li>
+			<li><istext key="account.create.benefit4.text" /></li>
+			<li><istext key="account.create.benefit5.text" /></li>
+		</ul>
+		<p>
+			<istext key="account.create_user.message" /> <isif condition="#isDefined(RegistrationLoginType) AND (RegistrationLoginType EQ "username")#"><istext key="account.create_user.username.message" /></isif> <istext key="account.create_user.email_password.message" />
+		</p>
+	</div>
+	
+	
+	<!---Email address and user name if configured --->
+	<div class="form-group clearfix<isif condition="#RegisterUserForm:Login:Invalid#"> server-error</isif>">
+		<label for="<isprint value="#RegisterUserForm:Login:QualifiedName#">" class="col-sm-3 control-label">
+			<isif condition="#isDefined(UserLoginType) AND (UserLoginType EQ 'username')#"><istext key="account.create_user.login.label" />
+			<iselse><istext key="account.register.email.label" />
+			</isif>
+		</label>
+		<div class="col-sm-6">
+			<input class="form-control" autocomplete="off" 
+					required
+					id="<isprint value="#RegisterUserForm:Login:QualifiedName#">"
+					name="<isprint value="#RegisterUserForm:Login:QualifiedName#">"
+					value="<isprint value="#RegisterUserForm:Login:FormattedValue#">"
+					<isif condition="#UserLoginType EQ "username"#">
+						maxlength="<isprint value="#LoginPreferenceReader:LoginMaxLength#">"
+						type="text"
+						data-bv-notempty-message="<istext key="account.login.username.error.required"/>"
+						<isif condition="#LoginPreferenceReader:LoginMinLength > 0#">
+							data-bv-stringlength="true"
+							data-bv-stringlength-min="<isprint value="#LoginPreferenceReader:LoginMinLength#">"
+							data-bv-stringlength-message="<istext key="account.register.username.error.length" parameter0="#LoginPreferenceReader:LoginMinLength#"/>"
+						</isif>
+						<isif condition="#isDefined(LoginPreferenceReader:LoginExpression)#">
+							data-bv-regexp="true"
+							data-bv-regexp-regexp="<isprint value="#LoginPreferenceReader:LoginExpression#">"
+							data-bv-regexp-message="<istext key="account.register.username.error.regexp"/>"
+						</isif>
+					<iselse>
+						maxlength="256"
+						type="email"
+						data-bv-notempty-message="<istext key="account.update_email.email.error.notempty"/>"
+						data-bv-emailaddress-message="<istext key="account.update_email.email.error.email"/>"
+					</isif>
+			/>
+		</div>
+	</div>
+
+	<isif condition="#isDefined(UserLoginType) AND (UserLoginType EQ "username")#">
+		<div class="form-group clearfix<isif condition="#RegisterUserForm:Email:Invalid#"> server-error</isif>">
+			<label for="<isprint value="#RegisterUserForm:Email:QualifiedName#">" class="col-sm-3 control-label">
+				<istext key="account.register.email.label" />
+			</label>
+			
+			<div class="col-sm-6">
+				<input class="form-control" 
+					autocomplete="off" 
+					required 
+					type="email" 
+					id="<isprint value="#RegisterUserForm:Email:QualifiedName#">"
+					name="<isprint value="#RegisterUserForm:Email:QualifiedName#">"
+					value="<isprint value="#RegisterUserForm:Email:Value#">"
+					data-bv-notempty-message="<istext key="account.login.email.error.required"/>"
+					data-bv-emailaddress-message="<istext key="account.login.email.error.invalid"/>"
+				/>
+			</div>
+		</div>
+	</isif>
+
+	<!--- Password and Confirm Password --->
+	<isPasswordInput Field="#RegisterUserForm:Password#"
+						Class="col-sm-6"
+						HintClass="col-sm-offset-3 col-sm-9"
+						LabelClass="col-sm-3"
+						Domain="#CurrentOrganization:Domain#"
+						ConfirmationField="#RegisterUserForm:RetypedPassword#">
+
+	<div class="form-group">
+		<div class="col-sm-offset-3 col-sm-9">
+			<button type="submit" class="btn btn-primary" value="Login" name="login"><istext key="account.create.button.label"/></button>
+			<a href="<isprint value="#URLEX(SecureURL,'',Action('ViewUserAccount-Start'))#">" class="btn btn-default"><istext key="account.cancel.link"/></a>
+		</div>
+	</div>
+</isform>
+<!--- END create account simple --->

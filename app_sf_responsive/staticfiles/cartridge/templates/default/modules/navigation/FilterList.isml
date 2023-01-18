@@ -1,0 +1,59 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(ListNavigationVO)#">
+	<isset name="SearchResult" value="#ListNavigationVO:SearchResult#" scope="request">
+	<isset name="FilterEntries" value="#ListNavigationVO:FilterEntries#" scope="request">
+</isif>
+
+<isif condition="#isDefined(showCount) AND (showCount EQ 'true')#">
+	<isset name="cfg_showcount" value="true" scope="request"/>
+<iselse>
+	<isset name="cfg_showcount" value="false" scope="request"/>
+</isif>
+<isif condition="#isDefined(showSelected) AND (showSelected EQ 'true')#">
+	<isset name="cfg_showselected" value="true" scope="request"/>
+<iselse>
+	<isset name="cfg_showselected" value="false" scope="request"/>
+</isif>
+
+<isif condition="#isDefined(ListNavigationVO:SortingAttribute)#">
+	<isset name="cfg_sortvalue" value="#ListNavigationVO:SortingAttribute#" scope="request"/>
+</isif>
+
+<isinclude template="modules/search/index/Modules">
+
+<!--- all entries (grouped and single filters)--->
+<isif condition="#isDefined(FilterEntries)#">
+	<div class="filter-panel collapse" id="filter-accordion">
+		<isloop iterator="FilterEntries" alias="FilterEntry">
+			<isif condition="#isDefined (FilterEntry:ConfigurationFilterGroup)#">
+				<isset name="FilterGroup" value="#FilterEntry#" scope="request">
+				<isif condition="#hasElements(FilterGroup:Filters)#">
+					<div class="filter-group">
+						<h1><isprint value="#FilterGroup:ConfigurationFilterGroup:DisplayName#" /></h1>
+						<ul>
+							<isloop iterator="FilterGroup:Filters" alias="filterAttribute">
+								<li>
+									<isif condition="#hasElements(filterAttribute:FilterAttributeEntry)#">
+										<isFilter pipeline="#ListNavigationVO:HandlerPipeline.'-Browse'#" filter="#filterAttribute#" query="#SearchResult:Query#" showselected="#cfg_showselected#" showcount="#cfg_showcount#" params="ListNavigationVO:GenericHandlerPipelineParams" sortvalue="#cfg_sortvalue#">
+									</isif>
+								</li>
+							</isloop>
+						</ul>
+					</div>
+				</isif>
+			<iselse>
+				<isset name="filterAttribute" value="#FilterEntry#" scope="request">
+				<isif condition="#hasElements(filterAttribute:FilterAttributeEntry)#">
+					<div class="filter-group">
+						<isFilter pipeline="#ListNavigationVO:HandlerPipeline.'-Browse'#" filter="#filterAttribute#" query="#SearchResult:Query#" showselected="#cfg_showselected#" showcount="#cfg_showcount#" params="ListNavigationVO:GenericHandlerPipelineParams" sortvalue="#cfg_sortvalue#">
+					</div>
+				</isif>
+			</isif>
+		</isloop>
+	</div>
+</isif>
+<!--- entries --->
+<a class="visible-xs mobile-filter-toggle collapsed" data-toggle="collapse" data-target="#'#'#filter-accordion">
+	<istext key="search.mobile.filter.trigger"><br/><span class="glyphicon glyphicon-chevron-up"></span>
+</a>

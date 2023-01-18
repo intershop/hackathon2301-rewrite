@@ -1,0 +1,2 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+KOR.namespace('KOR.product.productsJSON') = <isinclude template="product/json/ProductsJSON">;

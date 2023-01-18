@@ -1,0 +1,46 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.wishlists.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="WISHLISTS">
+		</div>
+
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div> 
+			<div class="wishlist">
+				<isTooltip 
+					linktext="#localizeText('account.wishlists.heading.tooltip.link')#" 
+					headline="#localizeText('account.wishlists.heading.tooltip.headline')#"
+					content="#localizeText('account.wishlists.heading.tooltip.content')#"
+					contenttype="html"
+					placement="bottom"
+				>
+				<h1>
+					<istext key="account.wishlists.heading"/>
+					<a class="btn btn-default" data-dialog href="#URL(Action('ViewWishlist-ShowNewWishlistDialog'), Parameter('AjaxRequestMarker', 'true'))#"><istext key="account.wishlists.add_wishlist"/></a>
+				</h1>
+			
+				<isinclude template="account/wishlist/WishlistsList">
+				
+				<isinclude template="account/wishlist/WishlistSettings">
+				
+				<isinclude template="account/wishlist/WishlistSearchForm">
+			</div>
+		</div>
+		
+	</div>
+</div>

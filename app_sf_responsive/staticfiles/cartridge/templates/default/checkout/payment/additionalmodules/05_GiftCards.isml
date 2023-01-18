@@ -1,0 +1,109 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/captcha/Modules">
+
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<isgetpreference preferencekey="intershop.CaptchaPreferences.RedemptionOfGiftCardsAndCertificates" domainname="#CurrentOrganization:OwningDomain:DomainName#" type="String" return="GiftCardAndCertificateCaptchaPreference">	
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+	boolean isCaptchaEnable = false;
+	String preferenceValue = (String)dict.get("GiftCardAndCertificateCaptchaPreference");
+	if (StringUtils.isNotBlank(preferenceValue))
+	{
+		try
+		{
+			isCaptchaEnable="ON".equalsIgnoreCase(preferenceValue);
+			dict.put("isEnableGiftCardAndCertificateCaptcha", isCaptchaEnable);
+		}
+		catch(Exception ex){}
+	}
+%>
+
+<!--- show gift card section if applicable (you cannot gift cards with gift cards) --->
+<isif condition="#hasElements(PaymentServiceBOs)#">
+	<isloop iterator="PaymentServiceBOs" alias="PaymentServiceBO">
+		<isif condition="#(isDefined(PaymentServiceBO:Extension("LimitedTender"))) AND (PaymentServiceBO:Applicability(CurrentCartBO):State EQ 'Applicable')#">
+			<isset name="isGiftPaymentActive" value="true" scope="request">	
+		</isif>
+	</isloop>
+</isif>
+
+<isif condition="#isGiftPaymentActive EQ 'true'#"><!--- gift card payment service is active --->
+	<h3><istext key="checkout.payment.pay_with_giftcard.heading" /></h3>
+	
+	<isform method="post" action="#URL(Action('ViewCheckoutPayment-Dispatch'))#" class="form-horizontal" name="GiftCardCaptchaForm">
+		<!---  BEGIN Payment ERROR  --->
+		<isif condition="#isDefined(ERROR_zeroAmountPII)#">
+			<div role="alert" class="alert alert-danger">
+				<p><istext key="checkout.payment.giftcard.empty" /></p>
+			</div>
+		</isif>
+		
+		<isif condition="#isDefined(ERROR_duplicateGiftCard)#">
+			<div role="alert" class="alert alert-danger">
+				<p><istext key="checkout.payment.giftcard.dublicate" /></p>
+			</div>
+		</isif>
+		<isif condition="#hasElements(Result:Errors)#">	
+			<isloop iterator="Result:Errors" alias="Error">
+				<div class="alert alert-danger">
+					<p>
+					<istext key="#'checkout.payment.giftcard.'.Error:ReasonCode#" encoding="off">
+				</div>
+			</isloop>
+		</isif>
+		<!---  END Payment ERROR  --->
+	
+		<!--- Success Message --->
+		<isif condition="#isDefined(SUCCESS_GiftCard)#">
+			<div class="alert alert-success">
+				<p><istext key="checkout.payment.giftcard.success.message"/></p>
+			</div>
+		</isif>
+	
+		<!--- Gift card entry --->
+		<isloop iterator="PaymentServiceBOs" alias="PaymentServiceBO">
+			<isif condition="#(isDefined(PaymentServiceBO:Extension("LimitedTender"))) AND (PaymentServiceBO:Applicability(CurrentCartBO):State EQ 'Applicable')#">
+				<div class="section">
+					<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+						<isPropertyEditor
+							propertydescriptor="#PaymentInstrumentParameter#"
+							validationresult="#ValidatedPropertyGroupConfiguration:get(PaymentInstrumentParameter)#"
+							hidetitle="true"
+							formfieldname="#PaymentServiceBO:ID#"
+						>
+					</isloop>
+					<!--- Without Captcha --->
+					<isif condition="#CurrentSession:LoggedIn OR NOT(isEnableGiftCardAndCertificateCaptcha)#">
+						<div class="form-group">
+							<div class="col-sm-offset-4 col-sm-8">
+								<!--- Ajax call to submit the form --->
+								<button class="btn btn-default" type="submit" name="applyGiftCard" value="<isprint value="#PaymentServiceBO:ID#">"><istext key="checkout.payment.apply.button.label" /></button>
+								<isTooltip linkclass="details-tooltip btn btn-link" linktextkey="checkout.detail.text" contentkey="checkout.payment.giftcard.tooltip">
+							</div>
+						</div>
+					<!--- with Captcha --->	
+					<iselse>
+						<ISCaptchaInclude>
+						<input type="hidden" name="webform-id" value="GiftCardCaptchaForm" />
+						<div class="form-group<isif condition="#GiftCardCaptchaForm:recaptcharesponsefield:Invalid#"> server-error</isif>">
+							<div class="col-sm-offset-4 col-sm-8">
+								<ISCaptchaFormField fieldname="GiftCardCaptchaForm:recaptcharesponsefield" enablepreference="intershop.CaptchaPreferences.RedemptionOfGiftCardsAndCertificates" loginstatus="#CurrentSession:LoggedIn#" captchaaction="redeem_gift_card">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-4 col-sm-8">
+								<button class="btn btn-default" type="submit" name="applyGiftCardAnonymous" value="<isprint value="#PaymentServiceBO:ID#">">
+									<istext key="checkout.payment.apply.button.label" />
+								</button>
+								<isTooltip linkclass="details-tooltip btn btn-link" linktextkey="checkout.detail.text" contentkey="checkout.payment.giftcard.tooltip">
+							</div>
+						</div>
+						
+					</isif>
+				</div>
+				<isinclude template="checkout/payment/paymentmethods/GiftCardsAssignedToBasket">
+			</isif>
+		</isloop>
+	</isform>
+</isif>

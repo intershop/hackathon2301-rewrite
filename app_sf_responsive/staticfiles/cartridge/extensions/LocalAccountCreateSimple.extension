@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensionpoint:ExtensionPointModel xmlns:extensionpoint="http://www.intershop.de/extensionpoint/2011"
+    name="LocalAccountCreateSimple">
+  <extensionBindings type="isml" extensionPoint="account/AccountCreateSimple-ExtendAccountCreateSimplePage" extension="account/inc/LocalAccountCreateSimple" priority="20"/>
+</extensionpoint:ExtensionPointModel>

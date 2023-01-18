@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<isif condition="#Not(isDefined(TargetURL) OR isDefined(TargetPipeline))#" >
+	<isset scope="request" name="TargetURL" value="#URLEX(SecureURL,'',Action('ViewUserAccount-ShowLogin'))#">
+<iselseif condition="#isDefined(TargetPipeline)#" >
+	<isif condition="#isDefined(TargetSite)#">
+		<isif condition="#isDefined(Protocol)#">
+			<isset scope="request" name="TargetURL"
+				value="#URLEX(Protocol,'',Action(TargetPipeline,'-', TargetSite:DomainName), Parameter(Parameter1_Name,Parameter1_Value), Parameter(Parameter2_Name,Parameter2_Value), Parameter(Parameter3_Name,Parameter3_Value), Parameter(Parameter4_Name,Parameter4_Value), Parameter(Parameter5_Name,Parameter5_Value), Parameter(Parameter6_Name,Parameter6_Value), Parameter(Parameter7_Name,Parameter7_Value))#">
+		<iselse>
+			<isset scope="request" name="TargetURL"
+				value="#URL(Action(TargetPipeline,'-', TargetSite:DomainName), Parameter(Parameter1_Name,Parameter1_Value), Parameter(Parameter2_Name,Parameter2_Value), Parameter(Parameter3_Name,Parameter3_Value), Parameter(Parameter4_Name,Parameter4_Value), Parameter(Parameter5_Name,Parameter5_Value), Parameter(Parameter6_Name,Parameter6_Value), Parameter(Parameter7_Name,Parameter7_Value))#">
+		</isif>
+	<iselse>
+		<isif condition="#isDefined(Protocol)#">
+			<isset scope="request" name="TargetURL"
+				value="#URLEX(Protocol,'',Action(TargetPipeline), Parameter(Parameter1_Name,Parameter1_Value), Parameter(Parameter2_Name,Parameter2_Value), Parameter(Parameter3_Name,Parameter3_Value), Parameter(Parameter4_Name,Parameter4_Value), Parameter(Parameter5_Name,Parameter5_Value), Parameter(Parameter6_Name,Parameter6_Value), Parameter(Parameter7_Name,Parameter7_Value))#">
+		<iselse>
+			<isset scope="request" name="TargetURL"
+				value="#URL(Action(TargetPipeline), Parameter(Parameter1_Name,Parameter1_Value), Parameter(Parameter2_Name,Parameter2_Value), Parameter(Parameter3_Name,Parameter3_Value), Parameter(Parameter4_Name,Parameter4_Value), Parameter(Parameter5_Name,Parameter5_Value), Parameter(Parameter6_Name,Parameter6_Value), Parameter(Parameter7_Name,Parameter7_Value))#">
+		</isif>
+	</isif>
+</isif>
+<a id="redirect" href="<isprint value="#TargetURL#" />"><istext key="account.login.redirect.link"/></a>

@@ -1,0 +1,8 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div id="compare-count" data-compare-ids="<isloop iterator="ProductCompareRefIDs" alias="ProductCompareRefID"><isprint value="#ProductCompareRefID#"><isif condition="#hasNext(ProductCompareRefID)#">,</isif></isloop>">
+	<isprint value="#ProductCompareRefIDs:Size#" />
+</div>
+<span class="hidden-xs"><istext key="product.compare.link" /></span>
+
+<script type="text/javascript">RetailShop.setCompareState();</script>

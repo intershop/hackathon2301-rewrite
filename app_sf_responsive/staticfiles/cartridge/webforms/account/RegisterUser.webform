@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="RegisterUser">
+  <forms name="PostCheckoutRegisterForm">
+    <parameters xsi:type="webform:FormParameter" name="Login" type="java.lang.String">
+        <formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Password" type="java.lang.String">
+      <validatorBindings validator="PasswordValidators-PasswordPreferenceValidator"></validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="RetypedPassword" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Password"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Newsletter" type="java.lang.String"/>
+  </forms>
+  <forms name="RegisterUserUsernameForm">
+    <parameters xsi:type="webform:FormParameter" name="Login" type="java.lang.String">
+        <formatterBinding formatter="GlobalFormatters-login"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Email" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Password" type="java.lang.String">
+      <validatorBindings validator="PasswordValidators-PasswordPreferenceValidator"></validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="RetypedPassword" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-stringcompare">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="StringToCompare" value="Password"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Newsletter" type="java.lang.String"/>
+  </forms>
+
+</webform:WebForm>

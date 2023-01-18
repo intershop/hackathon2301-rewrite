@@ -1,0 +1,132 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%><%
+	PipelineDictionary dict = getPipelineDictionary();
+%>
+
+<!--- Define separator variable --->
+<isif condition="#not(isDefined(separator))#">
+	<isset name="sep" value="/" scope="request">
+<iselseif condition="#(isDefined(separator)) AND (separator NE '')#">
+	<isset name="sep" value="#separator#" scope="request">
+</isif>
+
+<ol class="breadcrumbs-list">
+    <isif condition="#isDefined(showhomelink) AND (showhomelink EQ 'true')#">
+        <li class="breadcrumbs-list breadcrumbs-list-home">
+            <a class="breadcrumbs-list-link breadcrumbs-list-link-home" rel="home" href="#URL(Action('ViewHomepage-Start'))#"><istext key="common.home.link"/></a><isif condition="#isDefined(sep)#"><span class="breadcrumb-list-separator"><isprint value="#sep#" encoding="off"></span></isif>
+        </li>
+    </isif>
+    <isif condition="#isDefined(categorybo) AND (categorybo NE '')#">
+    	<iscachekey object="#categorybo#">
+        <!--- determine categoriespath form categorybo --->
+        <isset name="categoriespath" value="#categorybo:CatalogCategoryPath:ReversePath:Values#" scope="request" />
+    	<!--- set the offset to hide the first n categories in path --->
+	    <isif condition="#isDefined(categoryoffset)#">
+	        <isset name="offset" value="#categoryoffset#" scope="request" />
+	    <iselse>
+	    	<isset name="offset" value="#0#" scope="request" />
+	    </isif>
+        <!--- display categoriespath --->
+        <isif condition="#hasElements(categoriespath)#">
+            <isloop iterator="categoriespath" alias="parents" >
+            	<iscachekey object="#parents#">
+                <isif condition="#NOT (parents:DisplayName EQ 'Home') AND (offset<1)#">
+                        <isif condition="#hasNext(parents) or isDefined(product)#">
+                        	<li class="breadcrumbs-list">
+                            	<a class="breadcrumbs-list-link" href="#URLEX(InsecureURL,'',Action('ViewStandardCatalog-Browse'), Parameter('CatalogID', parents:CatalogBO:Name), Parameter('CategoryName', parents:Name))#"><isprint value="#parents:DisplayName#"><isset name="test" value="#parents:DisplayName#" scope="request"></a><isif condition="#isDefined(sep)#"><span class="breadcrumb-list-separator"><isprint value="#sep#" encoding="off"></span></isif>
+                            </li>
+                        <iselse>
+                        	<li class="breadcrumbs-list breadcrumbs-list-active">
+                            	<isprint value="#parents:DisplayName#">
+                            </li>
+                        </isif>
+                </isif>
+    			<isset name="offset" value="#offset-1#" scope="request" />
+            </isloop>
+        </isif>
+    </isif>
+    <!--- display product --->
+    <isif condition="#isDefined(product)#">
+        <iscachekey object="#product#">
+        <li class="breadcrumbs-list breadcrumbs-list-active">
+            <isif condition="#isDefined(product:Name)#">
+                <isprint value="#product:Name#">
+            <iselse>
+                <isprint value="#product:SKU#">
+            </isif>
+        </li>
+    </isif>
+	<!--- display search result path --->
+	<isif condition="#isDefined(searchresult) OR isDefined(searchterm)#">
+		<isif condition="#hasElements(searchresult)#">
+			<isloop iterator="searchresult:BreadCrumbTrail" alias="item">
+				<isif condition="#NOT(hasNext(item))#"><isbreak></isif><!--- last item is the SearchTerm --->
+					<li class="breadcrumbs-list">
+						<a class="breadcrumbs-list-link" href="#URL(Action('ViewParametricSearch-SimpleOfferSearch'),Parameter('SearchParameter', item:Query))#"><isprint value="#item:Text#"></a><isif condition="#isDefined(sep)#"><span class="breadcrumb-list-separator"><isprint value="#sep#" encoding="off"></span></isif>
+					</li>
+			</isloop>
+		</isif>
+		<li class="breadcrumbs-list breadcrumbs-list-active">
+			<istext key="search.breadcrumbs.your_search.label"/> <isprint value="#searchterm#"/>
+		</li>
+	</isif>
+        <%
+            boolean breadcrumbTrail = false;
+            for(int i=0;i<5;i++)
+            {
+                String link = (String)getObject("link"+i);
+                String text = (String)getObject("text"+i);
+                if(link != null && !link.isEmpty() &&
+                   text != null && !text.trim().isEmpty())
+                {
+                    dict.put("link",link);
+                    dict.put("text", text);
+                    %><li class="breadcrumbs-list"><%
+                    if(breadcrumbTrail)
+                    { 
+                        %><isif condition="#isDefined(sep)#"><span class="breadcrumb-list-separator"><isprint value="#sep#" encoding="off"></span></isif><a class="breadcrumbs-list-link" href="#link#"><isprint value="#text#"></a><%
+                    }
+                    else
+                    {
+                        %><a class="breadcrumbs-list-link" href="#link#"><isprint value="#text#"></a><%
+                        breadcrumbTrail = true;
+                        dict.put("breadcrumbTrail",breadcrumbTrail);
+                    } 
+                    %></li><%
+                }
+                link = null;
+                text = null;
+            }
+        %>
+        
+        <%
+            String trailText = "";
+            int textCounter=0;
+            for(int i=0;i<5;i++)
+            {
+                String text = (String)getObject("trailtext"+i);
+                if(text != null)
+                {
+                    if(textCounter > 0)
+                    {
+                        trailText += " " + text;
+                    }
+                    else
+                    {
+                        trailText = text;
+                    }
+                    textCounter ++;
+                }
+                text = null;
+            }
+            dict.put("trailText", trailText);
+        %>
+    <isif condition="#isDefined(trailText) AND (trailText NE '')#">
+    <li class="breadcrumbs-list breadcrumbs-list-active">
+    	<isif condition="#isDefined(separatetrailtext)  AND (separatetrailtext EQ 'true') AND (breadcrumbTrail EQ 'true')#">
+    		<isif condition="#isDefined(sep)#"><span class="breadcrumb-list-separator"><isprint value="#sep#" encoding="off"></span></isif>
+    	</isif>
+       	<isprint value="#trailText#">
+    </li>
+    </isif>
+</ol>

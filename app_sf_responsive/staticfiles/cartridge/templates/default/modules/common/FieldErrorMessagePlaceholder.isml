@@ -1,0 +1,20 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<div role="alert" 
+	data-name="<isif condition="#isDefined(name_override) AND (name_override NE "")#"><isprint value="#name_override#"><iselse><isprint value="#fieldname:QualifiedName#"></isif>Error" 
+	class="server-error <isif condition="#isDefined(class) AND (class NE "")#"><isprint value="#class#"></isif>"
+>
+	<isif condition="#isDefined(is_error) AND (is_error NE "false")#">
+		<div role="alert">
+			<isif condition="#isDefined(error_message_override)#">
+				<isif condition="#isDefined(localizeText(error_message_override))#">
+					<istext key="#error_message_override#"/>
+				<iselse>
+					<isprint value="#error_message_override#"/>
+				</isif>
+			</isif>
+		</div>
+	</isif>
+	<isif condition="#isDefined(fieldname) AND (fieldname NE "")#">
+		<isFieldErrorList error_message_override="#error_message_override#" fieldname="#fieldname#" ext_string_prefix="#ext_string_prefix#">
+	</isif>
+</div>

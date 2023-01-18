@@ -1,0 +1,105 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb
+		link="#URLEX(SecureURL,'',Action('ViewWishlist-ViewAll'))#"
+		text="#localizeText('account.wishlists.link')#"
+		trailtext="#localizeText('account.wishlists.search_results.breadcrumb')#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="WISHLISTS">
+		</div>
+
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+
+			<isTooltip 
+				placement="bottom"
+				linktext="#localizeText('account.wishlists.heading.tooltip.link')#" 
+				headline="#localizeText('account.wishlists.heading.tooltip.headline')#"
+				content="#localizeText('account.wishlists.heading.tooltip.content')#"
+				contenttype="html"
+			>
+			
+			<h1><istext key="account.wishlists.heading_search"/></h1>
+			
+
+			<h3><istext key="account.wishlists.search_results.search_criteria" parameter0="#WishlistSearchForm:FirstName:Value.' '.WishlistSearchForm:LastName:Value.' '.WishlistSearchForm:Email:Value#"></h3>
+
+			<div class="section">
+				<isif condition="#hasElements(WishlistBOs)#">
+					<div class="table-responsive">
+						<table class="table">
+							<thead>
+								<tr>
+									<th colspan="2">
+										<istext key="account.wishlists.search_results.resultnumber.text" parameter0="#WishlistBOs:ElementCount#">
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<isloop iterator="WishlistBOs" alias="WishlistBO">
+								<tr>
+									<td>
+										<isset scope="request" name="WishlistOwner" value="#WishlistBO:UserBO#">
+										<a href="#URLEX(SecureURL,'',Action('ViewWishlist-View'), Parameter('UserID', WishlistOwner:ID), Parameter('WishlistID', WishlistBO:ID))#">
+											<isif condition="#isDefined(WishlistOwner:FirstName) or isDefined(WishlistOwner:LastName)#">
+												<isprint value="#WishlistOwner:FirstName.' '.WishlistOwner:LastName.':'#">
+											<iselse>
+												<isprint value="#WishlistOwner:Login.':'#">
+											</isif>
+											&nbsp;<isprint value="#WishlistBO:Name#">
+										</a>
+									</td>
+									<td>
+										<isif condition="#isDefined(WishlistOwner:PreferredShippingAddressBO)#"> 
+											<isset scope="request" name="PreferredAddressBO" value="#WishlistOwner:PreferredBillingAddressBO#" />
+										<iselseif condition="#isDefined(WishlistOwner:PreferredShippingAddress)#">
+											<isset scope="request" name="PreferredAddressBO" value="#WishlistOwner:PreferredShippingAddressBO#" />
+										</isif>
+										
+										<isif condition="#isDefined(PreferredAddressBO:State) AND (PreferredAddressBO:State NE '')#">
+											<isprint value="#PreferredAddressBO:City.', '.PreferredAddressBO:State#"/>
+										<iselse>
+											<isprint value="#PreferredAddressBO:City#"/>
+										</isif>
+									</td>
+								</tr>
+								</isloop>
+							</tbody>
+						</table>
+						
+						<isif condition="#isDefined(ListNavigationVO)#">
+							<isif condition="#ListNavigationVO:PageCount NE '0'#">
+								<ismappagination
+									pipeline="#ListNavigationVO:HandlerPipeline.'-Paging'#"
+									params="#ListNavigationVO:GenericHandlerPipelineParams#"
+									itemcount="#ListNavigationVO:ElementCount#"
+									currentpage="#ListNavigationVO:CurrentPage#"
+									pagecount="#ListNavigationVO:PageCount#"
+								>
+							</isif>
+						</isif>
+					</div>
+				<iselse>
+					<p><istext key="account.wishlists.search_results.no_results" /></p>
+				</isif>
+			</div>
+
+			<isinclude template="account/wishlist/WishlistSearchForm">
+			
+		</div>
+	</div>
+</div>

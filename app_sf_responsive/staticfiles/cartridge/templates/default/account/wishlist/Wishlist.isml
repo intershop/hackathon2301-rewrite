@@ -1,0 +1,85 @@
+<iscontent charset="UTF-8" templatemarker="true">
+<isinclude template="modules/Modules">
+<script type="text/javascript">
+function setWishlistItemID(wishlistItemID)
+{
+	var element = document.getElementById('WishlistItemID');
+	element.value = wishlistItemID;
+}
+</script>
+<!--- BEGIN Errors --->	
+<isif condition="#isDefined(ERROR_Basket_Product)#">
+	<div class="alert alert-danger">
+		<isif condition="#ERROR_Basket_Product EQ 'MaxItemSizeReached'#">
+			<p><istext key="shopping_cart.max.item.count.error" /></p>
+		<iselseif condition="#ERROR_Basket_Product EQ 'ProductRepeatDisallowed'#">
+			<p><istext key="shopping_cart.repeat.disallowed.error" /></p>
+		<iselseif condition="#ERROR_Basket_Product EQ 'QUANTITY_FORMAT'#">
+			<p><istext key="shopping_cart.quantity.invalid.error.w.correction" /></p>
+		<iselse>
+			<!--- should not happen as every possible error should be caught --->
+			<p><istext key="shopping_cart.update.error" /></p>
+		</isif>
+	</div>
+</isif>
+<isShoppingCartGlobalErrorMsg
+	addToBasketResults="#AddToBasketResults#"
+>
+<!--- END Errors --->
+<div class="section">
+	<isset name="boolean_true" value="#1 == 1#" scope="request">
+	<isset name="WishlistItems" value="#WishlistBO:WishlistItemBOs(boolean_true)#" scope="request" />
+	<isif condition="#hasElements(WishlistItems)#">
+		<isform action="#URL(Action('ViewWishlist-Dispatch'))#" method="post" name="UpdateWishlist" class="kor-wishlistForm">
+			<input type="hidden" name="WishlistID" value="<isprint value="#WishlistBO:ID#"/>" />
+			<input type="hidden" name="WishlistOwnerID" value="<isprint value="#WishlistBO:UserBO:ID#"/>" />
+			<input type="hidden" name="WishlistItemID" id="WishlistItemID" value="toBeSetByJavaScriptIfNecessary" />
+
+			<div class="list-header">
+				<div class="col-sm-3 col-xs-3 list-header-item"><istext key="account.wishlist.table.header.item"></div>
+				<div class="col-sm-9 col-xs-9 list-header-item column-price"><istext key="account.wishlist.table.header.price"/></div>
+			</div>
+			<div class="list-body">
+				<isloop iterator="WishlistItems" alias="WishlistItem">
+				<div class="list-item-row">
+					<isif condition="#(isDefined(WishlistItem:ProductBO:SKU))#">
+						<isWishlistItem
+							WishlistItem="#WishlistItem#"
+							showImage="true"
+							showQuantitiesText="true"
+							showQuantityControls="true"
+							showDateAdded="true"
+							showPrice="true"
+							showAddToCartButton="true"
+							showEditItemButtons="true"
+							Currency="#CurrentRequest:Currency#"
+						>
+					<iselse/>
+						<div class="list-item">
+							<p><istext key="account.overview.wishlist.unshared_product"/></p>
+						</div>
+					</isif>
+				</div>
+				</isloop>
+			</div>
+
+			<button class="btn btn-default pull-right" type="submit" name="Update">
+				<istext key="account.wishlist.table.update_wishlist"/>
+			</button>
+		</isform>
+	<iselse>
+		<isif condition="#isDefined(WishlistBO)#">
+			<p><istext key="account.wishlist.no_entries"/></p>
+		</isif>
+	</isif>
+	<isif condition="#isDefined(WishlistBO)#">
+		<a href="#URL(Action('ViewWishlist-ViewAll'))#"><istext key="account.wishlist.searchform.return.link"></a>
+	</isif>
+
+	<isif condition="#isDefined(TargetWishlistBO)#">
+		<isinclude template="account/wishlist/MoveWishlistItemConfirmation"/>
+	</isif>
+</div>
+
+<isset name="list_name" value ="Wishlist" scope="request">
+<ISIncludeTrackingTool template="ViewWishList">

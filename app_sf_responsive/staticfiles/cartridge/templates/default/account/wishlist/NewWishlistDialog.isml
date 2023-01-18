@@ -1,0 +1,10 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isWishlistPropertiesForm
+	CurrentForm="#NewWishlistForm#"
+	TargetPipeline="ViewWishlist-CreateWishlist"
+	SubmitButtonName="CreateWishlist"
+	SubmitButtonText="#localizeText("account.wishlists.new_wishlist_form.create_button.text")#"
+	TitleText="#localizeText("account.wishlists.new_wishlist_dialog.header")#"
+>

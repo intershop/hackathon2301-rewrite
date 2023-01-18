@@ -1,0 +1,330 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<isplacement placeholderid="JSWebLibraries">moment/moment.js</isplacement>
+
+var controller = this;
+
+<!--- Create model JSON
+	Example for model:
+ 		{
+ 			error: false,
+			checkoutInProgress: false,
+ 			count: 2,
+ 			period: "W",
+ 			startDate: "08/15/2016",
+ 			endDate: "10/08/2016",
+ 			isRecurringBasket: true
+ 		} 
+--->
+var model =  {
+
+	error: false,
+	checkoutInProgress: false,
+
+	<isif condition="#RecurringBasket:RecurrenceInformation:Interval:Days > 0#">
+		count: <isprint value="#RecurringBasket:RecurrenceInformation:Interval:Days#" formatter="#0.#">,
+	<iselseif condition="#RecurringBasket:RecurrenceInformation:Interval:Weeks > 0#">
+		count: <isprint value="#RecurringBasket:RecurrenceInformation:Interval:Weeks#" formatter="#0.#">,
+	<iselseif condition="#RecurringBasket:RecurrenceInformation:Interval:Months > 0#">
+		count: <isprint value="#RecurringBasket:RecurrenceInformation:Interval:Months#" formatter="#0.#">,
+	<iselseif condition="#RecurringBasket:RecurrenceInformation:Interval:Years > 0#">
+		count: <isprint value="#RecurringBasket:RecurrenceInformation:Interval:Years#" formatter="#0.#">,
+	<iselse>
+		count: 1,
+	</isif>
+
+
+	<isif condition="#RecurringBasket:RecurrenceInformation:Interval:Days > 0#">
+		period: "D",
+	<iselseif condition="#RecurringBasket:RecurrenceInformation:Interval:Weeks > 0#">
+		period: "W",
+	<iselseif condition="#RecurringBasket:RecurrenceInformation:Interval:Months > 0#">
+		period: "M",
+	<iselseif condition="#RecurringBasket:RecurrenceInformation:Interval:Years > 0#">
+		period: "Y",
+	<iselse>
+		period: "W",
+	</isif>
+
+	<isif condition="#RecurringBasket:RecurrenceInformation:StartDate NE ''#">
+		startDate: "<isprint value="#RecurringBasket:RecurrenceInformation:StartDate#" style="DATE_INPUT" encoding="off">",
+	<iselse>
+	    startDate: new Date().toLocaleDateString('<isprint value="#CurrentRequest:Locale:JavaLanguageKey#">-<isprint value="#CurrentRequest:Locale:JavaCountryKey#">', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+	</isif>
+
+	<isif condition="#RecurringBasket:RecurrenceInformation:EndDate NE ''#">
+		endDate: "<isprint value="#RecurringBasket:RecurrenceInformation:EndDate#" style="DATE_INPUT" encoding="off">",
+	<iselse>
+		endDate: "",
+	</isif>
+
+	isRecurringBasket: <isprint value="#RecurringBasket:Recurring#">
+};
+
+var canSubmit = true;
+
+<!--- Fix for display "weeks" instead of "days" --->
+if (model.count % 7 === 0) {
+	model.period = "W";
+	model.count = (model.count / 7);
+}
+
+<!--- Set basket status --->
+<isset name="Quote" value="#CurrentCartBO:Extension("Quote")#" scope="request">	
+<isif condition="#hasLoopElements(Quote:QuoteBOs)#">
+	model.isRecurringBasket = false;
+	model.isQuoteRelatedBasket = true;
+<iselseif condition="#RecurringBasket:isRecurring#">
+	model.isRecurringBasket = true;
+</isif>
+
+
+<!--- Update and render the template --->
+$.i18n()
+	.load(subscriptionsEditFormLocalizationProperties)
+	.done(function() {
+
+		controller
+			.model(model)
+			.update();
+
+	});
+
+
+<!--- Update the checkout button visibility --->
+function updateStandardCheckoutButtonVisibility(show) {
+
+	if (show) {
+		
+		var model = controller.model();
+		model.isRecurringBasket = false;
+		
+		$('[data-section="CartCheckoutButtons"]').show();
+       	$('[data-section="subscriptionForm"]').hide();
+       	$('[data-section="CartSubscriptionSubscribeButton"]').hide();
+
+       	var Validator = $('form.bv-form').data('bootstrapValidator');
+		Validator.removeField($('#'#'#CartToSubscriptionRecurrence'));
+		Validator.removeField($('#'#'#CartToSubscriptionStartDate'));
+		Validator.removeField($('#'#'#CartToSubscriptionEndDate'));
+
+		$('.cart-summary-subscription').find('.alert').remove();
+
+	}else{
+
+		var model = controller.model();
+   		model.isRecurringBasket = true;
+
+    	$('.cart-summary-subscription').find('.alert').remove();
+
+		$('[data-section="CartCheckoutButtons"]').hide();
+	    $('[data-section="subscriptionForm"]').show();
+	    $('[data-section="CartSubscriptionSubscribeButton"]').show();
+
+	    var Validator = $('form.bv-form').data('bootstrapValidator');
+		Validator.addField($('#'#'#CartToSubscriptionRecurrence'));
+		Validator.addField($('#'#'#CartToSubscriptionStartDate'), {
+			trigger: 'change keyup',
+               validators: {
+               	callback: {
+               		message: "<istext key="shopping_cart.costsummary.subscription.form.validation.startdate.error.notvalid"/>",
+               		callback: function(value, validator, field) {
+               			
+						validator.revalidateField('CartToSubscriptionEndDate');
+						
+						// check that this is a valid date for the specified date pattern
+						if (!moment( value, '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase(), true).isValid()) {
+							return false;
+						}
+
+						var startDate = moment( value, '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase(), true).toDate().getTime();
+						var currentDate = new Date().setHours(0,0,0,0);
+
+               			if( startDate < 0 || (startDate < currentDate) ) {
+               				return false;
+               			}
+
+						return true;
+
+               		}
+               	}
+			}
+		});
+		Validator.addField($('#'#'#CartToSubscriptionEndDate'), {
+			trigger: 'change keyup',
+               validators: {
+               	callback: {
+                	message: "<istext key="shopping_cart.costsummary.subscription.form.validation.enddate.error.laterthan"/>",
+					callback: function(value, validator, field) {
+						
+						// no end date is valid
+						if (!value){
+							return true;
+						}
+					
+						// check that this is a valid date for the specified date pattern
+						if (!moment( value, '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase(), true).isValid()) {
+							return false;
+						}
+					
+						var startDate = moment( $('#'#'#CartToSubscriptionStartDate').val(), '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase(), true).toDate().getTime();
+						var endDate =  moment( value, '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase()).toDate().getTime();
+						
+                       	if (startDate >= endDate) {
+                       		return false;
+                       	} else {
+                       		return true;
+                       	}
+					}
+				}
+			}
+       	});
+
+	}
+
+}
+
+
+<!--- Bind all needed DOM events for radios --->
+$(function() {
+
+	$(document).on('change', '[name="CartToSubscriptionSwitch"]', function() {
+
+		canSubmit = false;
+		
+		if (this.value === 'default') {
+	       	updateStandardCheckoutButtonVisibility(true);
+		}else{
+			updateStandardCheckoutButtonVisibility(false);
+		}
+
+	});
+	
+		
+	<isif condition="#hasLoopElements(Quote:QuoteBOs)#">
+		
+		<!--- Quote related basket --->
+		updateStandardCheckoutButtonVisibility(true);
+		
+	<iselseif condition="#RecurringBasket:isRecurring#">
+		
+		<!--- Subscription related basket --->
+		updateStandardCheckoutButtonVisibility(false);
+		
+	</isif>
+	
+	<!---
+		Bind needed events for REST calls
+	--->
+
+	$(document).on('click', '[name="SubscriptionSubscribeButton"]', function() {
+
+    	var Validator = $('form.bv-form').data('bootstrapValidator').validate();
+    	if ( Validator.isValid() ) {
+
+	    	var BasketID = '<isprint value="#CurrentCartBO:ID#">';
+	    	var period = 'P' + $('[name="subscriptionRecurrenceCount"]').val() + $('[name="subscriptionRecurrence"] option:selected').val();
+
+	    	var requestData = {
+				"recurrence" : {
+					"interval": period
+				}
+			};
+
+	    	var startDate = moment( $('[name="CartToSubscriptionStartDate"]').val(), '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase()).toDate().getTime();
+       	    
+       	    var cartToSubscriptionEndDate = $('[name="CartToSubscriptionEndDate"]').val();
+       	    var endDate;
+       	    if (cartToSubscriptionEndDate)
+       	    {
+       	    	endDate = moment( cartToSubscriptionEndDate, '<isprint value="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#" encoding = "off">'.toUpperCase()).toDate().getTime();
+			}
+
+          	if (!isNaN(startDate)) {
+	    		requestData.recurrence.startDate = startDate;
+	    	}else{
+	    		requestData.recurrence.startDate = new Date().getTime();
+	    	}
+
+	    	if (!isNaN(endDate)) {
+	    		requestData.recurrence.endDate = endDate;
+	    	}else{
+	    		requestData.recurrence.endDate = '';
+	    	}
+
+	    	$('[name="SubscriptionSubscribeButton"]').attr("disabled", true).addClass('btn-loader');
+
+	    	var client = new ISHRestClient();
+	    	client
+	    		.customer(false)
+	    		.update('/baskets/' + BasketID, requestData)
+	    		.then(function(data) {
+
+		    		canSubmit = true;
+
+		    		$('[type="submit"][name="checkout"]').prop('disabled', false).click();
+
+		    	}, function() {
+
+		    		var model = controller.model();
+		    		model.error = true;
+		    		canSubmit = false;
+		    		controller
+						.model(model)
+						.update();
+
+		    		$(document).trigger('init.datepicker');
+
+		    	});
+
+    	}
+
+	});
+
+    <!--- REST call to remove recurrence information --->
+	$(document).on('click', '[type="submit"][name="checkout"]', function(e) {
+		
+		if (canSubmit) {
+		
+			return true;
+		
+		}
+		
+		
+		var model = controller.model();
+
+		var BasketID = '<isprint value="#CurrentCartBO:ID#">';
+		var requestData = {
+			"recurrence" : {
+				"interval": "P0D"
+			}
+		};
+
+		var client = new ISHRestClient();
+    	client
+    		.customer(false)
+    		.update('/baskets/' + BasketID, requestData)
+    		.then(function(data) {
+				
+				canSubmit = true;
+
+	    		$('[type="submit"][name="checkout"]').click();
+
+	    	}, function() {
+
+	    		var model = controller.model();
+	    		model.error = true;
+	    		canSubmit = false;
+
+	    		controller
+					.model(model)
+					.update();
+
+	    		updateStandardCheckoutButtonVisibility(false);
+
+	    	});
+
+		return false;
+
+	});
+
+});

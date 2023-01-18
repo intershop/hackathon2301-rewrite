@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import="com.intershop.beehive.core.capi.app.AppContextUtil"%>
+<%@page import="com.intershop.component.application.capi.ApplicationBO"%>
+<%
+	PipelineDictionary dictionary = getPipelineDictionary();
+	ApplicationBO app = AppContextUtil.getCurrentAppContext().getVariable("CurrentApplicationBO");
+	getPipelineDictionary().put("Locales", app.getLocales());
+%>
+<isif condition="#(selected EQ '')#"><isset name="selected" value="#currentlocale:LocaleID#" scope="request"></isif>
+<select class="form-control"
+	id="<isprint value="#parametername#">"
+	name="<isprint value="#parametername#">"
+	data-url="#URL(Action('ViewUserAccount-ChangeAddressForm'))#">
+	<isloop iterator="Locales" alias="Locale">
+		<option value="<isprint value="#Locale:LocaleID#">" <isif condition="#Locale:LocaleID EQ selected#">selected="selected"</isif>>
+			<isprint value="#Locale:DisplayName(currentlocale)#">
+		</option>
+	</isloop>
+</select>

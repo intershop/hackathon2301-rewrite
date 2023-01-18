@@ -1,0 +1,14 @@
+<iscontent compact="true" charset="UTF-8" type="text/html">
+<iscache type="forbidden">
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<div class="quick-cart-link hidden-xs">
+	<!--- Mini cart status link --->
+	<isinclude template="inc/header/MiniCartLink">
+	
+	<!--- Mini cart expanded --->
+	<isinclude template="inc/header/MiniCart">
+</div>

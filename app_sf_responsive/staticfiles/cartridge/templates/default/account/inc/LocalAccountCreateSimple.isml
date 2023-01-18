@@ -1,0 +1,26 @@
+<iscontent charset="UTF-8" compact="false" templatemarker="true">
+
+<div class="row" data-testing-id="account-login-page">
+	<div class="col-md-6">
+		<div class="section">
+			<isif condition="#NOT(CurrentSession:isLoggedIn)#">
+				<div>
+					<h2><istext key="account.login.returning_user.heading"/></h2>
+					
+					<isif condition="#isDefined(LoginToUse) AND (LoginToUse NE '')#">
+						<p class="alert alert-info"><istext key="#'account.login.'.lcase(LoginToUse).'.message'#"/></p>
+					</isif>
+					
+					<isinclude template="account/AccountLoginForm">
+				</div>
+			</isif>
+		</div>
+	</div>
+	<isif condition="#NOT(CurrentSession:isLoggedIn)#">
+		<div class="col-md-6">
+			<div class="section">
+				<isinclude template="account/CreateSimpleLogin">
+			</div>
+		</div>
+	</isif>
+</div>

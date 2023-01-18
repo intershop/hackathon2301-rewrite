@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+<isinclude template="cart/email/modules/Modules">
+
+<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request" />
+
+<!--- Promotion Message --->
+<isinclude template="cart/common/DynamicOrderLevelPromotion" dictionary="Dictionary">
+
+<!--- BEGIN Line Items Overview ---> 	
+<isloop iterator="CurrentCartBO:ProductLineItemBOs" alias="PLI" counter="pliIndex">
+	<isinclude template="cart/email/common/LineItemDetails">
+</isloop>
+
+<br /><br />
+
+<!--- Cost Summary --->
+<div>
+	<h2 class="emailOrderSummary"><istext key="checkout.order_details.heading" /></h2>
+	
+	<div class="cost-summary">
+		<isinclude template="cart/email/common/CostSummary">
+	</div>
+</div>

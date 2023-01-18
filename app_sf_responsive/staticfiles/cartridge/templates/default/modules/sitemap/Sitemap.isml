@@ -1,0 +1,40 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/sitemap/Modules">
+
+<ispipeline pipeline="ProcessSitemap-GetSitemapCategories" alias="ResultDict" params="#ParamMap(ParamEntry('Request', Request), ParamEntry('RenderType', RenderType), ParamEntry('CategoryBO', SelectedCategoryBO), ParamEntry('Range', SelectedRange), ParamEntry('Ranges', CategoryRanges))#" />
+<isset name="RenderType" value="#ResultDict:RenderType#" scope="request"/>
+<isset name="SelectedCategoryBO" value="#ResultDict:CategoryBO#" scope="request"/>
+<isset name="CategoryBOs" value="#ResultDict:CategoryBOs#" scope="request"/>
+<isset name="SelectedRange" value="#ResultDict:Range#" scope="request" />
+<isset name="CategoryRangesMap" value="#ResultDict:CategoryRangesMap#" scope="request"/>
+
+<!--- Display Navigation (Top) --->
+<ISSitemapNavigation
+	RenderType="#RenderType#"
+	CategoryBOs="#CategoryBOs#"
+	SelectedCategoryBO="#SelectedCategoryBO#"
+	CategoryRangesMap="#CategoryRangesMap#"
+	SelectedRange="#SelectedRange#"
+>
+
+<div class="sitemap">
+	<!--- Display Categories --->
+	<isif condition="#(RenderType EQ 'CategoryRange')#">
+		<ISSitemapCategoryList
+			CategoryBOs="#CategoryRangesMap:get(SelectedRange)#"
+		>
+	<iselse/>
+		<ISSitemapCategoryList
+			CategoryBOs="#SelectedCategoryBO:AccessibleSubCatalogCategoryBOs#"
+		>
+	</isif>
+</div>
+	
+<!--- Display Navigation (Bottom) --->
+<ISSitemapNavigation
+	RenderType="#RenderType#"
+	CategoryBOs="#CategoryBOs#"
+	SelectedCategoryBO="#SelectedCategoryBO#"
+	CategoryRangesMap="#CategoryRangesMap#"
+	SelectedRange="#SelectedRange#"
+>

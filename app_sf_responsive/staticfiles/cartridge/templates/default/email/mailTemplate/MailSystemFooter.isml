@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+						</td>
+					</tr>
+					<!--- End Email Body --->
+					
+					<!--- Start Email Footer --->
+					<tr>
+						<td class="emailFooter">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<!--- Start Footer Disclaimer --->
+								<tr>
+									<td class="footerDisclaimer">
+										<istext key="email.notification.message" encoding="off"/>
+									</td>
+								</tr>
+								<!--- End Footer Disclaimer --->
+																
+								<!--- Start Footer Imprint --->
+								<tr>
+									<td class="footerImprint">
+										<istext key="email.legal_notice.message" parameter0="#encodeValue(URL(Action('ViewContent-Start', '', '', LocaleID, Currency, AppID),Parameter('PageletEntryPointID','systempage.termsAndConditions.pagelet2-Page')))#" encoding="off" />
+									</td>
+								</tr>
+								<!--- End Footer Imprint --->
+							</table>
+						</td>
+					</tr>
+					<!--- End Email Footer --->
+				</table>
+				<!--- End Email Content --->
+				
+				<!--- Outlook doesn't support max-width, fixed width necessary --->
+				<!--[if (gte mso 9)|(IE)]>
+						</td>
+					</tr>
+				</table>
+				<![endif]-->
+				
+				</td>
+			</tr>
+		</table>
+		<!--- End - Table replaces body tag if extracted by client --->
+		
+	</body>
+</html>

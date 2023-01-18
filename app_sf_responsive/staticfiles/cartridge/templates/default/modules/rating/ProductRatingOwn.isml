@@ -1,0 +1,18 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<isCurrentUserBO currentuserbo="UserBO">
+<ispipeline 
+	pipeline="ProcessReview-GetReviewsByAuthor" 
+	params="#ParamMap(ParamEntry('BusinessObjectApprovedReviewBORepository', ProductBO:Extension("Review")), ParamEntry('UserBO', UserBO))#" 
+	alias="ReviewsDict"/>
+<isif condition="#(NOT hasElements(ReviewsDict:ReviewBOs))#">
+	<a href="#URL(Action('ViewAjax-Start'), 
+				Parameter('TargetPipeline','ViewProductReview-NewReview'), 
+				Parameter('SKU', ProductBO:SKU),
+				Parameter('CategoryDomainName', CategoryBO:DomainName), 
+				Parameter('CategoryName', CategoryBO:Name))#"
+			class="kor-open-as-dialog-check-login kor-product-link">
+		<istext key="product.rating.write_a_review.link" />
+	</a>&nbsp;&nbsp;
+</isif>

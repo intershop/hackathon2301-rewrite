@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="ContactUs">
+  <forms name="ContactUsForm">
+    <parameters xsi:type="webform:FormParameter" name="Name" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" name="Email" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-email"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" name="Phone" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Order" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" name="Subject" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" name="Comments" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="PageletEntryPointID" type="java.lang.String"/>
+    <parameters xsi:type="webform:FormParameter" optional="false" name="recaptcharesponsefield" type="java.lang.String">
+      <validatorBindings validator="Captcha-ValidatorCaptcha">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="EnablePreference" value="intershop.CaptchaPreferences.ContactUs"/>
+      </validatorBindings>
+    </parameters>
+  </forms>
+</webform:WebForm>

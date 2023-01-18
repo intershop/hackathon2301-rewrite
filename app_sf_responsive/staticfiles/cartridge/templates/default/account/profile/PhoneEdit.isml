@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="form-group">
+	<label for="<isprint value="#CurrentForm:Phone:QualifiedName#">" class="col-md-3 col-sm-3 control-label">
+		<istext key="account.update_profile.phone.label"/>
+	</label>
+	<div class="col-md-4 col-sm-6">
+		<input class="form-control" maxlength="20" type="text"
+			id="<isprint value="#CurrentForm:Phone:QualifiedName#">"
+			name="<isprint value="#CurrentForm:Phone:QualifiedName#">"
+			value="<isif condition="#CurrentForm:Submitted#"><isprint value="#CurrentForm:Phone:Value#"><iselse><isprint value="#UserBO:PhoneHome#"></isif>"
+		/>
+	</div>
+</div>

@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/common/Modules">
+
+<isif condition="#isDefined(ProductBO) AND (ProductBO NE '')#">
+	<isif condition="#isDefined(AltText)#">
+		<isset name="AltText" value="#AltText#" scope="request"/>
+	<iselse>
+		<!--- determine product image alt text --->
+		<isif condition="#isDefined(Locale)#">
+			<isset name="ProductAltText" value="#ProductBO:Extension("Seo"):ImageAltTextByLocale(Locale)#" scope="request">
+		<iselse>
+			<isset name="ProductAltText" value="#ProductBO:Extension("Seo"):ImageAltTextByCurrentLocale#" scope="request">
+		</isif>
+		<isif condition="#isDefined(ProductAltText)#">
+			<isset name="AltText" value="#ProductAltText#" scope="request"/>
+		<iselse>
+			<isset name="AltTextStatic" value="#localizeText("product.image.text.alttext")#" scope="request"/>
+			<isif condition="#isDefined(ProductBO:Name)#">
+				<isset name="AltText" value="#ProductBO:Name.' '.AltTextStatic#" scope="request"/>
+			<iselse>
+				<isset name="AltText" value="#ProductBO:SKU.' '.AltTextStatic#" scope="request"/>
+			</isif>
+		</isif>
+	</isif>
+	<isImage 
+		imagecontainer="#ProductBO:Extension("Image"):ImageContainerBO#"
+		imagetypeid="#ImageType#"
+		imageview="#ImageView#"
+		class="#Class#"
+		alttext="#AltText#"
+		richsnippetsenabled="#RichSnippetsEnabled#"
+		sourcesetmedia="#SourceSetMedia#"
+	>
+</isif>

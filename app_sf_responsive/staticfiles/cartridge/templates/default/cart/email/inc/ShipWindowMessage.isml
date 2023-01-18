@@ -1,0 +1,14 @@
+<iscontent charset="UTF-8" compact="true">
+<isif condition="#isDefined(pli:ProductBO:ReadyForShipmentMin) AND isDefined(pli:ProductBO:ReadyForShipmentMax) AND (pli:ProductBO:isAvailable)#">
+	<div>
+		<isif condition="#(pli:ProductBO:ReadyForShipmentMin EQ '0')#">
+			<isif condition="#(pli:ProductBO:ReadyForShipmentMax EQ '1')#">
+				<istext key="checkout.delivery.within24"/>
+			<iselse>
+				<istext key="checkout.delivery.within" parameter0="#pli:ProductBO:ReadyForShipmentMax#"/>
+			</isif>
+		<iselse>
+			<istext key="checkout.delivery.period.text" parameter0="#pli:ProductBO:ReadyForShipmentMin#" parameter1="#pli:ProductBO:ReadyForShipmentMax#" />
+		</isif>
+	</div>
+</isif>

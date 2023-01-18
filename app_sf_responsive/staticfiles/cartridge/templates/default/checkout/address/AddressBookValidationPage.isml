@@ -1,0 +1,42 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="true">
+<iscache type="forbidden">
+<isinclude template="modules/Modules">
+
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<h1><istext key="checkout.validate_address.header" /></h1>
+
+<isform method="post" action="#URL(Action('ViewCheckoutAddressBook-AddressValidation'))#">
+	<div class="row">
+		<div class="col-md-8">
+			<isif condition="#isDefined(AddressValidation)#">
+				<isif condition="#(NewBillingAddress EQ 'true') OR (EditBillingAddress EQ 'true')#">
+					<h2><istext key="checkout.validate_address.billing" /></h2>
+				</isif>
+				<isif condition="#(NewShippingAddress EQ 'true') OR (EditShippingAddress EQ 'true')#">
+					<h2><istext key="checkout.validate_address.shipping" /></h2>
+				</isif>
+
+				<isAddressSuggest locale="#CurrentSession:Locale#" sourceaddress="#AddressBO#" targetaddress="#AddressBO#" suggestedaddresses="#SuggestedAddresses#" formprefix="address" validateaddressnoresultmessagekey="checkout.validate_address.no_result">
+			</isif>
+
+			<div class="form-group">
+				<button name="saveAddAnother" class="btn btn-default" type="submit"><istext key="checkout.validate_address.save_add_another" /></button>
+			</div>
+		</div>
+	
+		<div class="col-md-4">
+			<h2><istext key="checkout.order_details.heading" /></h2>
+			
+			<div class="cost-summary">
+						<isinclude template="checkout/common/widgets/CostSummary">
+						<button name="continue" class="btn btn-lg btn-block btn-primary" type="submit"><istext key="checkout.button.label" /></button>
+			</div>
+			<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink.isml">
+		</div>
+	</div>
+</isform>

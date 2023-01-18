@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensionpoint:ExtensionPointModel xmlns:extensionpoint="http://www.intershop.de/extensionpoint/2011" name="BaseCheckoutPaymentAfterSelection">
+	<extensionBindings type="isml" extensionPoint="checkout/payment/CheckoutPayment-AfterPaymentMethodSelection" extension="checkout/payment/additionalmodules/05_GiftCards" priority="20"/> 
+	<extensionBindings type="isml" extensionPoint="checkout/payment/ajax/GiftCardResponse-AfterPaymentMethodSelection" extension="checkout/payment/additionalmodules/05_GiftCards" priority="20"/>   
+</extensionpoint:ExtensionPointModel>

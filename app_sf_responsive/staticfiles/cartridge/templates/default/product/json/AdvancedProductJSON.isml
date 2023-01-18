@@ -1,0 +1,54 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+<isset name="SalePrice" value="#ProductPrice:Price("SalePrice", CurrentRequest:Currency)#" scope="request"/>
+<isset name="ListPrice" value="#ProductPrice:Price("ListPrice", CurrentRequest:Currency)#" scope="request"/>
+"minOrderQuantity" : "<isprint value="#ProductBO:MinOrderQuantity#" encoding = "JavaScript">",
+"longDescription" : "<isprint value="#ProductBO:LongDescription#" encoding = "json">",
+"listPrice" : "<isprint value="#ListPrice:Price#" encoding = "JavaScript">",<isif condition="#ListPrice:Range EQ 'true'#">
+"maximumListPrice" : "<isprint value="#ListPrice:PriceRange:MaximumPrice#" encoding = "JavaScript">",
+"minimumListPrice" : "<isprint value="#ListPrice:PriceRange:MinimumPrice#" encoding = "JavaScript">",<iselse>
+"maximumListPrice" : "<isprint value="#ListPrice:Price#" encoding = "JavaScript">",
+"minimumListPrice" : "<isprint value="#ListPrice:Price#" encoding = "JavaScript">",</isif><isif condition="#SalePrice:Range EQ 'true'#">
+"minimumSalePrice" : "<isprint value="#SalePrice:PriceRange:MinimumPrice#" encoding = "JavaScript">",<iselse>
+"minimumSalePrice" : "<isprint value="#SalePrice:Price#" encoding = "JavaScript">",</isif>
+"salePrice" : "<isprint value="#SalePrice:Price#" encoding = "JavaScript">",
+<isif condition="#SalePrice:Range EQ 'true'#">
+"maximumSalePrice" : "<isprint value="#SalePrice:PriceRange:MaximumPrice#" encoding = "JavaScript">",<iselse>
+"maximumSalePrice" : "<isprint value="#SalePrice:Price#" encoding = "JavaScript">",</isif>
+"averageRating" : "<isprint value="#ProductBO:Extension("Review"):AggregatedRatingBO("APPROVED"):AverageRating#" encoding = "JavaScript">",
+"roundedAverageRating" : "<isprint value="#ProductBO:Extension("Review"):AggregatedRatingBO("APPROVED"):RoundedAverageRating#" encoding = "JavaScript">",
+"minimalRating" : "<isprint value="#ProductBO:Extension("Review"):AggregatedRatingBO("APPROVED"):MinimalRating#" encoding = "JavaScript">",
+"maximalRating" : "<isprint value="#ProductBO:Extension("Review"):AggregatedRatingBO("APPROVED"):MaximalRating#" encoding = "JavaScript">",
+"ratingComments" : {
+	<isset name="It" value="#ProductBO:Extension("Review"):ReviewBOs#" scope="request" />
+	<isif condition="#hasElements(It)#">
+		<isloop iterator="It" alias="Comment" counter="c">
+			<isif condition="#c > ReviewsCount#"><isbreak/></isif>
+			<iscachekey object="#ProductBO#">
+			"<isprint value="#Comment:UUID#">" : {
+				"title" : "<isprint value="#Comment:ReviewTitle(CurrentSession:Locale)#" encoding = "json">",
+				"comment" : "<isprint value="#Comment:ReviewContent(CurrentSession:Locale)#" encoding = "json">", 
+				"authorFirstName" : "<isif condition="#isDefined(Comment:AuthorBO)#"><isprint value="#Comment:AuthorBO:Profile:DataSheet:FirstName#" encoding = "json"><iselse><isprint value="#Comment:AuthorName#" encoding = "json"></isif>",
+				"authorLastName" : "<isprint value="#Comment:AuthorBO:Profile:DataSheet:LastName#" encoding = "json">",
+				"rating" : "<isprint value="#Comment:RatingBO:RatingValue#" encoding = "JavaScript">",
+				"ratedObjectID" : "<isprint value="#Comment:Extension("Product"):AttachedProductBO:ID#" encoding = "JavaScript">"
+			}<isif condition="#isDefined(Reviews) AND (c > Reviews)#"><isbreak/></isif>
+			 <isif condition="#hasNext(Comment)#">, </isif>	
+		</isloop>
+	</isif>
+},
+"promotions" : {
+	<isif condition="#isDefined(ApplicablePromotions)#">
+		<isset name="Promotions" value="#ApplicablePromotions#" scope="request"/>
+		<isif condition="#hasElements(Promotions)#">
+		  <isloop iterator="Promotions" alias="Promotion">
+			"<isprint value="#Promotion:PromotionID#">" : {
+				"id" : "<isprint value="#Promotion:PromotionID#">",
+				"longTitle" : "<isprint value="#Promotion:LongTitle(CurrentSession:Locale)#" encoding = "json">",
+				"displayName" : "<isprint value="#Promotion:DisplayName(CurrentSession:Locale)#" encoding = "json">",
+				"description" : "<isprint value="#Promotion:Description(CurrentSession:Locale)#" encoding = "json">" 
+			}<isif condition="#hasNext(Promotion)#">, </isif>	
+		  </isloop>
+		</isif>
+	</isif>	
+}

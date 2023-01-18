@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="section" style="display:<isif condition="#AddressForm:isInvalid OR isDefined(ForceForm)#">block<iselse>none</isif>;">
+	<h3><istext key="account.addresses.new_addresss.text"></h3>
+	
+	<div class="shift-content">
+		<isinclude template="account/address/NewAddress"/>
+	</div>
+</div>
+

@@ -1,0 +1,5 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div class="cart-summary">
+	<isinclude template="cart/inc/PromotionCodeInput">
+</div>

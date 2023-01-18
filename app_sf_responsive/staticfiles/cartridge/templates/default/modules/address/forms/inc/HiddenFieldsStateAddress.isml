@@ -1,0 +1,25 @@
+	<!--- 
+		this module prints out the fields as hidden input fields which are not used
+		by the according language
+		
+		one can use the following paramters:
+		usetitle="true" => means that there is no visible form field for title
+		usestate="true" => means that there is no visible form field for state
+		useaddress3="true" => means that there is no visible form field for address3
+		useshippingaddress="true" => for the default case
+	--->	
+	<isif condition="#(usetitle EQ 'true') AND (webform:Title:QualifiedName NE '')#">
+		<input type="hidden" value="" name="<isprint value = "#webform:Title:QualifiedName#">"/>
+	</isif>
+	<isif condition="#(usestate EQ 'true') AND (webform:State:QualifiedName NE '')#">
+		<input type="hidden" value="" name="<isprint value="#webform:State:QualifiedName#">"/>
+	</isif>
+	<isif condition="#(useaddress3 EQ 'true') AND (webform:Address3:QualifiedName NE '')#">	
+		<input type="hidden" value="" name="<isprint value = "#webform:Address3:QualifiedName#">"/>
+	</isif>
+	<isif condition="#useshippingaddress EQ 'true'#">
+		<input type="hidden" value="<isprint value = "#isshippingaddress#">" name="isshippingaddress"/>
+	</isif>
+	<isif condition = "#isDefined(webform:Type)#">
+		<input type="hidden" name="Type" value="<isprint value="#webform:Type:Value#">"/>
+	</isif>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessWishlist" overrideMode="Inherit" type="process">
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" strict="true" name="GetTargetWishlistBO"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode11"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="CallNode3"/>
+<!--@BendPoints 9,4 9,11-->
+    <nodeSuccessors name="NOTLOGGEDIN" next="JoinNode3"/>
+    <startNode referencedName="ProcessUser-CheckLoggedIn"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <startNode referencedName="ProcessWishlist-GetWishlistBORepository"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <startNode referencedName="ProcessWishlist-GetAddToWishlistMode"/>
+    <returnValueBindings name="TargetWishlistBO" objectPath="WishlistBO"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+<!--@BendPoints 7,12-->
+    <nodeSuccessors name="next" next="EndNode5"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" strict="true">
+    <returnValues name="WishlistBO" type="com.intershop.component.wishlist.capi.WishlistBO"
+        optional="true"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" strict="true" name="GetWishlistBORepository"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetApplicationBO0"/>
+<!--The current request-->
+    <parameters name="CurrentRequest" type="com.intershop.beehive.core.capi.request.Request"/>
+<!--The current domain-->
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+<!--The current user-->
+    <parameters name="CurrentUser" type="com.intershop.beehive.core.capi.user.User"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="OK" next="KeyMapper12"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <startNode referencedName="ProcessOrganization-GetOrganization"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper12">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO2"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="UserBORepository"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO2">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper13"/>
+    <parameterBindings name="UserID" objectPath="CurrentUser:ID"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper13">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 3,12-->
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <parameterBindings name="InValue_1" objectPath="UserBO:Extension(&quot;Wishlist&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="WishlistBORepository"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" strict="true">
+<!--Repository for Wishlist-->
+    <returnValues name="WishlistBORepository" type="com.intershop.component.wishlist.capi.WishlistBORepository"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<table cellpadding="0" cellspacing="0" class="pattern">
+	<tr class="mobileTable">
+		<td width="600">
+			<table cellpadding="0" cellspacing="0" width="100%" class="dataList">
+				<tr>
+					<td>
+						<istext key="#'email.pending_order_confirmation.id_of_'.BasketType.'.label'#" />
+					</td>
+					<td>
+					<isif condition="#BasketType EQ 'subscription'#">
+						<isprint value="#BasketBO:RecurringOrderDocumentNo#" />
+					<iselse>
+						<isprint value="#BasketBO:RequisitionDocumentNo#" />
+					</isif>
+					</td>
+				</tr>
+				<isif condition="#ShowCreationDate EQ 'true'#">
+					<tr>
+						<td>
+							<istext key="email.reject_order.order_date.label" />
+						</td>
+						<td>
+							<isprint value="#BasketBO:CreationDate#">
+						</td>
+					</tr>
+				</isif>
+				<tr>
+					<td>
+						<istext key="#'email.pending_order_confirmation.'.BasketType.'_total.label'#" />
+					</td>
+					<td>
+						<isif condition="#NOT isDefined(PriceDisplayTypeName)#">
+							<isset name="PriceDisplayTypeName" value="#BasketBO:PriceDisplayTypeName#" scope="request">
+						</isif>
+						<isprint value="#BasketBO:GrandTotalGross#">
+					</td>
+				</tr>
+				<isif condition="#ShowBuyer EQ 'true'#">
+					<tr>
+						<td>
+							<istext key="email.order_approval.purchaser.label" />
+						</td>
+						<td>
+							<isprint value="#BasketBO:UserBO:FirstName#">&nbsp;<isprint value="#BasketBO:UserBO:LastName#">
+						</td>
+					</tr>
+				</isif>
+				<isinclude extensionpoint="OrderAdditionalInfo"/>
+			</table>
+		</td>
+	</tr>
+</table>

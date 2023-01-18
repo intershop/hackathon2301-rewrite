@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="interface.page.standard.pagelet2">
+  <callParameterInterfaces name="Interface">
+    <callParameterDefinitions name="MetaTagsMap" type="java.util.HashMap" optional="true"/>
+    <callParameterDefinitions name="ConTitle" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="ConDescription" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="ConKeywords" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="PartnerUUID" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="ProgramUUID" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="HRefLangList" type="java.util.Collection" optional="true"/>
+  </callParameterInterfaces>
+</pagelet:PageletModel>

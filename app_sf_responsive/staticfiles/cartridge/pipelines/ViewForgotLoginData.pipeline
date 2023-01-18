@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group User-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewForgotLoginData" type="view">
+<!--@Location 20,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode14" strict="true" name="CheckPasswordReminderConfiguration"
+      callMode="Private">
+    <nodeSuccessors name="next" next="KeyMapper_lrOGUC5xEeitpJQkP-uSWw"/>
+    <parameters name="Configuration" type="com.intershop.beehive.configuration.capi.common.Configuration"/>
+  </nodes>
+<!--@Location 20,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_lrOGUC5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode7"/>
+    <parameterBindings name="InValue_1" objectPath="Configuration:Integer(&quot;PasswordReminderLinkLifeTime&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="PasswordReminderLinkLifeTime"/>
+  </nodes>
+<!--@Location 20,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="PasswordReminderLinkLifeTime">
+    <nodeSuccessors name="decision_yes" next="KeyMapper_mkepkC5xEeitpJQkP-uSWw"/>
+<!--@BendPoints 43,7-->
+    <nodeSuccessors name="decision_no" next="JoinNode14"/>
+  </nodes>
+<!--@Location 20,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_mkepkC5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CheckForEmptyString_nIbrMC5xEeitpJQkP-uSWw"/>
+    <parameterBindings name="InValue_1" objectPath="Configuration:String(&quot;PasswordReminderEmailFrom&quot;)"/>
+    <parameterBindings name="InValue_2" objectPath="Configuration:String(&quot;PasswordReminderEmailSubject&quot;)"/>
+    <parameterBindings name="InValue_3" objectPath="Configuration:String(&quot;PasswordReminderEmailTemplate&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="PasswordReminderEmailFrom"/>
+    <returnValueBindings name="OutValue_2" objectPath="PasswordReminderEmailSubject"/>
+    <returnValueBindings name="OutValue_3" objectPath="PasswordReminderEmailTemplate"/>
+  </nodes>
+<!--@Location 20,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckForEmptyString_nIbrMC5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/CheckForEmptyString.xml"/>
+    <nodeSuccessors name="next" next="CheckForEmptyString_n01eMC5xEeitpJQkP-uSWw"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode14"/>
+    <parameterBindings name="FilledString" objectPath="PasswordReminderEmailFrom"/>
+  </nodes>
+<!--@Location 20,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckForEmptyString_n01eMC5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/CheckForEmptyString.xml"/>
+    <nodeSuccessors name="next" next="CheckForEmptyString_orjq0C5xEeitpJQkP-uSWw"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode15"/>
+    <parameterBindings name="FilledString" objectPath="PasswordReminderEmailSubject"/>
+  </nodes>
+<!--@Location 20,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckForEmptyString_orjq0C5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/CheckForEmptyString.xml"/>
+    <nodeSuccessors name="next" next="EndNode8"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode16"/>
+    <parameterBindings name="FilledString" objectPath="PasswordReminderEmailTemplate"/>
+  </nodes>
+<!--@Location 20,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode8" strict="true"/>
+<!--@Location 21,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode16">
+    <nodeSuccessors name="next" next="KeyMapper_pZ4JYC5xEeitpJQkP-uSWw"/>
+  </nodes>
+<!--@Location 21,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_pZ4JYC5xEeitpJQkP-uSWw">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="EndNode7"/>
+    <parameterBindings name="InValue_1" constant="InvalidPasswordReminderPreferences"/>
+    <returnValueBindings name="OutValue_1" objectPath="ERROR_PasswordReminder"/>
+  </nodes>
+<!--@Location 21,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode7" name="ERROR" strict="true">
+<!--Return error if the password reminder is not valid-->
+    <returnValues name="ERROR_PasswordReminder" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 21,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode15">
+    <nodeSuccessors name="next" next="JoinNode16"/>
+  </nodes>
+<!--@Location 21,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode14">
+    <nodeSuccessors name="next" next="JoinNode15"/>
+  </nodes>
+<!--@depricated \- use CheckPasswordReminderConfiguration
+@Location 18,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode10" strict="true" name="CheckPasswordReminderPreferences"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode10"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+  </nodes>
+<!--@Location 18,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="EndNode5"/>
+    <nodeSuccessors name="ERROR" next="EndNode4"/>
+    <parameterBindings name="Configuration" objectPath="ApplicationBO:Configuration"/>
+    <startNode referencedName="This:CheckPasswordReminderConfiguration"/>
+  </nodes>
+<!--@Location 19,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" strict="true"/>
+<!--@Location 18,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4" name="ERROR" strict="true">
+<!--Return error if the password reminder is not valid-->
+    <returnValues name="ERROR_PasswordReminder" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Dispatch">
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="next" next="DispatchFormAction_VALFUC5xEeitpJQkP-uSWw"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction_VALFUC5xEeitpJQkP-uSWw">
+    <configurationValues name="OutValue_0" value="ViewForgotLoginData-Step2"/>
+    <configurationValues name="OutValue_1" value="ViewForgotLoginData-SendPassword"/>
+    <configurationValues name="OutValue_2" value="ViewForgotLoginData-UpdatePassword"/>
+    <configurationValues name="OutValue_3" value="ViewForgotLoginData-Step2UseSimpleAccount"/>
+    <pipelet href="enfinity:/core/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 3,6-->
+    <nodeSuccessors name="next" next="Jump1"/>
+<!--@BendPoints 7,5 7,6-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode1"/>
+    <parameterBindings name="Key_0" objectPath="Step2"/>
+    <parameterBindings name="Key_1" objectPath="SendPassword"/>
+    <parameterBindings name="Key_2" objectPath="UpdatePassword"/>
+    <parameterBindings name="Key_3" objectPath="Step2UseSimpleAccount"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewForgotLoginData-ForgotPassword"/>
+  </nodes>
+<!--@Location 16,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode11" name="Error" callMode="Private">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate5_Input"/>
+  </nodes>
+<!--@Location 16,3-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate5">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.newPassword.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/forgotlogindata/ErrorPasswordReminder.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@displayNearNode@Step1
+entry point for forgot password feature
+@Location 10,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="ForgotPassword">
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 10,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordForm"/>
+  </nodes>
+<!--@Location 10,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JoinNode10"/>
+  </nodes>
+<!--@Location 10,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 10,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+  </nodes>
+<!--@Location 10,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate3_Input"/>
+  </nodes>
+<!--@Location 10,9-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate3">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.newPassword.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/forgotlogindata/ForgotPasswordStep1.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 18,10-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode12" visibility="Private" name="GetForgotPasswordForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode19"/>
+  </nodes>
+<!--@Location 18,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode19">
+    <nodeSuccessors name="next" next="CallNode20"/>
+<!--@BendPoints 39,24-->
+    <nodeSuccessors name="YES" next="CallNode21"/>
+    <startNode referencedName="ProcessUserAccount-CheckUseSimpleAccount"/>
+  </nodes>
+<!--@Location 18,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode20">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordFormStep1"/>
+  </nodes>
+<!--@Location 18,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="EndNode6"/>
+  </nodes>
+<!--@Location 18,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode6"/>
+<!--@Location 19,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode21">
+    <nodeSuccessors name="next" next="SetDictionaryValue_jbxzQC5xEeitpJQkP-uSWw"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordFormStep1SimpleRegistration"/>
+  </nodes>
+<!--@Location 19,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_jbxzQC5xEeitpJQkP-uSWw">
+    <configurationValues name="Name" value="UseSimpleAccount"/>
+    <configurationValues name="Value" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 38,29-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" strict="true" name="GetForgotPasswordFormStep1"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 2,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+<!--@BendPoints 7,22-->
+    <nodeSuccessors name="next" next="CreateForm3"/>
+<!--@BendPoints 3,22-->
+    <nodeSuccessors name="LOGINISEMAIL" next="CreateForm2"/>
+    <startNode referencedName="ProcessUser-GetLoginType"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm3">
+    <configurationValues name="FormName" value="ForgotPasswordStep1Username"/>
+    <configurationValues name="FormResource" value="ForgotPassword"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 7,24-->
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <returnValueBindings name="Form" objectPath="ForgotPasswordFormStep1"/>
+  </nodes>
+<!--@Location 2,12-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" strict="true">
+    <returnValues name="ForgotPasswordFormStep1" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm2">
+    <configurationValues name="FormName" value="ForgotPasswordStep1Email"/>
+    <configurationValues name="FormResource" value="ForgotPassword"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 3,24-->
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <returnValueBindings name="Form" objectPath="ForgotPasswordFormStep1"/>
+  </nodes>
+<!--@Location 2,13-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="GetForgotPasswordFormStep1SimpleRegistration"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode11"/>
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 2,14-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+<!--@BendPoints 7,30-->
+    <nodeSuccessors name="next" next="CreateForm0"/>
+<!--@BendPoints 3,30-->
+    <nodeSuccessors name="LOGINISEMAIL" next="CreateForm5"/>
+    <startNode referencedName="ProcessUser-GetLoginType"/>
+  </nodes>
+<!--@Location 3,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm0">
+    <configurationValues name="FormName" value="ForgotPasswordStep1UsernameSimpleRegistration"/>
+    <configurationValues name="FormResource" value="ForgotPassword"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 7,32-->
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <returnValueBindings name="Form" objectPath="ForgotPasswordFormStep1"/>
+  </nodes>
+<!--@Location 2,16-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="ForgotPasswordFormStep1" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 1,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm5">
+    <configurationValues name="FormName" value="ForgotPasswordStep1EmailSimpleRegistration"/>
+    <configurationValues name="FormResource" value="ForgotPassword"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 3,32-->
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <returnValueBindings name="Form" objectPath="ForgotPasswordFormStep1"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" strict="true" name="GetForgotPasswordFormStep2"
+      callMode="Private">
+<!--@BendPoints 3,14-->
+    <nodeSuccessors name="next" next="CreateForm4"/>
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm4">
+    <configurationValues name="FormName" value="ForgotPasswordStep2"/>
+    <configurationValues name="FormResource" value="ForgotPassword"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+<!--@BendPoints 3,16-->
+    <nodeSuccessors name="next" next="EndNode1"/>
+    <returnValueBindings name="Form" objectPath="ForgotPasswordFormStep2"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="ForgotPasswordFormStep2" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 6,14-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_8MZ_YLBGEeim07DSWxOUHA" visibility="Private"
+      name="GetHashAndUidFromSession" callMode="Private">
+    <nodeSuccessors name="next" next="ExchangeSessionObject_8MT4wLBGEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 6,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExchangeSessionObject_8MT4wLBGEeim07DSWxOUHA">
+    <configurationValues name="ProcessMethod" value="Get Object from Session"/>
+    <pipelet href="enfinity:/core/pipelets/ExchangeSessionObject.xml"/>
+    <nodeSuccessors name="next" next="CheckForEmptyString_8MKHwLBGEeim07DSWxOUHA"/>
+<!--@BendPoints 14,31 14,35-->
+    <nodeSuccessors name="pipelet_error" next="ExchangeSessionObject_8MPnULBGEeim07DSWxOUHA"/>
+    <parameterBindings name="SessionObjectName" constant="uid"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+    <returnValueBindings name="LoadObject" objectPath="uid"/>
+  </nodes>
+<!--@Location 6,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckForEmptyString_8MKHwLBGEeim07DSWxOUHA">
+    <pipelet href="enfinity:/core/pipelets/CheckForEmptyString.xml"/>
+    <nodeSuccessors name="next" next="ExchangeSessionObject_8MPnULBGEeim07DSWxOUHA"/>
+<!--@BendPoints 14,33 14,31 14,35 15,37-->
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue_Tzas8LBHEeim07DSWxOUHA"/>
+    <parameterBindings name="FilledString" objectPath="uid"/>
+  </nodes>
+<!--@Location 6,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExchangeSessionObject_8MPnULBGEeim07DSWxOUHA">
+    <configurationValues name="ProcessMethod" value="Get Object from Session"/>
+    <pipelet href="enfinity:/core/pipelets/ExchangeSessionObject.xml"/>
+    <nodeSuccessors name="next" next="CheckForEmptyString_cDbbULBHEeim07DSWxOUHA"/>
+    <parameterBindings name="SessionObjectName" constant="TokenHash"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+    <returnValueBindings name="LoadObject" objectPath="TokenHash"/>
+  </nodes>
+<!--@Location 6,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckForEmptyString_cDbbULBHEeim07DSWxOUHA">
+    <pipelet href="enfinity:/core/pipelets/CheckForEmptyString.xml"/>
+    <nodeSuccessors name="next" next="EndNode_l50RoLBHEeim07DSWxOUHA"/>
+<!--@BendPoints 15,37-->
+    <nodeSuccessors name="pipelet_error" next="SetDictionaryValue_Tzas8LBHEeim07DSWxOUHA"/>
+    <parameterBindings name="FilledString" objectPath="TokenHash"/>
+  </nodes>
+<!--@Location 6,19-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_l50RoLBHEeim07DSWxOUHA"/>
+<!--@Location 7,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_Tzas8LBHEeim07DSWxOUHA">
+    <configurationValues name="Name" value="ERROR_User"/>
+    <configurationValues name="Value" value="ERROR_Consumer_Disabled"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JumpNode_YNQbALBHEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 7,20-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode_YNQbALBHEeim07DSWxOUHA">
+    <startNode referencedName="ViewForgotLoginData-Error"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode13" strict="true" name="GetNewPasswordForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CreateForm1"/>
+    <parameters name="CurrentDomain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm1">
+    <configurationValues name="FormName" value="NewPassword"/>
+    <configurationValues name="FormResource" value="NewPassword"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="EndNode3"/>
+    <returnValueBindings name="Form" objectPath="NewPasswordForm"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode3" strict="true">
+    <returnValues name="NewPasswordForm" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 15,\-2-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode8" name="NewPassword">
+    <nodeSuccessors name="next" next="DecisionNode_W-KaILDVEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 15,\-1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_W-KaILDVEeim07DSWxOUHA"
+      conditionKey="Hash">
+    <nodeSuccessors name="decision_yes" next="DecisionNode_ZhTFQLDVEeim07DSWxOUHA"/>
+<!--@BendPoints 32,\-1 32,1-->
+    <nodeSuccessors name="decision_no" next="CallNode_HhMQ4LBIEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 15,0-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_ZhTFQLDVEeim07DSWxOUHA"
+      conditionKey="uid">
+    <nodeSuccessors name="decision_yes" next="JumpNode_CKMmgLDWEeim07DSWxOUHA"/>
+    <nodeSuccessors name="decision_no" next="CallNode_HhMQ4LBIEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 14,0-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode_CKMmgLDWEeim07DSWxOUHA">
+    <startNode referencedName="ViewForgotLoginData-StoreHashAndUidInSessionAndRedirect"/>
+  </nodes>
+<!--@Location 15,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_HhMQ4LBIEeim07DSWxOUHA">
+    <nodeSuccessors name="next" next="CallNode13"/>
+    <startNode referencedName="ViewForgotLoginData-GetHashAndUidFromSession"/>
+  </nodes>
+<!--@Location 15,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode13">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <startNode referencedName="ViewForgotLoginData-GetNewPasswordForm"/>
+  </nodes>
+<!--@Location 15,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="GetUserBO2"/>
+  </nodes>
+<!--@Location 15,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO2">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <parameterBindings name="UserID" objectPath="uid"/>
+  </nodes>
+<!--@Location 15,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="UserBO:Disabled"
+      operator="str_neq" conditionValue="true">
+<!--@BendPoints 33,11-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode1"/>
+    <nodeSuccessors name="decision_no" next="JoinNode9"/>
+  </nodes>
+<!--@Location 16,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="UserBO:PasswordReminderExpired"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 33,17-->
+    <nodeSuccessors name="decision_yes" next="CallNode17"/>
+<!--@BendPoints 31,13-->
+    <nodeSuccessors name="decision_no" next="SetDictionaryValue_hgjcsC5xEeitpJQkP-uSWw"/>
+  </nodes>
+<!--@Location 15,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="KeyMapper_TR13oLBMEeim07DSWxOUHA"/>
+    <nodeSuccessors name="ERROR" next="JoinNode7"/>
+    <parameterBindings name="PasswordReminderHash" objectPath="TokenHash"/>
+    <startNode referencedName="ProcessUserForgotLoginData-VerifyPasswordReminderHash"/>
+  </nodes>
+<!--@Location 15,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_TR13oLBMEeim07DSWxOUHA">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode_NfzLELBNEeim07DSWxOUHA"/>
+    <parameterBindings name="InValue_1" objectPath="TokenHash"/>
+    <returnValueBindings name="OutValue_1" objectPath="Hash"/>
+  </nodes>
+<!--@Location 15,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_NfzLELBNEeim07DSWxOUHA">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate4_Input"/>
+    <startNode referencedName="ViewForgotLoginData-RemoveHashAndUidFromSession"/>
+  </nodes>
+<!--@Location 15,11-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate4">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.newPassword.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/forgotlogindata/NewPassword.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 14,8-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 14,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="DecisionNode_nAP1gIUWEeilb9fLYfuwGA"/>
+  </nodes>
+<!--@Location 14,11-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_nAP1gIUWEeilb9fLYfuwGA"
+      conditionKey="ViolatedRuleDescription">
+    <nodeSuccessors name="decision_no" next="JumpNode7"/>
+<!--@BendPoints 31,22-->
+    <nodeSuccessors name="decision_yes" next="RenderSystemPageWithTemplate4_Input"/>
+  </nodes>
+<!--@Location 14,12-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode7">
+    <startNode referencedName="ViewForgotLoginData-Error"/>
+  </nodes>
+<!--@Location 15,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_hgjcsC5xEeitpJQkP-uSWw">
+    <configurationValues name="Name" value="ERROR_User"/>
+    <configurationValues name="Value" value="ERROR_Consumer_PasswordTimeout"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 14,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+<!--@Location 14,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+    <nodeSuccessors name="next" next="SetDictionaryValue_gOmsoC5xEeitpJQkP-uSWw"/>
+  </nodes>
+<!--@Location 14,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_gOmsoC5xEeitpJQkP-uSWw">
+    <configurationValues name="Name" value="ERROR_User"/>
+    <configurationValues name="Value" value="ERROR_Consumer_Disabled"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 8,14-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_tK_m8LBMEeim07DSWxOUHA" visibility="Private"
+      name="RemoveHashAndUidFromSession" callMode="Private">
+    <nodeSuccessors name="next" next="ExchangeSessionObject_tKvIQLBMEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 8,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExchangeSessionObject_tKvIQLBMEeim07DSWxOUHA">
+    <configurationValues name="ProcessMethod" value="Put Object to Session"/>
+    <pipelet href="enfinity:/core/pipelets/ExchangeSessionObject.xml"/>
+    <nodeSuccessors name="next" next="ExchangeSessionObject_tKnMcLBMEeim07DSWxOUHA"/>
+    <nodeSuccessors name="pipelet_error" next="ExchangeSessionObject_tKnMcLBMEeim07DSWxOUHA"/>
+    <parameterBindings name="SaveObject" nullBinding="true"/>
+    <parameterBindings name="SessionObjectName" constant="uid"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+    <returnValueBindings name="LoadObject" objectPath="uid"/>
+  </nodes>
+<!--@Location 8,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExchangeSessionObject_tKnMcLBMEeim07DSWxOUHA">
+    <configurationValues name="ProcessMethod" value="Put Object to Session"/>
+    <pipelet href="enfinity:/core/pipelets/ExchangeSessionObject.xml"/>
+    <nodeSuccessors name="next" next="EndNode_tKiT8LBMEeim07DSWxOUHA"/>
+    <nodeSuccessors name="pipelet_error" next="EndNode_tKiT8LBMEeim07DSWxOUHA"/>
+    <parameterBindings name="SaveObject" nullBinding="true"/>
+    <parameterBindings name="SessionObjectName" constant="TokenHash"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+    <returnValueBindings name="LoadObject" objectPath="TokenHash"/>
+  </nodes>
+<!--@Location 8,17-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode_tKiT8LBMEeim07DSWxOUHA"/>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" name="SendPassword">
+    <nodeSuccessors name="next" next="CallNode5"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+<!--@BendPoints 13,12-->
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordFormStep2"/>
+  </nodes>
+<!--@Location 6,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO1"/>
+    <nodeSuccessors name="pipelet_error" next="GetUserBO0"/>
+    <parameterBindings name="Form" objectPath="ForgotPasswordFormStep2"/>
+  </nodes>
+<!--@Location 6,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO1">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+  </nodes>
+<!--@Location 6,9-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="KeyMapper_OGyc0IfXEeeqG66clpmtsw"/>
+    <nodeSuccessors name="ERROR" next="KeyMapper_Z_k-kC5xEeitpJQkP-uSWw"/>
+    <parameterBindings name="SecretAnswer" objectPath="ForgotPasswordFormStep2:Answer:Value"/>
+    <startNode referencedName="ProcessUserForgotLoginData-CheckAnswerOfSecretQuestion"/>
+  </nodes>
+<!--@Location 6,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_OGyc0IfXEeeqG66clpmtsw">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode18"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO"/>
+    <parameterBindings name="InValue_10" objectPath="ApplicationBO:DefaultCurrency"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetApplicationBO"/>
+    <returnValueBindings name="OutValue_10" objectPath="DefaultCurrency"/>
+  </nodes>
+<!--@Location 6,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode18">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <nodeSuccessors name="ERROR" next="JoinNode4"/>
+    <parameterBindings name="PasswordRelatedEmailFrom" objectPath="Repository:RepositoryDomain:Configuration:String(&quot;PasswordReminderEmailFrom&quot;)"/>
+    <parameterBindings name="PasswordRelatedEmailSubject" objectPath="Repository:RepositoryDomain:Configuration:String(&quot;PasswordReminderEmailSubject&quot;)"/>
+    <parameterBindings name="PasswordRelatedEmailTemplate" objectPath="Repository:RepositoryDomain:Configuration:String(&quot;PasswordReminderEmailTemplate&quot;)"/>
+    <parameterBindings name="PasswordRelatedLinkLifeTime" objectPath="Repository:RepositoryDomain:Configuration:Integer(&quot;PasswordReminderLinkLifeTime&quot;)"/>
+    <startNode referencedName="ProcessUserForgotLoginData-SendPasswordRemainderMail"/>
+  </nodes>
+<!--@Location 6,12-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.newPassword.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/forgotlogindata/SendPassword.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 8,11-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate1_Input"/>
+  </nodes>
+<!--@Location 8,12-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate1">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.newPassword.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/forgotlogindata/ForgotPasswordStep2.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 7,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_Z_k-kC5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="InValue_1" constant="ERROR_Answer"/>
+    <returnValueBindings name="OutValue_1" objectPath="ERROR_User"/>
+  </nodes>
+<!--@Location 7,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO0">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+  </nodes>
+<!--@displayNearNode@Step2
+security question
+@Location 8,\-1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="Step2">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 8,0-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="GetDomainPreference_SwKVwNO2EemCfMKF7Q3y2g"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordForm"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference_SwKVwNO2EemCfMKF7Q3y2g">
+    <configurationValues name="DefaultPreferenceKey" value="SecurityQuestionEnabled"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="ValidateForm2"/>
+    <parameterBindings name="PreferenceDomain" objectPath="Repository:Domain"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="SecurityQuestionEnabled"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm2">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="CallNode8"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="Form" objectPath="ForgotPasswordFormStep1"/>
+  </nodes>
+<!--@Location 8,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <nodeSuccessors name="ERROR" next="JoinNode10"/>
+    <parameterBindings name="Configuration" objectPath="Repository:RepositoryDomain:Configuration"/>
+    <startNode referencedName="ViewForgotLoginData-CheckPasswordReminderConfiguration"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <nodeSuccessors name="ERROR" next="JoinNode1"/>
+    <parameterBindings name="FirstName" objectPath="ForgotPasswordFormStep1:FirstName:Value"/>
+    <parameterBindings name="LastName" objectPath="ForgotPasswordFormStep1:LastName:Value"/>
+    <parameterBindings name="Login" objectPath="ForgotPasswordFormStep1:Login:FormattedValue"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <startNode referencedName="ProcessUserForgotLoginData-CheckValidUserExist"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="UserBO:SecurityQuestion">
+    <nodeSuccessors name="decision_yes" next="DecisionNode_e_jq0KLiEem-CNtSZbmccg"/>
+    <nodeSuccessors name="decision_no" next="KeyMapper_1ecYoIfXEeeqG66clpmtsw"/>
+  </nodes>
+<!--@Location 8,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_e_jq0KLiEem-CNtSZbmccg"
+      conditionKey="UserBO:SecurityQuestion" operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="CallNode16"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode_JqXZcNO3EemCfMKF7Q3y2g"/>
+  </nodes>
+<!--@Location 9,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate2_Input"/>
+    <nodeSuccessors name="ERROR" next="JoinNode3"/>
+    <parameterBindings name="PasswordRelatedEmailFrom" objectPath="Repository:RepositoryDomain:Configuration:String(&quot;PasswordReminderEmailFrom&quot;)"/>
+    <parameterBindings name="PasswordRelatedEmailSubject" objectPath="Repository:RepositoryDomain:Configuration:String(&quot;PasswordReminderEmailSubject&quot;)"/>
+    <parameterBindings name="PasswordRelatedEmailTemplate" objectPath="Repository:RepositoryDomain:Configuration:String(&quot;PasswordReminderEmailTemplate&quot;)"/>
+    <parameterBindings name="PasswordRelatedLinkLifeTime" objectPath="Repository:RepositoryDomain:Configuration:Integer(&quot;PasswordReminderLinkLifeTime&quot;)"/>
+    <startNode referencedName="ProcessUserForgotLoginData-SendPasswordRemainderMail"/>
+  </nodes>
+<!--@Location 9,11-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate2">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.newPassword.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/forgotlogindata/SendPassword.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 8,8-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_JqXZcNO3EemCfMKF7Q3y2g"
+      conditionKey="SecurityQuestionEnabled" operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="CallNode4"/>
+    <nodeSuccessors name="decision_no" next="CallNode16"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="AddValidateDefinition_SwOAINO2EemCfMKF7Q3y2g"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordFormStep2"/>
+  </nodes>
+<!--@Location 8,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddValidateDefinition_SwOAINO2EemCfMKF7Q3y2g">
+    <pipelet href="enfinity:/core/pipelets/AddValidateDefinition.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="Target" objectPath="ForgotPasswordStep2:Answer"/>
+    <parameterBindings name="Validator" constant="GlobalValidators-required"/>
+  </nodes>
+<!--@Location 9,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_1ecYoIfXEeeqG66clpmtsw">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode16"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO"/>
+    <returnValueBindings name="OutValue_1" objectPath="TargetApplicationBO"/>
+  </nodes>
+<!--@displayNearNode@Step2
+security question
+@Location 7,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" name="Step2UseSimpleAccount">
+    <nodeSuccessors name="next" next="CallNode15"/>
+  </nodes>
+<!--@Location 7,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+<!--@BendPoints 15,7-->
+    <nodeSuccessors name="next" next="ValidateForm2"/>
+    <startNode referencedName="ViewForgotLoginData-GetForgotPasswordForm"/>
+  </nodes>
+<!--@Location 10,14-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode_dc0AALAOEeivGtPRU7YsqA" visibility="Private"
+      name="StoreHashAndUidInSessionAndRedirect" callMode="Private">
+    <nodeSuccessors name="next" next="ExchangeSessionObject_x4udALAuEeim07DSWxOUHA"/>
+  </nodes>
+<!--@Location 10,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExchangeSessionObject_x4udALAuEeim07DSWxOUHA">
+    <configurationValues name="ProcessMethod" value="Put Object to Session"/>
+    <pipelet href="enfinity:/core/pipelets/ExchangeSessionObject.xml"/>
+    <nodeSuccessors name="next" next="ExchangeSessionObject_D3l2ULAvEeim07DSWxOUHA"/>
+    <parameterBindings name="SaveObject" objectPath="Hash"/>
+    <parameterBindings name="SessionObjectName" constant="TokenHash"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+  </nodes>
+<!--@Location 10,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ExchangeSessionObject_D3l2ULAvEeim07DSWxOUHA">
+    <configurationValues name="ProcessMethod" value="Put Object to Session"/>
+    <pipelet href="enfinity:/core/pipelets/ExchangeSessionObject.xml"/>
+    <nodeSuccessors name="next" next="JumpNode_EPRAYLA4Eeim07DSWxOUHA"/>
+    <parameterBindings name="SaveObject" objectPath="uid"/>
+    <parameterBindings name="SessionObjectName" constant="uid"/>
+    <parameterBindings name="TargetSession" objectPath="CurrentSession"/>
+  </nodes>
+<!--@Location 10,17-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode_EPRAYLA4Eeim07DSWxOUHA">
+    <parameterBindings name="Protocol" constant="https"/>
+    <parameterBindings name="TargetPipeline" constant="ViewForgotLoginData-NewPassword"/>
+    <startNode referencedName="Redirect-Start"/>
+  </nodes>
+<!--@Location 13,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode9" name="UpdatePassword">
+    <nodeSuccessors name="next" next="CallNode14"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="next" next="ValidateForm3"/>
+    <startNode referencedName="ViewForgotLoginData-GetNewPasswordForm"/>
+  </nodes>
+<!--@Location 13,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm3">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="GetUserBO3"/>
+<!--@BendPoints 28,7-->
+    <nodeSuccessors name="pipelet_error" next="KeyMapper_fJe3oC5xEeitpJQkP-uSWw"/>
+    <parameterBindings name="Form" objectPath="NewPasswordForm"/>
+  </nodes>
+<!--@Location 13,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetUserBO3">
+    <pipelet href="enfinity:/bc_user/pipelets/GetUserBO.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode4"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+  </nodes>
+<!--@Location 13,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="UserBO:Disabled"
+      operator="str_neq" conditionValue="true">
+<!--@BendPoints 25,11-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode5"/>
+    <nodeSuccessors name="decision_no" next="JoinNode9"/>
+  </nodes>
+<!--@Location 12,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="UserBO:PasswordReminderExpired"
+      operator="str_eq" conditionValue="true">
+<!--@BendPoints 25,17-->
+    <nodeSuccessors name="decision_yes" next="CallNode7"/>
+<!--@BendPoints 27,13-->
+    <nodeSuccessors name="decision_no" next="SetDictionaryValue_g4G8oC5xEeitpJQkP-uSWw"/>
+  </nodes>
+<!--@Location 13,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="CallNode9"/>
+    <nodeSuccessors name="ERROR" next="JoinNode7"/>
+    <parameterBindings name="PasswordReminderHash" objectPath="Hash"/>
+    <startNode referencedName="ProcessUserForgotLoginData-VerifyPasswordReminderHash"/>
+  </nodes>
+<!--@Location 13,9-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="JumpNode9"/>
+    <nodeSuccessors name="ERROR" next="JoinNode6"/>
+    <parameterBindings name="NewPassword" objectPath="NewPasswordForm:Password:Value"/>
+    <startNode referencedName="ProcessUserForgotLoginData-UpdateForgottenPassword"/>
+  </nodes>
+<!--@Location 13,12-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode9">
+    <startNode referencedName="ViewHomepage-Start"/>
+  </nodes>
+<!--@Location 13,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue_g4G8oC5xEeitpJQkP-uSWw">
+    <configurationValues name="Name" value="ERROR_User"/>
+    <configurationValues name="Value" value="ERROR_Consumer_PasswordTimeout"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 14,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_fJe3oC5xEeitpJQkP-uSWw">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode5"/>
+    <parameterBindings name="InValue_1" objectPath="UserID"/>
+    <returnValueBindings name="OutValue_1" objectPath="uid"/>
+  </nodes>
+</pipeline:Pipeline>

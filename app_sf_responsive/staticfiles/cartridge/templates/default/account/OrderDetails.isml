@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb 
+		link="#URL(Action('ViewOrders-SimpleOrderSearch'))#"
+		text="#localizeText('account.order_history.link')#"
+		trailtext="#localizeTextEx('account.orderdetails.breadcrumb', ParameterList(OrderBO:DocumentNo))#"
+	>
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="order-details-page">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="ORDERS">
+		</div>
+		
+		<div class="col-md-9">
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			
+			<!--- Orders list --->
+			<isinclude template="account/orders/OrderDetails">
+
+			<div class="section">
+				<a href="#URL(Action('ViewOrders-SimpleOrderSearch'))#">
+					<istext key="account.orderdetails.links.return_to_orders"/>
+				</a>
+				<a class="pull-right" href="#URLEX(InsecureURL,'', Action('ViewHomepage-Start'))#">
+					<istext key="account.orderdetails.links.continue_shopping"/>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+

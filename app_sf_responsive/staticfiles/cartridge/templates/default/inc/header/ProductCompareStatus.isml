@@ -1,0 +1,8 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<a class="compare-status" href="#URL(Action('ViewProductCompare-Show'))#" rel="nofollow">
+	<span class="glyphicon-equalizer glyphicon glyphicon-header-icon"></span>
+	<span class="compare-count-text" data-ajax-content="#URL(Action('ViewProductCompare-Status'))#">
+		<span class="hidden-xs"><istext key="product.compare.link" /></span>
+	</span>
+</a>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<components xmlns="http://www.intershop.de/component/2010">
+	<contract name="CategoryPageletEntryPointLookupStrategy" class="com.intershop.sellside.storefront.base.capi.lookup.PageletEntryPointLookupStrategy" />
+	<contract name="ProductPageletEntryPointLookupStrategy" class="com.intershop.sellside.storefront.base.capi.lookup.PageletEntryPointLookupStrategy" />
+	<contract name="CheckoutDispatcher" class="com.intershop.application.responsive.capi.checkout.CheckoutDispatcher" />
+	<contract name="DispatchEntry" class="com.intershop.application.responsive.capi.checkout.DispatchEntry" />
+</components>

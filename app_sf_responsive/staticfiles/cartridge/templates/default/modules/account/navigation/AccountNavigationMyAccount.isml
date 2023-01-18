@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<li class="<isif condition="#selecteditem EQ 'OVERVIEW'#">active</isif>">
+	<a href="#URL(Action('ViewUserAccount-Start'))#"><istext key="account.my_account.link"/></a>
+</li>

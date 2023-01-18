@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:webform="http://www.intershop.de/webform/2010" xmlns:core="http://www.intershop.de/core/2010" name="WishlistPropertiesForm">
+  <forms name="WishlistPropertiesForm">
+    <parameters xsi:type="webform:FormParameter" name="WishlistName" type="java.lang.String">
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentOrganization:OwningDomain"/>
+      </validatorBindings>
+	  <validatorBindings validator="GlobalValidators-maxlength">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="maxLength" value="35"/>
+      </validatorBindings>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Public" type="java.lang.Boolean"/>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="Preferred" type="java.lang.Boolean"/>
+  </forms>
+</webform:WebForm>

@@ -1,0 +1,55 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- Order Creation --->
+<isif condition = "#isDefined(basketValidationResults)#">
+	<ispipeline pipeline="ViewCheckout-CalculateCodesNotToBeShown" alias="dict" params="#ParamMap(ParamEntry('BasketValidationResults', basketValidationResults))#" />
+	<isset name="codesNotToBeShown" value="#dict:CodesNotToBeShown#" scope="request">
+</isif>
+<isset name="ShowAllCodes" value="#(NOT isDefined(codesNotToBeShown)) OR (NOT hasElements(codesNotToBeShown))#" scope="request">
+<isif condition="#isDefined(orderCreationResult)#">
+	<isif condition="#hasElements(orderCreationResult:Failures)#">
+		<isif condition="#(ShowAllCodes) OR (isDefined(codesNotToBeShown) AND (NOT codesNotToBeShown:ContainsAll(orderCreationResult:Failures)))#">
+			<ul class="list-unstyled alert alert-danger">
+				<isloop iterator="orderCreationResult:Failures" alias="Failure">
+					<isif condition="#(ShowAllCodes) OR (isDefined(codesNotToBeShown) AND (NOT codesNotToBeShown:Contains(Failure)))#">
+						<li>
+							<isif condition="#(ShowAllCodes) OR (isDefined(orderCreationResult:HandlerResultByFailureCode(Failure)))#">
+								<isif condition="#hasElements(orderCreationResult:HandlerResultByFailureCode(Failure):Parameter("ValidationFailureResults"))#">
+									<isloop iterator="orderCreationResult:HandlerResultByFailureCode(Failure):Parameter('ValidationFailureResults')" alias="validationResult">
+										<isif condition="#validationResult:FailureCode eq Failure#">
+											<isset name="parameter0" value="#validationResult:getParameter("parameter0")#" scope="request">
+											<isset name="parameter1" value="#validationResult:getParameter("parameter1")#" scope="request">	
+										</isif>
+									</isloop>
+								</isif>
+								<istext key="#'checkout.error.'.Failure#" encoding="off"
+										parameter0="#parameter0#" 
+										parameter1="#parameter1#">
+								<isif condition="#hasElements(orderCreationResult:HandlerResultByFailureCode(Failure):Parameter("AuthorizationFailed"))#">
+									<isloop iterator="orderCreationResult:HandlerResultByFailureCode(Failure):Parameter('AuthorizationFailed')" alias="authorizationMessage">
+										<br>
+										<isprint value="#authorizationMessage:Message#"/>
+									</isloop>
+								</isif>
+							</isif>
+						</li>
+					</isif>
+				</isloop>
+			</ul>
+		</isif>
+	</isif>
+	
+	<isif condition="#hasElements(orderCreationResult:Warnings)#">	
+		<isif condition="#(ShowAllCodes) OR (isDefined(codesNotToBeShown) AND (NOT codesNotToBeShown:ContainsAll(orderCreationResult:Warnings)))#">
+			<ul class="list-unstyled alert alert-warning">
+				<isloop iterator="orderCreationResult:Warnings" alias="Warning">
+					<isif condition="#(ShowAllCodes) OR (isDefined(codesNotToBeShown) AND (NOT codesNotToBeShown:Contains(Warning)))#">
+						<li>
+							<istext key="#'checkout.warning.'.Warning#">
+						</li>
+					</isif>
+				</isloop>
+			</ul>
+		</isif>
+	</isif>
+</isif>

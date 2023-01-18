@@ -1,0 +1,22 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#CurrentSession:isLoggedIn#">
+	<iscache type="forbidden" />
+	<isif condition="#isDefined(UserBO:Extension("Wishlist"):PreferredWishlistBO) AND (UserBO:Extension("Wishlist"):PreferredWishlistBO:WishlistItemBOsCount > 0)#">
+		<a href="#URLEX(SecureURL,'',Action('ViewWishlist-View'),Parameter('WishlistID',UserBO:Extension("Wishlist"):PreferredWishlistBO:ID))#" class="wishlist-count">
+			<span class="glyphicon-heart glyphicon glyphicon-header-icon"></span>
+			<span class="wishlist-count-text"><span><istext key="header.wishlists_count.text"/></span><div id="preferred-wishlist-counter"><isprint value="#UserBO:Extension("Wishlist"):PreferredWishlistBO:WishlistItemBOsCount#"></div></span>
+		</a>
+	<iselse>
+		<a href="#URLEX(SecureURL,'',Action('ViewWishlist-ViewAll'))#" class="">
+			<span class="glyphicon-heart glyphicon glyphicon-header-icon"></span>
+			<span class="hidden-xs"><istext key="header.wishlists.text"/></span>
+		</a>
+	</isif>
+<iselse>
+	<a href="#URLEX(SecureURL,'',Action('ViewUserAccount-ShowLogin'), Parameter('TargetPipeline', 'ViewWishlist-ViewAll'))#" class="" rel="nofollow">
+		<span class="glyphicon-heart glyphicon glyphicon-header-icon"></span>
+		<span class="hidden-xs"><istext key="header.wishlists.text"/></span>
+	</a>
+</isif>
+

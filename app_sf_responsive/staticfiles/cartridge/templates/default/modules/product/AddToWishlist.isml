@@ -1,0 +1,49 @@
+<iscontent charset="UTF-8" type="text/html" compact="true">
+
+<isif condition="#isDefined(class) AND (class NE '')#">
+	<isset name="CssClass" value="#class#" scope="request"/>
+<iselse>
+	<isset name="CssClass" value="btn-link" scope="request"/>
+</isif>
+
+<isif condition="#(NOT (isDefined(ProductBO:ServiceTypeBO) AND ProductBO:ServiceTypeBO:DigitalGiftCard)) AND (NOT (ProductBO:isEndOfLife))#">
+	<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+	<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+	<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+	<isset name="salePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request"/>
+	
+	<isif condition="#isDefined(salePrice) AND NOT(ProductBO:OrderableAsDependentOnly)#">
+		<button type="submit" class="btn add-to-wishlist <isprint value="#CssClass#"/>"
+			data-url-fragment-navigation="add-to-wishlist_<isprint value="#ProductBO:SKU#"/>"
+			rel="nofollow"
+			name="addToWishlistProduct"
+			<isprint value="#DataAttributes#">
+			data-dialog
+			data-dialog-action="#URL(Action('ViewWishlist-AddItems'),
+									Parameter('AjaxRequestMarker', 'true'),
+									Parameter('TargetPipelineAfterLogin', 'ViewProduct-Start'),
+									Parameter('Parameter1_Name', 'LoginToUse'),
+									Parameter('Parameter1_Value', 'wishlists'),
+									Parameter('Parameter2_Name', 'TargetPipeline'),
+									Parameter('Parameter2_Value', 'ViewProduct-Start'),
+									Parameter('Parameter3_Name', 'Parameter1_Name'),
+									Parameter('Parameter3_Value', 'SKU'),
+									Parameter('Parameter4_Name', 'Parameter1_Value'),
+									Parameter('Parameter4_Value', ProductBO:SKU),
+									Parameter('Parameter5_Name', 'TargetURLFragment'),
+									Parameter('Parameter5_Value', 'add-to-wishlist_'.ProductBO:SKU)
+								)#"
+			data-testing-class="button-addToWishlistProduct"
+			title="<istext key="product.add_to_wishlist.link" />"
+		>
+			<isif condition="#DisplayType EQ 'glyphicon'#">
+				<span class="glyphicon glyphicon-heart"></span>
+			<iselseif condition="#DisplayType EQ 'share-tool'#">
+				<span class="glyphicon glyphicon-heart"></span>
+				<span class="share-label"><istext key="product.add_to_wishlist.link" /></span>
+			<iselse>
+				<istext key="product.add_to_wishlist.link" />
+			</isif>
+		</button>
+	</isif>
+</isif>

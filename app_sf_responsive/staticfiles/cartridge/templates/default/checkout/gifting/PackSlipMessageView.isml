@@ -1,0 +1,31 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(Bucket:PackSlipMessage) AND (PackSlipMessage_Switch EQ 'true')#">
+	<div class="section">
+		<h3><istext key="checkout.pack_slip.header" />&nbsp;
+			<isif condition="#isDefined(CurrentStep) AND (CurrentStep EQ '4')#"><a data-csrf-guarded href="#URL(Action('ViewCheckoutShipping-Review'), parameter('BID',Bucket:ID))#"  title="<istext key="checkout.pack_slip.link.edit"/>" class="btn-tool"><span class="glyphicon glyphicon-pencil"></a></isif>
+		</h3>
+		
+		<isif condition="#trim(Bucket:PackSlipMessage:Message:To) NE ''#">
+			<div class="row">
+				<label class="col-xs-2 col-sm-1"><istext key="checkout.pack_slip.to" /></label>
+				<span class="col-xs-10 col-sm-11"><isprint value="#Bucket:PackSlipMessage:Message:To#" /></span>
+			</div>
+		</isif>
+	
+		<isif condition="#trim(Bucket:PackSlipMessage:Message:From) NE ''#">
+			<div class="row">
+				<label class="col-xs-2 col-sm-1"><istext key="checkout.pack_slip.from" /></label>
+				<span class="col-xs-10 col-sm-11"><isprint value="#Bucket:PackSlipMessage:Message:From#" /></span>
+			</div>
+		</isif>
+
+		<isif condition="#trim(Bucket:PackSlipMessage:Message:Message) NE ''#">
+			<div class="row">
+				<div class="col-xs-12">
+					<isprint value="#Bucket:PackSlipMessage:Message:Message#" encoding="nl2br,html"/>
+				</div>
+			</div>
+		</isif>
+	</div>
+</isif>

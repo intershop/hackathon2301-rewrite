@@ -1,0 +1,11 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div class="infobox" data-testing-id='address-slot-invoice-to-address'>
+	<a class="pull-right btn-tool" href="#URL(Action('ViewCheckoutAddressBook-EditAddress'), Parameter('AddressID',CurrentCartBO:InvoiceToAddressBO:URN))#" title="<istext key="checkout.address.update.label" />">
+		<span class="glyphicon glyphicon-pencil"></span>
+	</a>
+	<h3><istext key="checkout.widget.billing-address.heading" /></h3>
+
+	<isaddress address="#CurrentCartBO:InvoiceToAddressBO#" showemail="#NOT(CurrentSession:LoggedIn)#">
+	
+</div>

@@ -1,0 +1,18 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#ProductBO:isProductMaster#">
+	<isset name="productMaster" value="#ProductBO#" scope="request" >
+<iselseif condition="#ProductBO:isMastered#">
+	<isset name="productMaster" value="#ProductBO:ProductBOMaster#" scope="request" >
+</isif>
+<select class="variation-attribute form-control"
+	id="ID_VariationProduct_<isprint value="#ProductBO:ID#"/>"
+	name="VariationAttribute_VariationProduct"
+	data-variation-attribute="VariationProduct"
+	aria-required="true" 
+	data-validate="required"
+>
+	<isloop iterator="productMaster:MasteredProducts" alias="VariationProduct"> 
+		<option value="<isprint value="#VariationProduct:ID#">" <isif condition="#VariationProduct:ID EQ ProductBO:ID#">selected="selected"</isif> ><isprint value="#VariationProduct:ShortDescription#"> - <isprint value="#VariationProduct:Name#"><isif condition="#isDefined(VariationProduct) AND NOT(VariationProduct:Available)#"> <istext key="product.variation.not_available.text" /></isif>
+	</isloop>
+</select>

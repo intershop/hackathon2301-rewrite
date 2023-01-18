@@ -1,0 +1,14 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#RecurringBasket:Recurring#">	
+	<div class="col-sm-6">
+		<div class="infobox" data-testing-id="recurring-information-info">
+			<h3><istext key="subscription.title"/></h3>
+			
+			<!--- displays the subscription detail information --->
+			<div class="row">
+				<isSubscriptionDisplay recurrenceinformation="#RecurringBasket:RecurrenceInformation#">
+			</div>
+		</div>
+	</div>	
+</isif>

@@ -1,0 +1,30 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+
+<div class="section">
+	<isif condition="#hasElements(SortedOrders)#">
+		<div class="list-header">
+			<div class="list-header-item col-sm-2"><istext key="account.orderlist.table.date_of_order"/></div>
+			<div class="list-header-item col-sm-3"><istext key="account.orderlist.table.order_number"/></div>
+			<div class="list-header-item col-sm-2"><istext key="account.orderlist.table.items"/></div>
+			<div class="list-header-item col-sm-1"><istext key="account.orderlist.table.order_status"/></div>
+			<div class="list-header-item col-sm-3 column-price"><istext key="account.orderlist.table.order_total"/></div>
+			<div class="list-header-item col-sm-1">&nbsp;</div>
+		</div>
+		<div class="list-body">
+			<isloop iterator="SortedOrders" alias="OrderBO">
+				<isOrderHistoryItem 
+					OrderBO="#OrderBO#" 
+					showOrderNumber="true" orderNumberColumnWith="3" 
+					showNumberOfItems="true" numberOfItemsColumnWith="2" 
+					showOrderStatus="true"
+				>
+			</isloop>
+		</div>
+		
+	<iselse>
+		<p><istext key="account.orderlist.no_orders_message" parameter0="#Repository:DisplayName#"/></p>
+	</isif>
+	
+
+	<a href="#URL(Action('ViewOrders-SimpleOrderSearch'))#"><istext key="account.order.view_all_order.link"/></a>
+</div>

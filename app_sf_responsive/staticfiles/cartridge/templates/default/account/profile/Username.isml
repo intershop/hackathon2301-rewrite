@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="Preferences" value="#UserBO:Extension("UserBOPreferencesExtension")#" scope="request"/>
+
+<div class="row section">
+	<div class="col-md-4 pull-right col-xs-2">
+		<a class="btn-tool" title="<istext key="account.profile.update.link"/>" href="#URLEX(SecureURL,'',Action('ViewProfileSettings-ViewLoginSettings'))#">
+			<span class="glyphicon glyphicon-pencil"></span>
+		</a>
+	</div>
+	<div class="col-md-8 col-xs-10">
+		<h3>
+			<istext key="account.profile.username.heading"/>
+		</h3>
+		<div class="row">
+			<div class="col-sm-12">
+				<dl class="dl-horizontal dl-separator">
+					<dt><istext key="account.login.username.label"/></dt>
+					<dd data-testing-id="email-field">
+						<isprint value="#UserBO:Login#">
+					</dd>
+				</dl>
+			</div>
+		</div>
+	</div>
+</div>

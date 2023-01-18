@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isset name="tmp_remove_query" value="#SearchIndexFilterUtils:RemovedDescendantFilterConditionsQuery(query:RemovedValueCondition(entry:Name,entry:Value), ListNavigationVO:SearchIndex:Configuration, entry:Name)#" scope="request"/>
+<isset name="tmp_catalogcategory_uuid" value="#SearchIndexFilterUtils:getCategoryUUIDForRemoveSelectionLink(entry:CatalogCategory, ListNavigationVO:SearchResult:FilterAttribute(filter:ConfigurationAttribute))#" scope ="request" />
+<isif condition="#(entry:Name EQ 'ContextCategoryUUID')#">
+	<isif condition="#isDefined(entry:CatalogCategory:Parent:UUID) AND NOT (entry:CatalogCategory:Parent:ExcludePathFromSearchIndex EQ 'true') AND ((selectionType EQ 'single') OR (selectionType EQ 'taxonomic'))#">
+		<isset name="tmp_remove_query" value="#tmp_remove_query:ExtendedCondition("ContextCategoryUUID",entry:CatalogCategory:Parent:UUID)#" scope="request"/>
+	</isif>
+	<isif condition="#(displayType EQ 'checkbox') AND ((selectionType EQ 'taxonomic') OR (selectionType EQ 'single'))#">
+	<iselse>
+		<!--- remove selected UUIDs that are child categories of the current category condition to remove --->
+		<isset name="tmp_remove_query" value="#SearchIndexFilterUtils:RemovedSelectedChildCategoriesQuery(tmp_remove_query, filter, entry:Value)#" scope="request"/>
+	</isif>
+	<isset name="isSearch" value="#isDefined(ListNavigationVO:SearchTerm)#" scope="request" />
+	<isset name="tmp_remove_query" value="#SearchIndexFilterUtils:RemovedCategoryFilterConditionsQuery(tmp_remove_query, ListNavigationVO:SearchIndex:Configuration, entry:CatalogCategory, isSearch)#" scope="request"/>
+</isif>
+
+ 

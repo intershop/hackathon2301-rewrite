@@ -1,0 +1,63 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="true">
+<isinclude template="modules/Modules">
+<div>
+	<isform id="suggested-address-form" action="#URLEX(SecureURL,'',Action('ViewUserAddressList-Dispatch'))#" method="post">
+		<div>
+			<isAddressSuggest locale="#CurrentSession:Locale#" sourceaddress="#TempAddressBO#" targetaddress="#AddressBO#" suggestedaddresses="#SuggestedAddresses#" formprefix="address" validateaddressnoresultmessagekey="account.validate_address.no_result">
+			<input type="hidden" value="#getValue(PreferredBilling) EQ 'true'#" name="PreferredInvoiceToAddress"/>
+			<input type="hidden" value="#getValue(PreferredShipping) EQ 'true'#" name="PreferredShipToAddress"/>
+			<input type="hidden" value="#getValue(ShippingAddressID)#" name="ShippingAddressID"/>
+			<input type="hidden" value="#getValue(BillingAddressID)#" name="BillingAddressID"/>
+			<isif condition="#isDefined(AddressBO)#">
+				<input type="hidden" value="#AddressBO:ID#" name="AddressID"/>
+			</isif>
+		</div>
+		<div class="form-group">
+			<!---save changes --->
+			<button class="btn btn-primary" type="submit" name="update"><istext key="account.addresses.update_address.button.label" /></button>
+			<!--- edit address --->
+			<isif condition="#isDefined(AddressBO)#">
+				<a href="#'#'#" id="<isprint value = "#AddressBO:ID#">" 
+					class="btn btn-default update-address" 
+					data-url="<isprint value="#URL(Action('ViewUserAddressList-Edit'), 
+					Parameter('AjaxRequestMarker', 'true'), 
+					Parameter('AddressID', AddressBO:ID), 
+					Parameter('TempAddressID', TempAddressBO:ID), 
+					Parameter('PreferredShipping', getValue(PreferredShipping)),  
+					Parameter('PreferredBilling', getValue(PreferredBilling)),
+					Parameter('addressTargetAddressID', AddressBO:ID))#" 
+					encoding="javascript">"><istext key="account.addresses.edit_address.button" />
+				</a>
+			<iselse>
+				<a href="#'#'#" 
+				class="btn btn-default update-address" 
+				data-url="<isprint value="#URL(Action('ViewUserAddressList-Edit'), 
+				Parameter('AjaxRequestMarker', 'true'), 
+				Parameter('TempAddressID', TempAddressBO:ID), 
+				Parameter('PreferredShipping', getValue(PreferredShipping)), 
+				Parameter('PreferredBilling', getValue(PreferredBilling)),
+				Parameter('addressTargetAddressID', AddressBO:ID))#" 
+				encoding="javascript">"><istext key="account.addresses.edit_address.button" /></a>
+			</isif>
+			<!--- cancel --->
+			<isif condition="#SelectPreferredAddress EQ 'true'#"> 
+				<a class="btn btn-default" data-dismiss="modal"><istext key="account.addresses.cancel_address_update.button.label" /></a>
+			<iselse>
+				<a class="btn btn-default" href="<isprint value="#URLEX(SecureURL,'',Action('ViewUserAddressList-List'))#">"><istext key="account.addresses.cancel_address_update.button.label" /></a>
+			</isif>
+		</div>
+		
+	</isform>
+</div>
+<isif condition="#isDefined(NewAddress) OR  isDefined(UpdateAddress)#">
+	<script type="text/javascript">
+		var p = $('<p/>', {'class':'fade'});
+		<isif condition="#isDefined(NewAddress)#">
+			p.html('<istext key="account.addresses.new_address_created.message" />');	
+		<iselseif condition="#isDefined(UpdateAddress)#">
+			p.html('<istext key="account.addresses.update.message" />');
+		</isif>
+		$('.success-message').html(p);
+		p.show({queue:true}).delay(10000).fadeOut();
+	</script>
+</isif>

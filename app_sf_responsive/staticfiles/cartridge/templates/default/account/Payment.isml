@@ -1,0 +1,50 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules"/>
+<iscache type="forbidden">
+
+<!--- navigation breadcrumbs --->
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.payment.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper">
+	<div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="PAYMENT">
+		</div>
+		
+		<!--- main content --->	
+		<div class="col-md-9">
+			<div>
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+		
+			<h1><istext key="account.payment.heading"></h1>
+			<p><istext key="account.payment.message"></p>
+		
+			<isif condition="#isDefined(ShowSuccessMessage)#">
+				<div class="alert alert-success alert-fade">
+					<isif condition="#ShowSuccessMessage EQ 'NewPayment'#"><!--- if defined NewPayment then the creation process was successful, show info message --->
+						<istext key="account.payment.payment_created.message" />
+					</isif>
+					<isif condition="#ShowSuccessMessage EQ 'DeletedPayment'#"><!--- if defined DeletedPayment --->
+						<istext key="account.payment.payment_deleted.message" />
+					</isif>
+					<isif condition="#ShowSuccessMessage EQ 'ResetPayment'#"><!--- if defined ResetPayment --->
+						<istext key="account.payment.payment_reset.message" />
+					</isif>
+				</div>
+			</isif>
+		
+			<!--- Payment --->
+			<isinclude template="account/payment/Payment">
+			
+		</div>
+	</div>
+</div>

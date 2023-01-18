@@ -1,0 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><istext key="product.content.file_not_found.title"/></title>
+	</head>
+	<body>
+		<p><istext key="product.content.file_not_found.text"/></p>
+	</body>
+</html>

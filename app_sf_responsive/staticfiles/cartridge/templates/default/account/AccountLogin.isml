@@ -1,0 +1,40 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isif condition="#(CacheLoginPage EQ 'true')#">
+	<iscache type="relative" hour="24">
+</isif>
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<h1><istext key="account.login.heading"/></h1>
+
+<div class="row" data-testing-id="account-login-page">
+	<div class="col-md-6">
+		<div class="section">
+			<div>
+			 	<h2><istext key="account.login.returning_user.heading"/></h2>
+				<isif condition="#isDefined(LoginToUse) AND (LoginToUse NE '')#">
+					<p class="alert alert-info"><istext key="#'account.login.'.lcase(LoginToUse).'.message'#"/></p>
+				</isif>
+				<isinclude extensionpoint="ExtendLoginPage"/>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<h2><istext key="account.new_user.heading"/></h2>
+		<p><istext key="account.create.benefit.text"/></p>
+		<ul>
+			<li><istext key="account.create.benefit1.text"/></li>
+			<li><istext key="account.create.benefit2.text"/></li>
+			<li><istext key="account.create.benefit3.text"/></li>
+			<li><istext key="account.create.benefit4.text"/></li>
+			<li><istext key="account.create.benefit5.text"/></li>
+		</ul>
+		
+		<a class="btn btn-primary" href="#URL(Action('ViewUserAccount-ShowRegister'), Parameter('TargetPipeline', TargetPipeline), Parameter('Parameter1_Name', Parameter1_Name), Parameter('Parameter1_Value', Parameter1_Value), Parameter('Parameter2_Name', Parameter2_Name), Parameter ('Parameter2_Value', Parameter2_Value), Parameter('Parameter3_Name', Parameter3_Name), Parameter('Parameter3_Value', Parameter3_Value), Parameter('Parameter4_Name', Parameter4_Name), Parameter('Parameter4_Value', Parameter4_Value), Parameter('Parameter5_Name', Parameter5_Name), Parameter('Parameter5_Value', Parameter5_Value))#">
+			<istext key="account.create.button.label" />
+		</a>
+	</div>
+</div>
+

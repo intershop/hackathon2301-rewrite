@@ -1,0 +1,143 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="webcontrols/Modules"/>
+
+<isform id="form-payment" action="#URL(Action('ViewPaymentInstrumentInfo-Dispatch'))#"  method="post" name="paymentInstrumentInfoForm" class="form-horizontal">
+	<isif condition="#isDefined(ERROR_PaymentInstrumentInfo) OR
+		isDefined(ERROR_PaymentMethod) OR
+		isDefined(ERROR_PaymentSelection) OR
+		isDefined(ERROR_Validation)#"><!---ToDo: PaymentInstrumentInfo, PaymentMethod --->
+		<div role="alert" class="alert alert-danger">
+			<isif condition="#ERROR_PaymentSelection EQ 'true'#">
+				<istext key="account.payment.error.noselection">
+			<iselseif condition="#isDefined(ERROR_VALIDATION)#">
+				<istext key="account.payment.error.message">
+			</isif>
+		</div>
+	</isif>
+
+	<!--- enable "delete" links within the includes--->
+	<isset scope="request" name="showDeleteLink" value="true">
+	<isset scope="request" name="myaccount" value="true">
+	
+	<h3><istext key="account.payment.preferred_method"></h3>
+	
+	<!--- loop over all payment methods --->
+	<ul class="list-unstyled" id="payment-accordion" role="tablist" aria-multiselectable="true">
+		<isloop iterator="PaymentServiceBOs" alias="PaymentServiceBO" counter="count">
+			<!--- only show open tender in list and not zero payment--->
+			<isif condition="#(PaymentServiceBO:Extension("LimitedTender") EQ null) 
+					AND (PaymentServiceBO:Extension("FastCheckout") EQ null) 
+					AND (PaymentServiceBO:PaymentServiceID NE 'ISH_INVOICE_TOTAL_ZERO')
+					AND PaymentServiceBO:isPaymentInstrumentSavingAllowed
+					AND (not hasElements(PaymentInstrumentBORepository:PaymentInstrumentBOs(PaymentServiceBO)) 
+					OR hasElements(PaymentServiceBO:PaymentInstrumentParameters))#">
+				<li class="panel">
+					<div class="radio" role="tab" id="payment-accordion-heading-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">">
+						<label>
+							<input type="radio" 
+								name="PaymentServiceSelection" 
+								id="paymentOption_<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">" 
+								value="<isprint value = "#PaymentServiceBO:ID#">" 
+								data-toggle="collapse" 
+								data-parent="#'#'#payment-accordion" 
+								data-target="#'#'#payment-accordion-body-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">" 
+								aria-expanded="false" 
+								aria-controls="payment-accordion-body-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">"
+								class="collapsed"
+								<isif condition="#(((PaymentInstrumentBORepository:DefaultPaymentInstrumentBO:PaymentServiceBO:ID EQ PaymentServiceBO:ID) 
+									AND (not hasElements(PaymentServiceBO:PaymentInstrumentParameters))) 
+									OR (PaymentServiceSelection EQ PaymentServiceBO:ID))#">
+									checked="checked"
+								</isif>
+							/>
+							
+							<isPaymentServiceDisplay 
+								paymentservice="#PaymentServiceBO#" 
+								paymentcosts="#PaymentServiceBO:PaymentCostBO(CurrentRequest:Currency)#"
+							>
+							
+							<!--- extensionpoint after payment service description section --->
+							<isinclude extensionpoint="AdditionalPaymentServiceDescriptionData"/>
+						</label>
+					</div>
+				
+					<div 
+						id="payment-accordion-body-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">" 
+						class="panel-collapse collapse<isif condition="#(((PaymentInstrumentBORepository:DefaultPaymentInstrumentBO:PaymentServiceBO:ID EQ PaymentServiceBO:ID) 
+									AND (not hasElements(PaymentServiceBO:PaymentInstrumentParameters))) 
+									OR (PaymentServiceSelection EQ PaymentServiceBO:ID))#"> in</isif>"
+						role="tabpanel" 
+						aria-labelledby="payment-accordion-heading-<isprint value = "#replace(PaymentServiceBO:ID, '\\.', '-')#">">
+						<!--- only allow entering data if paymentservice allows saving of this data --->
+						<isif condition="#PaymentServiceBO:isPaymentInstrumentSavingAllowed#">			 
+							<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+								<isPropertyEditor owner="#PaymentInstrumentBO#" 
+										propertydescriptor="#PaymentInstrumentParameter#"
+										validationresult="#ValidatedPropertyGroupConfiguration:get(PaymentInstrumentParameter)#"
+										hidetitle="true"
+										formfieldname="#PaymentServiceBO:UUID#">
+							</isloop>
+							<!--- extension point directly after payment input data (property groups) to interact with them--->
+							<!--- intended to be used for page fragments (IFrame) hosted by the payment service provider  --->
+							<isinclude extensionpoint="HostedPaymentPageData"/>
+						</isif>	
+					</div>
+					<!--- extensionpoint on the end of the payment service section --->
+					<isinclude extensionpoint="AdditionalPaymentServiceInformation"/>
+				</li>
+			</isif>
+			
+			<!--- show available PaymentInstruments --->
+			<isif condition="#hasElements(PaymentInstrumentBOs)#">
+				<isloop iterator="PaymentInstrumentBOs" alias="PaymentInstrumentBO">
+					<isif condition="#(PaymentInstrumentBO:PaymentServiceBO:ID EQ PaymentServiceBO:ID)#">
+						<li class="panel">
+							<div class="radio" role="tab" id="payment-accordion-heading2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">">
+								<label>
+									<input type="radio" 
+										name="PaymentServiceSelection" 
+										id="paymentOption_<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">" 
+										value="<isprint value = "#PaymentInstrumentBO:ID#">" 
+										data-toggle="collapse" 
+										data-parent="#'#'#payment-accordion" 
+										data-target="#'#'#payment-accordion-body2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">" 
+										aria-expanded="false" 
+										aria-controls="payment-accordion-body2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">"
+										<isif condition="#PaymentInstrumentBO:Default AND NOT isDefined(ValidatedPropertyGroupConfiguration)#">
+											checked="checked"
+										</isif>
+									/>
+									<isif condition="#hasElements(PaymentServiceBO:PaymentInstrumentParameters)#">
+										<isloop iterator="PaymentServiceBO:PaymentInstrumentParameters" alias="PaymentInstrumentParameter">
+											<isPropertyViewer owner="#PaymentInstrumentBO#" 
+													propertydescriptor="#PaymentInstrumentParameter#"
+													hidetitle="true">
+										</isloop>
+										<div class="form-group">
+											<div class="col-sm-offset-4 col-sm-8">
+												<button type="button" form="form-payment" class="btn btn-default" name="deletePII" value="#PaymentInstrumentBO:ID#" ><istext key="checkout.payment.method.delete.link"/></button>
+											</div>
+										</div>
+									<iselse>
+										<isPaymentServiceDisplay paymentservice="#PaymentServiceBO#" paymentcosts="#PaymentServiceBO:PaymentCostBO(CurrentRequest:Currency)#">
+									</isif>
+								</label>
+							</div>
+							<!---empty body is needed by the accordion  --->
+							<div 
+								id="payment-accordion-body2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">" 
+								class="panel-collapse collapse" 
+								role="tabpanel" 
+								aria-labelledby="payment-accordion-heading2-<isprint value = "#replace(PaymentInstrumentBO:ID, '\\.', '-')#">"
+							>
+							</div>
+						</li>	
+					</isif>
+				</isloop>
+			</isif>
+		</isloop>
+	</ul>
+</isform>
+<!--- place the submit button outside the form in order to define the sequence of the submit events --->
+<button form="form-payment" class="btn btn-primary" type="submit" name="apply" value="Save" ><istext key="account.payment.payment_save_changes.txt"/></button>
+<button form="form-payment" class="btn btn-default" type="submit" name="resetPPI" value="resetPPI" ><istext key="account.payment.preferred_payment_reset.txt"/></button>

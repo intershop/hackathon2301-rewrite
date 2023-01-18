@@ -1,0 +1,9 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset scope="request" name="RecurringBasket" value="#BasketBO:Extension("RecurringBasket")#">
+
+<isif condition="#RecurringBasket:Recurring#">
+    <isset scope="request" name="BasketType" value="subscription">
+<iselse>
+	<isset scope="request" name="BasketType" value="order">
+</isif>

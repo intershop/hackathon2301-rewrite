@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Overrides Error\-Pipeline from sld_ch_sf_base.
+This pipeline is called whenever a technical error occurs while processing a request. A standard error page will be shown.
+@Group Common-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="Error" overrideMode="Inherit" type="view">
+<!--overrides Error\-Pipeline 
+from sld_ch_sf_base
+@Location 2,0-->
+  <nodes xsi:type="pipeline:Text" nodeID="Text0"/>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Page">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="ErrorCode">
+    <nodeSuccessors name="decision_yes" next="DecisionNode3"/>
+<!--@BendPoints 5,5-->
+    <nodeSuccessors name="decision_no" next="SetDictionaryValue0"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="ErrorCode"
+      operator="str_eq" conditionValue="ProductNotFound">
+    <nodeSuccessors name="decision_yes" next="JoinNode2"/>
+<!--@BendPoints 3,7-->
+    <nodeSuccessors name="decision_no" next="DecisionNode4"/>
+  </nodes>
+<!--@Location 0,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="CheckForEmptyIterator0"/>
+    <nodeSuccessors name="Error" next="JoinNode1"/>
+    <parameterBindings name="Application" nullBinding="true"/>
+    <parameterBindings name="PageletEntryPointID" constant="systempage.error.general.pagelet2-Page"/>
+    <parameterBindings name="PageletModelRepository" nullBinding="true"/>
+    <parameterBindings name="ResourceSetID" constant="app_sf_responsive"/>
+    <startNode referencedName="ProcessPagelet-GetPageletsByPageletEntryPointID"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CheckForEmptyIterator0">
+    <pipelet href="enfinity:/core/pipelets/CheckForEmptyIterator.xml"/>
+    <nodeSuccessors name="next" next="RenderSystemPage0_Input"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="FilledIterator" objectPath="Pagelets"/>
+  </nodes>
+<!--@Location 0,8-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPage0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.error.general.pagelet2-Page"/>
+    <pipelet href="enfinity:/sld_pmc/pipelets/com.intershop.sellside.pmc.capi.pipeline.RenderSystemPage.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+  </nodes>
+<!--@Location 2,7-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="application/SiteConstruction"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="ErrorCode"
+      operator="str_eq" conditionValue="CategoryNotFound">
+    <nodeSuccessors name="decision_yes" next="JoinNode4"/>
+    <nodeSuccessors name="decision_no" next="JoinNode5"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+<!--@BendPoints 5,11-->
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="ErrorCode"/>
+    <configurationValues name="Value" value="SystemError"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Start">
+<!--@BendPoints 3,3-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+</pipeline:Pipeline>

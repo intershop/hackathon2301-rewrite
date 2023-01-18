@@ -1,0 +1,131 @@
+
+<style type="text/css">
+	body {margin: 0; padding: 0; min-width: 100%!important; font-family: Arial; font-size: 16px; }
+	
+	<!---This is to overwrite Outlook.com’s Embedded CSS--->
+	table {border-collapse:separate; mso-table-lspace:0pt; mso-table-rspace:0pt;}
+	a, a:link, a:visited {text-decoration: underline; color: #'#'#1db5b5; } 
+	a, a:focus, a:hover, a:active {outline: 0 !important; }
+	a:hover {text-decoration: underline;}
+	
+	h2,h2 a,h2 a:visited,h3,h3 a,h3 a:visited,h4,h5,h6,.t_cht {color:#'#'#000 !important}
+	.ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td {line-height: 100%}
+	
+	<!--- This is to center your email in Outlook.com--->
+	.ExternalClass {width: 100%;}
+	
+	<!---stops outlook from converting symbols into large image representations--->
+	.ExternalClass .ecxhm { display:none; }
+	.ExternalClass .ecxhm2 {display: inline !important; font-size: 11px !important; color:#'#'#000000 !important;}
+	
+	<!--- reset --->
+	#'#'#outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */ 
+
+	<!--- bring inline --->
+	img {display: block; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;}
+	a img {border: none;} 	
+	a, a:focus, a:hover, a:active {outline: 0 !important; }
+
+
+	<!---email styles --->
+	a {color: #'#'#1db5b5; text-decoration: underline;}
+	
+	p {font-size: 16px;}
+	p.header {font-size: 24px; padding-bottom: 15px; font-weight: bold;}
+	p.header span.name{color: #'#'#999999;}
+
+	.button {text-align: center; font-size: 18px; font-family: Arial; padding: 0 10px;}
+	.button a {color: #'#'#ffffff; text-decoration: none; text-transform: uppercase;}
+
+	<!---email container --->
+	.emailContent {width: 100%; max-width: 600px;}
+	
+	<!---email header styles --->
+	.emailHeader {font-family: Arial;}
+	.emailHeader .logo {padding: 10px 0;}
+	.emailHeader .headerNav {padding: 10px; font-size: 16px; background-color: #'#'#eeeeee; width: 100%;}
+	
+	<!---email body styles --->
+	.emailBody{font-family: Arial; line-height: 22px; font-size: 16px; padding: 40px 10px 80px 10px;}		
+	.emailBodyElement {padding-bottom: 10px;}
+	
+	<!---email footer styles --->
+	.emailFooter {color: #'#'#222222; font-size: 13px; font-family: Arial; }  
+	.emailFooter a {font-size: 13px;}  
+	
+	.footerDisclaimer {background: #'#'#dddddd; font-family: Arial; font-size: 12px; color: #'#'#222222; padding: 10px;}
+	.footerAddress	{background: #'#'#eeeeee; padding: 10px;}
+	.footerAddressItem	{font-family: Arial; font-size: 12px; color: #'#'#222222;}
+	.footerImprint	{background: #'#'#666666; font-family: Arial; font-size: 12px; color: #'#'#ffffff; padding: 10px;}
+	.footerImprint a {color: #'#'#ffffff;}
+	
+	.productTitle {margin-bottom: 10px;}
+
+	<!---responsive table 2 columns --->
+	table[class=pattern] .mobileTable td td {width: 50%;}	
+	
+	<!---button --->
+	table[class=mobileButtonPattern] {background-color: #'#'#1db5b5;}
+	
+	<!---cart and order confirmation --->
+	table.emailCostSummary td td {vertical-align: top;}	
+	table.emailCartPrice th {background-color: #'#'#f9f9f9; padding: 5px; vertical-align: top; font-weight: bold;}
+	table.emailCartPrice td {background-color: #'#'#f9f9f9; padding: 5px; vertical-align: top;}
+	table.emailCartProductDetails td {padding: 10px; vertical-align: top; text-align: left;}
+	h2.emailOrderSummary {background-color: #'#'#cccccc; padding: 10px;}
+	
+	td.orderConfirmationShippingInfo {background-color: #'#'#e3e3e3;}
+	td.orderConfirmationBucketInfo {background-color: #'#'#fff;}
+	
+	.orderConfirmationShippingInfoAddress {font-weight: bold;}
+	address {font-style: normal;}
+	
+	.details-link {display: none;}
+	.old-price {color: #'#'#8b8b8b; text-decoration: line-through;}
+	.total-price {font-weight: bold;}
+	.emailPriceColumn {text-align: right;}
+
+	@media only screen and (max-width: 550px), screen and (max-device-width: 550px) {
+		.emailHeader .logo img {padding-left: 10px;}
+		.emailBody {padding: 10px;}
+		
+		<!---responsive table - items arranged below--->
+		table[class=pattern] .mobileTable {
+			display: table-footer-group;
+		}
+		
+		table[class=pattern] .mobileTable td td {
+			display: inline-block;
+			width: 100%;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+		
+		<!---mobile button --->
+		table[class=mobileButtonPattern] {width: 100%;}
+	
+		<!---mobile data sheet --->
+		table[class=pattern] .mobileTable td table.dataList td:last-child {padding-bottom: 10px;}
+	
+		<!---stops yahoo mail rendering media queries--->
+		body[yahoo] .hide {display: none!important;}
+		body[yahoo] .buttonwrapper {background-color: transparent!important;}
+		body[yahoo] .button {padding: 0px!important; text-transform:uppercase;}
+		body[yahoo] .button a {background-color: #'#'#1db5b5; padding: 10px 15px !important;}
+		
+		<!---cart --->
+		.emailPriceColumn {text-align: center;}
+		p.copyLink a {font-size: 6px;}
+	}
+
+	@media only screen and (min-device-width: 601px) {
+		.emailContent {width: 600px !important;}
+
+		.col380 {width: 380px!important;}
+		.col425 {width: 425px!important;}
+	}	
+
+</style>
+
+<isinclude extensionpoint="MailStyleB2B"/>

@@ -1,0 +1,58 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div>
+	<!--- Show existing wish lists --->
+	<isloop iterator="Wishlists" alias="WishlistBO">
+		<isif condition="#WishlistBO:ID NE ExcludedWishlistID#">
+			<div class="form-group">
+				<div class="radio">
+					<label>
+						<input type="radio" name="<isprint value="#CurrentForm:TargetWishlistID:QualifiedName#">"
+							value="<isprint value="#WishlistBO:ID#">"
+							<isif condition="#CurrentForm:Submitted#">
+								<isif condition="#WishlistBO:ID EQ CurrentForm:TargetWishlistID:Value#">
+									checked="checked"
+								</isif>
+							<iselseif condition="#isDefined(PreferredWishlistID)#">
+								<isif condition="#WishlistBO:ID EQ PreferredWishlistID#">
+									checked="checked"
+								</isif>
+							<iselse>
+								<isif condition="#NOT isDefined(firstWishlistSelected)#">
+									<isset name="firstWishlistSelected" value="true" scope="request" />
+									checked="checked"
+								</isif>
+							</isif>
+						/>
+						<isprint value="#WishlistBO:Name#">
+					</label>
+				</div>
+			</div>
+		</isif>
+	</isloop>
+	
+	<!--- Enter new wish list name --->
+	<div class="form-group form-inline">
+		<isif condition="#hasElements(Wishlists) AND (NOT isDefined(ExcludedWishlistID) OR (Wishlists:Size > 1))#">
+			<input type="radio" id="NewWishlistRadioButton" value="NewWishlist" class="radio-inline"
+				name="<isprint value="#CurrentForm:TargetWishlistID:QualifiedName#">"
+				<isif condition="#CurrentForm:Submitted AND (CurrentForm:TargetWishlistID:Value EQ 'NewWishlist')#">checked="checked"</isif>/>
+		<iselse>
+			<input type="hidden" name="<isprint value="#CurrentForm:TargetWishlistID:QualifiedName#">" value="NewWishlist" />
+		</isif>
+		
+		<input class="form-control" maxlength="35" type="text" id="NewWishlistName"
+			required 
+			data-bv-notempty-message="<istext key="account.wishlist.name.error.required"/>"
+			<isif condition="#NOT (CurrentForm:Submitted AND (CurrentForm:TargetWishlistID:Value EQ 'NewWishlist'))#"><isif condition="#hasElements(Wishlists) AND (NOT isDefined(ExcludedWishlistID) OR (Wishlists:Size > 1)) #">disabled</isif></isif>
+			size="35"
+			maxlength="35"
+			name="<isprint value="#CurrentForm:NewWishlistName:QualifiedName#">"
+			<isif condition="#CurrentForm:Submitted#">
+				value="<isprint value="#CurrentForm:NewWishlistName:Value#"/>"
+			<iselse>
+				value="<istext key="account.wishlists.choose_wishlist.new_wishlist_name.initial_value">"
+			</isif>
+		/>
+	</div>
+</div>	

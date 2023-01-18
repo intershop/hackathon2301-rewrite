@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<isinclude template="modules/common/Modules">
+<isinclude template="modules/cms/Modules">
+<isinclude template="modules/address/Modules">
+<isinclude template="modules/navigation/Modules">
+<isinclude template="modules/category/Modules">
+<isinclude template="modules/product/Modules">
+<isinclude template="modules/productlisting/Modules">
+<isinclude template="modules/search/Modules">
+<isinclude template="modules/cart/Modules">
+<isinclude template="modules/checkout/Modules">
+<isinclude template="modules/rating/Modules">
+<isinclude template="modules/paging/Modules">
+<isinclude template="modules/account/Modules">
+<isinclude template="modules/customer/Modules">
+<isinclude template="modules/sitemap/Modules">
+<isinclude template="modules/marketing/Modules">
+<isinclude template="modules/payment/Modules">
+<isinclude template="modules/subscription/Modules">
+<isinclude template="inc/TrackingModules">

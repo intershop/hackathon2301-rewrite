@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="systeminclude.dialog.safeAndSecure.pagelet2">
+  <componentEntryPointDefinitions name="Include" systemManaged="true" multiplicity="ZERO_MANY">
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.include.dialog.pagelet2-Interface"/>
+  </componentEntryPointDefinitions>
+</pagelet:PageletModel>

@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- display a warning message in case the user disabled Javascript in his browser --->
+<noscript>
+	<div class="system-notification">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="system-notification-icon">
+						<span class="glyphicon glyphicon-warning-sign"></span>
+					</div>
+					<div class="system-notification-text">
+						<h2><istext key="common.error.javascript.disabled.heading"/></h2>
+						<p><istext key="common.error.javascript.disabled.message" encoding="off"/></p>
+						<p><istext key="common.error.javascript.disabled.required" encoding="off"/></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</noscript>

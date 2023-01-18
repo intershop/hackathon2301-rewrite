@@ -1,0 +1,11 @@
+<iscontent personalized="true" type="application/json" charset="UTF-8" compact="true" templatemarker="false">
+<iscachekey object="#ProductBO#">
+{
+	<isif condition="#hasElements(ProductBO:ProductVariationInformationBO:VariationAttributes)#">
+		<isloop iterator="ProductBO:ProductVariationInformationBO:VariationAttributes" alias="VariableVariationAttr">
+			<isinclude template="product/json/VariationAttributeJSON"><isif condition="#hasNext(VariableVariationAttr)#">, </isif>
+		</isloop>
+	<iselse>
+		<isinclude template="product/json/DefaultVariationAttributeJSON">
+	</isif>
+}

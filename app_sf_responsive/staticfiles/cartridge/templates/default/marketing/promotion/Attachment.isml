@@ -1,0 +1,10 @@
+<iscontent personalized="true"  type="text/html" charset="UTF-8" compact="true">
+<isif condition="#isDefined(Additionals) AND hasElements(Additionals)#">
+	<p>
+		<isloop iterator="Additionals" alias="ac">
+			<isset name="contentDescriptor" value="#ac:Value#" scope="request">
+			<ISContentDescriptorFile contentdescriptor="contentDescriptor" file="File">
+			<a href="#URL(Action('ViewPromotionAttachment-OpenFile'), Parameter('LocaleId', LocaleId), Parameter('DirectoryPath', File:DirectoryPath), Parameter('FileName', File:FullName), Parameter('UnitName', File:UnitDomainName))#"><isprint value="#ac:Name#"></a><!---  | Order by: | Postmark by:  ---><br/>
+		</isloop>
+	</p>
+</isif>

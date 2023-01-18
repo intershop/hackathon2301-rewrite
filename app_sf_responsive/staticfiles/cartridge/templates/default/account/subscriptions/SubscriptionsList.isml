@@ -1,0 +1,103 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="modules/hbs/Modules">	<!--- Needed for using the hbs (Handlebars) module --->
+<isinclude template="modules/rest/Modules">
+
+<ISCurrentUserBO currentuserbo="CurrentUserBO">
+<ISCurrentCustomerBO currentcustomerbo="CurrentCustomerBO">
+<ISUserPermissionMap User="#CurrentUserBO#" UserPermissionMap="UserPermissionMap">
+
+<ishbsJavscriptLibraries>
+<ISRESTConfiguration>
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.subscriptions.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="account-subscriptions-page">
+	
+    <div class="row account-main">
+		<!--- Left Navigation Panel --->
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="SUBSCRIPTIONS">
+		</div>
+		<div class="col-md-9">
+
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+
+			<div class="section">
+				<h1><istext key="account.subscriptions.link" /></h1>
+				<p><istext key="account.subscriptions.subheadline"></p>
+			</div>
+
+			<!--- Renders the subscription list by using handlebars and rest --->
+			<div class="section">
+				<div class="row">
+					<form class="form-inline" method="post" action="#'#'#">
+						<div class="col-sm-5 col-md-5 col-lg-6">
+
+							<div class="form-group">
+								<label class="control-label" for="SubscriptionsListSort"><istext key="account.subscriptions.filter.sortby" /></label>
+								<select class="form-control" id="SubscriptionsListSort" data-sort="SubscriptionsListSort">
+									<option value="date_asc"><istext key="account.subscriptions.filter.sortby.date_asc" /></option>
+									<option value="date_desc" selected="selected"><istext key="account.subscriptions.filter.sortby.date_desc" /></option>
+									<option value="ordertotal_asc"><istext key="account.subscriptions.filter.sortby.ordertotal_asc" /></option>
+									<option value="ordertotal_desc"><istext key="account.subscriptions.filter.sortby.ordertotal_desc" /></option>
+								</select>
+							</div>
+
+						</div>
+						<div class="col-sm-7 col-md-7 col-lg-6 text-right">
+							<div class="form-group has-feedback">
+								<input type="text" class="form-control" id="SubscriptionsListFilter" data-filter="SubscriptionsListFilter" size="30" placeholder="<istext key="account.subscriptions.filter.number">" />
+								<a href="#'#'#" class="glyphicon glyphicon-remove form-control-feedback" data-filter="EmptySubscriptionsListFilter"></a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<!---
+				Defined specific localization properties that are needed only for JavaScript Handlebars helper "intervalFormatter"
+				!!!This block should be improved with a new better technique to load localization properties from client side!!!
+			--->
+			<script type="text/javascript">
+				$(document).ready(function(){
+					subscriptionsLocalizationProperties = {};
+					subscriptionsLocalizationProperties[RESTConfiguration.getLocale()] = {
+						"subscription.period.days": "<istext key="subscription.period.days"/>",
+						"subscription.period.weeks": "<istext key="subscription.period.weeks"/>",
+						"subscription.period.months": "<istext key="subscription.period.months"/>",
+						"subscription.period.years": "<istext key="subscription.period.years"/>"
+					};
+				});
+			</script>
+
+			<!--- Renders the subscriptions list template per REST and Handlebars --->
+			<ishbs folder="account/subscriptions" name="subscriptionsList">
+
+			<div class="modal fade" id="confirmDeactivateModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeactivateModalLabel">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<ishbs folder="account/subscriptions" name="subscriptionDeactivateDialog">
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="confirmActivateModal" tabindex="-1" role="dialog" aria-labelledby="confirmActivateModalLabel">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<ishbs folder="account/subscriptions" name="subscriptionActivateDialog">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

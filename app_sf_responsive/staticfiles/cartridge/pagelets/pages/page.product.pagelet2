@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pagelet:PageletModel xmlns:pagelet="http://www.intershop.de/pagelet/2010" name="page.product.pagelet2">
+  <pageEntryPointDefinitions name="Page">
+    <callParameterDefinitions name="ProductBO" type="com.intershop.component.product.capi.ProductBO"/>
+    <callParameterDefinitions name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO" optional="true"/>
+    <callParameterDefinitions name="ListNavigationVO" type="com.intershop.sellside.storefront.base.capi.common.ListNavigationVO" optional="true"/>
+    <callParameterDefinitions name="ActiveProductTab" type="java.lang.String" optional="true"/>
+    <callParameterDefinitions name="Locale" type="com.intershop.beehive.core.capi.localization.LocaleInformation" optional="true"/>
+    <callParameterInterfaces referencedName="app_sf_responsive:interface.page.standard.pagelet2-Interface"/>
+  </pageEntryPointDefinitions>
+</pagelet:PageletModel>

@@ -1,0 +1,9 @@
+<iscontent compact="true" charset="UTF-8">
+
+<!--- TODO: handle FieldErrorMessage functionality --->
+<isFieldErrorMessagePlaceholder name_override="SelectedPrice">
+<isif condition="#ProductBO:isRetailSet#">
+	<div role="alert" class="kor-form-error-message-placeholder"></div>
+</isif>
+
+<isinclude template="modules/product/AddToCartInc">

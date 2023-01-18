@@ -1,0 +1,30 @@
+<iscontent charset="UTF-8" compact="true">
+<%@page import="com.intershop.beehive.core.capi.environment.PropertyMgr"%>
+<%@page import="com.intershop.beehive.core.capi.pipeline.PipelineDictionary" %>
+<%@page import="com.intershop.component.foundation.capi.upload.FileUtil" %>
+<%@page import="java.io.File" %>
+<%
+    if (getPipelineDictionary().getFormValue("FullPath", false) != null)
+	{
+		throw new SecurityException("Parameter FullPath was injected as form parameter.");
+	}
+    
+    String fileName = (String) getPipelineDictionary().get("FullPath");
+    String mimeType = FileUtil.getMimeType(fileName);
+    response.setHeader("Content-Type", mimeType);
+    int maxBufferedFileSize = 50000000; 
+    String maxBufferedFileSizeProp = PropertyMgr.getInstance().getProperty("intershop.fileservlet.maxBufferedFileSize");
+    if(maxBufferedFileSizeProp != null) maxBufferedFileSize = Integer.valueOf(maxBufferedFileSizeProp); 
+    File downloadFile = new File(fileName);
+    if(downloadFile.exists())
+    {
+        if(downloadFile.length() > maxBufferedFileSize)
+        {
+            //switch to streamed mode if file is large, 
+            //this will also influence the caching behaviour regardless of the iscache tag below
+            response.setHeader("X-IS-STREAMED", "1");
+        }
+    }
+%>
+<iscache type="relative" hour="24" />
+<isbinary file="#FullPath#" downloadname="#FileName#"/>

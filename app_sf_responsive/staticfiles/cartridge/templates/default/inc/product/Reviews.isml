@@ -1,0 +1,34 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<isset name="RichSnippetsEnabled" value="#OwningDomain:Configuration:String("RichSnippetsEnabled")#" scope="request"/>
+
+<h2><istext key="product.reviews.heading" /></h2>
+
+<!--- Own reviews include "New Rating link" --->
+<isinclude url="#URL(Action('ViewProductReview-OwnProductReview'), Parameter('ProductID', ProductBO:ID))#">
+<isif condition="#(isDefined(EnableAdvancedVariationHandlingPreference) AND (EnableAdvancedVariationHandlingPreference EQ 'true') AND ProductBO:ProductMaster)#">
+	<!--- Common reviews from other users" --->
+	<ISReviewList
+		ProductBO="#ProductBO#"
+		CurrentUser="#CurrentUser#"
+		DomainName="#CurrentDomain:DomainName#"
+		CategoryName="#CategoryName#"
+		CategoryDomainName="#CategoryDomainName#"
+		ShowPaging="true"
+		RichSnippetsEnabled="#RichSnippetsEnabled#"
+	>
+<iselse>
+	<!--- Common reviews from other users" --->
+	<ISReviewList
+		ProductBO="#ProductBO#"
+		CurrentUser="#CurrentUser#"
+		ListNavigationVO="#ListNavigationVO#"
+		DomainName="#CurrentDomain:DomainName#"
+		CategoryName="#CategoryName#"
+		CategoryDomainName="#CategoryDomainName#"
+		ShowPaging="true"
+		RichSnippetsEnabled="#RichSnippetsEnabled#"
+	>
+</isif>

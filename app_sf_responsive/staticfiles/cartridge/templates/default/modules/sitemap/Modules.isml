@@ -1,0 +1,122 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Renders the Sitemap
+	
+	Parameters:
+		- RenderType (optional):
+			valid types are 'CategoryRange' or leave empty
+			
+		- CategoryRanges (optional):
+			Map of Strings with ranges for categories (RenderType: CategoryRange)
+			
+		- SelectedCategoryBO (optional):
+			Category that is highlighted in the navigation (RenderType: empty)
+			
+		- SelectedRange (optional):
+			The currently selected range (RenderType: CategoryRange) 
+			
+		- Request (required):
+			For retrieving organization
+			
+		- User (required):
+			For getting user information on the displayed categories
+	Example:
+		TWO WAYS of using ISSitemap is possible
+		<ISSitemap
+			RenderType="CategoryList"
+			SelectedCategoryBO="#SelectedCategoryBO#"
+			Request="#CurrentRequest#"
+			User="#CurrentUser#"
+		>
+		<ISSitemap
+			RenderType="CategoryRange"
+			CategoryRanges="#localizeText('sitemap.categoryRanges')#" OR "0 - 9|A - B|C - D|E - F|G - H|I - J|K - L|M - N|O - P|Q - R|S - T|U - V|W - X|Y - Z"
+			SelectedRange="#Range#"
+			Request="#CurrentRequest#"
+			User="#CurrentUser#"
+		>
+		...
+--->
+<ismodule template="modules/sitemap/Sitemap.isml"
+	name="Sitemap"
+	strict="true"
+	attribute="RenderType"
+	attribute="CategoryRanges"
+	attribute="SelectedCategoryBO"
+	attribute="SelectedRange"
+	attribute="Request"
+	attribute="User">
+	
+	
+	
+<!---
+	Renders the Sitemap Navigation
+	
+	Parameters:
+		- RenderType (optional):
+			valid types are 'CategoryRange' or leave empty
+			
+		- CategoryBOs (optional):
+			Categories to be listed (RenderType: empty)
+
+		- SelectedCategoryBO (optional):
+			Category that is highlighted in the navigation (RenderType: empty)
+			
+		- CategoryRangesMap (optional):
+			Map of Strings with ranges of categoriess (RenderType: CategoryRange)
+			
+		- SelectedRange (optional):
+			The currently selected range (RenderType: CategoryRange) 
+		
+	Example:
+		...
+		<ISSitemapNavigation
+			RenderType="CategoryList"
+			
+			CategoryBOs="CategoryBOs"
+			SelectedCategoryBO="SelectedCategoryBO"
+			
+			CategoryRangesMap="CategoryRangesMap"
+			SelectedRange="A - Z"
+		>
+		...
+--->
+<ismodule template="modules/sitemap/SitemapNavigation.isml"
+	name="SitemapNavigation"
+	strict="true"
+	attribute="RenderType"
+	
+	attribute="CategoryBOs"
+	attribute="SelectedCategoryBO"
+	
+	attribute="CategoryRangesMap"
+	attribute="SelectedRange">
+	
+<!---
+	Render all categories in the passed iterator for sitemap.
+	
+	Parameters:
+		- CategoryBOs:
+			Categories to be rendered
+		
+		- Organization (required):
+			
+		- User (required):
+			For getting user information on the displayed categories
+	Example:
+		...
+		<ISSitemapCategoryList
+			CategoryBOs="CategoryBOs"
+			Organization="#Organization#"
+			User="#User#" 
+		>
+		...
+--->
+<ismodule template="modules/sitemap/SitemapCategoryList.isml"
+	name="SitemapCategoryList"
+	strict="true"
+	attribute="User"
+	attribute="Organization"
+	attribute="CategoryBOs"
+	>

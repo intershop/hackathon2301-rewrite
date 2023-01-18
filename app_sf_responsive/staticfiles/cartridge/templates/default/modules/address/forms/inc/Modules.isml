@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- 
+	Display a form field with optional label
+	
+	Parameters:
+		- formparameter (mandatory)
+			The form parameter which delivers default values for id and value as well as logic for validation and error messages
+		- id
+			Used to link label and input field. If no id is specified, one will automatically be generated from the from parameter
+		- label
+			The text displayed as the form field's label. Can be a localization tag as well as a hard coded string. If no label parameter is specified, no label will be rendered
+		- value
+			Used to prefill the input field. If no value parameter is defined, the form parameter's value will be used as fallback
+		- fieldname
+			The name of the input field
+		- placeholder
+			A hint to the user of what can be entered in the control.
+		- groupclass
+			CSS class which is appended to the div surrounding label and input field
+		- showtooltip (default=false)
+			If it is true, a tooltip will be rendered, the following tooltip parameters are required
+		- tooltip_linktext
+			If a tooltip is rendered, this text is displayed as the tooltip's link text. Can be a localization tag as well as a hard coded string
+		- tooltip_headline
+			If a tooltip is rendered, this text is displayed as the tooltip's headline. Can be a localization tag as well as a hard coded string
+		- tooltip_content (mandatory for tooltips)
+			This text is displayed as the tooltip's content text. Can be a localization tag as well as a hard coded string. If no tooltip_content parameter is set, no tooltip will be rendered at all	
+--->
+ <ismodule template="modules/address/forms/inc/FormField" 
+	name="FormField"
+	attribute="formparameter"
+	
+	attribute="id"
+	attribute="label"
+	attribute="value" 
+	attribute="fieldname"
+	attribute="placeholder"
+	attribute="groupclass"
+	attribute="messageprefix"
+	
+	attribute="showtooltip"
+	attribute="tooltip_linktextkey"
+	attribute="tooltip_headlinekey"
+	attribute="tooltip_contentkey"
+	
+	strict="true"
+/>

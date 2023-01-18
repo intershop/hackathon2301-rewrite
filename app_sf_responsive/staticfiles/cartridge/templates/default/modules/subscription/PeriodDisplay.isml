@@ -1,0 +1,15 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isif condition="#period:Days > 0#">
+	<isif condition="#(period:Days % 7) == 0#">
+		<isprint value="#(period:Days / 7)#" style="INTEGER">&nbsp;<istext key="subscription.period.weeks"/>
+	<iselse>
+		<isprint value="#period:Days#" style="INTEGER">&nbsp;<istext key="subscription.period.days"/>
+	</isif>
+<iselseif condition="#period:Months > 0#">
+	<isprint value="#period:Months#" style="INTEGER">&nbsp;<istext key="subscription.period.months"/>
+<iselseif condition="#period:Years > 0#">
+	<isprint value="#period:Years#" style="INTEGER">&nbsp;<istext key="subscription.period.years"/>
+</isif>
+
+
+

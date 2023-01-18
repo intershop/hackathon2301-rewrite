@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Pipeline provides localizations in JSON format.-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewLocalization" overrideMode="Inherit" type="view">
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Get">
+    <nodeSuccessors name="next" next="GetLocale0"/>
+<!--The locale of the returned localizations.-->
+    <parameters name="locale" type="java.lang.String"/>
+<!--The topic to which the returned localizations belong.-->
+    <parameters name="topic" type="java.lang.String"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocale0">
+    <configurationValues name="LocaleFallback" value="Lead Locale"/>
+    <pipelet href="enfinity:/core/pipelets/GetLocale.xml"/>
+    <nodeSuccessors name="next" next="CreateLocalizationContextFromApplication0"/>
+    <parameterBindings name="LocaleId" objectPath="locale"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateLocalizationContextFromApplication0">
+    <pipelet href="enfinity:/core/pipelets/CreateLocalizationContextFromApplication.xml"/>
+    <nodeSuccessors name="next" next="GetLocalizedTextByLocalizationRepository0"/>
+    <parameterBindings name="Application" objectPath="CurrentApplication"/>
+    <parameterBindings name="LocaleInformation" objectPath="Locale"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocalizedTextByLocalizationRepository0">
+    <pipelet href="enfinity:/sld_enterprise_app/pipelets/GetLocalizedTextByLocalizationRepository.xml"/>
+    <nodeSuccessors name="next" next="InteractionNode0"/>
+    <parameterBindings name="Locale" objectPath="Locale"/>
+    <parameterBindings name="SearchedKey" objectPath="topic"/>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode0">
+    <template referencedName="localization/Localization"/>
+  </nodes>
+</pipeline:Pipeline>

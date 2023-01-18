@@ -1,0 +1,20 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset scope="request" name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#">
+
+<isif condition="#RecurringBasket:Recurring#">
+
+	<div class="cart-summary">
+		<div class="cart-summary-checkout">
+			<div class="row">
+				<div class="col-xs-12">
+					<h5><istext key="subscription.title"/></h5>
+				</div>
+				
+				<!--- displays the subscription detail information --->
+				<isSubscriptionDisplay recurrenceinformation="#RecurringBasket:RecurrenceInformation#" dataclass="text-right">
+				
+			</div>
+		</div>
+	</div>
+</isif>

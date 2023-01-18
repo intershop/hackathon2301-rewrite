@@ -1,0 +1,81 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isset name="CartShippingMethod" value="#CurrentCartBO:Extension("ShippingMethod")#" scope="request"/>
+<isset scope="request" name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#">
+
+<!--- heading --->
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<h1><istext key="checkout.shipping.pagetitle"></h1>
+
+<div class="row" data-testing-id="checkout-shipping-page">
+	<isform method="post" action="#URL(Action('ViewCheckoutShipping-Dispatch'))#" name="ShippingForm" class="form-horizontal">
+		<input type="hidden" name="update" value="update" /> 
+
+		<div class="col-sm-12 col-md-8">
+
+			<!--- Messages --->
+			<isBasketValidationMessages basketValidationResults="#BasketValidationResults#">
+			<isOrderCreationMessages orderCreationResult="#OrderCreationResult#" basketValidationResults="#BasketValidationResults#">
+
+			<isif condition="#isDefined(ERROR_AddressSelection)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.addresses.no_Selection.error"/>
+				</div>
+			</isif>
+			<isif condition="#isDefined(ERROR_ShippingMethodSelection)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.shipping_method.no_Selection.error"/>
+				</div>
+			</isif>
+			<isif condition="#isDefined(ERROR_DesiredDeliveryDateSuggestion)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.shipping.dddate.validation.suggestion" parameter0="#getValue(Suggestion,'MM/dd/yyyy')#"/>					
+				</div>
+			</isif>
+			<isif condition="#isDefined(ERROR_DesiredDeliveryDate)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="checkout.shipping.dddate.validation.error" parameter0="#CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern#"/>
+				</div>
+			</isif>
+			<isinclude template="cart/ProductIsNotAvailable">
+			
+			<isif condition="#(isDefined(GiftWrap_Switch) AND (GiftWrap_Switch EQ 'true')) OR (isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true'))#">
+				<isinclude template="checkout/gifting/GiftLink">
+			</isif>
+		
+			<!--- Bucket loop --->
+			<isloop iterator="CartShippingMethod:BasketShippingMethodSelectionBucketBOs" alias="Bucket">
+				<isif condition="#CartShippingMethod:BasketShippingMethodSelectionBucketBOs:Size <= 1#">
+					<isinclude template="checkout/shipping/ShippingMethods">
+					<isinclude template="checkout/gifting/PackSlipMessage">
+					<isinclude template="checkout/shipping/LineItems">
+				<iselse>
+					<isinclude template="checkout/shipping/LineItems">
+					<isinclude template="checkout/shipping/ShippingMethods">
+					<isinclude template="checkout/gifting/PackSlipMessage">
+				</isif>
+			</isloop>
+	
+			<isinclude extensionpoint="CheckoutShippingAfterBuckets"/>
+		</div>
+	
+		<!---Cart Summary --->
+		<div class="col-sm-12 col-md-4 order-summary">
+			<h2><istext key="checkout.order_details.heading" /></h2>
+			<isinclude template="checkout/common/widgets/AddressesBox">
+			<isinclude template="checkout/common/widgets/ItemsInCart">
+			<isinclude template="checkout/common/widgets/SubscriptionBox">
+			<div class="cost-summary">
+				<isinclude template="checkout/common/widgets/CostSummary">
+				<button name="continue" class="btn btn-lg btn-block btn-primary" type="submit"><istext key="checkout.button.label" /></button>
+			</div>
+			<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink">
+		</div>
+	</isform>
+</div>

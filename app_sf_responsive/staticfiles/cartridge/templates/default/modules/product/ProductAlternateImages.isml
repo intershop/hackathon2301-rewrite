@@ -1,0 +1,23 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscachekey object="#ProductBO#">
+
+<isset name="ImageViews" value="#ProductBO:Extension("Image"):ImageContainerBO:getImageViewIDsExcludePrimary(ImageType)#" scope="request">
+
+<isif condition="#isDefined(IncludePrimaryImage) AND (IncludePrimaryImage EQ 'false')#">
+	<isif condition="#hasElements(ImageViews)#">
+		<div class="product-img-thumbs" data-type="<isprint value="#ImageType#">">
+			<isloop iterator="ImageViews" alias="ImageView">
+				<ISProductImage ProductBO="#ProductBO#" ImageType="#ImageType#" ImageView="#ImageView#" Class="product-image">
+			</isloop>
+		</div>
+	</isif>
+<iselse>
+	<div class="product-img-thumbs" data-type="<isprint value="#ImageType#">">
+		<ISProductImage ProductBO="#ProductBO#" ImageType="#ImageType#" Class="product-image">
+		<isif condition="#hasElements(ImageViews)#">
+			<isloop iterator="ImageViews" alias="ImageView">
+				<ISProductImage ProductBO="#ProductBO#" ImageType="#ImageType#" ImageView="#ImageView#" Class="product-image">
+			</isloop>
+		</isif>
+	</div>
+</isif>

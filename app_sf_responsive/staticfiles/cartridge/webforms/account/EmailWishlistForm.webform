@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webform:WebForm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.intershop.de/core/2010" xmlns:webform="http://www.intershop.de/webform/2010" name="EmailWishlistForm">
+  <forms name="EmailWishlistForm">
+    <parameters xsi:type="webform:FormParameter" name="FriendsEmails" type="java.lang.String">
+      <validatorBindings validator="GlobalValidators-emails"/>
+    </parameters>
+    <parameters xsi:type="webform:FormParameter" optional="true" name="EmailMessage" type="java.lang.String">
+      <validatorBindings validator="ProfanityCheckWebform-ProfanityChecker">
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="ProfanityCheckConfigurationDomainDictionaryKey" value="CurrentOrganization:OwningDomain"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="CheckAllLocales" value="true"/>
+        <parameterBindings xsi:type="core:ParameterValueBinding" name="RegExToSplitInputstringIntoWords" value="[_;,]"/>
+      </validatorBindings>
+    </parameters>
+  </forms>
+</webform:WebForm>

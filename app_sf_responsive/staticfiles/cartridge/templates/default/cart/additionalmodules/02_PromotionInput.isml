@@ -1,0 +1,7 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(CurrentCartBO) AND hasLoopElements(CurrentCartBO:ProductLineItemBOs)#">
+	<div class="cart-summary">
+		<isinclude template="cart/inc/PromotionCodeInput">
+	</div>	
+</isif>

@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<div class="sitemap-navigation">
+	<nav class="navbar navbar-default">
+		<ul class="nav navbar-nav">
+			<isif condition="#(RenderType eq 'CategoryRange')#">
+				<isloop iterator="CategoryRangesMap:KeySet" alias="CurrentRange">
+					<iscachekey keyword="#CurrentRange#">
+					<li <isif condition="#CurrentRange eq SelectedRange#">
+							class="active"
+						</isif>>
+						<isif condition="#CurrentRange eq SelectedRange#">
+							<a><isprint value="#CurrentRange#"></a>
+						<iselsif condition="#hasElements(CategoryRangesMap:get(CurrentRange))#">
+							<a href="#URL(Action('ViewSitemap-BrowseCategoryRange'),Parameter('Range',CurrentRange))#"><isprint value="#CurrentRange#"></a>
+						<iselse>
+							<a><isprint value="#CurrentRange#"></a>
+						</isif>
+					</li>
+				</isloop>
+			<iselse>
+				<isloop iterator="CategoryBOs" alias="CategoryBO">
+					<iscachekey object="#CategoryBO#">
+					<isif condition="#CategoryBO EQ SelectedCategoryBO#">
+						<li class="active">
+							<a><isprint value="#CategoryBO:DisplayName#"></a>
+					<iselse>
+						<li>
+							<a href="#URL(Action('ViewSitemap-BrowseCategory'), Parameter('CatalogCategoryBOName', CategoryBO:Name))#">
+								<isprint value="#CategoryBO:DisplayName#">
+							</a>
+					</isif>
+					</li>
+				</isloop>
+			</isif>
+		</ul>
+	</nav>
+</div>

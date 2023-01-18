@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline includes the pipelines around the shipping step. 
+@Group Checkout-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewCheckoutShipping" type="view">
+<!--@Location 8,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" name="AdjustedEntryPoint"
+      callMode="Include">
+<!--@BendPoints 17,2-->
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+<!--@BendPoints 17,21-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <startNode referencedName="ViewCheckoutShipping-Prefix"/>
+  </nodes>
+<!--@Location 9,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode12"/>
+  </nodes>
+<!--@Location 9,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+    <nodeSuccessors name="next" next="CallNode23"/>
+    <startNode referencedName="This:CreateShippingForm"/>
+  </nodes>
+<!--@Location 9,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode23">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+    <startNode referencedName="This:CreatePackSlipMessageForm"/>
+  </nodes>
+<!--@Location 9,13-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+<!--@BendPoints 19,28-->
+    <nodeSuccessors name="next" next="SetDictionaryValue9"/>
+  </nodes>
+<!--@Location 9,14-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue9">
+    <configurationValues name="Name" value="JumpTarget"/>
+    <configurationValues name="Value" value="ViewCheckoutShipping-Review"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 19,30-->
+    <nodeSuccessors name="next" next="CallNode9"/>
+  </nodes>
+<!--@Location 9,15-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <startNode referencedName="ViewData-SecureForBrowserBack"/>
+  </nodes>
+<!--@Location 9,16-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <parameterBindings name="Basket" objectPath="CurrentCartBO"/>
+    <startNode referencedName="ProcessBasket-Calculate"/>
+  </nodes>
+<!--@Location 9,17-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.checkout.shipping.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="checkout/shipping/CheckoutShipping.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 2,8-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode11" visibility="Private" name="CheckoutShippingCallback"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CreateFormValuesWrapper0"/>
+  </nodes>
+<!--@Location 2,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateFormValuesWrapper0">
+    <pipelet href="enfinity:/core/pipelets/CreateFormValuesWrapper.xml"/>
+    <nodeSuccessors name="next" next="ExtensionPointNode2"/>
+  </nodes>
+<!--Extension point for "Continue Checkout" in Checkout Shipping process
+@Location 2,10-->
+  <nodes xsi:type="pipeline:ExtensionPointNode" nodeID="ExtensionPointNode2" name="CheckoutShippingContinueCheckout"
+      strict="true">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+<!--All Form values as map-->
+    <parameters name="AllFormValues" type="java.util.Map"/>
+<!--The current basket-->
+    <parameters name="Basket" type="com.intershop.component.basket.capi.BasketBO"/>
+    <parameterBindings name="Basket" objectPath="CurrentCartBO"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="ContinueAllowed"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="JoinNode8"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 2,12-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="EndNode7"/>
+  </nodes>
+<!--@Location 2,13-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode7"/>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="ContinueAllowed"
+      operator="str_eq" conditionValue="false">
+    <nodeSuccessors name="decision_yes" next="EndNode8"/>
+    <nodeSuccessors name="decision_no" next="JoinNode8"/>
+  </nodes>
+<!--@Location 1,13-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode8" name="ERROR"/>
+<!--@Location 6,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" name="ContinueCheckout">
+    <nodeSuccessors name="next" next="CallNode5"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="CallNode25"/>
+    <startNode referencedName="ViewCheckoutShipping-Prefix"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode25">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+<!--@BendPoints 15,5-->
+    <nodeSuccessors name="ERROR" next="SetDictionaryValue0"/>
+    <startNode referencedName="This:CheckoutShippingCallback"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="CallNode13"/>
+  </nodes>
+<!--@Location 6,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode13">
+    <nodeSuccessors name="next" next="CallNode15"/>
+<!--@BendPoints 15,9-->
+    <nodeSuccessors name="ERROR" next="SetDictionaryValue1"/>
+    <startNode referencedName="This:ValidateShippingForm"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <startNode referencedName="ProcessShipping-SetShippingMethods"/>
+  </nodes>
+<!--@Location 6,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="CallNode24"/>
+  </nodes>
+<!--@Location 6,7-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode24">
+    <nodeSuccessors name="next" next="CallNode21"/>
+<!--@BendPoints 15,15-->
+    <nodeSuccessors name="ERROR" next="SetDictionaryValue2"/>
+    <startNode referencedName="This:ValidatePackSlipMessageForm"/>
+  </nodes>
+<!--@Location 6,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode21">
+    <nodeSuccessors name="next" next="JoinNode9"/>
+    <startNode referencedName="ProcessShipping-UpdatePackSlipMessages"/>
+  </nodes>
+<!--@Location 6,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+    <nodeSuccessors name="next" next="DecisionNode_OVoigHBcEeexBdAjmMAiCw"/>
+  </nodes>
+<!--@Location 6,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode_OVoigHBcEeexBdAjmMAiCw"
+      conditionKey="VALIDATION_ERROR" operator="undef">
+    <nodeSuccessors name="decision_yes" next="CallNode27" action="begin"/>
+<!--@BendPoints 15,21 15,27-->
+    <nodeSuccessors name="decision_no" next="JoinNode_gi_q0HBcEeexBdAjmMAiCw"/>
+  </nodes>
+<!--@Location 6,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode27">
+    <nodeSuccessors name="next" next="ValidateBasket0_Input"/>
+    <nodeSuccessors name="DateValidationError" next="JumpNode0" action="rollback"/>
+    <startNode referencedName="ViewCheckoutShipping-HandleDesiredDeliveryDates"/>
+  </nodes>
+<!--@Location 6,14-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="ValidateBasket0">
+    <configurationValues name="AllowAdjustments" value="true"/>
+    <configurationValues name="StopOnError" value="StopOnError"/>
+    <pipelet href="enfinity:/bc_basket/pipelets/com.intershop.component.basket.pipelet.ValidateBasket.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="BasketBO" objectPath="CurrentCartBO"/>
+      <parameterBindings name="Scopes" constant="Shipping"/>
+    </inConnectors>
+    <outConnectors name="Success">
+      <nodeSuccessors next="CallNode11"/>
+    </outConnectors>
+    <outConnectors name="Error">
+      <nodeSuccessors next="JoinNode5"/>
+    </outConnectors>
+    <outConnectors name="Adjusted">
+      <nodeSuccessors next="CallNode11"/>
+    </outConnectors>
+  </nodes>
+<!--@Location 6,15-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="JumpNode4" action="commit"/>
+<!--@BendPoints 11,33-->
+    <nodeSuccessors name="toGiftOption" next="JumpNode1" action="commit"/>
+    <startNode referencedName="ProcessShipping-ProcessGiftOptionMarkers"/>
+  </nodes>
+<!--@Location 6,17-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode4">
+    <startNode referencedName="ViewCheckoutPayment-Start"/>
+  </nodes>
+<!--@Location 5,17-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewCheckoutGifting-Start"/>
+  </nodes>
+<!--@Location 7,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="KeyMapper1" action="rollback"/>
+  </nodes>
+<!--@Location 7,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 17,31-->
+    <nodeSuccessors name="next" next="JoinNode_gi_q0HBcEeexBdAjmMAiCw"/>
+    <parameterBindings name="InValue_1" constant="ERROR_ShippingMethodSelection"/>
+    <returnValueBindings name="OutValue_1" objectPath="ERROR_ShippingMethodSelection"/>
+  </nodes>
+<!--@Location 8,13-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode_gi_q0HBcEeexBdAjmMAiCw">
+    <nodeSuccessors name="next" next="JoinNode3"/>
+  </nodes>
+<!--@Location 5,14-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewCheckoutShipping-Review"/>
+  </nodes>
+<!--@Location 7,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="VALIDATION_ERROR"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 15,19-->
+    <nodeSuccessors name="next" next="JoinNode9"/>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="VALIDATION_ERROR"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 15,13-->
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+<!--@Location 7,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue0">
+    <configurationValues name="Name" value="VALIDATION_ERROR"/>
+    <configurationValues name="Value" value="true"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+  </nodes>
+<!--@Location 17,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode9" name="CreatePackSlipMessageForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="LoopNode1"/>
+  </nodes>
+<!--TempBucket
+@Location 17,1-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode1" loop="CurrentCartBO:Extension(&quot;ShippingMethod&quot;):BasketShippingMethodSelectionBucketBOs">
+    <nodeSuccessors name="next" next="CreatePageableFromCollection0"/>
+    <entry key="Bucket">
+      <nodeSuccessors name="loop_entry_next" next="AddObjectToCollection0"/>
+    </entry>
+  </nodes>
+<!--@Location 17,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToCollection0">
+    <pipelet href="enfinity:/core/pipelets/AddObjectToCollection.xml"/>
+<!--@BendPoints 33,5 33,3-->
+    <nodeSuccessors name="next" next="LoopNode1_Entry"/>
+    <parameterBindings name="InCollection" objectPath="BucketIDs"/>
+    <parameterBindings name="InObject" objectPath="Bucket:ID"/>
+    <returnValueBindings name="OutCollection" objectPath="BucketIDs"/>
+  </nodes>
+<!--@Location 18,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePageableFromCollection0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/CreatePageableFromCollection.xml"/>
+    <nodeSuccessors name="next" next="CreateListForm0"/>
+    <parameterBindings name="Collection" objectPath="BucketIDs"/>
+    <returnValueBindings name="Pageable" objectPath="BucketIDPageable"/>
+  </nodes>
+<!--@Location 18,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateListForm0">
+    <configurationValues name="FormName" value="PackSlipMessageForm"/>
+    <configurationValues name="ObjectIDMethod" value="toString"/>
+    <configurationValues name="ResourceName" value="PackSlipMessage"/>
+    <pipelet href="enfinity:/core/pipelets/CreateListForm.xml"/>
+    <nodeSuccessors name="next" next="EndNode4"/>
+    <parameterBindings name="PageableObject" objectPath="BucketIDPageable"/>
+    <returnValueBindings name="Form" objectPath="PackSlipMessageForm"/>
+  </nodes>
+<!--@Location 18,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4"/>
+<!--@Location 12,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode8" name="CreateShippingForm"
+      callMode="Private">
+<!--@BendPoints 25,2-->
+    <nodeSuccessors name="next" next="CreateForm0"/>
+  </nodes>
+<!--@Location 12,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm0">
+    <configurationValues name="FormName" value="ShippingForm"/>
+    <configurationValues name="FormResource" value="Shipping"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="LoopNode0"/>
+    <returnValueBindings name="Form" objectPath="ShippingForm"/>
+  </nodes>
+<!--TempBucket
+@Location 12,2-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode0" loop="CurrentCartBO:Extension(&quot;ShippingMethod&quot;):BasketShippingMethodSelectionBucketBOs">
+<!--@BendPoints 27,5-->
+    <nodeSuccessors name="next" next="EndNode3"/>
+    <entry key="Bucket">
+      <nodeSuccessors name="loop_entry_next" next="ConcatenateStrings0"/>
+    </entry>
+  </nodes>
+<!--@Location 12,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConcatenateStrings0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/ConcatenateStrings.xml"/>
+    <nodeSuccessors name="next" next="ConcatenateStrings1"/>
+    <parameterBindings name="String0" constant="ShippingInstruction_"/>
+    <parameterBindings name="String1" objectPath="Bucket:ID"/>
+    <returnValueBindings name="Concatenated" objectPath="ShippingInstructionFormFieldName"/>
+  </nodes>
+<!--@Location 12,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConcatenateStrings1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/ConcatenateStrings.xml"/>
+    <nodeSuccessors name="next" next="GetIndirectDictValue0"/>
+    <parameterBindings name="String0" constant="ShippingForm_"/>
+    <parameterBindings name="String1" objectPath="ShippingInstructionFormFieldName"/>
+    <returnValueBindings name="Concatenated" objectPath="ShippingInstructionQualifiedFormFieldName"/>
+  </nodes>
+<!--@Location 12,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetIndirectDictValue0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetIndirectDictValue.xml"/>
+<!--@BendPoints 25,12-->
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap0"/>
+    <parameterBindings name="KeyNameHolder" objectPath="ShippingInstructionQualifiedFormFieldName"/>
+    <returnValueBindings name="MappedEntry" objectPath="ShippingInstructionMappedValue"/>
+  </nodes>
+<!--@Location 12,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap0">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddMultipleEntriesToMap.xml"/>
+<!--@BendPoints 25,14-->
+    <nodeSuccessors name="next" next="AddFormParameterDefinition0"/>
+    <parameterBindings name="InMap" objectPath="ProfanityCheckValidatorParameterMap"/>
+    <parameterBindings name="Key1" constant="ProfanityCheckConfigurationDomainDictionaryKey"/>
+    <parameterBindings name="Key2" constant="ProfanityCheckConfigurationID"/>
+    <parameterBindings name="Value1" constant="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="Value2" constant="Default"/>
+    <returnValueBindings name="OutMap" objectPath="ProfanityCheckValidatorParameterMap"/>
+  </nodes>
+<!--@Location 12,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddFormParameterDefinition0">
+    <configurationValues name="Optional" value="true"/>
+    <configurationValues name="Type" value="java.lang.String"/>
+    <pipelet href="enfinity:/core/pipelets/AddFormParameterDefinition.xml"/>
+<!--@BendPoints 25,16-->
+    <nodeSuccessors name="next" next="AddEntryToMap0"/>
+    <parameterBindings name="Form" objectPath="ShippingForm"/>
+    <parameterBindings name="Name" objectPath="ShippingInstructionFormFieldName"/>
+    <parameterBindings name="ValidateProperties" objectPath="ProfanityCheckValidatorParameterMap"/>
+    <parameterBindings name="Validator" constant="ProfanityCheckWebform-ProfanityChecker"/>
+  </nodes>
+<!--@Location 12,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddEntryToMap.xml"/>
+<!--@BendPoints 25,18-->
+    <nodeSuccessors name="next" next="AddValidateDefinition0"/>
+    <parameterBindings name="Key" constant="maxLength"/>
+    <parameterBindings name="Value" constant="180"/>
+    <returnValueBindings name="OutMap" objectPath="textLengthRule"/>
+  </nodes>
+<!--@Location 12,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddValidateDefinition0">
+    <pipelet href="enfinity:/core/pipelets/AddValidateDefinition.xml"/>
+<!--@BendPoints 25,20-->
+    <nodeSuccessors name="next" next="SetFormParameterValue0"/>
+    <parameterBindings name="Target" objectPath="ShippingForm:getParameter(ShippingInstructionFormFieldName)"/>
+    <parameterBindings name="ValidationProperties" objectPath="textLengthRule"/>
+    <parameterBindings name="Validator" constant="GlobalValidators-maxlength"/>
+  </nodes>
+<!--@Location 12,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetFormParameterValue0">
+    <pipelet href="enfinity:/core/pipelets/SetFormParameterValue.xml"/>
+<!--@BendPoints 23,21 23,5-->
+    <nodeSuccessors name="next" next="LoopNode0_Entry"/>
+    <parameterBindings name="FormParameter" objectPath="ShippingForm:get(ShippingInstructionFormFieldName)"/>
+    <parameterBindings name="Value" objectPath="ShippingInstructionMappedValue"/>
+  </nodes>
+<!--@Location 13,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode3"/>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+    <nodeSuccessors name="next" next="DispatchFormAction1"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction1">
+    <configurationValues name="OutValue_0" value="ViewCheckoutShipping-ContinueCheckout"/>
+    <configurationValues name="OutValue_1" value="ViewCheckoutShipping-Update"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+    <nodeSuccessors name="next" next="Jump1"/>
+<!--@BendPoints 3,3 3,4-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode2"/>
+    <parameterBindings name="Key_0" objectPath="continue"/>
+    <parameterBindings name="Key_1" objectPath="update"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewCheckoutShipping-Start"/>
+  </nodes>
+<!--@Location 23,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode13" name="HandleDesiredDeliveryDates"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CreateIteratorForPrefix0"/>
+  </nodes>
+<!--@Location 23,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateIteratorForPrefix0">
+    <configurationValues name="Prefix" value="desiredDeliveryDate"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/CreateIteratorForPrefix.xml"/>
+    <nodeSuccessors name="next" next="LoopNode2"/>
+    <returnValueBindings name="PrefixIterator" objectPath="DesiredDeliveryDates"/>
+  </nodes>
+<!--@Location 23,2-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode2" loop="DesiredDeliveryDates">
+    <nodeSuccessors name="next" next="CallNode28"/>
+    <entry key="UUID">
+      <nodeSuccessors name="loop_entry_next" next="ConcatenateStrings2"/>
+    </entry>
+  </nodes>
+<!--@Location 23,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConcatenateStrings2">
+    <configurationValues name="DefaultString0" value="desiredDeliveryDate_"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/ConcatenateStrings.xml"/>
+    <nodeSuccessors name="next" next="GetIndirectDictValue1"/>
+    <parameterBindings name="String1" objectPath="UUID"/>
+    <returnValueBindings name="Concatenated" objectPath="DesiredDeliveryDateMarkerKey"/>
+  </nodes>
+<!--@Location 23,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetIndirectDictValue1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetIndirectDictValue.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode3"/>
+    <parameterBindings name="KeyNameHolder" objectPath="DesiredDeliveryDateMarkerKey"/>
+    <returnValueBindings name="MappedEntry" objectPath="DesiredDeliveryDateMarker"/>
+  </nodes>
+<!--@Location 23,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode3" conditionKey="DesiredDeliveryDateMarker"
+      operator="str_empty">
+    <nodeSuccessors name="decision_yes" next="JoinNode0"/>
+    <nodeSuccessors name="decision_no" next="VerifyDate0"/>
+  </nodes>
+<!--@Location 22,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="LoopNode2_Entry"/>
+  </nodes>
+<!--@Location 23,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyDate0">
+    <configurationValues name="MinDate" value="1000.01.01_at_00:00:00"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyDate.xml"/>
+    <nodeSuccessors name="next" next="GetLineItemByUUID0"/>
+    <nodeSuccessors name="pipelet_error" next="KeyMapper0"/>
+    <parameterBindings name="DatePattern" constant="dd/MM/yyyy"/>
+    <parameterBindings name="DateString" objectPath="DesiredDeliveryDateMarker"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+    <returnValueBindings name="Date" objectPath="DesiredDeliveryDate"/>
+    <returnValueBindings name="ErrorCode" objectPath="ERROR_DesiredDeliveryDate"/>
+  </nodes>
+<!--@Location 23,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLineItemByUUID0">
+    <pipelet href="enfinity:/bc_requisition/pipelets/GetLineItemByUUID.xml"/>
+    <nodeSuccessors name="next" next="VerifyDesiredDeliveryDate0"/>
+    <nodeSuccessors name="pipelet_error" next="KeyMapper0"/>
+    <parameterBindings name="LineItemUUID" objectPath="UUID"/>
+    <returnValueBindings name="LineItem" objectPath="ProductLineItem"/>
+  </nodes>
+<!--@Location 23,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyDesiredDeliveryDate0">
+    <pipelet href="enfinity:/bc_basket/pipelets/VerifyDesiredDeliveryDate.xml"/>
+    <nodeSuccessors name="next" next="AddEntryToMap1"/>
+    <nodeSuccessors name="pipelet_error" next="KeyMapper0"/>
+    <parameterBindings name="DesiredDeliveryDate" objectPath="DesiredDeliveryDate"/>
+    <parameterBindings name="Domain" objectPath="Repository:Domain"/>
+    <returnValueBindings name="ErrorCode" objectPath="ERROR_DesiredDeliveryDateSuggestion"/>
+  </nodes>
+<!--@Location 23,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddEntryToMap1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddEntryToMap.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="InMap" objectPath="DatesMap"/>
+    <parameterBindings name="Key" objectPath="UUID"/>
+    <parameterBindings name="Value" objectPath="DesiredDeliveryDate"/>
+    <returnValueBindings name="OutMap" objectPath="DatesMap"/>
+  </nodes>
+<!--@Location 24,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="EndNode10"/>
+    <parameterBindings name="InValue_1" objectPath="UUID"/>
+    <parameterBindings name="InValue_10" objectPath="DesiredDeliveryDateMarker"/>
+    <returnValueBindings name="OutValue_1" objectPath="ERROR_DesiredDeliveryDateUUID"/>
+    <returnValueBindings name="OutValue_10" objectPath="ERROR_DesiredDeliveryDateValue"/>
+  </nodes>
+<!--@Location 25,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode10" name="DateValidationError"
+      strict="true">
+    <returnValues name="ERROR_LINEITEM_UUID" objectPath="UUID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 24,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode28">
+    <nodeSuccessors name="next" next="EndNode9"/>
+    <parameterBindings name="DesiredDeliveryDates" objectPath="DatesMap"/>
+    <startNode referencedName="ProcessShipping-ProcessDesiredDeliveryDate"/>
+  </nodes>
+<!--@Location 25,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode9"/>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="Prefix" callMode="Private">
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="VerifyInteger2"/>
+    <startNode referencedName="ViewCheckout-Prefix"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+<!--@BendPoints 6,5 6,7-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode4"/>
+    <parameterBindings name="LocalizedString" constant="2"/>
+    <returnValueBindings name="IntegerObject" objectPath="CurrentStep"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="CallNode16"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="EndNode1"/>
+    <parameterBindings name="Application" objectPath="ApplicationBO:PersistentObject"/>
+    <parameterBindings name="DomainPreference" objectPath="Repository:Domain"/>
+    <startNode referencedName="ProcessGiftingPreferences-GetGiftingPreferences"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1"/>
+<!--@Location 9,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" name="Review">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 9,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="Pipelet1"/>
+    <startNode referencedName="ViewCheckoutShipping-Prefix"/>
+  </nodes>
+<!--@Location 9,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="Pipelet1">
+    <configurationValues name="Name" value="JumpStep"/>
+    <configurationValues name="Value" value="2"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 19,13-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 10,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="PipeletNode0"/>
+  </nodes>
+<!--@Location 10,7-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="PipeletNode0">
+    <pipelet href="enfinity:/bc_basket/pipelets/GetExcludedDeliveryDatesCalendar.xml"/>
+    <nodeSuccessors name="next" next="CallNode19"/>
+    <parameterBindings name="Domain" objectPath="Repository:Domain"/>
+  </nodes>
+<!--@Location 10,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode19">
+    <nodeSuccessors name="next" next="CallNode17"/>
+    <startNode referencedName="ViewCart-GetUpdateQuantityValues"/>
+  </nodes>
+<!--@Location 10,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <startNode referencedName="ViewCheckout-AdjustJumpStep"/>
+  </nodes>
+<!--@Location 10,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Start">
+    <nodeSuccessors name="next" next="CallNode18"/>
+  </nodes>
+<!--@Location 10,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode18">
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <parameterBindings name="PageName" constant="shipping"/>
+    <parameterBindings name="PageType" constant="checkout"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 10,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <startNode referencedName="ViewCheckoutShipping-Prefix"/>
+  </nodes>
+<!--@Location 10,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="ExtensionPointNode0"/>
+    <parameterBindings name="Cart" objectPath="CurrentCart"/>
+    <parameterBindings name="CustomerBORepository" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="User" objectPath="CurrentUser"/>
+    <parameterBindings name="UserBORepository" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <startNode referencedName="ProcessCheckout-DefaultSettings"/>
+  </nodes>
+<!--Extension point for "Start" in Checkout Shipping process
+@Location 10,4-->
+  <nodes xsi:type="pipeline:ExtensionPointNode" nodeID="ExtensionPointNode0" name="CheckoutShippingStart"
+      strict="true">
+    <nodeSuccessors name="next" next="CallNode14"/>
+  </nodes>
+<!--@Location 10,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="Basket" objectPath="CurrentCart"/>
+    <startNode referencedName="ProcessShipping-StartHook"/>
+  </nodes>
+<!--@Location 4,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Update">
+    <nodeSuccessors name="next" next="CallNode4"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+<!--@BendPoints 9,4-->
+    <nodeSuccessors name="next" next="CallNode8"/>
+    <startNode referencedName="ViewCheckoutShipping-Prefix"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode26"/>
+    <startNode referencedName="ProcessShipping-SetShippingMethods"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode26">
+    <nodeSuccessors name="next" next="JumpNode3"/>
+    <parameterBindings name="Basket" objectPath="CurrentCartBO"/>
+    <startNode referencedName="ProcessBasket-Calculate"/>
+  </nodes>
+<!--@Location 4,4-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="ViewCheckoutShipping-Review"/>
+  </nodes>
+<!--@Location 19,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode10" name="ValidatePackSlipMessageForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode22"/>
+  </nodes>
+<!--@Location 19,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode22">
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <startNode referencedName="This:CreatePackSlipMessageForm"/>
+  </nodes>
+<!--@Location 19,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <configurationValues name="Trim" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+<!--@BendPoints 39,6-->
+    <nodeSuccessors name="next" next="EndNode6"/>
+    <nodeSuccessors name="pipelet_error" next="EndNode5"/>
+    <parameterBindings name="Form" objectPath="PackSlipMessageForm"/>
+  </nodes>
+<!--@Location 19,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode6"/>
+<!--@Location 20,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" name="ERROR"/>
+<!--@Location 14,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="ValidateShippingForm"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode10"/>
+  </nodes>
+<!--@Location 14,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="ValidateForm0"/>
+    <startNode referencedName="This:CreateShippingForm"/>
+  </nodes>
+<!--@Location 14,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm0">
+    <configurationValues name="Trim" value="true"/>
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+<!--@BendPoints 29,6-->
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <nodeSuccessors name="pipelet_error" next="EndNode0"/>
+    <parameterBindings name="Form" objectPath="ShippingForm"/>
+  </nodes>
+<!--@Location 14,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2"/>
+<!--@Location 15,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" name="ERROR"/>
+</pipeline:Pipeline>

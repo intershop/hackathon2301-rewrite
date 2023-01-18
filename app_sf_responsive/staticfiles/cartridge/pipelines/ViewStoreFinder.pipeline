@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Stores in consimer app.
+@Group Stores-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewStoreFinder" type="view">
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Dispatch">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="Pipelet1"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="Pipelet1">
+    <configurationValues name="OutValue_0" value="ViewStoreFinder-Search"/>
+    <configurationValues name="OutValue_1" value="ViewStoreFinder-ReloadStates"/>
+    <configurationValues name="PagingPipeline" value="ViewStoreFinder-Paging"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="JumpNode3"/>
+<!--@BendPoints 3,3 3,4-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode1"/>
+    <parameterBindings name="Key_0" objectPath="search"/>
+    <parameterBindings name="Key_1" objectPath="reloadStates"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="SecureJump-Start"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewStoreFinder-Start"/>
+  </nodes>
+<!--@Location 0,5-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" strict="true" name="GetStoreFinderForm"
+      callMode="Private">
+<!--@BendPoints 1,12-->
+    <nodeSuccessors name="next" next="CreateForm1"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateForm1">
+    <configurationValues name="FormName" value="StoreFinder-StoreFinder"/>
+    <configurationValues name="FormResource" value="StoreFinder"/>
+    <pipelet href="enfinity:/core/pipelets/CreateForm.xml"/>
+    <nodeSuccessors name="next" next="EndNode4"/>
+    <returnValueBindings name="Form" objectPath="StoreFinderForm"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4" strict="true">
+    <returnValues name="StoreFinderForm" type="com.intershop.beehive.core.capi.webform.Form"/>
+  </nodes>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Paging">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="ValidateForm0"/>
+    <startNode referencedName="This:GetStoreFinderForm"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm0">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode0"/>
+    <parameterBindings name="Form" objectPath="StoreFinderForm"/>
+  </nodes>
+<!--@Location 2,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+<!--@BendPoints 5,19-->
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <nodeSuccessors name="ERROR" next="JoinNode5"/>
+    <startNode referencedName="Paging-GetPageableByID"/>
+    <returnValueBindings name="Pageable" objectPath="Stores"/>
+  </nodes>
+<!--@Location 3,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="CallNode4"/>
+  </nodes>
+<!--@Location 3,10-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <parameterBindings name="Pageable" objectPath="Stores"/>
+    <startNode referencedName="Paging-SetPageNumber"/>
+  </nodes>
+<!--@Location 3,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="AddMultipleEntriesToMap0"/>
+    <parameterBindings name="InValue_1" constant="ViewStoreFinder"/>
+    <returnValueBindings name="OutValue_1" objectPath="HandlerPipeline"/>
+  </nodes>
+<!--@Location 3,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddMultipleEntriesToMap0">
+    <configurationValues name="Mode" value="OverwriteValue"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddMultipleEntriesToMap.xml"/>
+    <nodeSuccessors name="next" next="CreateNavigationList0"/>
+    <parameterBindings name="Key1" objectPath="StoreFinderForm:CountryCode:QualifiedName"/>
+    <parameterBindings name="Key2" objectPath="StoreFinderForm:PostalCode:QualifiedName"/>
+    <parameterBindings name="Key3" objectPath="StoreFinderForm:City:QualifiedName"/>
+    <parameterBindings name="Value1" objectPath="StoreFinderForm:CountryCode:Value"/>
+    <parameterBindings name="Value2" objectPath="StoreFinderForm:PostalCode:Value"/>
+    <parameterBindings name="Value3" objectPath="StoreFinderForm:City:Value"/>
+    <returnValueBindings name="OutMap" objectPath="GenericHandlerPipelineParams"/>
+  </nodes>
+<!--@Location 3,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreateNavigationList0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreateNavigationList.xml"/>
+    <nodeSuccessors name="next" next="JoinNode4"/>
+    <parameterBindings name="CurrentPage" objectPath="Stores:Page"/>
+    <parameterBindings name="ElementCount" objectPath="Stores:ElementCount"/>
+    <parameterBindings name="Iterator" objectPath="Stores"/>
+    <parameterBindings name="PageCount" objectPath="Stores:PageCount"/>
+    <parameterBindings name="PageSize" objectPath="Stores:PageSize"/>
+    <parameterBindings name="PageableID" objectPath="Stores:ID"/>
+  </nodes>
+<!--@Location 3,14-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="GetApplicationBO1"/>
+  </nodes>
+<!--@Location 3,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO1">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="GetDomainPreference0"/>
+  </nodes>
+<!--@Location 3,16-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainPreference0">
+    <configurationValues name="DefaultPreferenceKey" value="HRefLangEnabled"/>
+    <configurationValues name="Type" value="String"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainPreference.xml"/>
+    <nodeSuccessors name="next" next="JoinNode9"/>
+<!--@BendPoints 8,33 8,35-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode9"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="PreferenceKey" nullBinding="true"/>
+    <returnValueBindings name="Preference" objectPath="PreferenceHRefLangEnabled"/>
+    <returnValueBindings name="PreferenceStringValue" objectPath="HRefLangEnabled"/>
+  </nodes>
+<!--@Location 3,17-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+    <nodeSuccessors name="next" next="CreatePipelineHrefLangList0"/>
+  </nodes>
+<!--@Location 3,18-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePipelineHrefLangList0">
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/CreatePipelineHRefLangList.xml"/>
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <parameterBindings name="Locales" objectPath="ApplicationBO:Locales"/>
+    <parameterBindings name="Parameter" nullBinding="true"/>
+    <parameterBindings name="PipelineAction" constant="ViewStoreFinder-Start"/>
+  </nodes>
+<!--@Location 3,19-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.storeFinder.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="storefinder/StoreFinder.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode5">
+    <nodeSuccessors name="next" next="GetStoresBySearch0"/>
+  </nodes>
+<!--@Location 3,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetStoresBySearch0">
+    <pipelet href="enfinity:/bc_store/pipelets/GetStoresBySearch.xml"/>
+    <nodeSuccessors name="next" next="CreatePageableFromCollection0"/>
+<!--@BendPoints 9,11 9,15-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode6"/>
+    <parameterBindings name="Active" constant="(Boolean)true"/>
+    <parameterBindings name="City" objectPath="StoreFinderForm:City:Value"/>
+    <parameterBindings name="Country" objectPath="StoreFinderForm:CountryCode:Value"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+    <parameterBindings name="PostalCode" objectPath="StoreFinderForm:PostalCode:Value"/>
+    <parameterBindings name="State" objectPath="StoreFinderForm:State:Value"/>
+    <parameterBindings name="StoreBORepository" objectPath="ApplicationBO:Repository(&quot;StoreBORepository&quot;)"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="CreatePageableFromCollection0">
+    <configurationValues name="Pagesize" value="15"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/CreatePageableFromCollection.xml"/>
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <parameterBindings name="Collection" objectPath="StoreBOs"/>
+    <returnValueBindings name="Pageable" objectPath="Stores"/>
+  </nodes>
+<!--@Location 3,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="JoinNode5"/>
+  </nodes>
+<!--@Location 6,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="ReloadStates">
+<!--@BendPoints 13,2-->
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+<!--@BendPoints 13,4-->
+    <nodeSuccessors name="next" next="ValidateForm3"/>
+    <startNode referencedName="ViewStoreFinder-GetStoreFinderForm"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm3">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="JoinNode3"/>
+<!--@BendPoints 14,5 14,7-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="Form" objectPath="StoreFinderForm"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+<!--@BendPoints 13,11-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 5,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode8"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+<!--@BendPoints 11,29-->
+    <nodeSuccessors name="next" next="JoinNode4"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" name="Search">
+    <nodeSuccessors name="next" next="CallNode6"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="ValidateForm1"/>
+    <startNode referencedName="ViewStoreFinder-GetStoreFinderForm"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ValidateForm1">
+    <pipelet href="enfinity:/core/pipelets/ValidateForm.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="Form" objectPath="StoreFinderForm"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Start">
+    <nodeSuccessors name="next" next="CallNode5"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+    <startNode referencedName="ViewStoreFinder-GetStoreFinderForm"/>
+  </nodes>
+</pipeline:Pipeline>

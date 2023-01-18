@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isif condition="#RecurringBasket:Recurring#">
+	<isset name="recurrenceinformation" value="#RecurringBasket:RecurrenceInformation#" scope="request"/>
+	<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+	<tr>
+		<td><istext key="subscription.display.recurrence.label"/></td>
+		<td><isPeriodDisplay period="#recurrenceinformation:Interval#"></td>
+	</tr>
+	<tr>
+		<td><istext key="subscription.display.start_date.label"/></td>
+		<td><isprint value="#recurrenceinformation:StartDate#" style="DATE_SHORT"></td>
+	</tr>
+	<tr>
+		<td><istext key="subscription.display.end_date.label"/></td>
+		<td>
+			<isif condition="#isDefined(recurrenceinformation:EndDate)#">
+				<isprint value="#recurrenceinformation:EndDate#" style="DATE_SHORT">
+			<iselse>
+				<istext key="subscription.display.no_end_date"/>
+			</isif>
+		</td>
+	</tr>
+	<tr><td>&nbsp;</td><td>&nbsp;</td></tr>
+</isif>

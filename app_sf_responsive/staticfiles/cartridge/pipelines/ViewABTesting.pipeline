@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Provides several public nodes to trigger the logging of abtest events.
+@Group OnlineMarketing-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewABTesting" type="view">
+<!--@Location 5,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="CallLogPageletClickEvents">
+<!--@BendPoints 11,2-->
+    <nodeSuccessors name="next" next="LogABTestClickEvents0"/>
+    <parameters name="ClickedABTestObjectID" type="java.lang.String"/>
+    <parameters name="ClickedABTestGroupID" type="java.lang.String"/>
+    <parameters name="ClickedNestedABTestClick" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 5,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="LogABTestClickEvents0">
+    <pipelet href="enfinity:/bc_abtest/pipelets/LogABTestClickEvents.xml"/>
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <parameterBindings name="ABTestGroupID" objectPath="ClickedABTestGroupID"/>
+    <parameterBindings name="ABTestObjectID" objectPath="ClickedABTestObjectID"/>
+    <parameterBindings name="CurrentABTestGroups" objectPath="CurrentSession:Object(&quot;T_CurrentABTestGroupUUIDs&quot;)"/>
+    <parameterBindings name="CurrentSession" objectPath="CurrentSession"/>
+    <parameterBindings name="CurrentUser" objectPath="CurrentUser"/>
+    <parameterBindings name="NestedABTestClicks" objectPath="ClickedNestedABTestClick"/>
+  </nodes>
+<!--@Location 5,2-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0"/>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="CallLogPageletViewEvents">
+    <nodeSuccessors name="next" next="GetABTestGroupByUUID0"/>
+    <parameters name="TestObjectID" type="java.lang.String"/>
+    <parameters name="ABTestGroupID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetABTestGroupByUUID0">
+    <pipelet href="enfinity:/bc_abtest/pipelets/GetABTestGroupByUUID.xml"/>
+    <nodeSuccessors name="next" next="GetPageletByUUID1"/>
+<!--@BendPoints 9,3-->
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="UUID" objectPath="ABTestGroupID"/>
+    <returnValueBindings name="ABTestGroup" objectPath="ABTestGroup"/>
+  </nodes>
+<!--@Location 3,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPageletByUUID1">
+    <pipelet href="enfinity:/bc_pmc/pipelets/GetPageletByUUID.xml"/>
+<!--@BendPoints 7,6-->
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode2"/>
+    <parameterBindings name="PageletUUID" objectPath="TestObjectID"/>
+    <returnValueBindings name="Pagelet" objectPath="TestObject"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <parameterBindings name="ABTestGroup" objectPath="ABTestGroup"/>
+    <parameterBindings name="TestObject" objectPath="TestObject"/>
+    <startNode referencedName="ProcessABTesting-LogViewEvent"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 7,11-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+<!--@Location 2,5-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="Empty"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+<!--@BendPoints 9,9-->
+    <nodeSuccessors name="next" next="JoinNode1"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="CallLogPromotionViewEvents">
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+    <parameters name="TestObjectID" type="java.lang.String"/>
+    <parameters name="ABTestGroupID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="CurrentSession:getObject(&quot;T_ABTestMode&quot;)"
+      operator="str_eq" conditionValue="Enabled">
+    <nodeSuccessors name="decision_yes" next="GetPromotionByUUID0"/>
+<!--@BendPoints 5,3-->
+    <nodeSuccessors name="decision_no" next="JoinNode3"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPromotionByUUID0">
+    <pipelet href="enfinity:/bc_marketing/pipelets/GetPromotionByUUID.xml"/>
+    <nodeSuccessors name="next" next="AddObjectToVector0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode3"/>
+    <parameterBindings name="PromotionUUID" objectPath="TestObjectID"/>
+    <returnValueBindings name="Promotion" objectPath="TestObject"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddObjectToVector.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameterBindings name="InVector" nullBinding="true"/>
+    <parameterBindings name="Object" objectPath="TestObject"/>
+    <parameterBindings name="Objects" nullBinding="true"/>
+    <returnValueBindings name="Iterator" objectPath="TestObjects"/>
+    <returnValueBindings name="OutVector" nullBinding="true"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+<!--@BendPoints 3,11-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <startNode referencedName="ProcessABTesting-LogViewEvents"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+</pipeline:Pipeline>

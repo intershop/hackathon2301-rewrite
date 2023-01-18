@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<!--- Contains payment related application storefront modules. --->
+
+<!---
+	Displays the name, description and payment costs for the payment service
+	Parameters:
+		- PaymentService (required)
+			Payment service to show name for
+		- Description (optional)
+			true (default) or false 
+		- PaymentCosts (optional)	
+			payment costs for the purchase currency
+--->
+<ismodule template = "modules/payment/PaymentServiceDisplay.isml"
+	name="PaymentServiceDisplay"
+	attribute="paymentservice"
+	attribute="description"
+	attribute="paymentcosts"
+	attribute="restrictionerrors"
+	attribute="currentcartbo"
+	strict="true"
+>
+
+<!---
+	Displays payment method(s) (open and limited) for a basket/order
+	Parameters:
+		- paymentBOs (required)
+			Iterator of payment methods of a basket or order, e.g. #CurrentCartBO:Extension("Payment"):PaymentBOs# or #OrderBO:Extension("Payment"):PaymentTransactionBOs#		
+--->
+<ismodule template = "modules/payment/PaymentMethodDisplay.isml"
+	name="PaymentMethodDisplay"
+	attribute="paymentBOs"		
+	strict="true"
+>

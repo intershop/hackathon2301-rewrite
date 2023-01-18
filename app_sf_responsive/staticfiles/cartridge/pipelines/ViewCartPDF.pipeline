@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline is used to save shopping cart as pdf.-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewCartPDF" type="view">
+<!--@Location 4,\-2-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Cart.pdf">
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 4,\-1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="KeyMapper_6C_ooBCIEeeKeIxDN8w-GQ"/>
+    <startNode referencedName="This:Prefix"/>
+  </nodes>
+<!--@Location 4,0-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper_6C_ooBCIEeeKeIxDN8w-GQ">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+    <parameterBindings name="InValue_1" constant="true"/>
+    <returnValueBindings name="OutValue_1" objectPath="CartReadonly"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="InteractionNodePDF"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentRequest:PipelineDictionary"/>
+    <parameterBindings name="InValue_2" constant=""/>
+    <parameterBindings name="InValue_3" constant="systempage.cart.pdf.pagelet2-Page"/>
+    <returnValueBindings name="OutValue_1" objectPath="Dictionary"/>
+    <returnValueBindings name="OutValue_3" objectPath="PageletEntryPointID"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNodePDF" interactionProcessor="PageEntryPoint2PDFInteractionProcessor"
+      dynamic="true">
+    <template/>
+  </nodes>
+<!--@Location 0,\-2-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="Prefix"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <parameters name="CurrentOrganization" type="com.intershop.component.organization.capi.Organization"/>
+    <parameters name="CurrentUser" type="com.intershop.beehive.core.capi.user.User"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+    <parameters name="CurrentApplication" type="com.intershop.beehive.core.capi.domain.Application"/>
+  </nodes>
+<!--@Location 0,\-1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameterBindings name="BasketBORepository" objectPath="ApplicationBO:Repository(&quot;BasketBORepository&quot;)"/>
+    <parameterBindings name="Organization" objectPath="CurrentOrganization"/>
+    <startNode referencedName="ViewCart-GetCurrentCartBO"/>
+    <returnValueBindings name="BasketBO" objectPath="CurrentCartBO"/>
+  </nodes>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="CurrentCartBO:AllProductLineItemBOs:Size"
+      operator="gt" conditionValue="0">
+    <nodeSuccessors name="decision_yes" next="CallNode3"/>
+    <nodeSuccessors name="decision_no" next="CallNode0"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="GetPageletsOfPageletEntryPoint0"/>
+<!--@BendPoints 3,3-->
+    <nodeSuccessors name="ERROR" next="JoinNode1"/>
+    <parameterBindings name="PageletEntryPointID" constant="systempage.cart.pdf.pagelet2-Page"/>
+    <parameterBindings name="ResourceSetID" constant="app_sf_responsive"/>
+    <startNode referencedName="ProcessPagelet-LookupPageletEntryPoint"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPageletsOfPageletEntryPoint0">
+    <pipelet href="enfinity:/sld_pmc/pipelets/GetPageletsOfPageletEntryPoint.xml"/>
+    <nodeSuccessors name="next" next="GetFirstElementOfIterator0"/>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetFirstElementOfIterator0">
+    <pipelet href="enfinity:/core/pipelets/GetFirstElementOfIterator.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <nodeSuccessors name="pipelet_error" next="JoinNode1"/>
+    <parameterBindings name="Iterator" objectPath="Pagelets"/>
+    <returnValueBindings name="FirstElement" objectPath="Pagevariant"/>
+  </nodes>
+<!--@Location 0,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/core/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="InValue_1" objectPath="Pagevariant:ConfigurationParametersAsMap:DefaultFileName:Value"/>
+    <returnValueBindings name="OutValue_1" objectPath="DefaultFileName"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+    <nodeSuccessors name="next" next="EndNode0"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="CurrentCart" type="com.intershop.beehive.bts.capi.orderprocess.basket.Basket"/>
+    <returnValues name="CurrentCartBO" type="com.intershop.component.basket.capi.BasketBO"
+        optional="true"/>
+    <returnValues name="DefaultFileName" type="java.lang.String" optional="true"/>
+    <returnValues name="PriceType" type="java.lang.String"/>
+    <returnValues name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"
+        optional="true"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+<!--@BendPoints 3,13-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+  </nodes>
+<!--@Location 2,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="RenderSystemPage0_Input"/>
+    <parameterBindings name="Basket" objectPath="CurrentCartBO:Extension(&quot;PersistentObjectBOExtension&quot;):PersistentObject"/>
+    <startNode referencedName="FireTrackingEvents-ViewBasket"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPage0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.cart.empty.pagelet2-Page"/>
+    <pipelet href="enfinity:/sld_pmc/pipelets/com.intershop.sellside.pmc.capi.pipeline.RenderSystemPage.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+</pipeline:Pipeline>

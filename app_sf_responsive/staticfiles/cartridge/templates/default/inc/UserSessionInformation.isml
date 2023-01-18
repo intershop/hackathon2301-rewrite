@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- display a warning message in case the user session has been taken over --->
+<isif condition="#isDefined(CurrentSession:TransientObject("sessionTakeover"))#">
+
+	<div class="system-notification userSessionMessage">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12">
+					<a href="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#" class="system-notification-close userSessionMessage-close">
+						<span class="glyphicon glyphicon-remove"></span>
+					</a>
+					<div class="system-notification-icon">
+						<span class="glyphicon glyphicon-warning-sign"></span>
+					</div>
+					<div class="system-notification-text">
+						<h2><istext key="security.session.takeover.title"/></h2>
+						<p><istext key="security.session.takeover.message" parameter0="#encodeValue(CurrentRequest:ChannelSite:DisplayName)#" encoding="off"/></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('.userSessionMessage-close').on('click', function(e) {
+				e.preventDefault();
+				var self = this;
+				
+				// Fade out the message
+				$(this).closest('.userSessionMessage').fadeOut();
+				
+				$.ajax({
+					url: $(this).attr('href'),
+					data: {},
+					
+					// if there is an error then fade in the message again
+					error: function(jqXHR, textStatus, errorThrown) {
+						$(self).closest('.userSessionMessage').fadeIn();
+					}
+				});
+				
+			});
+		});
+	</script>
+
+</isif>

@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#pli:ProductBO:ServiceType:DigitalGiftCard#">
+	<div>
+		<isprint value="#pli:ShipToAddressBO:EMail#"><br />
+		<isprint value="#pli:CustomAttributes:GIFTCARD_GreetingMessage#">
+	</div>
+	
+	<isif condition="#(editable EQ 'true')#">
+		<a class="btn-tool" data-dialog title="<istext key="account.giftcard.edit"/>" 
+			href="#URL(Action('ViewGiftCertificates-ViewGiftCertificateForm'), 
+			Parameter("PLIID", pli:ID), 
+			Parameter('SKU', pli:ProductSKU))#">
+			<span class="glyphicon glyphicon-pencil"></span>
+		</a>
+	<iselse>
+		<br/>
+	</isif>
+</isif>

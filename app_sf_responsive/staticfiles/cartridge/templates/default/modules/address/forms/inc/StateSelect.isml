@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/common/Modules">
+
+<div class="form-group">
+	<isseq-next name="tabcount">
+	<label class="control-label col-sm-4" for="<isprint value = "#webform:State:QualifiedName.idSuffix#">">
+		<isif condition="#webform:CountryCode:Value EQ 'US'#">
+			<istext key="account.address.state.label" />
+		<iselse>
+			<istext key="account.default_address.state.label" />
+		</isif>
+		<isif condition="#NOT webform:State:Optional#"><span class="required">*</span></isif>
+	</label>
+	<div class="col-sm-8">
+		<isif condition="#isDefined(webform:State:Value)#" >
+			<isif condition="#webform:State:isInvalid#">
+				<isstateselectbox countrycode="#webform:CountryCode:Value#" autosuggestion="on" validation="required" validationgroup="#validationgroup#" formparameter="#webform:State:QualifiedName#" state="#webform:State:Value#" class="kor-error" inputfieldid="#webform:State:QualifiedName.idSuffix#">
+			<iselse>
+				<isstateselectbox countrycode="#webform:CountryCode:Value#" autosuggestion="on" validation="required" validationgroup="#validationgroup#" formparameter="#webform:State:QualifiedName#" state="#webform:State:Value#" inputfieldid="#webform:State:QualifiedName.idSuffix#">
+			</isif>
+		<iselseif condition="#isDefined(address)#">
+			<isstateselectbox countrycode="#address:CountryCode#" autosuggestion="on" validation="required" validationgroup="#validationgroup#" formparameter="#webform:State:QualifiedName#" state="#address:MainDivision#" inputfieldid="#webform:State:QualifiedName.idSuffix#">
+		<iselse>
+			<isstateselectbox countrycode="#webform:CountryCode:Value#" autosuggestion="on" validation="required" validationgroup="#validationgroup#" formparameter="#webform:State:QualifiedName#" inputfieldid="#webform:State:QualifiedName.idSuffix#">
+		</isif>
+	</div>	
+</div>

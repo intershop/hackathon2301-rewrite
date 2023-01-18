@@ -1,0 +1,13 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div class="express-shop-trigger hidden-xs" 
+	data-dialog
+	data-dialog-href="#URL(Action('ViewExpressShop-ViewProduct'), Parameter('SKU', ProductBO:SKU), Parameter('CategoryName', ProductBO:DefaultCatalogCategory:Name), Parameter('CategoryDomainName', ProductBO:DefaultCatalogCategory:DomainName))#"
+	title="<istext key="common.express_shop.label">"
+>
+	<isif condition="#isdefined(label)#">
+		<isprint value="#label#">
+	<iselse>
+		<span class="glyphicon-eye-open glyphicon"></span>
+	</isif>
+</div>

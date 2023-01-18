@@ -1,0 +1,166 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true" templatemarker="true">
+<isinclude template="modules/Modules">
+<isGetLoginPreferenceReader>
+<isinclude template="checkout/common/HeaderProgressBar">
+<isset name="emailKeyPrefix" value="email" scope="request">
+
+<div data-testing-id="new-user-address-page">
+	<div class="marketing-area">
+		<ISMarketingSlot id="baseMarketing">
+	</div>
+
+	<h1><istext key="checkout.addresses.heading" /></h1>
+
+	<div class="row">
+	
+		<!--- returning user section --->
+		<div class="col-sm-6 col-md-4">
+			<!--- Include login form for registered user --->
+			<isif condition="#NOT(CurrentSession:isLoggedIn)#">
+				<isinclude template="checkout/common/widgets/LoginBox">
+			</isif>
+		</div>
+	
+		<isform method="post" action="#URL(Action('ViewCheckoutAddresses-Dispatch'))#" class="form-horizontal bv-form show-inline">
+		
+			<div class="col-sm-6 col-md-4">	
+					
+				<isif condition="#isDefined(ERROR_AddressSelection)#">
+					<div class="alert alert-danger" role="alert">
+						<istext key="checkout.addresses.no_Selection.error"/>
+					</div>
+				</isif>
+				<isif condition="#isDefined(AddressCreationResult) AND NOT(AddressCreationResult:Success)#">
+					<isif condition="#AddressCreationResult:FailureCode EQ 'DuplicateAddress'#">
+						<div class="alert alert-info" role="alert">
+							<p><istext key="checkout.addresses.create_address.duplicate.error"/></p>
+						</div>
+					<iselse>
+						<div class="alert alert-danger" role="alert">
+							<p><istext key="#'checkout.addresses.create_address.'.AddressCreationResult:FailureCode.'.error'#"/></p>
+						</div>
+					</isif>
+				</isif>
+
+				<h2><istext key="checkout.addresses.checkout_as_guest.heading" /></h2>
+				<h3 class="subheading"><istext key="checkout.addresses.billing_address.heading" /></h3>
+				
+				<!--- Include Address form --->
+				<isaddressform webform="#BillingAddress#" countrylist="#ShippingCountries#" addresstemplate="#'modules/address/forms/'.BillingAddressWebFormFileName#" salutation_enumeration_provider="#SalutationEnumerationKeyProvider#">
+						
+				<isif condition="#NOT CurrentSession:LoggedIn#">
+
+					<isinclude extensionpoint="AdditionalAddressInformationExtensions"/>
+
+					<div class="form-group<isif condition="#EmailAddress:Email:isInvalid#" > has-error </isif>">
+						<label  class="control-label col-sm-4" for="<isprint value="#EmailAddress:Email:QualifiedName#">">
+							<istext key="checkout.addresses.email.label" /><span class="required">*</span>
+						</label>
+						<div class="col-sm-8">
+							<input type="email" value="<isprint value="#EmailAddress:Email:Value#">" 
+									class="form-control <isif condition="#EmailAddress:Email:isInvalid#">has-error</isif>" 
+									name="<isprint value = "#EmailAddress:Email:QualifiedName#">" 
+									id="<isprint value = "#EmailAddress:Email:QualifiedName#">" 
+									required 
+									data-bv-notempty-message="<istext key="account.email.error.email">"
+									data-bv-emailaddress-message="<istext key="checkout.addresses.email.invalid.error"/>"
+									<isprint value="#EmailAddress:Email:ClientValidationConfig("html5")#" encoding="off" >
+							/>
+						</div>
+						<div class="col-sm-offset-4 col-sm-8">
+							<small class="input-help"><istext key="account.address.email.hint" /></small>
+						</div>
+					</div>
+					
+					<isif condition="#isDefined(ActiveEmailProvider) AND  isDefined(BasketEmailOptIn) AND (BasketEmailOptIn NE 'yes')#">
+						<div class="checkbox">
+							<label for="<isprint value="#EmailAddress:Newsletter:QualifiedName#">">
+								<input type="checkbox" value="true" id="<isprint value="#EmailAddress:Newsletter:QualifiedName#">" name="<isprint value="#EmailAddress:Newsletter:QualifiedName#">" <isif condition="#(EmailAddress:Newsletter:Value EQ 'true')#"> checked="checked" </isif>/>
+								<istext key="checkout.addresses.newsletter.checkbox.text"/>
+							</label>
+						</div>
+						<div class="help-block">
+							<istext key="checkout.order_and_shipping_confirmation.text" encoding="off"
+									parameter0="#URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systempage.privacyPolicy.pagelet2-Page'))#"/>
+						</div>
+					<iselse>
+						<div class="help-block">
+							<istext key="checkout.order_and_shipping_confirmation.auto_email.text" encoding="off"
+									parameter0="#URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systempage.privacyPolicy.pagelet2-Page'))#"/>
+						</div>
+					</isif>
+				</isif>
+				
+				<div class="section">
+					<h3><istext key="checkout.addresses.shipping_address.heading" /></h3>
+		
+					<isif condition="#NOT CurrentCartBO:hasShipToAddressesSet#">
+							
+						<div class="radio">
+							<label>
+								<input <isif condition="#(NOT isDefined(ShippingAddressOption)) OR (ShippingAddressOption EQ '1')#">checked="checked"</isif> type="radio" value="1" name="ShippingAddressOption" id="shipOption1"/><istext key="checkout.addresses.shipping_address.option1.text" />
+							</label>
+						</div>
+							
+						<div class="radio">
+							<label>
+								<input class="alternate-address"<isif condition="#(isDefined(ShippingAddressOption)) AND (ShippingAddressOption EQ '2')#"> checked="checked"</isif> type="radio" value="2" name="ShippingAddressOption"/><istext key="checkout.addresses.shipping_address.option2.text" />
+							</label>
+						</div>
+						<isif condition="#(isDefined(PickupInStoreEnabled)) AND (PickupInStoreEnabled EQ 'true')#">
+							<div class="radio<isif condition="#isDefined(ERROR_StoreSelection) AND (ERROR_StoreSelection EQ 'true')#"> has-error</isif>" id="checkoutShippingAddressOptionStore">
+								<label>
+									<input class="alternate-store-address"<isif condition="#(isDefined(ShippingAddressOption)) AND (ShippingAddressOption EQ '4')#"> checked="checked"</isif> type="radio" value="4" id="shipOption" name="ShippingAddressOption"/><istext key="checkout.addresses.shipping_address.option4.text" />
+								</label>
+								<isif condition="#isDefined(ERROR_StoreSelection) AND (ERROR_StoreSelection EQ 'true')#">
+									<small class="help-block" id="checkoutShippingAddressStoreSelectionError">
+										<istext key="checkout.addresses.no_StoreSelection.error"/>
+									</small>
+								</isif>
+							</div>
+						</isif>
+						<isif condition="#(CurrentCartBO:TotalProductQuantity > (1 + CurrentCartBO:ShippedByEmailProductsQuantity)) AND (CurrentCartBO:MultipleShipmentsSupported)#">
+							<div class="radio">
+								<label>
+									<input<isif condition="#(isDefined(ShippingAddressOption)) AND (ShippingAddressOption EQ '3')#"> checked="checked"</isif> type="radio" value="3" id="shipOption3" name="ShippingAddressOption"/><istext key="checkout.addresses.shipping_address.option3.text" />
+								</label>
+							</div>
+						</isif>
+						<div class="checkout-address-alt" <isif condition="#NOT (isDefined(ShippingAddressOption) AND (ShippingAddressOption EQ '2'))#">style="display:none"</isif>>
+							<br/><isaddressform
+								webform="#ShippingAddress#"
+								countrylist="#ShippingCountries#"
+								salutation_enumeration_provider="#SalutationEnumerationKeyProvider#"
+								addresstemplate="#'modules/address/forms/'.ShippingAddressWebFormFileName#"
+								validationgroup="'input[name=ShippingAddressOption]:checked',2">
+						</div>
+						<div class="checkout-storeaddress-alt" <isif condition="#NOT (isDefined(ShippingAddressOption) AND (ShippingAddressOption EQ '4'))#">style="display:none"</isif>>
+							<br />
+							<div id="checkoutAddressSelectedStore" style="display:none">
+								<input type="hidden" name="StoreAddressID" data-validate-error-message="#localizeText('checkout.addresses.no_StoreSelection.error')#">
+								<isFieldErrorMessagePlaceholder name_override="StoreAddressID">
+							</div>
+							
+							<p><istext key="checkout.addresses.shipping_address.storefinder.text"/></p>
+							<a class="btn btn-primary" data-dialog href="#URL(Action('ViewStoreAddresses-Start'))#"><istext key="checkout.addresses.shipping_address.storefinder.button"/></a>
+						</div>
+					<iselse>
+						<istext key="checkout.addresses.shipping_address.email.text"/>
+					</isif>
+				</div>
+			</div>		
+			
+			<div class="col-sm-12 col-md-4">
+				<h2><istext key="checkout.order_details.heading" /></h2>
+				<!--- Begin Cart Summary --->
+				<isinclude template="checkout/common/widgets/ItemsInCart">
+				<isinclude template="checkout/common/widgets/SubscriptionBox">
+				<div class="cost-summary">
+					<isinclude template="checkout/common/widgets/CostSummary">
+					<button name="continue" class="btn btn-lg btn-block btn-primary" type="submit"><istext key="checkout.button.label" /></button>		
+				</div>
+				<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink.isml">
+			</div>
+		</isform>
+	</div>
+</div>

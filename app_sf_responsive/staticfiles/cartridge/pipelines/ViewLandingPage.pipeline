@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Shows the landing page.
+@Group ImportExport-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewLandingPage" type="view">
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="ProcessContentURL">
+<!--@BendPoints 3,2-->
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="CurrentChannel">
+<!--@BendPoints 3,4-->
+    <nodeSuccessors name="decision_yes" next="KeyMapper17"/>
+<!--@BendPoints 5,3 5,4-->
+    <nodeSuccessors name="decision_no" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper17">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentChannel:Domain:Site:Domain"/>
+    <returnValueBindings name="OutValue_1" objectPath="UnitDomain"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+<!--@BendPoints 3,8-->
+    <nodeSuccessors name="next" next="DetermineLocales2"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DetermineLocales2">
+    <pipelet href="enfinity:/core/pipelets/DetermineLocales.xml"/>
+<!--@BendPoints 3,10-->
+    <nodeSuccessors name="next" next="GetLocale2"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetLocale2">
+    <configurationValues name="LocaleFallback" value="Session Locale"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetLocale.xml"/>
+<!--@BendPoints 3,12-->
+    <nodeSuccessors name="next" next="ResolveFilename1"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ResolveFilename1">
+    <configurationValues name="UnitDirectory" value="LANDING_PAGES_DIR"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/ResolveFilename.xml"/>
+<!--@BendPoints 3,14-->
+    <nodeSuccessors name="next" next="InteractionNode1"/>
+    <parameterBindings name="FileName" objectPath="File"/>
+    <returnValueBindings name="AbsoluteFileName" objectPath="FullPath"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode1">
+    <template referencedName="landingpages/LandingPageContent"/>
+  </nodes>
+<!--@Location 2,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 5,7-->
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <parameterBindings name="InValue_1" objectPath="CurrentDomain"/>
+    <returnValueBindings name="OutValue_1" objectPath="UnitDomain"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="ShowURL">
+<!--@BendPoints 7,2-->
+    <nodeSuccessors name="next" next="InteractionNode2"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:InteractionNode" nodeID="InteractionNode2">
+    <template referencedName="landingpages/LandingPageURL"/>
+  </nodes>
+</pipeline:Pipeline>

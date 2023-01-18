@@ -1,0 +1,23 @@
+<iscontent type="text/html" charset="UTF-8">
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%>
+<%
+	PipelineDictionary dict = getPipelineDictionary();
+	String name = String.valueOf((Object)dict.get("name"));
+	
+	if(dict.get(name) == null){
+	
+		dict.put(name, new Integer(1));
+	
+	} else {
+	
+		int value  = ((Integer)dict.get(name)).intValue();	
+		if(dict.get(name+"_mod") != null){
+			int modulo = ((Integer)dict.get(name+"_mod")).intValue();
+				value = (value + 1) % modulo;
+		} else {
+			value = (value + 1);
+		}
+		
+		dict.put(name, new Integer(value));
+	}
+%>

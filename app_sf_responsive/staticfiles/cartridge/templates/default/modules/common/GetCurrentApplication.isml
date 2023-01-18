@@ -1,0 +1,9 @@
+<%@page import="com.intershop.beehive.app.capi.AppContext"%>
+<%@page import="com.intershop.beehive.core.capi.app.AppContextUtil"%>
+<%@page import="com.intershop.component.application.capi.ApplicationBO"%>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%
+	AppContext appContext = AppContextUtil.getCurrentAppContext();
+	ApplicationBO applicationBO = appContext.getVariable(ApplicationBO.CURRENT);
+	getPipelineDictionary().put("ApplicationBO", applicationBO);
+%>

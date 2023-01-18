@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline manage the gifting features.
+@Group Checkout-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewCheckoutGifting" type="view">
+<!--@Location 8,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="Continue">
+<!--@BendPoints 17,4-->
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 8,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="CallNode9"/>
+    <startNode referencedName="ViewCheckoutGifting-Prefix"/>
+  </nodes>
+<!--@Location 8,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="CallNode13"/>
+    <nodeSuccessors name="ERROR" next="JoinNode1"/>
+    <startNode referencedName="ProcessCheckoutGifting-ValidateForm"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode13">
+    <nodeSuccessors name="next" next="CallNode17"/>
+    <startNode referencedName="ProcessShipping-ProcessGiftOptionMarkers"/>
+  </nodes>
+<!--@Location 8,8-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode17">
+    <nodeSuccessors name="next" next="KeyMapper2"/>
+    <startNode referencedName="ProcessCheckoutGifting-GetSplitProductLineItems"/>
+  </nodes>
+<!--@Location 8,9-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameterBindings name="InValue_1" objectPath="GiftingForm:get(&quot;Splitting&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="SplittingSubform"/>
+  </nodes>
+<!--@Location 8,10-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="SplittingSubform:SplitInfoMapID:Value"
+      operator="str_neq" conditionItem="PLISplitInfoMap:ID">
+    <nodeSuccessors name="decision_yes" next="JoinNode2"/>
+    <nodeSuccessors name="decision_no" next="CallNode6" action="begin"/>
+  </nodes>
+<!--@Location 6,10-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode8"/>
+  </nodes>
+<!--@Location 6,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+    <nodeSuccessors name="next" next="CallNode4"/>
+    <startNode referencedName="ProcessCheckoutGifting-GetAllGiftWraps"/>
+  </nodes>
+<!--@Location 6,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="CallNode5"/>
+    <startNode referencedName="ProcessCheckoutGifting-GetAllGiftMessages"/>
+  </nodes>
+<!--@Location 6,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="CallNode14"/>
+    <startNode referencedName="ProcessUser-GetCurrentUserBOAndCustomerBO"/>
+  </nodes>
+<!--@Location 6,14-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode14">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <parameterBindings name="Basket" objectPath="CurrentCartBO"/>
+    <startNode referencedName="ProcessBasket-Calculate"/>
+  </nodes>
+<!--@Location 6,15-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.checkout.gifting.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="checkout/gifting/CheckoutGifting.isml"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 8,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <startNode referencedName="ProcessCheckoutGifting-UpdateGiftWrap"/>
+  </nodes>
+<!--@Location 8,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="CallNode11"/>
+    <startNode referencedName="ProcessCheckoutGifting-UpdateGiftMessage"/>
+  </nodes>
+<!--@Location 8,13-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="JumpNode1" action="commit"/>
+    <startNode referencedName="ProcessCheckoutGifting-SetMergedProductLineItems"/>
+  </nodes>
+<!--@Location 8,14-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="ViewCheckoutPayment-Start"/>
+  </nodes>
+<!--@Location 6,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode1">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Dispatch">
+    <nodeSuccessors name="next" next="DispatchFormAction1"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="DispatchFormAction1">
+    <configurationValues name="OutValue_0" value="ViewCheckoutGifting-Continue"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/DispatchFormAction.xml"/>
+    <nodeSuccessors name="next" next="Jump1"/>
+<!--@BendPoints 5,5 5,6-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode2"/>
+    <parameterBindings name="Key_0" objectPath="continue"/>
+    <returnValueBindings name="SelectionKey" objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="Jump1">
+    <startNode objectPath="JumpTarget"/>
+  </nodes>
+<!--@Location 2,3-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewCheckoutGifting-Start"/>
+  </nodes>
+<!--@Location 4,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="Prefix" callMode="Private">
+    <nodeSuccessors name="next" next="CallNode3"/>
+  </nodes>
+<!--@Location 4,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="VerifyInteger2"/>
+    <startNode referencedName="ViewCheckout-Prefix"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="VerifyInteger2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/VerifyInteger.xml"/>
+    <nodeSuccessors name="next" next="CallNode15"/>
+    <parameterBindings name="LocalizedString" constant="2"/>
+    <returnValueBindings name="IntegerObject" objectPath="CurrentStep"/>
+  </nodes>
+<!--@Location 4,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode15">
+    <nodeSuccessors name="next" next="EndNode1"/>
+    <parameterBindings name="Application" objectPath="ApplicationBO:PersistentObject"/>
+    <parameterBindings name="DomainPreference" objectPath="CurrentOrganization:OwningDomain"/>
+    <startNode referencedName="ProcessGiftingPreferences-GetGiftingPreferences"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1"/>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" name="Start">
+    <nodeSuccessors name="next" next="CallNode16"/>
+  </nodes>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode16">
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="PageName" constant="gifting"/>
+    <parameterBindings name="PageType" constant="checkout"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="CallNode12"/>
+    <startNode referencedName="ViewCheckoutGifting-Prefix"/>
+  </nodes>
+<!--@Location 6,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+    <nodeSuccessors name="next" next="CallNode10"/>
+    <startNode referencedName="ProcessCheckoutGifting-GetSplitProductLineItems"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode10">
+    <nodeSuccessors name="next" next="JoinNode1"/>
+    <startNode referencedName="ProcessCheckoutGifting-GenerateForm"/>
+  </nodes>
+</pipeline:Pipeline>

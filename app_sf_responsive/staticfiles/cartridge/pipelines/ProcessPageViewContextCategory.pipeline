@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Pagelet-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessPageViewContextCategory" type="process">
+<!--@displayNearNode@Determine the pagelet entry point for the given view context and category.
+@Location 1,1-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="GetPageletEntryPoint"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetValuesFromRequest1"/>
+    <parameters name="ViewContext" type="com.intershop.component.pmc.capi.viewcontext.ViewContext"/>
+    <parameters name="CategoryBO" type="com.intershop.component.catalog.capi.CatalogCategoryBO"/>
+    <parameters name="ListNavigationVO" type="java.lang.Object" optional="true"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetValuesFromRequest1">
+    <configurationValues name="Namespace" value="Application"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetValuesFromRequest.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode1"/>
+    <parameterBindings name="Key" constant="CurrentOrganization"/>
+    <parameterBindings name="Namespace" nullBinding="true"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="CategoryBO:AccessibleSubCatalogCategoryBOs:Empty"
+      operator="str_eq" conditionValue="false">
+<!--@BendPoints 3,10-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode9"/>
+<!--@BendPoints 7,9-->
+    <nodeSuccessors name="decision_no" next="JoinNode9"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode9" conditionKey="ListNavigationVO"
+      operator="undef">
+    <nodeSuccessors name="decision_yes" next="JoinNode10"/>
+<!--@BendPoints 5,11 5,12-->
+    <nodeSuccessors name="decision_no" next="DecisionNode10"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+<!--@BendPoints 3,16-->
+    <nodeSuccessors name="next" next="SetDictionaryValue1"/>
+  </nodes>
+<!--@Location 1,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue1">
+    <configurationValues name="Name" value="ViewContextInclusionName"/>
+    <configurationValues name="Value" value="PageCategory"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 1,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="GetContentSharingProvider0"/>
+  </nodes>
+<!--@Location 1,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetContentSharingProvider0">
+    <pipelet href="enfinity:/bc_pmc/pipelets/GetContentSharingProvider.xml"/>
+    <nodeSuccessors name="next" next="GetPageletEntryPointByViewContext1"/>
+  </nodes>
+<!--@Location 1,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetPageletEntryPointByViewContext1">
+    <configurationValues name="Strategy" value="Category"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/GetPageletEntryPointByViewContext.xml"/>
+    <nodeSuccessors name="next" next="EndNode1"/>
+<!--@BendPoints 7,23-->
+    <nodeSuccessors name="pipelet_error" next="EndNode2"/>
+    <parameterBindings name="Domain" objectPath="ContentSharingProvider:ContentRepositoryDomainByCurrentApplication"/>
+  </nodes>
+<!--@Location 1,12-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true">
+    <returnValues name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"/>
+  </nodes>
+<!--@Location 3,12-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" name="ERROR" strict="true"/>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode10" conditionKey="ListNavigationVO:NonCategoryFilterSelected"
+      operator="str_neq" conditionValue="true">
+<!--@BendPoints 5,15-->
+    <nodeSuccessors name="decision_yes" next="JoinNode10"/>
+    <nodeSuccessors name="decision_no" next="JoinNode9"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode9">
+<!--@BendPoints 7,16-->
+    <nodeSuccessors name="next" next="SetDictionaryValue2"/>
+  </nodes>
+<!--@Location 3,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue2">
+    <configurationValues name="Name" value="ViewContextInclusionName"/>
+    <configurationValues name="Value" value="PageFamily"/>
+    <pipelet href="enfinity:/core/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 7,19-->
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,25 @@
+<iscontent  type="text/html" charset="UTF-8" compact="true">
+
+<ISUUID name="InternalID">
+<isif condition="#isDefined(ContentSearchResult)#">
+	<div class="radio search-switch-toggle col-xs-6 search-result-toggle">
+		<input type="radio" data-switch-target-id="<isprint value="#contentDataSwitchTargetID#">" id="cont-<isprint value="#InternalID#">" name="search-result-<isprint value="#InternalID#">"  
+			<isif condition="#ContentSearchResultActive#">checked="checked"</isif>
+			<isif condition="#(ContentSearchResult:Pageable:ElementCount EQ '0') OR (ContentSearchResult:Pageable:ElementCount EQ '')#">disabled="disabled"</isif>
+		/>
+		<label for="cont-<isprint value="#InternalID#">" >
+			<istext key="search.result.type.content.label"/> 
+			(<isif condition="#ContentSearchResult:Pageable:ElementCount EQ ''#">0<iselse><isprint value="#ContentSearchResult:Pageable:ElementCount#"></isif>)
+		</label>
+	</div>
+	<div class="radio search-switch-toggle col-xs-6 search-result-toggle">
+		<input type="radio" data-switch-target-id="<isprint value="#productDataSwitchTargetID#">" id="prod-<isprint value="#InternalID#">" name="search-result-<isprint value="#InternalID#">" 
+			<isif condition="#NOT(ContentSearchResultActive)#">checked="checked"</isif>
+			<isif condition="#(ProductSearchResult:Pageable:ElementCount EQ '0') OR (ProductSearchResult:Pageable:ElementCount EQ '')#">disabled="disabled"</isif>
+		/>
+		<label for="prod-<isprint value="#InternalID#">" >
+			<istext key="search.result.type.product.label"/> 
+			(<isif condition="#ProductSearchResult:Pageable:ElementCount EQ ''#">0<iselse><isprint value="#ProductSearchResult:Pageable:ElementCount#"></isif>)
+		</label>
+	</div>
+</isif>

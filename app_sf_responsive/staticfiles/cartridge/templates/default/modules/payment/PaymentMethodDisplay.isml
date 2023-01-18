@@ -1,0 +1,28 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!---ToDo: Display special payment info like credit card type etc. --->
+<isif condition="#hasLoopElements(paymentBOs)#">
+	<isloop iterator="paymentBOs" alias="PBO">
+		<isif condition="#PBO:PaymentServiceBO:Extension("LimitedTender") EQ null#">
+			<p><isprint value="#PBO:PaymentServiceBO:DisplayName#">
+			<isif condition="#PBO:PaymentInstrumentBO:AccountIdentifier NE ''#">
+				<br /><isprint value="#PBO:PaymentInstrumentBO:AccountIdentifier#"/></p>
+			</isif>	
+			</p>
+			<br/><isinclude extensionpoint="AdditionalDataOpenTender"/>
+		</isif>
+	</isloop>
+
+	<isloop iterator="paymentBOs" alias="PBO">
+		<isif condition="#PBO:PaymentServiceBO:Extension("LimitedTender") NE null#">
+			<p><isprint value="#PBO:PaymentServiceBO:DisplayName#">
+			<isif condition="#PBO:PaymentInstrumentBO:AccountIdentifier NE ''#">
+				<br /><isprint value="#PBO:PaymentInstrumentBO:AccountIdentifier#"/></p>
+			</isif>	
+			</p>
+			<br/><isinclude extensionpoint="AdditionalDataLimitedTender"/>
+		</isif>
+	</isloop>
+<iselse>
+	<istext key="checkout.payment.no_payment_required.info" />
+</isif>

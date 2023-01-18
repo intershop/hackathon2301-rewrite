@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<li class="<isif condition="#selecteditem EQ 'PAYMENT'#">active</isif>">
+	<a href="#URL(Action('ViewPaymentInstrumentInfo-Edit'))#"><istext key="account.payment.link"/></a>
+</li>

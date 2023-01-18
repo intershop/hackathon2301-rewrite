@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Renders a configurable search box (label. input, submit button).
+	
+	Parameters:
+		- id (requried):
+			unique id to support the multiple use of this module on a page
+		- useAutoSuggest [true | false]:
+			enables the auto suggest if true (default is false)
+		- maxAutoSuggestResults (requried if useAutoSuggest="true"):
+			Number of auto suggest results presented to the user
+		- searchFieldLabel:
+			alternative search input label
+		- instructionalText:
+			instructional text within the input field
+		- searchButtonText:
+			alternative search button text
+	Example:
+		...
+		<ISSearchBox 
+			id="Header"
+			useAutoSuggest="true"
+			maxAutoSuggestResults="10"
+			instructionalText="#localizeText("search.searchbox.instructional_text")#"
+		>
+		...
+--->
+<ismodule template="modules/search/SearchBox.isml"
+	name="SearchBox"
+	strict="true"
+	attribute="id"
+	attribute="useAutoSuggest"
+	attribute="maxAutoSuggestResults"
+	attribute="searchFieldLabel"
+	attribute="instructionalText"
+	attribute="searchButtonText"
+>
+
+<ismodule template="modules/search/SearchResultTypeSwitch.isml"
+	name="SearchResultTypeSwitch"
+	strict="true"
+	attribute="ProductSearchResult"
+	attribute="ContentSearchResult"
+	attribute="ContentSearchResultActive"
+	attribute="contentDataSwitchTargetID"
+	attribute="productDataSwitchTargetID"
+>

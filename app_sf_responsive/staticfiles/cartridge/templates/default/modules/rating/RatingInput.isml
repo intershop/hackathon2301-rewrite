@@ -1,0 +1,28 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+
+	
+	<!--- Adding class according to Value --->
+	<isif condition="#Value eq '1'#">
+		<isset name="ratingUlClass" value="rating-one" scope="request">
+	<iselseif condition="#Value eq '2'#">
+		<isset name="ratingUlClass" value="rating-two" scope="request">
+	<iselseif condition="#Value eq '3'#">
+		<isset name="ratingUlClass" value="rating-three" scope="request">
+	<iselseif condition="#Value eq '4'#">
+		<isset name="ratingUlClass" value="rating-four" scope="request">
+	<iselseif condition="#Value eq '5'#">
+		<isset name="ratingUlClass" value="rating-five" scope="request">
+	</isif>
+	<!---TODO: Move inline JS into productdetail.js --->
+	<div class="clearfix">
+		<ul class="rating-input clearfix <isprint value="#ratingUlClass#">">
+			<li><a class="star-one" title="1 Star" href="javascript:void(false)" data-field-name="<isprint value="#Name#">" data-value="1" data-parent-class="rating-one"><span class="glyphicon glyphicon-star"></span></a></li>
+			<li><a class="star-two" title="2 Stars" href="javascript:void(false)" data-field-name="<isprint value="#Name#">" data-value="2" data-parent-class="rating-two"><span class="glyphicon glyphicon-star"></span></a></li>
+			<li><a class="star-three" title="3 Stars" href="javascript:void(false)" data-field-name="<isprint value="#Name#">" data-value="3" data-parent-class="rating-three"><span class="glyphicon glyphicon-star"></span></a></li>
+			<li><a class="star-four" title="4 Stars" href="javascript:void(false)" data-field-name="<isprint value="#Name#">" data-value="4" data-parent-class="rating-four"><span class="glyphicon glyphicon-star"></span></a></li>
+			<li><a class="star-five" title="5 Stars" href="javascript:void(false)" data-field-name="<isprint value="#Name#">" data-value="5" data-parent-class="rating-five"><span class="glyphicon glyphicon-star"></span></a></li>
+		</ul>
+	</div>
+	<!--- Mark this field as rating specific  --->
+	<input type="hidden" name="<isprint value="#Name#">" value="<isprint value="#Value#">" rating-field="true"/>
+	<div class="rating-star-required" style="display: none;" ><istext key="review.new_review.rating.error.required"/></div>

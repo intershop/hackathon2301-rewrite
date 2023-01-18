@@ -1,0 +1,103 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><isprint value="#TitleText#"></h2>
+		</div>
+		
+		<isform action="#URL(Action(TargetPipeline), Parameter('AjaxRequestMarker', 'true'))#" method="post" class="form-horizontal bv-form" data-hijax="true">
+			<isif condition="#isDefined(WishlistBO)#">
+				<input type="hidden" name="WishlistID" value="<isprint value="#WishlistBO:ID#"/>" />
+			</isif>
+			
+			<div class="modal-body">
+			
+				<!--- Error Message --->
+				<isif condition="#(CurrentForm:WishlistName:isInvalid) AND (CurrentForm:WishlistName:isError("error.profanitycheck"))#">
+					<div role="alertdialog" class="alert alert-danger">
+						<istext key="account.wishlists.wishlist_form.name.error.profanitycheck" />
+					</div>
+				</isif>
+				<div class="form-group">
+					<isif condition="#CurrentForm:Submitted#">
+						<isset name="initialWishlistName" value="#CurrentForm:WishlistName:Value#" scope="request">
+					<iselse>
+						<isset name="initialWishlistName" value="#WishlistBO:Name#" scope="request">
+					</isif>
+					
+					<label class="col-sm-4 control-label" for="<isprint value="#CurrentForm:WishlistName:QualifiedName#">"><istext key="account.wishlists.wishlist_form.name.label"></label>
+					<div class="col-sm-8">
+						<input class="form-control" maxlength="35" type="text"
+							name="<isprint value="#CurrentForm:WishlistName:QualifiedName#">"
+							value="<isprint value="#initialWishlistName#">"
+							required
+							data-bv-notempty-message="<istext key="account.wishlists.wishlist_form.name.error.required"/>"
+						/>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-offset-4 col-sm-8">
+						<div class="checkbox">
+							<isif condition="#CurrentForm:Submitted#">
+								<isset name="initialPublic" value="#CurrentForm:Public:Value#" scope="request">
+							<iselseif condition="#isDefined(WishlistBO)#">
+								<isset name="initialPublic" value="#WishlistBO:Public#" scope="request">
+							<iselse>
+								<isset name="initialPublic" value="false" scope="request">
+							</isif>
+							<label for="<isprint value="#CurrentForm:Public:QualifiedName#">">
+								<input type="checkbox"
+									id="<isprint value="#CurrentForm:Public:QualifiedName#">"
+									name="<isprint value="#CurrentForm:Public:QualifiedName#"/>"
+									value="true"
+									<isif condition="#initialPublic EQ 'true'#">checked="checked"</isif>
+								/>
+								<istext key="account.wishlists.wishlist_form.public.label">
+							</label>
+							<isTooltip linkclass="details-tooltip"
+								linktextkey="account.wishlists.wishlist_form.public.tooltip.linktext" 
+								headlinekey="account.wishlists.wishlist_form.public.tooltip.headline"
+								contentkey="account.wishlists.wishlist_form.public.tooltip.content">
+						</div>
+						
+						<div class="checkbox">
+							<isif condition="#CurrentForm:Submitted#">
+								<isset name="initialPreferred" value="#CurrentForm:Preferred:Value#" scope="request">
+							<iselseif condition="#isDefined(WishlistBO)#">
+								<isif condition="#PreferredWishlistID EQ WishlistBO:ID#">
+									<isset name="initialPreferred" value="true" scope="request">
+								<iselse>
+									<isset name="initialPreferred" value="false" scope="request">
+								</isif>
+							<iselse>
+								<isset name="initialPreferred" value="false" scope="request">
+							</isif>
+							<label for="<isprint value="#CurrentForm:Preferred:QualifiedName#">">
+								<input type="checkbox"
+									id="<isprint value="#CurrentForm:Preferred:QualifiedName#">"
+									name="<isprint value="#CurrentForm:Preferred:QualifiedName#"/>"
+									value="true"
+									<isif condition="#initialPreferred EQ 'true'#">checked="checked"</isif>
+								/>
+								<istext key="account.wishlists.wishlist_form.preferred.label">
+							</label>
+							<isTooltip linkclass="details-tooltip"
+								linktextkey="account.wishlists.wishlist_form.preferred.tooltip.linktext" 
+								headlinekey="account.wishlists.wishlist_form.preferred.tooltip.headline"
+								contentkey="account.wishlists.wishlist_form.preferred.tooltip.content">
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" name="<isprint value="#SubmitButtonName#">"><isprint value="#SubmitButtonText#"></button>
+				<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.wishlists.wishlist_form.cancel_button.text"></button>
+			</div>
+			
+		</isform>
+	</div>
+</div>

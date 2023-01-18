@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DDescriptionContainer dbo.type="com.intershop.beehive.core.rapi.common.DDescriptionContainer">
+<localeId>en_US</localeId>
+<descriptions>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletDesc" id="Pipelet1"  localeId="en_US" >
+<description>Converts the ISML money styles MONEY_SHORT, MONEY_LONG etc. to a format used by accounting.js.</description>
+</DDescription>
+<DDescription dbo.type="com.intershop.beehive.core.rapi.pipeline.DPipeletPropertyDesc" id="dictionary-out_AccountingJSMoneyFormats"  localeId="en_US" >
+<description>The map contains accounting.js conform format settings of ISML money styles like MONEY_LONG, MONEY_SHORT etc.</description>
+</DDescription>
+</descriptions>
+</DDescriptionContainer>

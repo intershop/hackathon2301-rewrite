@@ -1,0 +1,152 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+<!--- Show Item state for OrderBO items, but not for BasketBO items --->
+<isset name="showPLIState" value="#isDefined(OrderBO)#" scope="request">
+
+<div class="list-header">
+	<div class="col-sm-6 list-header-item"><istext key="account.orderdetails.items_table.item"/></div>
+	<div class="col-sm-2 list-header-item"><isif condition="#showPLIState#"><istext key="account.orderdetails.items_table.fulfillment_status"/></isif></div>
+	<div class="col-sm-2 list-header-item column-price"><istext key="account.orderdetails.items_table.price"/></div>
+	<div class="col-sm-2 list-header-item column-price"><istext key="account.orderdetails.items_table.total_price"/></div>
+</div>
+<div class="list-body">
+	<isloop iterator="bucket:ProductLineItemBOs" alias="PLI">
+		<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+		<isset name="PLIPromotionInfo" value="#PLI:Extension("PromotionInformation")#" scope="request"/>
+		<div class="list-item-row">
+			<isif condition="#not(PLI:isHiddenGift)#">
+				<div class="col-sm-2 col-xs-2 list-item">
+					<a href="#URL(Action('ViewProduct-Start'),Parameter('SKU',PLI:ProductBO:SKU))#">
+						<ISProductImage ProductBO="#PLI:ProductBO#" ImageType="S">
+					</a>
+				</div>
+				<div class="col-sm-6 col-xs-7">
+					<div class="row">
+						<div class="col-sm-8 col-xs-12 list-item">
+							<div class="pli-description">
+								<isif condition="#isDefined(PLI:ProductBO)#">
+									<a class="product-title" href="#URL(Action('ViewProduct-Start'),Parameter('SKU',PLI:ProductBO:SKU))#">
+										<isprint value="#PLI:ProductName#">
+									</a>
+								<iselse>
+									<isprint value="#PLI:ProductName#">
+								</isif>
+								
+								<p class="product-id">
+									<istext key="account.orderdetails.items_table.item_no"/>
+									<isprint value="#' '.PLI:ProductRef:ProductSKU#">
+								</p>
+								
+								<!--- Product Variation Attributes --->
+								<isif condition="#isDefined (PLI:VariationInformationBO)#">
+									<dl id="editProductVariation<isprint value="#index#" style="INTEGER" />" class="dl-horizontal">
+										<isif condition="#hasLoopElements(PLI:VariationInformationBO:VariationAttributes)#">
+											<isloop iterator="PLI:VariationInformationBO:VariationAttributes" alias="VariationAttribute">
+												<dt><isprint value="#VariationAttribute:DisplayName#">:</dt>
+												<dd class="<isif condition="#not(hasNext(VariationAttribute)) AND (editable EQ 'true')#"> variationAttribute-last</isif>"><isprint value="#PLI:ProductBO:Attribute(VariationAttribute:Name)#"></dd>	
+											</isloop>
+										</isif>
+									</dl>
+								</isif>
+								
+								<p>
+									<label><istext key="account.orderdetails.items_table.quantity_text_label"/>&nbsp;</label>
+									<isprint value="#PLI:Quantity#" style="QUANTITY_SHORT">
+								</p>
+								
+								<!--- pli promotion messages and free gift --->
+								<isinclude template="account/orders/PromotionList">
+							</div>
+						</div>
+						<div class="col-sm-4 col-xs-12 list-item">
+							<isif condition="#showPLIState#">
+								<p>
+									<label class="hidden-sm hidden-md hidden-lg"><istext key="account.orderdetails.items_table.status.label"/></label>
+									<isprint value="#PLI:FulfillmentStatusDisplayName#">
+								</p>
+								<!---Desired Delivery Date --->
+								<isif condition="#isDefined(PLI:DesiredDeliveryDate)#">
+									<p>
+										<span><istext key="checkout.shipping.pli.dddate.short.text" />:</span>
+										<span><isprint value="#PLI:DesiredDeliveryDate#" style="DATE_LONG"/></span>
+									</p>
+								</isif>
+							</isif>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-sm-2 list-item hidden-xs column-price">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLI:SingleBasePriceNet#">
+					<iselse>
+						<isprint value="#PLI:SingleBasePriceGross#">
+					</isif>
+
+				</div>
+				
+				<div class="col-sm-2 col-xs-3 list-item column-price">
+					<div>
+						<isif condition="#PriceDisplayType EQ 'net'#">
+							<isprint value="#PLI:DiscountedPriceNet#">
+						<iselse>
+							<isprint value="#PLI:DiscountedPriceGross#">
+						</isif>
+					</div>
+					<isif condition="#PLIPromotionInfo:ItemValueRebatesTotal:Available#">
+						<div class="old-price">
+							<isif condition="#PriceDisplayType EQ 'net'#">
+								<isprint value="#PLI:PriceNet#">
+							<iselse/>
+								<isprint value="#PLI:PriceGross#">
+							</isif>
+						</div>
+					</isif>&nbsp;
+				</div>
+				
+			</isif>
+			
+			<isif condition="#isDefined(PLIWarranty:Warranty:Warranty)#">
+				<isset scope="request" name="WarrantyPLI" value="#PLIWarranty:Warranty#">
+				
+				<div class="col-sm-6 col-sm-offset-0 col-xs-8 col-xs-offset-2 list-item">
+					<p>
+						<isprint value="#WarrantyPLI:Warranty:DisplayName#"> 
+						<a href="#URL(Action('ViewWarrantyDetails-Start'), Parameter('SKU', WarrantyPLI:Warranty:ProductRef:ProductSKU))#" data-dialog class="details-link">
+							<istext key="account.orderdetails.items_table.warranty_details_link"/>
+						</a>
+					</p>
+				</div>
+				<div class="col-sm-2 list-item column-price hidden-xs">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#WarrantyPLI:SingleBasePriceNet#">
+					<iselse>
+						<isprint value="#WarrantyPLI:SingleBasePriceGross#">
+					</isif>
+				</div>
+				
+				<div class="col-sm-2 col-xs-2 list-item column-price">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#WarrantyPLI:PriceNet#">
+					<iselse>
+						<isprint value="#WarrantyPLI:PriceGross#">
+					</isif>
+				</div>
+			</isif>
+			
+			<isif condition="#hasLoopElements(PLI:ItemSurchargeBOs)#">
+				<div class="col-sm-10 col-sm-offset-0 col-xs-8 col-xs-offset-2 list-item">
+					<isloop iterator="PLI:ItemSurchargeBOs" alias="Surcharge">
+						<p>
+							<isif condition="#isDefined(Surcharge:DisplayName)#"><isprint value="#Surcharge:DisplayName#"/><iselse><istext key="account.orderdetails.items_table.surcharge"></isif>
+							<span> (<isif condition="#PriceDisplayType EQ 'net'#"><isprint value="#Surcharge:AmountNet#"><iselse><isprint value="#Surcharge:AmountGross#"></isif>)</span>&nbsp;
+							<isTooltip linktextkey="shopping_cart.detail.text" headline="#Surcharge:DisplayName#" content="#Surcharge:Description#">
+						</p>
+					</isloop>
+				</div>
+			</isif>
+		</div>
+	</isloop>
+</div>

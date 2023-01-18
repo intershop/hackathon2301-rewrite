@@ -1,0 +1,129 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isset scope="request" name="hasGiftOption" value="false">
+<isif condition="#(isDefined(GiftWrap_Switch) AND (GiftWrap_Switch EQ 'true')) OR (isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true'))#">
+	<isset scope="request" name="hasGiftOption" value="true">
+</isif>
+
+<div class="section">
+	<!--- bucket header --->
+	<isBucketHeader bucket="#Bucket#" bucketnumber="#CartShippingMethod:BasketShippingMethodSelectionBucketBOs:Size#" displaydeliverytime="false">
+	
+	<!--- LineItems per bucket --->
+	<div class="list-header">
+		<div class="list-header-item <isif condition="#hasGiftOption EQ 'true'#">col-sm-6<iselse>col-sm-8</isif>"><istext key="checkout.shipping.pli.description.heading" /></div>
+		<div class="list-header-item col-sm-1"><istext key="checkout.shipping.pli.qty.heading" /></div>
+		<isif condition="#hasGiftOption EQ 'true'#">
+			<div class="list-header-item col-sm-2"><istext key="checkout.gifting.shipping.heading" /></div>
+		</isif>
+		<div class="list-header-item col-sm-3"><istext key="checkout.shipping.pli.availability.heading" /></div>
+	</div>
+	<isif condition="#CartShippingMethod:BasketShippingMethodSelectionBucketBOs:Size <= 1#">
+		<h3 class="visible-xs">
+			<istext key="checkout.shipping.pli.items.heading" />
+		</h3>
+	</isif>
+	<div class="list-body">
+		<isset name="BasketBOInventoryExtension" value="#CurrentCartBO:Extension("Inventory")#" scope="request"/>
+		<isset name="InventoryMappings" value="#BasketBOInventoryExtension:InventoryStatusForProductsInWarehouse#" scope="request"/>
+		
+		<isloop iterator="Bucket:ProductLineItemBOs" alias="PLI">
+			<isset name="PLIGifting" value="#PLI:Extension("Gifting")#" scope="request"/>
+			<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+		
+			<div class="list-item-row list-item-row-big">
+				<!---Product Description --->
+				<div class="<isif condition="#hasGiftOption EQ 'true'#">col-sm-6<iselse>col-sm-8</isif> list-item">
+					
+					<isset name="InventoryStock" value="#InventoryMappings:get(PLI:ProductRef):InStock#" scope="request"/>
+					<isPLIDescription BasketBOInventoryExtension="#BasketBOInventoryExtension#" InventoryMappings="#InventoryStock#" pli="#PLI#" showimage="false" variationattributes="horizontal" owningdomain="#CurrentOrganization:OwningDomain#" showwarranty="false">
+					<isinclude template="checkout/common/PromotionCodeList">
+					
+					<!--- Warranty --->
+					<isif condition="#isDefined(PLIWarranty:Warranty:Warranty)#">
+						<div>
+							<isprint value="#PLIWarranty:Warranty:Warranty:DisplayName#"><a href="#URL(Action('ViewWarrantyDetails-Start'), Parameter('SKU', PLIWarranty:Warranty:ProductSKU))#" data-dialog class="details-link"><istext key="shopping_cart.detail.text" /></a>
+						</div>
+					</isif>
+				</div>
+				
+				<!---Quantity --->
+				<div class="col-sm-1 list-item">
+					<input type="hidden" name="<isprint value="#Bucket:ID#">_<isprint value="#PLI:ID#">" value="<isprint value="#PLI:ID#">" />
+					<label class="hidden-sm hidden-md hidden-lg control-label"><istext key="checkout.shipping.pli.qty.label"></label>
+					<isprint value="#PLI:Quantity#">
+				</div>	
+				
+				<!---Gifting (optional) --->
+				<isif condition="#hasGiftOption EQ 'true'#">
+					<div class="col-sm-2 list-item checkbox">
+						<isif condition="#(PLIGifting:GiftWrappable EQ 'true') OR (PLIGifting:GiftMessagable EQ 'true')#">
+							<isGetIndirectValue key="#'giftOptionsFromTemplate_'.PLI:ID#" entry="GiftOptionsFromTemplate" print="false">
+							<isGetIndirectValue key="#'giftOption_'.PLI:ID#" entry="GiftOption" print="false">
+							
+							<label for="gift_checkbox_<isprint value="#PLI:ID#">">
+								<input name="giftOption_<isprint value="#PLI:ID#">"
+									<isif condition="#(isDefined(GiftOptionsFromTemplate))#">
+										<isif condition="#GiftOption EQ 'on'#"> checked="checked"</isif>
+									<iselseif condition="#(isDefined(PLIGifting:GiftOptionMarked) AND (PLIGifting:GiftOptionMarked EQ 'true'))#"> checked="checked"
+									</isif>
+									id="gift_checkbox_<isprint value="#PLI:ID#">" type="checkbox" 
+								/>
+								<istext key="checkout.gifting.shipping.gift_checkbox.text" />
+							</label>
+						<iselse>
+							<span class="hidden-xs"><istext key="checkout.gifting.shipping.gift_notavailable.text" /></span>
+							<span class="hidden-sm hidden-md hidden-lg"><istext key="checkout.gifting.shipping.gift_notavailable.xs.text" /></span>
+						</isif>
+					</div>
+					<input type="hidden" name="#'giftOptionsFromTemplate_'.PLI:ID#" value="true" /><!--- needed to check if gift options form data has been sent --->
+				</isif>
+			
+				<!--- Availability --->		
+				<div class="col-sm-3 list-item">
+					<p>
+						<isif condition="#PLI:Available EQ 'true'#">
+							<istext key="checkout.shipping.pli.instock.text" />
+						<iselse>
+							<istext key="checkout.shipping.pli.out_of_stock.text" />
+						</isif>
+					</p>
+											
+					<isif condition="#ApplicationBO:Configuration:String("DesiredDeliveryDate_Switch") EQ 'true'#">
+						<isif condition="#NOT RecurringBasket:Recurring#">
+							<isif condition="#NOT PLI:FreeGift#">
+								<isif condition="#NOT Bucket:SelectedShippingMethod:DigitalDelivery#">
+									<div class="form-group <isif condition="#isDefined(ERROR_DesiredDeliveryDate) AND (ERROR_DesiredDeliveryDateUUID EQ PLI:ID)#" >has-error</isif>">
+										<!--- recover ddd form data is still pending because date format is changed before the form is sent --->
+										<!--- <isGetIndirectValue key="#'desiredDeliveryDate_'.PLI:ID#" entry="DeliveryDate" print="false">--->
+										<label class="control-label" for="desiredDeliveryDate_<isprint value="#PLI:ID#">"><istext key="checkout.shipping.pli.dddate.short.text" /></label>
+										<input data-testing-id="desiredDeliveryDate" type="text" maxlength="255" aria-required="true" 
+											class="desiredDeliveryDateField form-control" 
+											value="
+												<isif condition="#isDefined(ERROR_DesiredDeliveryDate) AND (ERROR_DesiredDeliveryDateUUID EQ PLI:ID)#"><isprint value="#ERROR_DesiredDeliveryDateValue#">
+												<iselseif condition="#isDefined(DeliveryDate)#"><isprint value="#DeliveryDate#">
+												<iselse><isprint value="#PLI:DesiredDeliveryDate#" style="DATE_INPUT">
+												</isif>
+											" 
+											id="desiredDeliveryDate_<isprint value="#PLI:ID#">"
+										/>
+										<isDatePicker 
+											start_date="#ExcludedDeliveryDatesCalendar:StartDateJS#"
+											end_date="#ExcludedDeliveryDatesCalendar:EndDateJS#" 
+											locale="#CurrentSession:Locale#" 
+											input_id="#'desiredDeliveryDate_' . PLI:ID#" 
+											dates_disabled="#ExcludedDeliveryDatesCalendar:ExcludedDatesByPLIAsJSON(PLI, CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern)#" 
+											days_of_week_disabled="#ExcludedDeliveryDatesCalendar:DaysOfWeekDisabled#" 
+										>
+		
+										<small class="input-help"><isprint value="#ucase(CurrentSession:Locale:DefaultRegionalSettings:inputDatePattern)#"></small>
+									</div>
+								</isif>
+							</isif>
+						</isif>
+					</isif>
+				</div>
+			</div>
+		</isloop>
+	</div>
+</div> 

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline is used as a entry point to search functionality. It branches to the specific search pipeline implementations (Oracle, Search engine, etc.).
+@Group Search-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewParametricSearch" type="view">
+<!--Determine if a SearchIndex for 
+SFProductSearch is available. 
+If not, use Oracle search.
+@Location 4,4-->
+  <nodes xsi:type="pipeline:Text" nodeID="TextNode1" width="2"/>
+<!--@Location 2,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode3" name="Browse">
+<!--@BendPoints 5,7-->
+    <nodeSuccessors name="next" next="JoinNode12"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode12">
+<!--@BendPoints 7,8-->
+    <nodeSuccessors name="next" next="CallNode20"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode20">
+    <nodeSuccessors name="next" next="JumpNode12"/>
+<!--@BendPoints 8,10 9,10-->
+    <nodeSuccessors name="NO_SEARCHINDEX" next="DecisionNode8"/>
+    <parameterBindings name="DefaultQueryTerm" constant="*"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <parameterBindings name="FeatureID" constant="SFProductSearch"/>
+    <parameterBindings name="Locale" objectPath="CurrentRequest:Locale"/>
+    <parameterBindings name="QueryTerm" objectPath="SearchTerm"/>
+    <startNode referencedName="ProcessSearchBySearchIndex-GetSearchIndexQuery"/>
+    <returnValueBindings name="SearchIndex" objectPath="ProductSearchIndex"/>
+    <returnValueBindings name="SearchIndexQuery" objectPath="ProductSearchIndexQuery"/>
+  </nodes>
+<!--@Location 3,6-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode12">
+    <startNode referencedName="ViewParametricSearchBySearchIndex-SimpleOfferSearch"/>
+  </nodes>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode8" conditionKey="SortingAttribute">
+<!--@BendPoints 9,12-->
+    <nodeSuccessors name="decision_yes" next="CallNode3"/>
+<!--@BendPoints 10,11 11,11 11,12-->
+    <nodeSuccessors name="decision_no" next="CallNode5"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <startNode referencedName="ProcessCatalogSorting-ExtractSortAttributes"/>
+  </nodes>
+<!--@Location 4,11-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode6">
+<!--@BendPoints 9,24-->
+    <nodeSuccessors name="next" next="JumpNode3"/>
+  </nodes>
+<!--@Location 4,12-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode3">
+    <startNode referencedName="ViewParametricSearchByOracle-SimpleOfferSearch"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode5">
+    <nodeSuccessors name="next" next="DecisionNode12"/>
+    <parameterBindings name="PreferenceDomain" objectPath="CurrentOrganization:OwningDomain"/>
+    <startNode referencedName="ProcessCatalogSorting-PrepareProductSortingPreferences"/>
+  </nodes>
+<!--@Location 5,7-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode12" conditionKey="sort_direction_1"
+      operator="str_eq" conditionValue="ascending">
+    <nodeSuccessors name="decision_yes" next="SetDictionaryValue6"/>
+<!--@BendPoints 13,15 13,16-->
+    <nodeSuccessors name="decision_no" next="SetDictionaryValue7"/>
+  </nodes>
+<!--@Location 5,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue6">
+    <configurationValues name="Name" value="SortOrder"/>
+    <configurationValues name="Value" value="asc"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+    <nodeSuccessors name="next" next="JoinNode11"/>
+  </nodes>
+<!--@Location 5,9-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode11">
+<!--@BendPoints 11,20-->
+    <nodeSuccessors name="next" next="KeyMapper3"/>
+  </nodes>
+<!--@Location 5,10-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 11,23-->
+    <nodeSuccessors name="next" next="JoinNode6"/>
+    <parameterBindings name="InValue_1" objectPath="sort_attribute_1"/>
+    <parameterBindings name="InValue_2" objectPath="sort_attribute_type_1"/>
+    <returnValueBindings name="OutValue_1" objectPath="SortAttribute"/>
+    <returnValueBindings name="OutValue_2" objectPath="SortAttributeType"/>
+  </nodes>
+<!--@Location 6,8-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="SetDictionaryValue7">
+    <configurationValues name="Name" value="SortOrder"/>
+    <configurationValues name="Value" value="desc"/>
+    <configurationValues name="ValueType" value="Dictionary Value"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/SetDictionaryValue.xml"/>
+<!--@BendPoints 13,19-->
+    <nodeSuccessors name="next" next="JoinNode11"/>
+  </nodes>
+<!--@Location 4,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" name="ChangePageSize">
+<!--@BendPoints 9,3 9,7-->
+    <nodeSuccessors name="next" next="JoinNode12"/>
+  </nodes>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start4" name="OfferPaging">
+    <nodeSuccessors name="next" next="JoinNode10"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode10">
+<!--@BendPoints 1,4-->
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 0,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <parameterBindings name="Domain" objectPath="CurrentOrganization:OwningDomain"/>
+    <startNode referencedName="ProcessSearchIndexFeature-GetEnabledFeatureIDs"/>
+  </nodes>
+<!--@Location 0,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="EnabledFeatureIDs"
+      operator="has_elements">
+<!--@BendPoints 1,14-->
+    <nodeSuccessors name="decision_yes" next="JumpNode16"/>
+<!--@BendPoints 3,7-->
+    <nodeSuccessors name="decision_no" next="DecisionNode9"/>
+  </nodes>
+<!--@Location 0,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode16">
+    <startNode referencedName="ViewParametricSearchBySearchIndex-OfferPaging"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode9" conditionKey="SortingAttribute">
+    <nodeSuccessors name="decision_yes" next="CallNode4"/>
+<!--@BendPoints 4,9 4,13-->
+    <nodeSuccessors name="decision_no" next="JoinNode7"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="next" next="JoinNode7"/>
+    <startNode referencedName="ProcessCatalogSorting-ExtractSortAttributes"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode7">
+    <nodeSuccessors name="next" next="JumpNode2"/>
+  </nodes>
+<!--@Location 1,7-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode2">
+    <startNode referencedName="ViewParametricSearchByOracle-OfferPaging"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="ProductPaging">
+<!--@BendPoints 3,3-->
+    <nodeSuccessors name="next" next="JoinNode10"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="Start6" name="SimpleOfferSearch">
+    <nodeSuccessors name="next" next="JoinNode12"/>
+  </nodes>
+</pipeline:Pipeline>

@@ -1,0 +1,10 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<div class="infobox">
+	<isset name="CartShippingMethod" value="#CurrentCartBO:Extension("ShippingMethod")#" scope="request"/>	
+
+	<a data-csrf-guarded class="pull-right btn-tool" title="<istext key="checkout.address.update.label"/>" href="#URL(Action('ViewCheckoutShipping-Review'))#"><span class="glyphicon glyphicon-pencil"></span></a>
+	<h3><istext key="checkout.widget.shipping_method.heading" /></h3>
+
+	<isinclude template="checkout/common/widgets/ShippingMethodInc">
+</div>

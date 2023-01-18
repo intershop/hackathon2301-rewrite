@@ -1,0 +1,11 @@
+<!--- load javascript for the slick carousel --->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isplacement placeholderid="JS_head">
+	<script defer src="#webRoot().'/js/vendor/slick-1.8.1.min.js'#"></script>
+	<!--- initialize slick carousels --->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			 $('.slick-carousel').slick();
+		});
+	</script>
+</isplacement>

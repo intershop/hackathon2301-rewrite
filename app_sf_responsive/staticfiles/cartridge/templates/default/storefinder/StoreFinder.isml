@@ -1,0 +1,68 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<isinclude template="modules/Modules">
+<isinclude template="inc/LocalizedCountryNamesHelper">
+
+<div class="breadcrumbs row">
+	<ISBreadcrumb showhomelink="true" trailtext0="#localizeText('store.store_finder.breadcrumb')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<h1><istext key="store.store_finder.heading" /></h1>
+
+<istext key="store.store_finder.message" encoding="off" />
+
+<p>
+	<istext key="store.store_finder.note" encoding="off" />
+</p>
+
+
+	<!--- Store Finder Search Form --->
+	<isform action="#URL(Action('ViewStoreFinder-Dispatch'))#" method="post" name="StoresFinderForm" class="form-horizontal">
+		<div class="row">
+			<fieldset class="col-sm-6">
+				<isinclude template="storefinder/inc/StoreSearchForm">
+			</fieldset>	
+		</div>
+	</isform>
+	
+	<!--- Store Finder Search Result --->
+	<isif condition="#isDefined(ListNavigationVO)#">
+	
+		<isif condition="#isDefined(Stores) AND hasElements(Stores) #">
+			
+			<h2><istext key="store.locator.search_results.label"/></h2>	
+			
+			<div class="row">	
+				<isloop iterator="Stores" alias="Store">
+					<div class="store-list-address col-md-3 col-xs-12 col-sm-6">
+						<isaddress address="#Store:AddressBO#">
+					</div>
+				</isloop>
+			</div>
+			
+			<isif condition="#ListNavigationVO:PageCount >1#">
+				<div class="row">
+					<div class="pagination clearfix col-xs-10">
+						<ismappagination 
+							pipeline="#ListNavigationVO:HandlerPipeline.'-Paging'#"
+							params="#ListNavigationVO:GenericHandlerPipelineParams#"
+							itemcount="#ListNavigationVO:ElementCount#"
+							currentpage="#ListNavigationVO:CurrentPage#"
+							pagecount="#ListNavigationVO:PageCount#"
+						>
+					</div>
+				</div>
+			</isif>
+			
+		<iselse>
+			<p>
+				<istext key="store.locator.no_search_results.label" parameter0="#encodeValue(URL(Action('ViewHomepage-Start')))#" encoding="off" />
+			</p>
+		</isif>
+	
+	</isif>

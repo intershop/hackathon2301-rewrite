@@ -1,0 +1,114 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="modules/common/Modules">
+
+<isset scope="request" name="RecurringBasket" value="#CurrentCartBO:Extension("RecurringBasket")#">
+
+<!--- heading --->
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="cart-header">
+	<h1>
+		<span class="cart-header-title">
+			<isif condition="#RecurringBasket:Recurring#">
+				<istext key="checkout.order_review.heading.subscription.title" />
+			<iselse>
+				<istext key="checkout.order_review.heading.title" />
+			</isif>
+		</span>
+		<span class="cart-header-note">
+			<span><istext key="shopping_cart.transaction.text" /></span>
+			<a data-dialog class="details-link" href="#URL(Action('ViewContent-Start'), Parameter('PageletEntryPointID', 'systeminclude.dialog.safeAndSecure.pagelet2-Include'))#"><istext key="shopping_cart.read_more.link" /></a>
+		</span>
+	</h1>
+</div>
+
+<div class="row" data-testing-id="checkout-review-page">
+	<isform method="post" action="#URL(Action('ViewCheckoutReview-Dispatch'))#" class="bv-form" name="MultipleBucketsForm">
+		<div class="col-sm-12 col-md-8">
+			
+			<isBasketValidationMessages basketValidationResults="#BasketValidationResults#">
+			<isOrderCreationMessages orderCreationResult="#OrderCreationResult#" basketValidationResults="#BasketValidationResults#">
+			
+			<isif condition="#isDefined(ValidationErrorCode)#">
+				<div role="alert" class="alert alert-danger">
+					<ul class="list-unstyled">
+						<li><istext key="checkout.order_summary.dddate.error.text1" /></li>
+						<li><istext key="checkout.order_summary.dddate.error.text2" /></li>
+					</ul>
+				</div>
+			<iselseif condition="#isDefined(ERROR_Basket) AND (ERROR_Basket EQ 'BasketMaxTotalValue')#">
+				<div role="alert" class="alert alert-danger">
+					<ul class="list-unstyled">
+						<li><istext key="checkout.order_summary.max.total.value.error.text1" parameter0="#encodeValue(BasketMaxTotalPrefCurrencyValue)#" parameter1="#encodeValue(BasketTotalAmoutDifference)#"/></li>
+						<li><istext key="checkout.order_summary.max.total.value.error.text2" /></li>
+					</ul>
+				</div>
+			<iselseif condition="#isDefined(ERROR_PaymentSelection) AND (ERROR_PaymentSelection EQ 'true')#" />
+				<div role="alert" class="alert alert-danger">
+					<ul class="list-unstyled">
+						<li><istext key="checkout.order_summary.payment_selection.error.text1" /></li>
+						<li><istext key="checkout.order_summary.payment_selection.error.text2" /></li>
+					</ul>
+				</div>
+			<iselseif condition="#isDefined(ERROR_Subscription)#">
+				<div role="alert" class="alert alert-danger">
+					<istext key="subscription.rest.general.error"/>
+				</div>
+			<iselseif condition="#isDefined(WARN_PromotionsForBasketChanged) AND (WARN_PromotionsForBasketChanged EQ 'true')#" /><!---ToDo: message never occurs? --->
+				<isif condition="#isDefined(RemovedPromotionsIDs) AND (RemovedPromotionsIDsCount > 0)#">
+					<div role="alert" class="alert alert-danger">
+						<ul class="list-unstyled">
+							<isPromotionsText promotionids="#RemovedPromotionsIDs#" promotionsmap="#PromotionIDPromotionMap#" return="promotiontext">
+							<isif condition="#(RemovedPromotionsIDsCount > 1)#">
+								<li><istext key="checkout.promotion.removed.multiple.text" parameter0="#promotiontext#"/></li>
+							<iselse>
+								<li><istext key="checkout.promotion.removed.text" parameter0="#promotiontext#"/></li>
+							</isif>
+							<li><istext key="checkout.promotion.removed.common.text" /></li>
+						</ul>
+					</div>
+				</isif>
+				<isif condition="#isDefined(AddedPromotionsIDs) AND (AddedPromotionsIDsCount > 0)#"><!---ToDo: message never occurs? --->
+					<div class="alert alert-success">
+						<isPromotionsText promotionids="#AddedPromotionsIDs#" promotionsmap="#PromotionIDPromotionMap#" return="promotiontext">
+						<isif condition="#(AddedPromotionsIDsCount > 1)#">
+							<p>
+								<istext key="checkout.promotion.added.multiple.text" parameter0="#promotiontext#"/><br>
+								<istext key="checkout.promotion.added.common.text" />
+							</p>
+						<iselse>
+							<p>
+								<istext key="checkout.promotion.added.text" parameter0="#promotiontext#"/><br>
+								<istext key="checkout.promotion.added.common.text" />
+							</p>
+						</isif>
+					</div>
+				</isif>
+			</isif>
+		
+			<isset name="PIIs" value="#CurrentCartBO:Extension("Payment"):PaymentInstrumentInfoBOs#" scope="request"/>
+			<isinclude template="checkout/review/MultipleBuckets">
+			
+		</div>
+		
+		<div class="col-xs-12 col-md-4 order-summary">
+			
+			<h2><istext key="checkout.order_details.heading" /></h2>
+			
+			<!---Cart Summary --->
+			<div class="cost-summary">
+				<isinclude template="checkout/common/widgets/CostSummary">
+				<isinclude template="checkout/review/SubmitOrderBottom">
+			</div>
+			<isinclude template="checkout/common/widgets/PromoCodeLink">
+			<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink">
+
+		</div>
+	</isform>
+</div>

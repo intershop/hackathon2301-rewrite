@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/address/forms/inc/Modules">
+
+<isif condition="#isDefined(webform:City)#">
+
+	<!--- VALUE : value --->
+	<isif condition="#(NOT isDefined(webform:City:Value)) AND isDefined(address)#">
+		<isset name="valueCity" value="#address:City#" scope="request" />
+	</isif>
+
+	<isFormField formparameter="#webform:City#"
+		label="account.default_address.city.label"
+		messageprefix="#addressKeyPrefix#"
+		value="#valueCity#"
+		
+		showtooltip="#showtooltip#"
+		tooltip_linktextkey="account.address.apo_fpo.link"
+		tooltip_headlinekey="account.address.apo_fpo.tooltip.headline"
+		tooltip_contentkey="account.address.apo_fpo.tooltip"
+	>
+</isif>

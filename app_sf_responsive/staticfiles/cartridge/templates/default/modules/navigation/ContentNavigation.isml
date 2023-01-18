@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/navigation/Modules">
+
+<ispipeline pipeline="ProcessContentNavigation-ContentNavigationTree" alias="dict" params="#ParamMap(ParamEntry('Depth', navigationDepth), ParamEntry('RootID', navigationRoot), ParamEntry('Locale', locale), ParamEntry('PageletEntryPointID', currentPageletEntryPointID))#" />
+
+<h3><isprint value="#dict:ContentNavigationTreeHeading#"/></h3>
+
+<ul class="page-navigation-0">
+	<isif condition="#hasLoopElements(dict:ContentNavigationTree)#">
+		<isloop iterator="dict:ContentNavigationTree" alias="NavigationItem">
+			<isContentNavigationLevel navigationItem="#NavigationItem#" navigationDepth="#1#">
+		</isloop>
+	</isif>
+</ul>

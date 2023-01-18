@@ -1,0 +1,13 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<%@page import = "com.intershop.beehive.core.capi.pipeline.PipelineDictionary"%><%	
+	PipelineDictionary dict = getPipelineDictionary();
+	String key = (String)getObject("key");
+	String entry = (String)getObject("entry");
+    if(entry != null)
+    {
+		dict.put(entry, dict.get(key));
+	}else{
+		dict.put("printvalue", dict.get(key));
+	}
+%><isif condition="#(NOT isDefined(print)) OR(isDefined(print) AND (print EQ 'true'))#"><isprint value="#printvalue#"></isif>
+									

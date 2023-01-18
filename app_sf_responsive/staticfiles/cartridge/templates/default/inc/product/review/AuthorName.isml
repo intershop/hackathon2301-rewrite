@@ -1,0 +1,8 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+<isif condition="#isDefined(ReviewBO:AuthorBO:FirstName) AND (ReviewBO:AuthorBO:FirstName NE '')#">
+	<isprint value="#ReviewBO:AuthorBO:FirstName#">
+<iselseif condition="#isDefined(ReviewBO:AuthorName) AND (ReviewBO:AuthorName NE '')#">
+	<isprint value="#ReviewBO:AuthorName#">
+<iselse>
+	<istext key="review.unknown_author.name">
+</isif>

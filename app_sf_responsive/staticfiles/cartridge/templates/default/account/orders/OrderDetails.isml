@@ -1,0 +1,182 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset scope="request" name="RecurringOrder" value="#OrderBO:Extension("RecurringOrder")#">
+
+<isif condition="#(NOT isDefined(ERROR_CODE))#">
+	<isif condition="#NOT isDefined(CancellationStatus)#">
+		<!--- TODO: styles for order details printing? --->
+		<!---TODO: Print Link --->
+		<a class="btn-tool pull-right"	href="javascript:window.print()" title="<istext key="account.orderdetails.print_link.text"/>">
+			<span class="glyphicon glyphicon-print"></span>
+		</a>
+	</isif>
+</isif>
+<isif condition="#isDefined(OrderCancellationResult) #">
+	<isif condition="#OrderCancellationResult:Failure#">
+		<h1><istext key="account.orderdetails.heading.cancellationIncomplete"/></h1>
+		<istext key="account.orderdetails.headerDetails.cancellationIncomplete" encoding="off">
+	<iselse>
+		<h1><istext key="account.orderdetails.heading.cancellationSuccessful"/></h1>
+		<istext key="account.orderdetails.headerDetails.cancellationSuccessful" encoding="off">
+	</isif>
+<iselseif condition="#CancellationStatus EQ 'cancellationSuccessful'#">
+	<h1><istext key="account.orderdetails.heading.cancellationSuccessful"/></h1>
+	<istext key="account.orderdetails.headerDetails.cancellationSuccessful" encoding="off">
+<iselseif condition="#CancellationStatus EQ 'cancellationImpossible'#">
+	<h1><istext key="account.orderdetails.heading.cancellationImpossible"/></h1>
+	<istext key="account.orderdetails.headerDetails.cancellationImpossible" encoding="off">
+<iselseif condition="#CancellationStatus EQ 'confirmCancel'#">
+	<h1><istext key="account.orderdetails.heading.confirmCancel"/></h1>
+	<istext key="account.orderdetails.headerDetails.confirmCancel" encoding="off">
+	
+	<div class="section form-group">
+		<isform action="#URL(Action('ViewOrders-Dispatch'))#" method="post" name="ConfirmCancelOrderUp">
+			<input type="hidden" name="OrderID" value="<isprint value="#OrderBO:ID#">"/>
+			<button class="btn btn-primary" name="cancelOrder" type="submit"><istext key="account.orderdetails.cancel.confirm_cancel_button"></button>
+			<button class="btn btn-default" name="cancelCancellation" type="submit"><istext key="account.orderdetails.cancel.cancel_cancellation_button"></button>
+		</isform>
+	</div>
+<iselse>
+	<h1><istext key="account.orderdetails.heading.default"/></h1>
+	<isif condition="#isDefined(ERROR_CODE) AND (ERROR_CODE EQ 'CONNECTION_FAIL')#">
+		<div class="alert alert-danger"><istext key="order.orderstateservice.error"/></div>
+	<iselse>
+		<p><istext key="account.orderdetails.headerDetails.default" encoding="off"></p>
+	</isif>
+</isif>
+<isif condition="#CurrentUser:ID EQ OrderBO:UserBO:ID#">
+	<!--- Cancel Order Row --->
+	<isinclude extensionpoint="OrderActions" />
+</isif>
+<isif condition="#(NOT isdefined(ERROR_CODE))#">
+	<div class="section" data-testing-id="order-summary-info">
+		<dl class="dl-horizontal dl-horizontal-inline dl-separator">
+			<dt><istext key="account.orderdetails.order_number.label"></dt><dd data-testing-id="order-number"><isprint value="#OrderBO:DocumentNo#"></dd>
+			<dt><istext key="account.orderdetails.date_of_order.label"></dt><dd data-testing-id="order-date"><isprint value="#getValue(OrderBO:CreationDate,DATE_SHORT)#"></dd>
+			<dt><istext key="account.orderdetails.order_status.label"></dt><dd data-testing-id="order-status"><isprint value="#OrderBO:StatusDisplayName#"></dd>
+		</dl>
+	</div>
+	
+	<isif condition="#RecurringOrder:Recurring#">
+		<p>
+			<isif condition="#CurrentUser:ID EQ OrderBO:UserBO:ID#">
+				<istext key="account.subscription.order_details.note" parameter0="#url(action('ViewSubscriptions-Details'), Parameter('SubscriptionID', RecurringOrder:RecurringOrderID), Parameter('OrderID', OrderBO:ID))#" encoding="off">
+			<iselse>
+				<istext key="account.subscription.order.note" encoding="off">
+			</isif>
+		</p>
+	</isif>
+</isif>
+
+<!--- Info Boxes --->
+<isif condition="#(NOT isdefined(ERROR_CODE))#">
+	<isset name="CurrentCartBO" value="#OrderBO#" scope="request">
+	<isset name="CustomerBO" value="#OrderBO:CustomerBO#" scope="request">
+	<isset name="OrderShippingBucket" value="#OrderBO:Extension("ShippingBucket")#" scope="request"/>
+	<isset name="OrderShippingMethod" value="#OrderBO:Extension("ShippingMethod")#" scope="request"/>
+	<isset name="OrderPayment" value="#OrderBO:Extension("Payment")#" scope="request"/>
+	
+	<div class="row">
+		<isinclude extensionpoint="OrderDetailsInfoBoxes"/>
+	</div>
+	
+	<isif condition="#OrderShippingBucket:hasMultipleShippments#">
+		<div class="row equal">
+			<div class="col-xs-12 col-sm-6 order-detail-box">
+				<div class="infobox">
+					<h3><istext key="account.orderdetails.billing_address.heading"/></h3>
+					<isaddress address="#OrderBO:InvoiceToAddressBO#" showemail="true">
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-6 order-detail-box">
+				<div class="infobox">
+					<isinclude template="account/orders/PaymentWidget">
+				</div>
+			</div>
+		</div>
+	</isif>
+	
+	<isset name="PromotionMessages" value="#isDefined(OrderBO:Extension("PromotionInformation"))#" scope="request"/> 
+	
+	<isset name="BucketIndex" value="#0#" scope="request">
+	<isloop iterator="OrderShippingBucket:ShippingBucketBOs" alias="bucket">
+		<isset name="BucketIndex" value="#BucketIndex + 1#" scope="request">
+		
+		<isif condition="#OrderShippingBucket:hasMultipleShippments#">
+			<div class="row equal">
+				<div class="col-xs-12 col-sm-6 order-detail-box">
+					<div class="infobox">
+						<h3>
+							<isif condition="#OrderShippingBucket:ShippingBucketBOs:Size > 1#">
+								<istext key="account.orderdetails.bucket.shipping_address.label" parameter0="#BucketIndex#"/> 
+							<iselse>
+								<istext key="account.orderdetails.bucket.shipping_address.no_param.label"/> 
+							</isif>
+						</h3>
+						
+						<isaddress address="#bucket:ShipToAddress#" showemail="#bucket:SelectedShippingMethod:DigitalDelivery#">
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-6 order-detail-box">
+					<isinclude template="account/orders/ShippingWidget">
+				</div>
+			</div>
+		<iselse>
+		
+			<div class="equal row">
+				<div class="col-xs-12 col-sm-6 col-lg-3 order-detail-box">
+					<div class="infobox">
+						<h3><istext key="account.orderdetails.billing_address.heading"/></h3>
+						<isaddress address="#OrderBO:InvoiceToAddressBO#" showemail="true">
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-6 col-lg-3 order-detail-box">
+					<div class="infobox">
+						<h3>
+							<isif condition="#OrderShippingBucket:ShippingBucketBOs:Size > 1#">
+								<istext key="account.orderdetails.bucket.shipping_address.label" parameter0="#BucketIndex#"/>
+							<iselse>
+								<istext key="account.orderdetails.bucket.shipping_address.no_param.label"/>
+							</isif>
+						</h3>
+						
+						<isaddress address="#bucket:ShipToAddress#" showemail="#bucket:SelectedShippingMethod:DigitalDelivery#">
+					</div>
+				</div>
+			</div>
+	
+			<div class="equal row">
+				<div class="col-xs-12 col-sm-6 col-lg-3 order-detail-box">
+					<isinclude template="account/orders/ShippingWidget">
+				</div>
+				<div class="col-xs-12 col-sm-6 col-lg-3 order-detail-box">
+					<div class="infobox">
+						<isinclude template="account/orders/PaymentWidget">
+					</div>
+				</div>
+			</div>
+		</isif>
+		
+		<isif condition="#PromotionMessages#">
+			<!--- new template with promotion messages from order --->
+			<isinclude template="account/orders/LineItemsDetails.isml" />
+		<iselse>
+			<!---old template --->
+			<isinclude template="cart/common/LineItemsDetails.isml" />
+		</isif>
+	</isloop>
+	
+	<div class="section cost-summary pull-right">
+		<h3><istext key="checkout.order_summary.heading" /></h3>
+		
+		<isif condition="#PromotionMessages#">
+			<!--- new template with promotion messages from order --->
+			<isinclude template="account/orders/CostSummary.isml" />
+		<iselse>
+			<!---old template --->
+			<isinclude template="cart/common/CostSummary.isml" />
+		</isif>
+		
+	</div>
+	
+</isif>

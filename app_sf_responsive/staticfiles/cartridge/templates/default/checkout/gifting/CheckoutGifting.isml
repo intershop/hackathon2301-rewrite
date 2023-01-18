@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="checkout/common/HeaderProgressBar">
+	
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<isset name="GiftWrapSwitchFlag" value="#isDefined(GiftWrap_Switch) AND (GiftWrap_Switch EQ 'true')#" scope="request"/>
+<isset name="GiftMessageSwitchFlag" value="#isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true')#" scope="request"/>
+
+<h1>
+	<isif condition="#GiftWrapSwitchFlag#">
+		<istext key="checkout.gifting.giftwrap.header"/>
+	<iselseif condition="#GiftMessageSwitchFlag#">
+		<istext key="checkout.gifting.giftmessage.header"/>
+	</isif>
+</h1>
+
+<div class="row">
+	<isform class="form-horizontal bv-form" method="post" action="#URL(Action('ViewCheckoutGifting-Dispatch'))#" name="#GiftingForm:ID#">
+		<div class="col-md-8">
+			<isset name="formKey" value="Splitting" scope="request" />
+			<isset name="Subform" value="#GiftingForm:get(formKey)#" scope="request"/>
+			<isset name = "errorcheck" value="false" scope = "request">
+			<isset name = "errorindex" value="0" scope = "request">
+			
+			<input type="hidden" name="<isprint value="#Subform:SplitInfoMapID:QualifiedName#">" value="<isprint value = "#PLISplitInfoMap:ID#">" />
+
+			<isif condition="#(isDefined(GiftWrap_Switch) AND (GiftWrap_Switch EQ 'true')) OR (isDefined(GiftMessage_Switch) AND (GiftMessage_Switch EQ 'true'))#">
+				<!--- GiftWrap template include the GiftMessage template if it will be necessary --->
+				<isinclude template="checkout/gifting/GiftOptions">
+			</isif>
+
+		</div>
+		
+		<!---Cart Summary --->
+		<div class="col-md-4 order-summary">
+			<h2><istext key="checkout.order_details.heading" /></h2>
+			<isinclude template="checkout/common/widgets/AddressesBox">
+			<isinclude template="checkout/common/widgets/ItemsInCart">
+			<isinclude template="checkout/common/widgets/SubscriptionBox">
+			<div class="cost-summary">
+				<isinclude template="checkout/common/widgets/CostSummary">
+				<button name="continue" class="btn btn-lg btn-block btn-primary" type="submit"><istext key="checkout.button.label" /></button>
+			</div>
+			<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink">
+		</div>	
+	</isform>
+</div>

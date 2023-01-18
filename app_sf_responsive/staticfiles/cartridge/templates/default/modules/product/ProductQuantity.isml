@@ -1,0 +1,102 @@
+<%@page import="com.intershop.beehive.core.capi.preference.PreferenceDefinition"%>
+<%@page import="com.intershop.beehive.bts.capi.orderprocess.basket.BasketConstants"%>
+<%@page import="com.intershop.beehive.core.capi.naming.NamingMgr"%>
+<%@page import="com.intershop.beehive.core.capi.preference.PreferenceDefinitionMgr"%>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT((ProductBO:isEndOfLife) OR (ProductBO:isLastOrderDate)) AND NOT(ProductBO:isRetailSet) AND NOT(isDefined(ProductBO:ServiceType) AND ProductBO:ServiceType:DigitalGiftCard)#">
+	<div class="product-quantity row">
+		<isif condition="#ProductBO:Available#">
+		
+			<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+			<isCurrentCustomerBO currentcustomerbo="CustomerBO">
+			<isGetProductPriceContext CustomerBO="#CustomerBO#" ProductPriceContext="ProductPriceContext">
+			<isset name="salePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request"/>
+			<isset name="ProductInventory" value="#ProductBO:Extension("Inventory")#" scope="request" />
+			
+			<isif condition="#((ProductInventory:ServiceEnabled AND InventoryStatus:InStock) OR (NOT(ProductInventory:ServiceEnabled) AND ProductBO:InventoryStatus:InStock))
+							AND salePrice:Price:Available#">
+				
+				<isif condition="#isDefined(nullQuantity) AND (nullQuantity EQ 'true')#">
+					<isset name="initialQuantity" value="#0#" scope="request" />
+				<iselseif condition="#isDefined(initialQuantity) AND (initialQuantity NE '')#">
+					<isset name="initialQuantity" value="#val(initialQuantity)#" scope="request" />
+				<iselseif condition="#isDefined(ProductBO:MinOrderQuantity)#">
+					<isset name="initialQuantity" value="#val(ProductBO:MinOrderQuantity)#" scope="request" />
+				<iselse>
+					<isset name="initialQuantity" value="#1#" scope="request" />
+				</isif>
+
+				<isif condition="#isDefined(ProductLineItemBO)#">
+					<isset name="displayQuantity" value="#val(ProductLineItemBO:Quantity)#" scope="request" />
+				<iselseif condition="#isDefined(displayQuantity) AND (displayQuantity NE '')#">
+					<isset name="displayQuantity" value="#displayQuantity#" scope="request" />
+				<iselse>
+					<isset name="displayQuantity" value="#initialQuantity#" scope="request" />
+				</isif>
+
+				<isif condition="#isDefined(maxQuantity) AND (maxQuantity NE '') AND (val(maxQuantity) >= initialQuantity)#">
+					<isset name="maxQuantity" value="#val(maxQuantity)#" scope="request" />
+				<iselseif condition="#isDefined(ProductBO:MaxOrderQuantity:Value) AND (ProductBO:MaxOrderQuantity:Value != 0) AND (val(getValue(ProductBO:MaxOrderQuantity:Value, '0')) >= initialQuantity)#"><!--- Convert BigDecimal to Double --->
+					<isset name="maxQuantity" value="#val(getValue(ProductBO:MaxOrderQuantity:Value, '0'))#" scope="request" />
+				<iselse><!--- use the application configuration parameter --->
+					
+					<ispipeline pipeline="ViewCart-GetApplicationBasketMaxItemQuantity" alias="dict">
+					<isif condition="#(isDefined(dict:BasketMaxItemQuantity)) AND (dict:BasketMaxItemQuantity > 0)#">
+						<isset name="maxQuantity" value="#dict:BasketMaxItemQuantity#" scope="request" />
+					<iselse>
+						<%
+							PreferenceDefinitionMgr prefMgr = (PreferenceDefinitionMgr) NamingMgr.getManager(PreferenceDefinitionMgr.class);
+							PreferenceDefinition pref = prefMgr.getPreferenceDefinition(BasketConstants.BASKET_MAX_ITEMQUANTITY);
+							java.lang.Double maxBasketQty = java.lang.Double.valueOf(pref.getDefaultValue());
+							getPipelineDictionary().put("maxQuantity", maxBasketQty);
+						%>
+					</isif>
+				</isif>
+
+				<isif condition="#isDefined(ProductBO:StepQuantity)#">
+					<isset name="stepQuantity" value="#val(ProductBO:StepQuantity)#" scope="request"/>
+				<iselse>
+					<isset name="stepQuantity" value="#1#" scope="request"/>
+				</isif>
+
+				<isFieldErrorMessagePlaceholder name_override="#'Quantity_'.ProductBO:SKU#" fieldname="#Quantity#">
+				
+				<isif condition="#ShowLabel NE 'false'#">
+					<label for="Quantity_<isprint value="#ProductBO:SKU#">" class="label-quantity col-xs-6 "><istext key="product.quantity.label" /></label>
+				</isif>
+				
+				<div class="<isif condition="#ShowLabel NE 'false'#">col-xs-6<iselse>col-xs-12</isif> form-group <isif condition="#isDefined(customStyle)#">#customStyle#</isif>">
+					<isif condition="#type EQ 'dropdown'#">
+						<select class="input-quantity form-control"	id="Quantity_<isprint value="#ProductBO:SKU#">"	name="Quantity_<isprint value="#ProductBO:SKU#">"></select>
+	
+						<script language="javascript">
+							$(document).ready(function() {
+								for(i=<isprint value="#initialQuantity#" formatter="0">; i <= <isprint value="#maxQuantity#" formatter="0">; i += <isprint value="#stepQuantity#" formatter="0">){
+									$('<option value="'+i+'">'+i+'</option>').appendTo('select.input-quantity');
+								}
+							});
+						</script>
+					
+					<iselse>
+						<input type="number" class="input-quantity form-control"
+							required
+							id="Quantity_<isprint value="#ProductBO:SKU#">"
+							name="Quantity_<isprint value="#ProductBO:SKU#">"
+							value="<isprint value="#displayQuantity#" formatter="0">"
+							step="<isprint value="#stepQuantity#" formatter="0">"
+							min="<isprint value="#initialQuantity#" formatter="0">"
+							max="<isprint value="#maxQuantity#" formatter="0">"
+							data-error-position="placeholder"
+							data-bv-notempty-message="<istext key="product.quantity.notempty.text"/>"
+							data-bv-lessthan-message="<istext key="product.quantity.lessthan.text" parameter0="#maxQuantity#"/>"
+							data-bv-greaterthan-message="<istext key="product.quantity.greaterthan.text" parameter0="#initialQuantity#"/>"
+							data-bv-message="<istext key="product.quantity.message.text"/>" 
+							data-bv-integer-message="<istext key="product.quantity.integer.text"/>"
+						/>
+					</isif>
+				</div>
+			</isif>
+		</isif>
+	</div>
+</isif>

@@ -1,0 +1,114 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<div class="breadcrumbs row">
+	<isAccountBreadcrumb trailtext="#localizeText('account.overview.link')#">
+</div>
+
+<!--- Marketing slot --->
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<div class="account-wrapper" data-testing-id="account-page">
+	<div class="row account-main">
+		<div class="col-md-3 account-nav-box">
+			<isAccountNavigation selecteditem="OVERVIEW">
+		</div>
+		
+		<div class="col-md-9">
+			<!--- Marketing slot --->
+			<div class="marketing-area">
+				<ISMarketingSlot id="contentMarketing">
+			</div>
+			<h1>
+				<isif condition="#isDefined(CurrentUser:Profile:DataSheet:FirstName) AND (CurrentUser:Profile:DataSheet:FirstName NE '')#">
+					<!--- B2C --->
+					<istext key="account.overview.personal_message.text" parameter0="#encodeValue(CurrentUser:Profile:DataSheet:FirstName)#" encoding="off" />
+				<iselse>
+					<istext key="account.overview.personal_message.text" parameter0="#encodeValue(CurrentUser:Profile:Credentials:Login)#" encoding="off" />
+				</isif>
+			</h1>
+			<p><istext key="account.overview.message.text"/></p>
+			
+			<!---Icon Navi --->
+			<div class="row account-dashboard">
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewOrders-SimpleOrderSearch'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-list-alt"></span>
+						</div>
+						<istext key="account.order_history.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewWishlist-ViewAll'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-heart"></span>
+						</div>
+						<istext key="account.wishlists.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewGiftCertificates-ListAll'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-gift"></span>
+						</div>
+						<istext key="account.gift_certificates.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewGiftCertificatesBalance-Show'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-flash"></span>
+						</div>
+						<istext key="account.giftcard_balance.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewPaymentInstrumentInfo-Edit'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-credit-card"></span>
+						</div>
+						<istext key="account.payment.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewUserAddressList-List'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-book"></span>
+						</div>
+						<istext key="account.saved_addresses.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewProfileSettings-ViewProfile'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-cog"></span>
+						</div>
+						<istext key="account.profile.link"/>
+					</a>
+				</div>
+				<div class="col-sm-3 col-xs-6 dashboard-item">
+					<a href="#URL(Action('ViewProductNotification-List'))#">
+						<div class="circle-icon">
+							<span class="glyphicon glyphicon-bell"></span>
+						</div>
+						<istext key="account.productnotification.link"/>
+					</a>
+				</div>
+			</div>
+			
+			<!--- Latest orders list --->
+			<h2><istext key="account.order.most_recent.heading"/></h2>
+			<isinclude template="account/overview/LatestOrders">
+			
+			<!--- Latest wishlist items list --->
+			<h2><istext key="account.overview.wishlist.most_recent.heading"/></h2>
+			<isinclude template="account/overview/LatestWishlistItems">
+			
+			<!--- Note --->
+			<isinclude template="account/inc/PrivacyPolicyNote">
+		</div>
+	</div>
+</div>

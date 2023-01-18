@@ -1,0 +1,55 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!---
+	Renders a handlebars template script snippet and includes a defined isml template 
+	Parameters:
+		- name 
+			Defines the name of the module
+		- folder
+			Defines the folder where exists the view and the copntroller of the module 
+	Example:
+		<ishbs name="quote-list" folder="quote">
+--->
+<ismodule 
+	strict="false" 
+	template = "modules/hbs/hbs-script-tag" 
+	name = "hbs"
+	attribute = "name"
+	attribute = "folder"
+>
+
+<!---
+	Renders a handlebars partial template script snippet and includes a defined isml template 
+	Parameters:
+		- name 
+			Defines the name of the partial
+		- folder
+			Defines the folder where exists the view and the copntroller of the module 
+	Example:
+		<ishbspartial name="quote-list" folder="quote">
+--->
+<ismodule 
+	strict="false" 
+	template = "modules/hbs/hbs-partial-tag" 
+	name = "hbspartial"
+	attribute = "name"
+	attribute = "folder"
+>
+
+<!---
+	Renders some needed JavaScript reference links for using REST and Handlebars in the global placeholder "JS_head". 
+	Parameters: NONE 
+	Example:
+		<hbsJavscriptLinks>
+--->
+<ismodule 
+	strict="true" 
+	template = "modules/hbs/hbs-js-links" 
+	name = "hbsJavscriptLibraries"
+	attribute = "excludeHandlebarsLib"
+	attribute = "excludeRSVPLib"
+	attribute = "excludeAccountingLib"
+	attribute = "excludeDateFormatLib"
+	attribute = "excludeI18nLib"
+	attribute = "excludeIshHbsHelpers"
+>

@@ -1,0 +1,20 @@
+<iscontent charset="UTF-8" compact="true" templatemarker="true">
+
+<div class="form-group <isif condition="#webform:Birthday:Month:isInvalid OR 
+												webform:Birthday:Day:isInvalid OR 
+												webform:Birthday:Year:isInvalid OR 
+												webform:Birthday:isInvalid#"> has-error</isif>">
+	
+	<label class="control-label col-sm-4" for="<isprint value="#webform:Birthday:QualifiedName#">">
+		<istext key="account.default_address.birthday.label" />
+		<isif condition="#NOT webform:Birthday:Optional#"><span class="required">*</span></isif>
+	</label>
+
+	<div class="col-sm-8">
+		<isBirthdayInput 
+			formparameter="#webform:Birthday#" 
+			type="select" 
+			required="false"
+		>
+	</div>
+</div>

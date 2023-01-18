@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--@Group Pagelet-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessSearchPage" type="process">
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" strict="true" name="DeterminePageEntryPointForSearchResults"
+      callMode="Private">
+    <nodeSuccessors name="next" next="DecisionNode2"/>
+    <parameters name="Products" type="java.util.Iterator" optional="true"/>
+    <parameters name="SearchIndexResult" type="com.intershop.component.search.capi.SearchResult"
+        optional="true"/>
+    <parameters name="SearchIndexContentResult" type="com.intershop.component.search.capi.SearchResult"
+        optional="true"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode2" conditionKey="Products"
+      operator="has_elements">
+<!--@BendPoints 2,5 2,6 2,7-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode7"/>
+    <nodeSuccessors name="decision_no" next="DecisionNode1"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode7" conditionKey="SearchIndexResult">
+<!--@BendPoints 4,7-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode8"/>
+    <nodeSuccessors name="decision_no" next="JoinNode2"/>
+  </nodes>
+<!--@displayNearNode@Then checks if the available results,
+are from SpellCorrected results.
+If so goes to 'Did you mean' page.
+@Location 2,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode8" conditionKey="SearchIndexResult:SpellCorrected"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="DecisionNode5"/>
+    <nodeSuccessors name="decision_no" next="CallNode0"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode5" conditionKey="SearchIndexContentResult">
+    <nodeSuccessors name="decision_yes" next="DecisionNode6"/>
+    <nodeSuccessors name="decision_no" next="CallNode1"/>
+  </nodes>
+<!--@Location 4,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode6" conditionKey="SearchIndexContentResult:Results"
+      operator="has_elements">
+<!--@BendPoints 11,7-->
+    <nodeSuccessors name="decision_yes" next="JoinNode4"/>
+    <nodeSuccessors name="decision_no" next="CallNode1"/>
+  </nodes>
+<!--@Location 5,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode4">
+    <nodeSuccessors name="next" next="JoinNode2"/>
+  </nodes>
+<!--@Location 1,4-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode2">
+    <nodeSuccessors name="next" next="CallNode0"/>
+  </nodes>
+<!--@Location 1,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="EndNode10"/>
+<!--@BendPoints 5,11-->
+    <nodeSuccessors name="ERROR" next="EndNode11"/>
+    <parameterBindings name="PageletEntryPointID" constant="systempage.search.result.pagelet2-Page"/>
+    <parameterBindings name="ResourceSetID" constant="app_sf_responsive"/>
+    <startNode referencedName="ProcessPagelet-LookupPageletEntryPoint"/>
+  </nodes>
+<!--@Location 1,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode10" strict="true">
+    <returnValues name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"/>
+  </nodes>
+<!--@Location 2,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode11" name="ERROR" strict="true"/>
+<!--@Location 4,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="next" next="EndNode18"/>
+<!--@BendPoints 11,11-->
+    <nodeSuccessors name="ERROR" next="EndNode17"/>
+    <parameterBindings name="PageletEntryPointID" constant="systempage.search.didYouMean.pagelet2-Page"/>
+    <parameterBindings name="ResourceSetID" constant="app_sf_responsive"/>
+    <startNode referencedName="ProcessPagelet-LookupPageletEntryPoint"/>
+  </nodes>
+<!--@Location 4,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode18" strict="true">
+    <returnValues name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"/>
+  </nodes>
+<!--@Location 5,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode17" name="ERROR" strict="true"/>
+<!--@Location 6,2-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode1" conditionKey="SearchIndexContentResult">
+<!--@BendPoints 13,6-->
+    <nodeSuccessors name="decision_yes" next="DecisionNode4"/>
+<!--@BendPoints 15,5-->
+    <nodeSuccessors name="decision_no" next="JoinNode3"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode4" conditionKey="SearchIndexContentResult:Results"
+      operator="has_elements">
+<!--@BendPoints 13,9-->
+    <nodeSuccessors name="decision_yes" next="JoinNode4"/>
+    <nodeSuccessors name="decision_no" next="JoinNode3"/>
+  </nodes>
+<!--@Location 7,3-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode3">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="next" next="EndNode15"/>
+<!--@BendPoints 17,11-->
+    <nodeSuccessors name="ERROR" next="EndNode16"/>
+    <parameterBindings name="PageletEntryPointID" constant="systempage.search.noResult.pagelet2-Page"/>
+    <parameterBindings name="ResourceSetID" constant="app_sf_responsive"/>
+    <startNode referencedName="ProcessPagelet-LookupPageletEntryPoint"/>
+  </nodes>
+<!--@Location 7,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode15" strict="true">
+    <returnValues name="PageletEntryPoint" type="com.intershop.component.pmc.capi.pagelet.PageletEntryPoint"/>
+  </nodes>
+<!--@Location 8,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode16" name="ERROR" strict="true"/>
+</pipeline:Pipeline>

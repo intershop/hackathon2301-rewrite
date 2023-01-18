@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/address/forms/inc/Modules">
+
+<isif condition="#isDefined(webform:Address3)#">
+
+	<!--- VALUE : value --->
+	<isif condition="#(NOT isDefined(webform:Address3:Value)) AND isDefined(address)#">
+		<isFormField formparameter="#webform:Address3#"
+			label="account.default_address.street3.label" 
+			messageprefix="#addressKeyPrefix#"
+			value="#address:AddressLine3#"
+		>
+	<iselse>
+		<isFormField formparameter="#webform:Address3#"
+			label="account.default_address.street3.label" 
+			messageprefix="#addressKeyPrefix#"
+		>
+	</isif>
+</isif>

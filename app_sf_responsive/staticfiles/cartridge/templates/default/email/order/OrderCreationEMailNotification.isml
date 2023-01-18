@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>
+		<istext key="email.order_creation.title" />
+	</title>	
+</head>
+
+<body>
+	
+	<p>
+		<!--- Text --->
+		<b><istext key="email.order_creation.text" /></b>
+		<p>
+			<!--- Customer --->
+			<istext key="email.order_creation.customer" parameter0="#BasketBO:UserBO:FirstName#" parameter1="#BasketBO:UserBO:LastName#" /><br>
+			<!--- Subscription No --->
+			<istext key="email.order_creation.subscription" parameter0="#RecOrderNo#" />
+		<p/>
+	<p/>
+	
+	<p>
+		<!--- Details --->
+		<i><istext key="email.order_creation.details" /></i>
+		<p>
+			<!--- Recurring Order ID --->
+			<istext key="email.order_creation.recurringorder" parameter0="#RecOrderID#" /><br>
+			<!--- Basket ID --->
+			<istext key="email.order_creation.basket" parameter0="#BasketBO:ID#" />
+		<p/>
+	<p/>
+	
+	<p>
+		<!--- Error Codes --->
+		<istext key="email.order_creation.errorcodes" />
+		<ul>
+			<isloop iterator="ErrorCodes" alias="ErrorCode">
+				<li><isprint value="#ErrorCode#"></li>
+			</isloop>
+		</ul>		
+	<p/>
+	<p>
+		<istext key="email.order_creation.system"/>
+	</p>	
+	
+</body>
+</html>

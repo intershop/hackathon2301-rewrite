@@ -1,0 +1,13 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(category) AND (category NE '')#">
+	<iscachekey object="#category#">
+	<isImage 
+        imagecontainer="#category:Extension("Image"):ImageContainerBO#" 
+        imagetypeid="#imagetypeid#" 
+        imageview="#imageview#" 
+        class="#class#" 
+        alttext="#category:Name#"
+        datatestingid="#'category-image-'.category:Name#"
+    >
+</isif>

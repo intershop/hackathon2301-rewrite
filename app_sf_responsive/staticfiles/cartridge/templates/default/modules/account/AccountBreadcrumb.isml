@@ -1,0 +1,34 @@
+<iscontent charset="UTF-8" compact="true">
+
+<!--- wish list details --->
+<isif condition="#isDefined (wishlistBO)#">
+	<ISBreadcrumb
+		showhomelink="true"
+		link0="#URLEX(SecureURL,'',Action('ViewUserAccount-Start'))#"
+		text0="#localizeText('account.my_account.link')#"
+		link1="#URLEX(SecureURL,'',Action('ViewWishlist-ViewAll'))#"
+		text1="#localizeText('account.wishlists.link')#"
+		separatetrailtext="true"
+		trailtext1="#wishlistBO:Name#"
+	>
+<!--- submenu items --->
+<iselseif condition="#isDefined(link)#">
+	<ISBreadcrumb
+		showhomelink="true"
+		link0="#URLEX(SecureURL,'',Action('ViewUserAccount-Start'))#"
+		text0="#localizeText('account.my_account.link')#"
+		link1="#link#"
+		text1="#text#"
+		separatetrailtext="true"
+		trailtext1="#trailtext#"
+	>
+<!--- default --->
+<iselse>
+	<ISBreadcrumb
+		showhomelink="true" 
+		link0="#URLEX(SecureURL,'',Action('ViewUserAccount-Start'))#"
+		text0="#localizeText('account.my_account.link')#"
+		separatetrailtext="true"
+		trailtext0="#trailtext#"
+	>
+</isif>

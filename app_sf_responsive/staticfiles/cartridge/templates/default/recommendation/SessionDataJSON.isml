@@ -1,0 +1,8 @@
+<iscontent type="application/json" charset="UTF-8" compact="true" templatemarker="false" >
+<iscache type="forbidden">
+{
+	"sessionid" : "<isprint value="#CurrentSession:Id#" encoding = "JavaScript">"
+	<isif condition="#CurrentSession:LoggedIn#">
+		, "userid" : "<isprint value="#CurrentSession:User:Profile:BasicCredentials:Login#" encoding = "JavaScript">"
+	</isif>
+}

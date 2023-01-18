@@ -1,0 +1,83 @@
+<iscontent type="text/html" session="false" charset="UTF-8" compact="true">
+<isinclude template="email/mailTemplate/Modules">
+
+<isinclude template="email/mailTemplate/MailConfig"/>
+<isinclude template="modules/Modules">
+
+<!--- 
+	TODO: subject can not be localized yet because the subject is given in the backoffice
+			add the following tags if it changes:
+
+<subject><istext key="email.product_agent.heading" parameter0="#ChannelName#" encoding="off"/></subject>
+
+--->
+
+<isMailHeader ChannelName="#ChannelName#" ShowMyAccountLink="true" ShowCustomerInformation="true">
+
+<p class="header">
+	<istext key="email.product_agent.heading" parameter0="#ChannelName#"/>
+</p>
+<p>
+	<isif condition="#isDefined(UserBO:Title) AND (UserBO:Title NE '')#">
+		<istext key="email.dear.label.title_firstname_lastname"
+			parameter0="#encodeValue(UserBO:Title)#"
+			parameter1="#encodeValue(UserBO:FirstName)#"
+			parameter2="#encodeValue(UserBO:LastName)#"
+			encoding="off"/>
+	<iselse>
+		<istext key="email.dear.label.firstname_lastname"
+			parameter0="#encodeValue(UserBO:FirstName)#"
+			parameter1="#encodeValue(UserBO:LastName)#"
+			encoding="off"/>
+	</isif>
+</p>
+<p>
+	<isif condition="#Alert:HandlerClassName EQ 'com.intershop.component.mvc.capi.alert.PriceConditionHandler'#">
+		<!--- target price is reached --->
+		<isGetProductPriceContext CustomerBO="#UserBO:Extension("Customer"):CustomerBO#" UserBO="#UserBO#" AddressSpecificPrice="true" ProductPriceContext="ProductPriceContext">
+		<isset name="ProductPrice" value="#ProductBO:Extension("Pricing")#" scope="request"/>
+		<isset name="SalePrice" value="#ProductPrice:Price("SalePrice", Currency, ProductPriceContext)#" scope="request"/>
+
+		<isif condition="#IsDefined(Unsubscribe)#">
+			<istext key="email.product_agent.price_unsubscribed" encoding="off"/>
+		<iselse>
+			<isif condition="#SalePrice:Range#">
+				<istext key="email.product_agent.price_reached" parameter0="#getValue(SalePrice:PriceRange:MinimumPrice)#" encoding="off"/>
+			<iselseif condition="#SalePrice:Price:Available#">
+				<istext key="email.product_agent.price_reached" parameter0="#getValue(SalePrice:Price)#" encoding="off"/>
+			<iselse>
+				<istext key="email.product_agent.price_reached" parameter0="#getValue(ProductBO:Price)#" encoding="off"/>
+			</isif>
+		</isif>
+	<iselse>
+		<!--- product back in stock --->
+		<isif condition="#IsDefined(Unsubscribe)#">
+			<istext key="email.product_agent.back_in_stock_unsubscribed" encoding="off"/>
+		<iselse>
+			<istext key="email.product_agent.back_in_stock" encoding="off"/>
+		</isif>
+	</isif>
+</p>
+<a href="#URL(Action('ViewProduct-Start'), Parameter('SKU', ProductBO:SKU))#">
+	<isif condition="#isDefined(ProductBO)#">
+		<div class="productTitle"><isprint value="#ProductBO:Name#"></div>
+		<img alt="<isprint value="#ProductBO:Name#"/>"
+			src="<isprint value="#ContentUrlEx('', '', '', '', '', ProductBO:Extension("Image"):ImageContainerBO:PrimaryImageBO("M"):ContentRef)#"/>">
+	<iselse>
+		<div class="productTitle"><isprint value="#AlertProductName#"></div>
+	</isif>
+</a>
+<p>
+	<istext key="email.product_agent.account"
+		parameter0="#URLEX(SecureURL,'',Action('ViewUserAccount-Start'))#"
+		parameter1="#encodeValue(ChannelName)#"
+		encoding="off"/>
+</p>
+<p>
+	<istext key="email.product_agent.happy_shopping.text"
+		parameter0="#URLEX(InsecureURL,'',Action('ViewHomepage-Start'))#"
+		parameter1="#encodeValue(ChannelName)#"
+		encoding="off"/>
+</p>
+
+<isinclude template="email/mailTemplate/MailFooter"/>

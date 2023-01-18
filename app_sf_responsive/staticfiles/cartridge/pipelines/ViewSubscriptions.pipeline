@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Contains logic to display a list of subscriptions.
+@Group Subscriptions-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ViewSubscriptions" overrideMode="Inherit" type="View">
+<!--@Location 6,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" name="Details">
+    <nodeSuccessors name="next" next="CallNode2"/>
+  </nodes>
+<!--@Location 6,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+    <nodeSuccessors name="LOGGEDIN" next="CallNode_cHZIEDKBEeip6KN4VvIgdg"/>
+    <startNode referencedName="ViewSubscriptions-Prefix"/>
+  </nodes>
+<!--@Location 6,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_cHZIEDKBEeip6KN4VvIgdg">
+    <nodeSuccessors name="next" next="GetBasketByID0"/>
+    <parameterBindings name="PageName" constant="subscription-detail"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 6,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketByID0">
+    <configurationValues name="CurrentUserOnly" value="false"/>
+    <pipelet href="enfinity:/bts/pipelets/GetBasketByID.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode0"/>
+<!--@BendPoints 15,9-->
+    <nodeSuccessors name="pipelet_error" next="JumpNode1"/>
+    <parameterBindings name="BasketID" objectPath="SubscriptionID"/>
+  </nodes>
+<!--@Location 6,5-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode0" conditionKey="Basket">
+    <nodeSuccessors name="decision_yes" next="GetBasketBO0"/>
+    <nodeSuccessors name="decision_no" next="JumpNode1"/>
+  </nodes>
+<!--@Location 6,6-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetBasketBO0">
+    <pipelet href="enfinity:/bc_basket/pipelets/GetBasketBO.xml"/>
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate1_Input"/>
+    <parameterBindings name="BasketBORepository" objectPath="ApplicationBO:Repository(&quot;BasketBORepository&quot;)"/>
+  </nodes>
+<!--@Location 6,7-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate1">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.subscription.details.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/subscriptions/SubscriptionDetails"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode1">
+    <startNode referencedName="Error-Page"/>
+  </nodes>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" name="List">
+    <nodeSuccessors name="next" next="CallNode1"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+    <nodeSuccessors name="LOGGEDIN" next="CallNode_IntyYDJ4EeitIbLIizZqXw"/>
+    <startNode referencedName="ViewSubscriptions-Prefix"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode_IntyYDJ4EeitIbLIizZqXw">
+    <nodeSuccessors name="next" next="RenderSystemPageWithTemplate0_Input"/>
+    <parameterBindings name="PageName" constant="subscription-list"/>
+    <parameterBindings name="PageType" constant="account"/>
+    <startNode referencedName="FireTrackingEvents-View"/>
+  </nodes>
+<!--@Location 3,4-->
+  <nodes xsi:type="pipeline:PipelineNodeNode" nodeID="RenderSystemPageWithTemplate0">
+    <configurationValues name="PageEntryPointDefinitionReference" value="app_sf_responsive:systempage.account.subscriptions.pagelet2-Page"/>
+    <configurationValues name="WorkingTemplate" value="account/subscriptions/SubscriptionsList"/>
+    <pipelet href="enfinity:/sld_ch_sf_base/pipelets/com.intershop.sellside.storefront.base.capi.pipeline.RenderSystemPageWithTemplate.pipelinenode"/>
+    <inConnectors name="Input">
+      <parameterBindings name="Dictionary" objectPath="CurrentRequest:PipelineDictionary"/>
+    </inConnectors>
+  </nodes>
+<!--@Location 0,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="Prefix"
+      callMode="Private">
+<!--@BendPoints 1,2-->
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameters name="ApplicationBO" type="com.intershop.component.application.capi.ApplicationBO"/>
+  </nodes>
+<!--@Location 0,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+    <nodeSuccessors name="NOTLOGGEDIN" next="JumpNode0"/>
+    <startNode referencedName="ProcessUser-CheckLoggedIn"/>
+  </nodes>
+<!--@Location 0,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode3"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Repository(&quot;UserBORepository&quot;)"/>
+    <parameterBindings name="InValue_10" objectPath="ApplicationBO:Repository(&quot;CustomerBORepository&quot;)"/>
+    <returnValueBindings name="OutValue_1" objectPath="UserBORepository"/>
+    <returnValueBindings name="OutValue_10" objectPath="CustomerBORepository"/>
+  </nodes>
+<!--@Location 0,5-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode3">
+    <nodeSuccessors name="next" next="EndNode0"/>
+    <startNode referencedName="ProcessUserAccount-GetCustomerBO"/>
+  </nodes>
+<!--@Location 0,6-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" name="LOGGEDIN" strict="true">
+    <returnValues name="CustomerBO" type="com.intershop.component.customer.capi.CustomerBO"
+        optional="true"/>
+<!--A token that authenticates the given user.-->
+    <returnValues name="Token" type="com.intershop.component.rest.capi.auth.Token"
+        optional="true"/>
+<!--The global property of intershop.WebServerSecureURL.-->
+    <returnValues name="WebServerSecureURL" type="java.lang.String" optional="true"/>
+<!--The global property of intershop.urlmapping.rest.webadapter.-->
+    <returnValues name="URLMappingRESTWebadapter" type="java.lang.String" optional="true"/>
+<!--The global property of intershop.urlmapping.pipeline.webadapter.-->
+    <returnValues name="URLMappingPipelineWebadapter" type="java.lang.String" optional="true"/>
+<!--The global property of intershop.WebServerURL.-->
+    <returnValues name="WebServerURL" type="java.lang.String" optional="true"/>
+    <returnValues name="ServerGroup" type="java.lang.String" optional="true"/>
+    <returnValues name="URLMappingStaticWebadapter" type="java.lang.String" optional="true"/>
+    <returnValues name="AccountingJSMoneyFormats" type="java.util.Map&lt;String,String>"
+        optional="true"/>
+    <returnValues name="ISMLDatePatterns" type="java.util.Map&lt;String,String>" optional="true"/>
+  </nodes>
+<!--@Location 1,2-->
+  <nodes xsi:type="pipeline:JumpNode" nodeID="JumpNode0">
+    <startNode referencedName="ViewUserAccount-ShowLogin"/>
+  </nodes>
+</pipeline:Pipeline>

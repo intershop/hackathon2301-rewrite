@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<iscache type="relative" hour="24">
+<iscachekey object="#ProductBO#">
+<isinclude template="modules/Modules">
+
+<ispipeline pipeline="ProcessProductTabs-GetAttributeGroup" params="#ParamMap(ParamEntry('ProductBO', ProductBO), ParamEntry('AttributeGroupID', 'PRODUCT_DETAIL_ATTRIBUTES'))#" alias="dict"/>
+
+<isif condition="#isDefined(dict:SortedAttributeDescriptors) AND hasElements(dict:SortedAttributeDescriptors)#">
+	<ISUUID name="collectionItemID">
+	<div class="panel-heading">
+		 <a data-toggle="collapse" data-parent="#'#'#accordion" href="#'#'#<isprint value="#collectionItemID#">" class="collapsed">
+			<istext key="product.details.heading" /> <span class="glyphicon glyphicon-plus pull-right"></span>
+		</a>
+	</div>
+	<div id="<isprint value="#collectionItemID#">" class="panel-collapse collapse">
+		<div class="panel-body">
+			<dl class="ish-productAttributes">
+				<isloop iterator="dict:SortedAttributeDescriptors" alias="AttributeDescriptorID" counter="counter">
+					<isset name="AttributeDescriptor" value="#AttributeDescriptorID#" scope="request">
+					<isif condition="#counter >= 1000#">
+						<isbreak>
+					</isif>
+					<isif condition="#isDefined(AttributeDescriptor:DisplayName) AND (AttributeDescriptor:DisplayName NE '')#">
+						<isCustomAttribute attributelabel="#AttributeDescriptor:DisplayName#" attributevalue="#ProductBO:AttributeValue(AttributeDescriptor:ID)#" attributeseparator=",&nbsp;">
+					<iselse>
+						<isCustomAttribute attributelabel="#AttributeDescriptor:ID#" attributevalue="#ProductBO:AttributeValue(AttributeDescriptor:ID)#" attributeseparator=",&nbsp;">
+					</isif>
+				</isloop>
+			</dl>
+		</div>
+	</div>
+</isif>

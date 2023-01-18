@@ -1,0 +1,29 @@
+<!---[Comment]--->
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- @Beta Basket Validation --->
+<isif condition="#hasElements(basketValidationResults:Failures)#">
+	<ul class="list-unstyled alert alert-danger">
+		<isloop iterator="basketValidationResults:getFailures" alias="FailureResult">
+			<li><istext key="#'checkout.error.'.FailureResult:FailureCode#" encoding="off"
+						parameter0="#FailureResult:getParameter("parameter0")#" 
+						parameter1="#FailureResult:getParameter("parameter1")#">
+			</li>
+		</isloop>
+	</ul>
+
+</isif>
+
+<isif condition="#hasElements(basketValidationResults:Adjustments)#">
+	<ul class="list-unstyled alert alert-warning">
+		<isloop iterator="basketValidationResults:Adjustments" alias="AdjustmentResult">
+			<li><istext key="#'checkout.adjustment.'.AdjustmentResult:AdjustmentCode#" encoding="off"
+						parameter0="#AdjustmentResult:getParameter("parameter0")#" 
+						parameter1="#AdjustmentResult:getParameter("parameter1")#">
+			</li>
+		</isloop>
+	</ul>
+</isif>
+
+<isRemovedProductsError removeFromBasketResults="#basketValidationResults:getParameterValues("RemoveFromBasketResult")#">
+<!--- END Global errors --->

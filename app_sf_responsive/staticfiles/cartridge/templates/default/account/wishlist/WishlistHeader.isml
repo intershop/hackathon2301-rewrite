@@ -1,0 +1,47 @@
+<iscontent charset="UTF-8" compact="true">
+
+<h1><isprint value="#WishlistBO:Name#"></h1>
+
+<ul class="share-tools">
+	<li>
+		<a data-dialog
+			href="#URL(Action('ViewWishlist-ShowEditWishlistPropertiesDialog'), Parameter('AjaxRequestMarker', 'true'), Parameter('WishlistID', WishlistBO:ID))#"
+			title="<istext key="account.wishlist.header.edit_wishlist.label">"
+		>
+			<span class="glyphicon glyphicon-pencil"></span>
+			<span class="share-label"><istext key="account.wishlist.header.edit_wishlist.label"></span>
+		</a>
+	</li>
+	
+	<isif condition="#WishlistBO:WishlistItemBOsCount > 0#">
+		<li>
+			<a data-dialog
+				title="<istext key="account.wishlist.header.email_to_friend.label"/>"
+				href="#URL(Action('ViewWishlist-ViewEmailWishlistForm'), Parameter('AjaxRequestMarker', 'true'), Parameter('WishlistID', WishlistBO:ID))#"
+			>
+				<span class="glyphicon glyphicon-send"></span><span class="share-label"><istext key="account.wishlist.header.email_to_friend.label"/></span>
+			</a>
+		</li>
+		<isif condition="#WishlistBO:Public OR WishlistBO:Shared#">
+			<li>
+				<isinclude template="inc/CSRFGuardJSToken"/>
+				<a data-csrf-guarded
+					title="<istext key="account.wishlist.header.cancelSharing.label"/>"
+					href="#URL(Action('ViewWishlist-Unshare'), Parameter('WishlistID', WishlistBO:ID))#"
+				>
+					<span class="glyphicon glyphicon-pause"></span><span class="share-label"><istext key="account.wishlist.header.cancelSharing.label"/></span>
+				</a>
+			</li>
+		</isif>
+	</isif>
+</ul>
+<div class="clearfix visible-xs-block"></div>
+<isif condition="#WishlistBO:Public#">
+	<p><istext key="account.wishlist.header.public_wishlist"/> <span class="glyphicon glyphicon-eye-open"></span></p>
+<iselse>
+	<p><istext key="account.wishlist.header.private_wishlist"/> <span class="glyphicon glyphicon-eye-close"></span></p>
+</isif>
+
+<isif condition="#PreferredWishlistID EQ WishlistBO:ID#">
+	<p><istext key="account.wishlist.header.preferred_wishlist" /></p>
+</isif>

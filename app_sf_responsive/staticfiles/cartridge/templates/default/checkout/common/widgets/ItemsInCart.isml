@@ -1,0 +1,93 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#NOT isDefined(PriceDisplayType)#">
+	<isset name="PriceDisplayType" value="#CurrentCartBO:PriceDisplayTypeName#" scope="request">
+</isif>
+
+<div class="cart-summary">
+	<isloop iterator="CurrentCartBO:ProductLineItemBOs" alias="PLI" counter="index">
+		<isset name="PLIWarranty" value="#PLI:Extension("Warranty")#" scope="request"/>
+		<isset name="PLIAppliedRebate" value="#PLI:Extension("AppliedRebate")#" scope="request"/>
+	
+		<isif condition="#index == 4#">
+			<isset scope="request" name="ShowAllProductLineItems" value="true">
+			
+			<div class="collapse" id="furtheritemsincart">
+		</isif>
+			<div class="row cart-summary-checkout">
+				<div class="col-xs-8"><a href="#URLEX(InsecureURL,'',Action('ViewProduct-Start'), Parameter('SKU', PLI:ProductBO:SKU))#"><isprint value="#PLI:ProductBO:Name#"/></a></div>
+				<div class="col-xs-4 text-right">
+					<isif condition="#PriceDisplayType EQ 'net'#">
+						<isprint value="#PLI:DiscountedPriceNet#">
+					<iselse/>
+						<isprint value="#PLI:DiscountedPriceGross#">
+					</isif>
+				</div>
+				
+				<div class="col-xs-8 cart-pli-data"><span><istext key="checkout.pli.qty.label"><isprint value="#PLI:Quantity#"></span></div>
+				<div class="col-xs-4 text-right">					
+					<isif condition="#PLIAppliedRebate:ItemValueRebatesTotal:Available#">
+						<div class="old-price">
+							<isif condition="#PriceDisplayType EQ 'net'#">
+								<isprint value="#PLI:PriceNet#">
+							<iselse/>
+								<isprint value="#PLI:PriceGross#">
+							</isif>
+						</div>
+					</isif>
+					<isif condition="#PLI:FreeGift#">
+						<div class="list-item-promo"><istext key="checkout.pli.freegift.text" /></div>
+					</isif>
+				</div>
+				
+				<isif condition="#PLIAppliedRebate:AppliedRebates:Size >= 1#">
+					<div class="col-xs-12">	
+						<isif condition="#PLIAppliedRebate:AppliedRebates:Size == 1#">
+							<istext key="checkout.widget.promotion.discount">
+						<iselse>
+							<isprint value="#PLIAppliedRebate:AppliedRebates:Size#"> <istext key="checkout.widget.promotion.discounts">
+						</isif>
+					
+						<isset name="PromotionIDs" value="#''#" scope="request">
+						<isloop iterator="PLIAppliedRebate:AppliedRebates" alias="AppliedRebate">
+							<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+								<isset name="PromotionIDs" value="#PromotionIDs.AppliedRebate:PromotionID.','#" scope="request">
+							</isif>
+						</isloop>
+						
+						<isloop iterator="PLIAppliedRebate:AppliedRebates" alias="AppliedRebate">
+							<isif condition="#NOT(AppliedRebate:RebateBO:PromotionBO:DisableMessages)#">
+								<a href="#URL(Action('ViewPromotion-Browse'),Parameter('PromotionIDs',PromotionIDs),Parameter('DisplayType','dialog'))#"
+										data-dialog class="details-link"
+										title="<istext key="promotion.detailslink.label"/>"><istext key="checkout.widget.promotion.details"></a>
+							</isif>
+						</isloop>
+					</div>
+				</isif>
+				<isif condition="#(isDefined(PLIWarranty:hasWarranty) AND (PLIWarranty:hasWarranty))#">
+					<div class="col-xs-8" data-testing-id="widgets-cart-summary-warranty">
+						<isprint value="#PLIWarranty:Warranty:Warranty:DisplayName#"></div>
+					<div class="col-xs-4 text-right">
+						<isif condition="#PriceDisplayType EQ 'net'#">
+							<isprint value="#PLIWarranty:Warranty:PriceNet#">
+						<iselse/>
+							<isprint value="#PLIWarranty:Warranty:PriceGross#">
+						</isif>
+					</div>
+				</isif>
+			</div>
+		<isif condition="#(ShowAllProductLineItems EQ 'true') AND (NOT hasNext(PLI))#">
+			</div>
+		</isif>		
+	</isloop>
+		
+		
+	<isif condition="#ShowAllProductLineItems EQ 'true'#">  <!--- with garantee products the CurrentBO:ProductLineItemsCount is not working --->
+		<a data-toggle="collapse" data-target="#'#'#furtheritemsincart" href="#'#'#">
+			<istext key="checkout.show_all.link" parameter0="#getValue(CurrentCartBO:TotalProductQuantity,INTEGER)#" />&nbsp;<span class="glyphicon glyphicon-chevron-down"></span>
+		</a>
+		<a class="hidden" data-toggle="collapse" data-target="#'#'#furtheritemsincart" href="#'#'#">
+			<istext key="checkout.hide_all.link" parameter0="#getValue(CurrentCartBO:TotalProductQuantity,INTEGER)#" />&nbsp;<span class="glyphicon glyphicon-chevron-up"></span>
+		</a>
+	</isif>
+</div>

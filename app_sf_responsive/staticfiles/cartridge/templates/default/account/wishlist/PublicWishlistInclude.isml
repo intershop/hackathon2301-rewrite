@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<script type="text/javascript">
+function setWishlistItemID(wishlistItemID)
+{
+	var element = document.getElementById('WishlistItemID');
+	element.value = wishlistItemID;
+}
+</script>
+
+<isif condition="#hasElements(WishlistBO:PublicWishlistItemBOs)#">
+	<isform action="#URL(Action('ViewWishlist-Dispatch'))#" method="post">
+		<input type="hidden" name="WishlistID" value="<isprint value="#WishlistBO:ID#"/>" />
+		<input type="hidden" name="WishlistOwnerID" value="<isprint value="#WishlistBO:UserBO:ID#"/>" />
+		<input type="hidden" name="UserID" value="<isprint value="#WishlistBO:UserBO:ID#"/>" />
+		<input type="hidden" name="SecureCode" id="SecureCode" value="<isprint value="#SecureCode#"/>" />
+		<input type="hidden" name="WishlistItemID" id="WishlistItemID" value="toBeSetByJavaScriptIfNecessary" />
+
+		<div class="list-header">
+			<div class="col-sm-3 col-xs-3 list-header-item"><istext key="account.wishlist.table.header.item"></div>
+			<div class="col-sm-9 col-xs-9 list-header-item column-price"><istext key="account.wishlist.table.header.price"/></div>
+		</div>
+		<div class="list-body">
+			<isloop iterator="WishlistBO:PublicWishlistItemBOs" alias="WishlistItem">
+			<div class="list-item-row">
+				<isif condition="#(isDefined(WishlistItem:ProductBO:SKU))#">
+					<isWishlistItem
+						WishlistItem="#WishlistItem#"
+						showImage="true"
+						showQuantitiesText="true"
+						showPrice="true"
+						showAddToCartButton="true"
+						Currency="#CurrentRequest:Currency#"
+					>
+				<iselse/>
+					<p><istext key="account.overview.wishlist.unshared_product"/></p>
+				</isif>
+			</div>
+			</isloop>
+		</div>
+	</isform>
+<iselse>
+
+	<isif condition="#isDefined(WishlistBO)#">
+		<p><istext key="account.wishlist.no_entries"/></p>
+	</isif>
+	
+</isif>

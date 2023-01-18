@@ -1,0 +1,69 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+
+<isinclude template="inc/CSRFGuardJSToken"/>
+<div class="progress-bar-panel" data-testing-id="progress-bar">
+	<ul class="progress-steps">
+		<li class="<isif condition="#CurrentStep == 1#">progress-active<iselseif condition="#(CurrentStep > 1)#">progress-complete</isif>">
+			<isif condition="#(CurrentStep > 1) AND (CurrentStep != 5)#">
+				<a data-csrf-guarded href="#URL(Action('ViewCheckoutAddresses-Review'))#">
+					<div class="progress-number"><span class="glyphicon glyphicon-ok"></span></div>
+					<span class="progress-label"><istext key="checkout.progress.addresses.label" /></span>
+				</a>
+			<iselse>
+				<div class="progress-number"><istext key="checkout.progress.step1.text" /></div>
+				<span class="progress-label"><istext key="checkout.progress.addresses.label" /></span>
+			</isif>
+		</li>
+		<li class="<isif condition="#CurrentStep == 2#">progress-active<iselseif condition="#(CurrentStep > 4) OR ( (CurrentStep != 2) AND (VerifiedStep > 1) )#">progress-complete</isif>">
+			<isif condition="#( (CurrentStep != 2) AND (VerifiedStep > 1) )#">
+				<a data-csrf-guarded href="#URL(Action('ViewCheckoutShipping-Review'))#">
+					<div class="progress-number"><span class="glyphicon glyphicon-ok"></span></div>
+					<span class="progress-label"><istext key="checkout.progress.shipping.label" /></span>
+				</a>
+			<iselse>
+				<div class="progress-number"><istext key="checkout.progress.step2.text" /></div>
+				<span class="progress-label"><istext key="checkout.progress.shipping.label" /></span>
+			</isif>
+		</li>
+		<li class="<isif condition="#CurrentStep == 3#">progress-active<iselseif condition="#(CurrentStep > 4) OR ( (CurrentStep != 3) AND (VerifiedStep > 2) )#">progress-complete</isif>">
+			<isif condition="#( (CurrentStep != 3) AND (VerifiedStep > 2) )#">
+				<a data-csrf-guarded href="#URL(Action('ViewCheckoutPayment-Review'))#">
+					<div class="progress-number"><span class="glyphicon glyphicon-ok"></span></div>
+					<span class="progress-label"><istext key="checkout.progress.payment.label" /></span>
+				</a>
+			<iselse>
+				<div class="progress-number"><istext key="checkout.progress.step3.text" /></div>
+				<span class="progress-label"><istext key="checkout.progress.payment.label" /></span>
+			</isif>
+		</li>
+		<li class="<isif condition="#CurrentStep == 4#">progress-active<iselseif condition="#(CurrentStep > 4) OR ( (CurrentStep != 4) AND (VerifiedStep > 3) )#">progress-complete</isif>">
+			<isif condition="#( (CurrentStep != 4) AND (VerifiedStep > 3) ) #">
+				<a data-csrf-guarded href="#URL(Action('ViewCheckoutReview-Start'))#">
+					<div class="progress-number"><span class="glyphicon glyphicon-ok"></span></div>
+					<span class="progress-label"><istext key="checkout.progress.review.label" /></span>
+				</a>
+			<iselse>
+				<div class="progress-number"><istext key="checkout.progress.step4.text" /></div>
+				<span class="progress-label"><istext key="checkout.progress.review.label" /></span>
+			</isif>
+		</li>
+		<li class="<isif condition="#CurrentStep == 5#">progress-active</isif><isif condition="#(CurrentStep > 5)#">progress-complete</isif>">
+			<div class="progress-number"><istext key="checkout.progress.step5.text" /></div>
+			<span class="progress-label"><istext key="checkout.progress.receipt.label" /></span>
+		</li>
+	</ul>
+</div>
+<isif condition="#CurrentStep == 5#">
+	<ISIncludeTrackingTool template="CheckoutCart">
+<iselse>
+	<ispipeline alias="dict" pipeline="FireTrackingEvents-ViewCheckout" params="#ParamMap(
+		ParamEntry('CurrentSession', CurrentSession), 
+		ParamEntry('CurrentUser', CurrentUser), 
+		ParamEntry('CurrentRequest', CurrentRequest), 
+		ParamEntry('TrackingDataContainer', TrackingDataContainer),
+		ParamEntry('Basket', CurrentCartBO),
+		ParamEntry('CheckoutStep', ''.CurrentStep)
+		)#">
+	<isset name="TrackingDataContainer" value="#dict:TrackingDataContainer#" scope="request">
+	<ISIncludeTrackingTool template="CheckoutCart">
+</isif>

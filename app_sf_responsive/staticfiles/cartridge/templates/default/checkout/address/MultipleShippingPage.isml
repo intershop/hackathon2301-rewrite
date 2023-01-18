@@ -1,0 +1,68 @@
+<iscontent personalized="true" type="text/html" charset="UTF-8" compact="true">
+<iscache type="forbidden">
+
+<isinclude template="checkout/common/HeaderProgressBar">
+
+<div class="marketing-area">
+	<ISMarketingSlot id="baseMarketing">
+</div>
+
+<h1><istext key="checkout.addresses.heading" /></h1>
+
+<div class="row" data-testing-id="multiple-shipment-address-page">
+	<div class="col-md-8 ">
+		<div class="multiple-address-container">
+			<isinclude template="checkout/address/MultipleShippingForm">
+		</div>
+		
+		<div class="section">
+		
+			<isif condition="#(isDefined(PickupInStoreEnabled)) AND (PickupInStoreEnabled EQ 'true')#">
+				<p>
+					<a class="btn-link" data-dialog href="#URL(Action('ViewStoreAddresses-Start'))#"/><istext key="checkout.addresses.multiple_shipping.storefinder.link"/></a>
+				</p>
+			</isif>
+			<p>
+				<a data-csrf-guarded href="#URL(Action('ViewCheckoutMultipleAddresses-SelectMultipleShipToAddresses'),Parameter('NewShippingAddress','true'))#" class="btn-link"><istext key="checkout.address.addNewAddressLink" /></a>
+			</p>
+			<div id="multiple-shipping-newaddress" data-testing-id="multiple-shipping-newaddress" <isif condition="#(NewAddressForm:isInvalid) OR (NewShippingAddress EQ 'true') OR ((addAndSelectAsShipping EQ 'false') AND NOT (isDefined(addNewBilling)))#">class="collapse in"<iselse>style="display: none;"</isif>>
+				<isform method="post" action="#URL(Action('ViewCheckoutAddresses-Dispatch'))#" class="form-horizontal bv-form">
+					<input type="hidden" name="AddressID" value="newAddress" />
+					<input type="hidden" name="addAndSelectAsShipping" value="false" />
+					<input type="hidden" name="FromMultipleShipping" value="true" />
+				
+					<isinclude extensionpoint="AddressForm"/>
+
+					<isif condition="#CurrentSession:LoggedIn#">
+						<isaddressusageinput
+							webform="#NewAddressForm#"	
+							customerBO="#CustomerBO#"
+							userBO="#UserBO#"
+							checkoutAddressType="shipping"
+						>
+					</isif>
+					<div class="form-group">
+						<div class="col-sm-offset-4 col-sm-8">
+							<button type="submit" name="addNewBilling" class="btn btn-primary"><istext key="checkout.address.save.button.label" /></button>
+							<button type="reset" name="cancel" class="btn btn-default kor-cancel" data-toggle="collapse" data-target="#'#'#multiple-shipping-newaddress"><istext key="checkout.address.cancel.button.label" /></button>
+						</div>
+					</div>
+				</isform>
+			</div>
+			
+		</div>
+	</div>
+	
+	<!---Order Summary --->
+	<div class="col-md-4 order-summary">
+		<h2><istext key="checkout.order_details.heading" /></h2>
+		<isinclude template="checkout/common/widgets/AddressesBox">
+		<isinclude template="checkout/common/widgets/ItemsInCart">
+		<isinclude template="checkout/common/widgets/SubscriptionBox">
+		<div class="cost-summary">
+			<isinclude template="checkout/common/widgets/CostSummary">
+			<a data-csrf-guarded href="#URL(Action('ViewCheckoutMultipleAddresses-ApplyMultipleShipToAddresses'))#" class="btn btn-lg btn-block btn-primary" name="continue"><istext key="checkout.button.label" /></a>
+		</div>
+		<isinclude template="checkout/common/widgets/SecurityPrivacyPolicyLink">
+	</div>
+</div>

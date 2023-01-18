@@ -1,0 +1,60 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<ispipeline pipeline="ProcessWebforms-GetStates" alias="dict" params="#ParamMap(ParamEntry('CountryCode', countrycode))#"/>
+
+<isif condition="#(NOT isDefined(autosuggestion)) OR (isDefined(autosuggestion) AND (autosuggestion EQ 'off'))#">
+		<isif condition="#(isDefined(width) AND (width NE ''))#">
+			<select required data-bv-notempty-message="Please select a state" name="<isprint value="#formparameter#">" id="<isif condition="#inputfieldid NE ''#"><isprint value="#inputfieldid#"><iselse><isprint value="#formparameter#"></isif>" class="<isprint value="#class#"> form-control" size="1" style="<isprint value="#style#">"
+		<iselse>	
+			<select required data-bv-notempty-message="Please select a state" name="<isprint value="#formparameter#">" id="<isif condition="#inputfieldid NE ''#"><isprint value="#inputfieldid#"><iselse><isprint value="#formparameter#"></isif>" class="<isprint value="#class#"> form-control" size="1" style="<isprint value="#style#">"
+		</isif>
+			>
+
+			<isif condition="#(NOT isDefined(displaymode)) OR (isDefined(displaymode) AND (displaymode EQ 'showNames'))#">
+				<option value="" selected="selected"><istext key="account.option.select.text" /></option>
+
+				<isif condition="#hasElements(dict:StatesProvinces)#">
+					<isloop iterator="dict:StatesProvinces" alias="StateProvince">
+						<isif condition="#(StateProvince:Id NE 'XU') AND (StateProvince:DisplayName NE 'null')#">
+							<option value = "<isprint value="#StateProvince:Id#">" <isif condition="#(StateProvince:Id EQ state)#">selected = "selected"</isif>><isprint value="#StateProvince:DisplayName#"></option>
+						</isif>
+					</isloop>
+				</isif>
+
+			<iselseif condition="#(isDefined(displaymode) AND (displaymode EQ 'showAbbreviationCodes'))#">
+				<option value="">--</option>
+
+				<isif condition="#hasElements(dict:StatesProvinces)#">
+					<isloop iterator="dict:StatesProvinces" alias="StateProvince">
+						<isif condition="#StateProvince:Id NE 'XU'#">
+							<option value = "<isprint value="#StateProvince:Id#">" <isif condition="#(StateProvince:Id EQ state)#">selected = "selected"</isif>><isprint value="#StateProvince:Id#"></option>
+						</isif>
+					</isloop>
+				</isif>
+
+			</isif>
+		</select>
+<iselseif condition="#(isDefined(autosuggestion) AND (autosuggestion EQ 'on'))#">
+	<ISUUID name="stateValues">
+	<isif condition="#(isDefined(width) AND (width NE ''))#">
+		<select class="form-control"
+				name="<isprint value="#formparameter#">" 
+				id="<isprint value="#formparameter#">" 
+				style="<isprint value="#style#">" 
+				required data-bv-notempty-message="Please select a state" >
+	<iselse>
+		<select class="form-control"
+				name="<isprint value="#formparameter#">" 
+				id="<isprint value="#formparameter#">" 
+				style="<isprint value="#style#">" 
+				required data-bv-notempty-message="Please select a state">
+	</isif>
+			<option value=""><istext key="account.option.select.text" /></option>
+			<isif condition="#hasElements(dict:StatesProvinces)#">
+				<isloop iterator="dict:StatesProvinces" alias="StateProvince">
+					<isif condition="#StateProvince:Id NE 'XU'#">
+						<option value="<isprint value="#StateProvince:Id#">" <isif condition="#(StateProvince:Id EQ state)#">selected = "selected"</isif>><isprint value="#StateProvince:DisplayName#"></option>
+					</isif>
+				</isloop>
+			</isif>
+		</select>
+</isif>

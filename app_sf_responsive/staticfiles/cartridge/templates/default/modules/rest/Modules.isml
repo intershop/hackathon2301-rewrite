@@ -1,0 +1,13 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+
+<!--- 
+	Creates a JavaScript object that holds data and provides methods used for making REST calls.
+	
+	Parameters:
+		- AuthenticationToken (optional)
+			Token for authenticating a user.
+--->
+<ismodule template="modules/rest/RESTConfiguration.isml"
+	name="RESTConfiguration"
+	strict="false"
+>

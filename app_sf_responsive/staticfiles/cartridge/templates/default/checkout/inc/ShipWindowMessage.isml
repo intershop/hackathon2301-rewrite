@@ -1,0 +1,19 @@
+<iscontent charset="UTF-8" compact="true">
+<isif condition="#pli:ProductBO:ServiceType:DigitalGiftCard#">
+<!--- gift certificates are sent by mail,no message required --->
+<iselse>
+	<isif condition="#isDefined(pli:ProductBO:ReadyForShipmentMin) AND isDefined(pli:ProductBO:ReadyForShipmentMax) AND (pli:ProductBO:isAvailable)#">
+		<div>
+			<isif condition="#(pli:ProductBO:ReadyForShipmentMin EQ '0')#">
+				<isif condition="#(pli:ProductBO:ReadyForShipmentMax EQ '1')#">
+					<istext key="checkout.delivery.within24"/>
+				<iselse>
+					<istext key="checkout.delivery.within" parameter0="#pli:ProductBO:ReadyForShipmentMax#"/>
+				</isif>
+			<iselse>
+				<istext key="checkout.delivery.period.text" parameter0="#pli:ProductBO:ReadyForShipmentMin#" parameter1="#pli:ProductBO:ReadyForShipmentMax#" />
+			</isif>
+			<isTooltip linkclass="details-tooltip" placement="bottom" linktextkey="checkout.detail.text" headlinekey="checkout.item.delivery.text" contentkey="checkout.order_delivery_date.text">
+		</div>
+	</isif>
+</isif>

@@ -1,0 +1,23 @@
+<iscontent charset="UTF-8" compact="true">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="account.wishlists.add_to_wishlist.title"/></h2>
+		</div>
+		<div class="modal-body">
+			<p>
+				<istext key="account.wishlists.move_from_cart_to_wishlist.confirmation" 
+					parameter0="#encodeValue(ProductName)#" encoding="off"
+					parameter1="#encodeValue(TargetWishlistBO:Name)#"
+					parameter2="#URLEX(SecureURL,'',Action('ViewWishlist-View'), Parameter('WishlistID', TargetWishlistBO:ID))#" />
+			</p>
+		</div>
+		<div class="modal-footer">
+			<a class="btn btn-primary" href="#URLEX(SecureURL,'',Action('ViewCart-View'))#">
+				<istext key="account.wishlists.move_from_cart_to_wishlist.confirmation.ok_button.text" />
+			</a>
+		</div>
+	</div>
+</div>

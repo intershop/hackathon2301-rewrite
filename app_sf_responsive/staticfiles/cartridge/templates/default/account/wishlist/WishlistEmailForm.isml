@@ -1,0 +1,88 @@
+<iscontent charset="UTF-8" compact="true">
+<isinclude template="modules/Modules">
+
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" id="emailWishlistClose" class="close" data-dismiss="modal" title="<istext key="dialog.close.text">" aria-label="<istext key="dialog.close.text"/>"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title"><istext key="account.wishlist.email.heading"/></h2>
+		</div>
+		
+		<isif condition="#(EmailWishlistForm:Submitted AND (NOT EmailWishlistForm:Invalid))#">
+			<ispipeline pipeline="DetermineRepositories-Channel" alias="RepositoriesDictionary">
+				<isset name="ChannelName" value="#RepositoriesDictionary:Repository:DisplayName#" scope="request">
+				<isset name="EmailAFriendSubject" value="#replace(encodeValue(localizeTextEx("account.wishlist.email.recommend.subject", ParameterList(ChannelName)), "url"), "\\+", "%20")#" scope="request">
+				<issetcanonicallink
+					name="CurrentWishlistURL"
+					action="ViewWishlist-View"
+					parameters="#ParameterList(Parameter('WishlistID', WishlistBO:ID), Parameter('SecureCode', SecureCode), Parameter('UserID', CurrentUser:ID))#"
+					scope="request">
+			<isif condition="#EmailWishlistForm:EmailMessage:Value NE ''#">
+				<isset name="EmailAFriendBody" value="#replace(encodeValue(EmailWishlistForm:EmailMessage:Value.' '.WishlistBO:Name.'\n'.CurrentWishlistURL, "url"), "\\+", "%20")#" scope="request">
+			<iselse>
+				<isset name="EmailAFriendBody" value="#replace(encodeValue(localizeTextEx("account.wishlist.email.recommend.text", ParameterList(WishlistBO:Name, CurrentWishlistURL)), "url"), "\\+", "%20")#" scope="request">
+			</isif>
+			<div class="modal-body">
+				<a href="mailto:#MailTo#?subject=#EmailAFriendSubject#&body=#EmailAFriendBody#">
+					<p><istext key="account.wishlist.email.thankyou_message" /></p>
+				</a>
+			</div>
+			<script type="text/javascript">
+	            window.location = 'mailto:' + '#MailTo#' + '?subject=' + '#EmailAFriendSubject#' + '&body=' + '#EmailAFriendBody#';
+	            $("#'#'#emailWishlistClose").click();
+	        </script>
+			
+			<div class="modal-footer">
+				<a href="#URL(Action('ViewWishlist-View'), Parameter('WishlistID', WishlistBO:ID))#" class="btn btn-default"><istext key="account.wishlist.email.close_window_button.text" /></a>
+			</div>
+		<iselse>
+			<isform action="#URL(Action('ViewWishlist-EmailWishlist'))#" name="email-wishlist-form" method="post"
+				class="form-horizontal bv-form"
+				data-hijax="true"
+			>
+				<div class="modal-body">
+					<p class="indicates-required"><span class="required">*</span><istext key="account.wishlist.required_field.text" /></p>
+					
+					<isif condition="#EmailWishlistForm:Invalid#" >
+						<div class="alert alert-danger">
+							<istext key="account.wishlist.email.form_error" />
+						</div>
+					</isif>
+					
+					<input type="hidden" name="WishlistID" value="<isprint value="#WishlistID#"/>" />
+					<div class="form-group <isif condition="#EmailWishlistForm:FriendsEmails:Invalid#" >server-error</isif>">
+						<label class="control-label col-sm-4"><istext key="account.wishlist.friend_email.label" /><span class="required">*</span></label>
+						<div class="col-sm-8">
+							<input type="email" class="form-control" 
+							name="<isprint value="#EmailWishlistForm:FriendsEmails:QualifiedName#">" 
+							value="<isprint value="#EmailWishlistForm:FriendsEmails:Value#">" 
+							maxlength="256" 
+							data-bv-emailaddress-message="<istext key="account.update_email.email.error.email"/>"
+							required 
+							data-bv-notempty-message="<istext key="account.update_email.email.error.notempty"/>" />
+							<small class="input-help"><istext key="account.wishlist.separate_multiple_emails_note" /></small>
+						</div>
+					</div>
+					
+					<div class="form-group <isif condition="#EmailWishlistForm:EmailMessage:Invalid#" >server-error</isif>">
+						<label class="control-label col-sm-4"><istext key="account.wishlist.personalized_message.label" /></label>
+						<div class="col-sm-8">
+							<textarea class="form-control"
+								maxlength="30000"
+								name="<isprint value="#EmailWishlistForm:EmailMessage:QualifiedName#">"
+								data-charactercounter="cCounter<isprint value="#EmailWishlistForm:EmailMessage:QualifiedName#">"
+							><isprint value="#EmailWishlistForm:EmailMessage:Value#"></textarea>
+							<small class="input-help"><istext key="checkout.shipping_method.instructions_max_limit.pre.text" /> <span id="cCounter<isprint value="#EmailWishlistForm:EmailMessage:QualifiedName#">"></span> <istext key="checkout.shipping_method.instructions_max_limit.post.text" /></small>
+						</div>
+					</div>
+					<p class="help-block"><istext key="account.wishlist.disclaimer.text" /> <a href="#URL(Action('ViewContent-Start'),Parameter('PageletEntryPointID','systempage.privacyPolicy.pagelet2-Page'))#"><istext key="account.wishlist.disclaimer.text.privacy_policy" /></a> <istext key="account.wishlist.disclaimer.text.suffix" /><br /><istext key="account.wishlist.disclaimer.text2" /></p>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" name="sendMail" value="true"><istext key="account.wishlist.send_mail.button.text" /></button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" name="cancel"><istext key="account.wishlist.cancel.button.text" /></button>
+				</div>
+			</isform>
+		</isif>
+	</div>
+</div>

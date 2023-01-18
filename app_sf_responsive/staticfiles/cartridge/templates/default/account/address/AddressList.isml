@@ -1,0 +1,162 @@
+<iscontent charset="UTF-8">
+<isinclude template="modules/address/Modules"/>
+<isinclude template="inc/BootstrapSelect">
+
+<isset name="UserAddressBOs" value="#CustomerBO:AddressBOs#" scope="request">
+<isset name="FurtherAddressesMinSize" value="#2#" scope="request">
+<isset name="removable" value="#UserAddressBOs:Size > 1#" scope="request">
+
+<div class="myAccount-addressBook">
+	<isif condition="#hasElements(UserAddressBOs)#"><!--- display saved addresses --->
+		<!--- preferred invoice address = preferred shipping address --->
+		<isif condition="#(isDefined(UserBO:PreferredInvoiceToAddressBO)) AND (isDefined(UserBO:PreferredShipToAddressBO)) AND (UserBO:PreferredInvoiceToAddressBO:ID EQ UserBO:PreferredShipToAddressBO:ID)#">
+			<div class="section">
+				<h3><istext key="account.addresses.preferredinvoiceandshipping.heading"/></h3>
+			
+				<div class="row">
+					<isAddressListItem addressBO="#UserBO:PreferredInvoiceToAddressBO#" userBO="#UserBO#" removable="false">
+				</div>
+
+				<div class="row">
+					<!---Preferred Invoice Address --->
+					<isform method="post" action="#URL(Action('ViewUserAddressList-SelectPreferredAddress'))#" name="PreferredAddressSelectionForm">
+						<isif condition="#(CustomerBO:InvoiceToAddressBOs:Size > 1) OR 
+										((NOT isDefined(UserBO:PreferredInvoiceToAddressBO)) AND (CustomerBO:InvoiceToAddressBOs:Size > 0))#">
+							<div class="col-xs-11 col-sm-7 col-md-5">
+								<select
+									name="PreferredInvoiceAddressID" 
+									class="form-control selectpicker useAsPreferredAddress"
+									data-form-action-key="PreferredInvoiceAddress"
+									data-live-search="true"
+									title="<istext key="account.addresses.preferredinvoice.button.label"/>"
+								>
+									<isloop iterator="CustomerBO:InvoiceToAddressBOs" alias="AddressBO" counter="Counter">
+										<isif condition="#(AddressBO:ID NE UserBO:PreferredInvoiceToAddressBO:ID)#">
+											<option value="<isprint value = "#AddressBO:ID#">" >
+												<isprint value="#AddressBO:FirstName#"> <isprint value="#AddressBO:LastName#">, <isprint value="#AddressBO:Street#"><isif condition="#isDefined(AddressBO:Street2) AND (AddressBO:Street2 NE '')#"> <isprint value="#AddressBO:Street2#"></isif>, <isprint value="#AddressBO:City#">
+											</option>
+										</isif>
+									</isloop>
+								</select>
+							</div>
+						</isif>
+						<!---Preferred Shipping Address --->
+						<isif condition="#(CustomerBO:ShipToAddressBOs:Size > 1) OR
+										((NOT isDefined(UserBO:PreferredShipToAddressBO)) AND (CustomerBO:ShipToAddressBOs:Size > 0))#">
+							<div class="col-xs-11 col-sm-7 col-md-5">
+								<select
+									name="PreferredShippingAddressID" 
+									class="form-control selectpicker useAsPreferredAddress"
+									data-form-action-key="PreferredShipToAddress"
+									data-live-search="true"
+									title="<istext key="account.addresses.preferredshipping.button.label"/>"
+								>
+									<isloop iterator="CustomerBO:ShipToAddressBOs" alias="AddressBO" counter="Counter">
+										<isif condition="#(AddressBO:ID NE UserBO:PreferredShipToAddressBO:ID)#">
+											<option value="<isprint value = "#AddressBO:ID#">" >
+												<isprint value="#AddressBO:FirstName#"> <isprint value="#AddressBO:LastName#">, <isprint value="#AddressBO:Street#"><isif condition="#isDefined(AddressBO:Street2) AND (AddressBO:Street2 NE '')#"> <isprint value="#AddressBO:Street2#"></isif>, <isprint value="#AddressBO:City#">
+											</option>
+										</isif>
+									</isloop>
+								</select>
+							</div>
+						</isif>
+					</isform>
+				</div>
+			</div>
+		<iselse>
+			<!--- preferred invoice address --->
+			<div class="section">
+				<h3><istext key="account.addresses.preferredinvoice.heading"/></h3>
+				<isif condition="#isDefined(UserBO:PreferredInvoiceToAddressBO)#">
+					<div class="myAccount-addressBook row">
+						<isAddressListItem addressBO="#UserBO:PreferredInvoiceToAddressBO#" userBO="#UserBO#" removable="false">
+					</div>
+				<iselse>
+					<p><istext key="account.addresses.no_preferred_invoice_address.text"/></p>
+					<isset name="FurtherAddressesMinSize" value="#1#" scope="request">
+				</isif>
+				<isif condition="#(CustomerBO:InvoiceToAddressBOs:Size > 1) OR 
+					    			((NOT isDefined(UserBO:PreferredInvoiceToAddressBO)) AND (CustomerBO:InvoiceToAddressBOs:Size > 0))#">
+					<isform method="post" action="#URL(Action('ViewUserAddressList-SelectPreferredAddress'))#" name="PreferredAddressSelectionForm">
+						<div class="form-group col-xs-11 col-sm-7 col-md-5 row">
+							<select
+								name="PreferredInvoiceAddressID" 
+								class="form-control selectpicker useAsPreferredAddress"
+								data-form-action-key="PreferredInvoiceAddress"
+								data-live-search="true"
+								title="<istext key="account.addresses.preferredinvoice.button.label"/>"
+							>
+								<isloop iterator="CustomerBO:InvoiceToAddressBOs" alias="AddressBO" counter="Counter">
+									<isif condition="#(AddressBO:ID NE UserBO:PreferredInvoiceToAddressBO:ID)#">
+										<option value="<isprint value = "#AddressBO:ID#">" >
+											<isprint value="#AddressBO:FirstName#"> <isprint value="#AddressBO:LastName#">, <isprint value="#AddressBO:Street#"><isif condition="#isDefined(AddressBO:Street2) AND (AddressBO:Street2 NE '')#"> <isprint value="#AddressBO:Street2#"></isif>, <isprint value="#AddressBO:City#">
+										</option>
+									</isif>
+								</isloop>
+							</select>
+						</div>
+					</isform>
+				</isif>
+			</div>
+			
+			<!--- preferred shipping address --->
+			<div class="section">
+				<h3><istext key="account.addresses.preferredshipping.heading"/></h3>
+				<isif condition="#isDefined(UserBO:PreferredShipToAddressBO)#">
+					<div class="myAccount-addressBook row">
+						<isAddressListItem addressBO="#UserBO:PreferredShipToAddressBO#" userBO="#UserBO#" removable="false">
+					</div>
+					<isset name="FurtherAddressesMinSize" value="#FurtherAddressesMinSize+1#" scope="request">
+				<iselse>
+					<p><istext key="account.addresses.no_preferred_shipping_address.text"/></p>
+				</isif>
+				<isif condition="#(CustomerBO:ShipToAddressBOs:Size > 1) OR
+									((NOT isDefined(UserBO:PreferredShipToAddressBO)) AND (CustomerBO:ShipToAddressBOs:Size > 0))#">
+					<isform method="post" action="#URL(Action('ViewUserAddressList-SelectPreferredAddress'))#" name="PreferredAddressSelectionForm">
+						<div class="form-group col-xs-11 col-sm-7 col-md-5 row">
+							<select
+								name="PreferredShippingAddressID" 
+								class="form-control selectpicker useAsPreferredAddress" 
+								data-live-search="true"
+								data-form-action-key="PreferredShipToAddress"
+								title="<istext key="account.addresses.preferredshipping.button.label"/>"
+							>
+								<isloop iterator="CustomerBO:ShipToAddressBOs" alias="AddressBO" counter="Counter">
+									<isif condition="#(AddressBO:ID NE UserBO:PreferredShipToAddressBO:ID)#">
+										<option value="<isprint value = "#AddressBO:ID#">" >
+											<isprint value="#AddressBO:FirstName#"> <isprint value="#AddressBO:LastName#">, <isprint value="#AddressBO:Street#"><isif condition="#isDefined(AddressBO:Street2) AND (AddressBO:Street2 NE '')#"> <isprint value="#AddressBO:Street2#"></isif>, <isprint value="#AddressBO:City#">
+										</option>
+									</isif>
+								</isloop>
+							</select>
+						</div>
+					</isform>
+				</isif>
+			</div>
+		</isif>
+	
+		<!--- further addresses --->
+		<isif condition="#UserAddressBOs:Size >= FurtherAddressesMinSize#">
+			<div class="section">
+				<h3><istext key="account.addresses.heading"/></h3>
+			
+				<div class="myAccount-addressBook row">
+					<isloop iterator="UserAddressBOs" alias="CurrentAddressBO" counter="Counter">
+						<isif condition="#(CurrentAddressBO:ID NE UserBO:PreferredInvoiceToAddressBO:ID) AND (CurrentAddressBO:ID NE UserBO:PreferredShipToAddressBO:ID)#">
+							<isif condition="#(NOT (hasNext(CurrentAddressBO))) AND (Counter == 1)#">
+								<isset name="removable" value="false" scope="request"/>
+							<iselse>
+								<isset name="removable" value="true" scope="request"/>
+							</isif>
+							<!--- #CurrentAddressBO:ShipToAddress#--->
+							<isAddressListItem addressBO="#CurrentAddressBO#" userBO="#UserBO#" removable="#removable#">
+						</isif>
+					</isloop>
+				</div>
+			</div>
+		</isif>
+	<iselse><!--- no saved addresses  --->
+		<p><istext key="account.addresses.have_no_saved_address.text" /></p>
+	</isif>
+</div>

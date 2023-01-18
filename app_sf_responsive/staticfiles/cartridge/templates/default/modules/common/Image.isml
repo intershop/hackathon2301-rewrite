@@ -1,0 +1,78 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isif condition="#isDefined(imagecontainer) AND isDefined(imagetypeid)#">
+	<isset scope="request" name="boolean_false" value="#1 == 0#">
+	<!--- determine image --->
+	<isif condition="#isDefined(imageview) AND (imageview NE '')#">
+		<isif condition="#isDefined(imagetypeid2) AND (imagetypeid2 NE '')#">
+			<!--- try the first image type: 'imagetypeid' without the fall back image defined for image type  --->
+			<isset name="image" value="#imagecontainer:ImageBO(imagetypeid, imageview, boolean_false)#" scope="request">
+			<isif condition="#NOT isDefined(image)#">
+			<!--- try the second image type: 'imagetypeid2' with fall back image defined for image type  --->
+				<isset name="image" value="#imagecontainer:ImageBO(imagetypeid2, imageview)#" scope="request">
+			</isif>
+		<iselse>
+			<!--- if 'imagetypeid2' doesn't exist use the default behavior, get the image for image type: 'imagetypeid' --->
+			<isset name="image" value="#imagecontainer:ImageBO(imagetypeid, imageview)#" scope="request">
+		</isif>
+	<iselse>
+		<isif condition="#isDefined(imagetypeid2) AND (imagetypeid2 NE '')#">
+			<!--- try the first image type: 'imagetypeid' without the fall back image defined for image type and primary view  --->
+			<isset name="image" value="#imagecontainer:PrimaryImageBO(imagetypeid, boolean_false)#" scope="request">
+			<isif condition="#NOT isDefined(image)#">
+			<!--- try the second image type: 'imagetypeid2' with fall back image defined for image type and primary view  --->
+				<isset name="image" value="#imagecontainer:PrimaryImageBO(imagetypeid2)#" scope="request">
+			</isif>
+		<iselse>
+			<!--- if 'imagetypeid2' doesn't exist use the default behavior, get the primary image for image type: 'imagetypeid' --->
+			<isset name="image" value="#imagecontainer:PrimaryImageBO(imagetypeid)#" scope="request">
+		</isif>
+	</isif>
+	<!--- set the image source --->
+	<isset name="imagesource" value="#image:EffectiveUrl#" scope="request">
+	<isif condition="#replace(imagesource, '[^\\s]+\\.swf', 'foo') EQ 'foo'#">
+		<object 
+			classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" 
+			width="<isprint formatter="#" value="#image:Width#">" 
+			height="<isprint formatter="#" value="#image:Height#">"
+			<isif condition="#isDefined(imagetypeid) AND (imagetypeid NE '')#"> data-type="<isprint value="#imagetypeid#">"</isif>
+		>
+			<param name="movie" value="<isprint value="#imagesource#">" />
+			<!--[if !IE]>-->
+			<object type="application/x-shockwave-flash" data="<isprint value="#imagesource#">" width="<isprint value="#image:Width#">" height="<isprint value="#image:Height#">">
+			<!--<![endif]-->
+				<param name="flashVars" value="<isprint value="#imagesource#">" />
+				<!--- alt content --->
+				<img
+					src="<isprint value="#imagesource#">" 
+					data-test="true"
+					<isif condition="#isDefined(class) AND (class NE '')#"> class="<isprint value="#class#"/>"</isif>
+					<isif condition="#isDefined(imagetypeid) AND (imagetypeid NE '')#"> data-type="<isprint value="#imagetypeid#">"</isif>
+					<isif condition="#isDefined(imageview) AND (imageview NE '')#"> data-view-value="<isprint value="#imageview#">"</isif>
+					<isif condition="#isDefined(alttext) AND (alttext NE '')#"> alt="<isprint value="#alttext#"><isif condition="#isDefined(imageview) AND (imageview NE '')#"> <isprint value="#image:ImageViewBO:Name#"> <isprint value="#imagetypeid#"></isif>"</isif>
+					<isif condition="#isDefined(image:Height)#"> height="<isprint formatter="#" value="#image:Height#"/>"</isif>
+					<isif condition="#isDefined(image:Width)#"> width="<isprint formatter="#" value="#image:Width#"/>"</isif>
+					<isif condition="#isDefined(richsnippetsenabled) AND (richsnippetsenabled EQ 'true')#"> itemprop="image"</isif>
+					<isif condition="#isDefined(datatestingid) AND (datatestingid NE '')#"> data-testing-id="<isprint value="#datatestingid#">"</isif>
+				/>
+			<!--[if !IE]>-->
+			</object>
+			<!--<![endif]-->
+		</object>
+	<iselseif condition="#isDefined(sourcesetmedia)#">
+		<source srcset="<isif condition="#imagesource NE ''#"><isprint value="#imagesource#" encoding="off"><iselse>#WebRoot()#/img/not_available.png</isif>" media="<isprint value="#sourcesetmedia#"/>"/>	
+	<iselse>
+		<img src="<isif condition="#imagesource NE ''#"><isprint value="#imagesource#" encoding="off"><iselse>#WebRoot()#/img/not_available.png</isif>"
+			data-test="true"
+			<isif condition="#isDefined(class) AND (class NE '')#"> class="<isprint value="#class#"/>"</isif>
+			<isif condition="#isDefined(imagetypeid) AND (imagetypeid NE '')#"> data-type="<isprint value="#imagetypeid#">"</isif>
+			<isif condition="#isDefined(imageview) AND (imageview NE '')#"> data-view-value="<isprint value="#imageview#">"</isif>
+			<isif condition="#isDefined(title) AND (title NE '')#"> title="<isprint value="#title#">"</isif>
+			<isif condition="#isDefined(alttext) AND (alttext NE '')#"> alt="<isprint value="#alttext#"><isif condition="#isDefined(imageview) AND (imageview NE '')#"> <isprint value="#image:ImageViewBO:Name#"> <isprint value="#imagetypeid#"></isif>"</isif>
+			<isif condition="#isDefined(image:Height)#"> height="<isprint formatter="#" value="#image:Height#"/>"</isif>
+			<isif condition="#isDefined(image:Width)#"> width="<isprint formatter="#" value="#image:Width#"/>"</isif>
+			<isif condition="#isDefined(richsnippetsenabled) AND (richsnippetsenabled EQ 'true')#"> itemprop="image"</isif>
+			<isif condition="#isDefined(datatestingid) AND (datatestingid NE '')#"> data-testing-id="<isprint value="#datatestingid#">"</isif>
+		/>
+	</isif>
+</isif>

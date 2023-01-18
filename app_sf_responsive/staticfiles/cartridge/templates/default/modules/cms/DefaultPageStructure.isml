@@ -1,0 +1,110 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" templatemarker="false">
+<!DOCTYPE html>
+<html class="no-js" lang="<isprint value="#CurrentRequest:Locale:Language#">">
+<isinclude template="modules/Modules">
+
+<!---Default page if another content model than app_sf_responsive_cm is used --->
+
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="#WebRoot()#/img/logo_is7.ico">
+
+	<!--- affiliate count: needs this include to bypass the page cache -> Prefix-Pipeline can only handle this w/o page cache. --->
+	<isif condition="#isDefined(ProgramUUID) OR isDefined(PartnerUUID)#">
+		<isinclude url="#URL(Action('AffiliateInclude-UpdateCount'),Parameter('ProgramUUID', ProgramUUID), Parameter('PartnerUUID', PartnerUUID))#">
+	</isif>
+
+	<isif condition="#isDefined(MetaTagsMap:ROBOTS)#">
+		<meta name="robots" content="<isprint value="#MetaTagsMap:ROBOTS#">" />
+	<iselseif condition="#isDefined(metaRobots)#"><!--- this is obsolete and should not be used any more --->
+		<meta name="robots" content="<isprint value="#metaRobots#">" />
+	</isif>
+
+	<isif condition="#isDefined(metaDescription)#">
+		<meta name="description" content="<isprint value="#metaDescription#">" />
+	</isif>
+	<isif condition="#isDefined(metaKeywords)#">
+		<meta name="keywords" content="<isprint value="#metaKeywords#">" />
+	</isif>
+
+	<isif condition="#isDefined(HRefLangList) and hasElements(HRefLangList)#">
+		<isloop iterator="HRefLangList" alias="HrefLang">
+			<link rel="alternate" href="<islink link="#HrefLang:Link#" encoding="off">" hreflang="<isprint value="#HrefLang:LocaleInformation:Language.'-'.HrefLang:LocaleInformation:Country#">">
+		</isloop>
+	</isif>
+
+	<ISPLACEHOLDER id="CANONICAL" removeduplicates="true"/>
+
+	<title><isprint value="#metaTitle#"></title>
+
+	<!---
+		JavaScript Includes - externalized to allow for easier, less obtrusive overrides:
+		BaseJS.isml 		- includes the default JavaScript of the Responsive Starter Store
+		ExtensionJS.isml	- dummy that can be overloaded for custom JavaScript additions
+	--->
+	<isinclude template="inc/BaseJS.isml" />
+	<isinclude template="inc/ExtensionJS.isml" />
+	
+	<ISPLACEHOLDER id="JS_head" removeduplicates="true"/>
+	
+	<!---
+		CSS Includes - externalized to allow for easier, less obtrusive overrides:
+		BaseCSS.isml 		- includes the default styling of the Responsive Starter Store
+		ExtensionCSS.isml	- dummy that can be overloaded for custom styling additions
+	--->
+	<isinclude template="inc/BaseCSS.isml" />
+	<isinclude template="inc/ExtensionCSS.isml" />
+	
+	<ISPLACEHOLDER id="CSS" removeduplicates="true"/>
+	<ISPLACEHOLDER id="STYLE" removeduplicates="true"/>
+	
+	
+	<isinclude template="webcontrols/Placeholder">
+	
+	
+	<isinclude extensionpoint="HTMLHeadExtension"/>
+	<ispipeline pipeline="FireTrackingEvents-View" alias="dict" params="#ParamMap(
+				ParamEntry('CurrentSession', CurrentSession), 
+				ParamEntry('CurrentUser', CurrentUser), 
+				ParamEntry('CurrentRequest', CurrentRequest), 
+				ParamEntry('PageName', ''), 
+				ParamEntry('PageType', ''))#" />
+	<ISIncludeTrackingTool template="MainFrameBodyStart">
+</head>
+
+<body <isif condition="#(isDefined(bodyid)) AND (bodyid NE '')#">id="<isprint value="#bodyid#">"</isif>
+	<isif condition="#(isDefined(bodyclass)) AND (bodyclass NE '')#"> class="<isprint value="#bodyclass#">"</isif>>
+	
+	<isinclude extensionpoint="GoogleTagManagerContainerExtensions"/>
+	
+	<isinclude template="inc/JavaScriptDisabledOverlay.isml" />
+	<isinclude template="inc/CookiesDisabledOverlay.isml" />
+	<isinclude template="inc/UserSessionInformation.isml" />
+	
+	<header class="top">
+			<!-- header content -->
+	</header>
+	
+	<div class="wrapper">
+		<div role="main" class="container main-container">
+			<!-- main content (e.g. with WorkingTemplate content) -->
+			<isif condition="#isDefined(Dictionary:WorkingTemplate)#">
+				<isinclude template="#Dictionary:WorkingTemplate#" dictionary="Dictionary">
+			<iselseif condition="#isDefined(WorkingTemplate)#">
+				<isinclude template="#WorkingTemplate#">
+			<iselse>
+				<istext key="common.no_working_template.message" />
+			</isif>
+		</div>
+	</div>
+	
+	<footer>
+			<!-- footer content -->
+	</footer>
+	
+	<ISPLACEHOLDER id="JS_end" removeduplicates="true"/>
+	<ISIncludeTrackingTool template="MainFrameFooter">
+</body>
+</html>
+

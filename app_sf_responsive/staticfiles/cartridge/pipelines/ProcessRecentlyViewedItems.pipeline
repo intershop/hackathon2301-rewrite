@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This pipeline is used to process recently viewed items. It can be used to get all recently viewed items for a domain or add various kinds of recently viewed items for a domain.
+@Group Catalog-->
+
+<pipeline:Pipeline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pipeline="http://www.intershop.de/pipeline/2010"
+    name="ProcessRecentlyViewedItems" type="process">
+<!--@Location 7,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode5" strict="true" name="AddRecentlyViewedCategory"
+      callMode="Private">
+<!--@BendPoints 15,2-->
+    <nodeSuccessors name="next" next="ConcatenateStrings1"/>
+    <parameters name="Domain" type="com.intershop.beehive.core.capi.domain.Domain"
+        optional="true"/>
+    <parameters name="CategoryName" type="java.lang.String" optional="true"/>
+    <parameters name="CategoryDomainName" type="java.lang.String" optional="true"/>
+  </nodes>
+<!--@Location 7,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="ConcatenateStrings1">
+    <configurationValues name="DefaultString1" value="@"/>
+    <pipelet href="enfinity:/bc_foundation/pipelets/ConcatenateStrings.xml"/>
+<!--@BendPoints 15,4-->
+    <nodeSuccessors name="next" next="CallNode1"/>
+    <parameterBindings name="String0" objectPath="CategoryName"/>
+    <parameterBindings name="String2" objectPath="CategoryDomainName"/>
+    <returnValueBindings name="Concatenated" objectPath="RecentlyViewedItemValue"/>
+  </nodes>
+<!--@Location 7,2-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode1">
+<!--@BendPoints 15,6-->
+    <nodeSuccessors name="next" next="GetRepositoryByRepositoryDomain1"/>
+    <startNode referencedName="DetermineOrganizations-Current"/>
+  </nodes>
+<!--@Location 7,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRepositoryByRepositoryDomain1">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetRepositoryByRepositoryDomain.xml"/>
+<!--@BendPoints 15,8-->
+    <nodeSuccessors name="next" next="CallNode25"/>
+    <parameterBindings name="RepositoryDomain" objectPath="CurrentOrganization:OwningDomain"/>
+  </nodes>
+<!--@Location 7,4-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode25">
+    <nodeSuccessors name="next" next="EndNode4"/>
+    <parameterBindings name="Domain" objectPath="Repository:Domain"/>
+    <parameterBindings name="RecentlyViewedItemType" constant="CATEGORIES"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-AddRecentlyViewedItem"/>
+  </nodes>
+<!--@Location 7,5-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode4" strict="true"/>
+<!--@Location 3,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode1" strict="true" name="AddRecentlyViewedItem"
+      callMode="Private">
+    <nodeSuccessors name="next" next="AddRecentlyViewedItem1"/>
+    <parameters name="Domain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+    <parameters name="RecentlyViewedItemType" type="java.lang.String"/>
+    <parameters name="RecentlyViewedItemValue" type="java.lang.String"/>
+  </nodes>
+<!--@Location 3,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddRecentlyViewedItem1">
+    <pipelet href="enfinity:/bc_marketing/pipelets/AddRecentlyViewedItem.xml"/>
+    <nodeSuccessors name="next" next="EndNode1"/>
+  </nodes>
+<!--@Location 3,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode1" strict="true"/>
+<!--@Location 5,10-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode8" strict="true" name="AddRecentlyViewedProductBO"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode11"/>
+    <parameters name="ProductBORepository" type="com.intershop.component.product.capi.ProductBORepository"/>
+    <parameters name="ProductID" type="java.lang.String"/>
+  </nodes>
+<!--@Location 5,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode11">
+    <nodeSuccessors name="next" next="CallNode9"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-RemoveRecentlyViewProductBO"/>
+  </nodes>
+<!--@Location 5,12-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode9">
+    <nodeSuccessors name="next" next="GetDomainByUUID0"/>
+    <startNode referencedName="ProcessProduct-GetProductBOByID"/>
+  </nodes>
+<!--@Location 5,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainByUUID0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainByUUID.xml"/>
+    <nodeSuccessors name="next" next="CallNode8"/>
+    <parameterBindings name="DomainUUID" objectPath="ProductBORepository:RepositoryID"/>
+  </nodes>
+<!--@Location 5,14-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode8">
+<!--@BendPoints 11,30-->
+    <nodeSuccessors name="next" next="EndNode6"/>
+    <parameterBindings name="Domain" objectPath="Domain"/>
+    <parameterBindings name="RecentlyViewedItemType" constant="PRODUCTS"/>
+    <parameterBindings name="RecentlyViewedItemValue" objectPath="ProductBO:ID"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-AddRecentlyViewedItem"/>
+  </nodes>
+<!--@Location 5,15-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode6" strict="true"/>
+<!--@Location 9,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode4" strict="true" name="AddRecentlyViewedSearchTerm"
+      callMode="Private">
+<!--@BendPoints 19,2-->
+    <nodeSuccessors name="next" next="CallNode2"/>
+    <parameters name="Domain" type="com.intershop.beehive.core.capi.domain.Domain"
+        optional="true"/>
+    <parameters name="SearchTerm" type="java.lang.String"/>
+  </nodes>
+<!--@Location 9,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode2">
+<!--@BendPoints 19,4-->
+    <nodeSuccessors name="next" next="GetRepositoryByRepositoryDomain2"/>
+    <startNode referencedName="DetermineOrganizations-Current"/>
+  </nodes>
+<!--@Location 9,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRepositoryByRepositoryDomain2">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetRepositoryByRepositoryDomain.xml"/>
+<!--@BendPoints 19,6-->
+    <nodeSuccessors name="next" next="CallNode20"/>
+    <parameterBindings name="RepositoryDomain" objectPath="CurrentOrganization:OwningDomain"/>
+  </nodes>
+<!--@Location 9,3-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode20">
+    <nodeSuccessors name="next" next="EndNode5"/>
+    <parameterBindings name="Domain" objectPath="Repository:Domain"/>
+    <parameterBindings name="RecentlyViewedItemType" constant="KEYWORD_SEARCHES"/>
+    <parameterBindings name="RecentlyViewedItemValue" objectPath="SearchTerm"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-AddRecentlyViewedItem"/>
+  </nodes>
+<!--@Location 9,4-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode5" strict="true"/>
+<!--@Location 11,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode0" strict="true" name="GetAllItems"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode4"/>
+  </nodes>
+<!--@Location 11,1-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode4">
+    <nodeSuccessors name="OK" next="GetApplicationBO0"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <parameterBindings name="Request" objectPath="CurrentRequest"/>
+    <startNode referencedName="ProcessOrganization-GetOrganization"/>
+  </nodes>
+<!--@Location 11,2-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetApplicationBO0">
+    <pipelet href="enfinity:/bc_application/pipelets/GetApplicationBO.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper1"/>
+  </nodes>
+<!--@Location 11,3-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="GetRepositoryByRepositoryDomain0"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Catalog&quot;):CatalogBORepository"/>
+    <parameterBindings name="InValue_2" objectPath="ApplicationBO:Extension(&quot;Product&quot;):getProductBORepository(CurrentDomain:UUID)"/>
+    <returnValueBindings name="OutValue_1" objectPath="CatalogBORepository"/>
+    <returnValueBindings name="OutValue_2" objectPath="ProductBORepository"/>
+  </nodes>
+<!--@Location 11,4-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRepositoryByRepositoryDomain0">
+    <pipelet href="enfinity:/bc_mvc/pipelets/GetRepositoryByRepositoryDomain.xml"/>
+    <nodeSuccessors name="next" next="KeyMapper0"/>
+<!--@BendPoints 25,9-->
+    <nodeSuccessors name="pipelet_error" next="KeyMapper2"/>
+    <parameterBindings name="RepositoryDomain" objectPath="Organization:OwningDomain"/>
+  </nodes>
+<!--@Location 11,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper0">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode6"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Product&quot;):getProductBORepository(Repository:Domain:UUID)"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBORepository"/>
+  </nodes>
+<!--@Location 11,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode6">
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="Domain" objectPath="Repository:Domain"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-GetAllTrackedItemsForDomain"/>
+  </nodes>
+<!--@Location 11,7-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode0">
+<!--@BendPoints 23,16-->
+    <nodeSuccessors name="next" next="EndNode0"/>
+  </nodes>
+<!--@Location 11,8-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode0" strict="true">
+    <returnValues name="KeywordSearches" type="java.util.Iterator" optional="true"/>
+    <returnValues name="ProductBOs" type="java.util.Collection&lt;com.intershop.component.product.capi.ProductBO>"
+        optional="true"/>
+    <returnValues name="CategoryBOs" type="java.util.Collection&lt;com.intershop.component.catalog.capi.CatalogCategoryBO>"
+        optional="true"/>
+  </nodes>
+<!--@Location 12,5-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="CallNode0"/>
+    <parameterBindings name="InValue_1" objectPath="ApplicationBO:Extension(&quot;Product&quot;):getProductBORepository(CurrentDomain:UUID)"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBORepository"/>
+  </nodes>
+<!--@Location 12,6-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode0">
+<!--@BendPoints 25,15-->
+    <nodeSuccessors name="next" next="JoinNode0"/>
+    <parameterBindings name="Domain" objectPath="CurrentDomain"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-GetAllTrackedItemsForDomain"/>
+  </nodes>
+<!--@Location 1,0-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode2" strict="true" name="GetAllTrackedItemsForDomain"
+      callMode="Private">
+<!--@BendPoints 3,2-->
+    <nodeSuccessors name="next" next="GetRecentlyViewedItems1"/>
+    <parameters name="CatalogBORepository" type="com.intershop.component.catalog.capi.CatalogBORepository"/>
+    <parameters name="ProductBORepository" type="com.intershop.component.product.capi.ProductBORepository"/>
+    <parameters name="Domain" type="com.intershop.beehive.core.capi.domain.Domain"/>
+  </nodes>
+<!--@Location 1,1-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetRecentlyViewedItems1">
+    <pipelet href="enfinity:/bc_marketing/pipelets/GetRecentlyViewedItems.xml"/>
+    <nodeSuccessors name="next" next="EndNode2"/>
+    <parameterBindings name="RecentlyViewedItemType" nullBinding="true"/>
+  </nodes>
+<!--@Location 1,3-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode2" strict="true">
+    <returnValues name="KeywordSearches" type="java.util.Iterator" optional="true"/>
+    <returnValues name="CategoryBOs" type="java.util.Collection&lt;com.intershop.component.catalog.capi.CatalogCategoryBO>"
+        optional="true"/>
+    <returnValues name="ProductBOs" type="java.util.Collection&lt;com.intershop.component.product.capi.ProductBO>"
+        optional="true"/>
+  </nodes>
+<!--@displayNearNode@Get product by uuid and domain. If it is a master, then get its variations. Remove found variations  from recently view items cache
+
+@Location 2,10-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode6" strict="true" name="RemoveRecentlyViewProductBO"
+      callMode="Private">
+    <nodeSuccessors name="next" next="CallNode7"/>
+    <parameters name="ProductID" type="java.lang.String"/>
+    <parameters name="ProductBORepository" type="com.intershop.component.product.capi.ProductBORepository"/>
+  </nodes>
+<!--@Location 2,11-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode7">
+    <nodeSuccessors name="next" next="KeyMapper5"/>
+    <startNode referencedName="ProcessProduct-GetProductBOByID"/>
+  </nodes>
+<!--@Location 2,13-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper5">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+    <nodeSuccessors name="next" next="DecisionNode10"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBORepository:RepositoryID"/>
+    <returnValueBindings name="OutValue_1" objectPath="DomainID"/>
+  </nodes>
+<!--@Location 2,15-->
+  <nodes xsi:type="pipeline:DecisionNode" nodeID="DecisionNode10" conditionKey="ProductBO:isProductMaster"
+      operator="str_eq" conditionValue="true">
+    <nodeSuccessors name="decision_yes" next="JoinNode8"/>
+<!--@BendPoints 6,31-->
+    <nodeSuccessors name="decision_no" next="KeyMapper4"/>
+  </nodes>
+<!--@Location 2,16-->
+  <nodes xsi:type="pipeline:JoinNode" nodeID="JoinNode8">
+    <nodeSuccessors name="next" next="KeyMapper3"/>
+  </nodes>
+<!--@Location 2,17-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper3">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 5,36-->
+    <nodeSuccessors name="next" next="LoopNode1"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:MasteredProductBOs"/>
+    <parameterBindings name="InValue_10" objectPath=" "/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductVariations"/>
+  </nodes>
+<!--@Location 2,18-->
+  <nodes xsi:type="pipeline:LoopNode" nodeID="LoopNode1" loop="ProductVariations">
+<!--@BendPoints 7,37-->
+    <nodeSuccessors name="next" next="AddObjectToVector2"/>
+    <entry key="ProductVariation">
+<!--@BendPoints 5,38-->
+      <nodeSuccessors name="loop_entry_next" next="AddObjectToVector1"/>
+    </entry>
+  </nodes>
+<!--@Location 2,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddObjectToVector.xml"/>
+<!--@BendPoints 5,41 3,41 3,37-->
+    <nodeSuccessors name="next" next="LoopNode1_Entry"/>
+    <parameterBindings name="InVector" objectPath="ProductVariationIDs"/>
+    <parameterBindings name="Object" objectPath="ProductVariation:ID"/>
+    <returnValueBindings name="OutVector" objectPath="ProductVariationIDs"/>
+  </nodes>
+<!--@displayNearNode@Convert product variation uuids from Vector to Iterator
+
+@Location 3,19-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="AddObjectToVector2">
+    <pipelet href="enfinity:/bc_foundation/pipelets/AddObjectToVector.xml"/>
+    <nodeSuccessors name="next" next="CallNode12"/>
+    <parameterBindings name="InVector" objectPath="ProductVariationIDs"/>
+    <returnValueBindings name="Iterator" objectPath="ProductVariationIDIterator"/>
+  </nodes>
+<!--@Location 3,20-->
+  <nodes xsi:type="pipeline:CallNode" nodeID="CallNode12">
+    <nodeSuccessors name="next" next="EndNode12"/>
+    <parameterBindings name="ItemsToDelete" objectPath="ProductVariationIDIterator"/>
+    <parameterBindings name="RecentlyViewType" constant="PRODUCTS"/>
+    <startNode referencedName="ProcessRecentlyViewedItems-RemoveRecentlyViewedItems"/>
+  </nodes>
+<!--@Location 3,21-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode12" strict="true"/>
+<!--@Location 3,15-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="KeyMapper4">
+    <pipelet href="enfinity:/bc_foundation/pipelets/KeyMapper.xml"/>
+<!--@BendPoints 8,31 8,33-->
+    <nodeSuccessors name="next" next="JoinNode8"/>
+    <parameterBindings name="InValue_1" objectPath="ProductBO:ProductBOMaster"/>
+    <returnValueBindings name="OutValue_1" objectPath="ProductBO"/>
+  </nodes>
+<!--@Location 8,10-->
+  <nodes xsi:type="pipeline:StartNode" nodeID="StartNode7" strict="true" name="RemoveRecentlyViewedItems"
+      callMode="Private">
+    <nodeSuccessors name="next" next="GetDomainByUUID1"/>
+    <parameters name="DomainID" type="java.lang.String"/>
+    <parameters name="ItemsToDelete" type="java.util.Iterator&lt;java.lang.String>"/>
+    <parameters name="RecentlyViewType" type="java.lang.String"/>
+  </nodes>
+<!--@Location 8,11-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="GetDomainByUUID1">
+    <pipelet href="enfinity:/bc_foundation/pipelets/GetDomainByUUID.xml"/>
+    <nodeSuccessors name="next" next="RemoveRecentlyViewedItems0"/>
+    <parameterBindings name="DomainUUID" objectPath="DomainID"/>
+  </nodes>
+<!--@Location 8,12-->
+  <nodes xsi:type="pipeline:PipeletNode" nodeID="RemoveRecentlyViewedItems0">
+    <pipelet href="enfinity:/bc_marketing/pipelets/RemoveRecentlyViewedItems.xml"/>
+    <nodeSuccessors name="next" next="EndNode7"/>
+  </nodes>
+<!--@Location 8,13-->
+  <nodes xsi:type="pipeline:EndNode" nodeID="EndNode7" strict="true"/>
+</pipeline:Pipeline>
