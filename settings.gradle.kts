@@ -96,14 +96,10 @@ gradleEnterprise {
 // define root project name
 rootProject.name = "hackathon2301-rewrite"
 
-val excludeList = listOf("gradle", ".gradle", "target", "build", "bin", "reports", "buildSrc", "config", "sites", "docker")
-
-val filter: (File, String) -> Boolean = { dir, filename ->
-    File(dir, filename).isDirectory &&
-            ! excludeList.contains(filename) &&
-            ! filename.startsWith(".")
-}
-
-settings.rootDir.listFiles( filter )?.forEach { sub ->
-    include(":${sub.name}")
-}
+include("versions")
+include("versions_test")
+include("migration")
+include("my_cartridge")
+include("my_cartridge_test")
+include("ft_production")
+include("ft_test")

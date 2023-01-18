@@ -12,5 +12,5 @@ dependencies {
     cartridgeRuntime project(':ft_production')
 
     // add your test cartridge here
-    cartridgeRuntime project(":my_cartridge_test")
+    // cartridgeRuntime project(":my_cartridge_test")
 }
