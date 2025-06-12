@@ -24,7 +24,7 @@ Example command:
 gradlew migration:migrateAll -Ptarget=$ICM -Psteps=src/main/resources/migration/002_migration_11_to_12
 ```
 
-### Apply Jakarta EE Migration support
+### Integrate OpenRewrite recipes for Migration to ICM 12
 
 Migrator: `ClasspathResourceFileCopier` 
 
@@ -35,7 +35,10 @@ Applies Jakarta EE 10+ migration recipes if required (e.g., using OpenRewrite).
 
 ### Run OpenRewrite on the Migration Project
 
-Run OpenRewrite to apply Jakarta EE migration recipes to the migration project:
+Run OpenRewrite to apply migration recipes
+* Jakarta EE 10 migration
+* Gradle 8 migration
+to the migration project:
 ```
 gradlew --init-script rewrite.gradle rewriteRun
 ```

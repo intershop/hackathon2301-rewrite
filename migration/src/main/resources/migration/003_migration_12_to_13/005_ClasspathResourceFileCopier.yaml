@@ -4,10 +4,12 @@ message: "refactor: copy OpenRewrite configuration files to root project"
 options:
   source-map:
     # source file located in the resources directory
-    "rewrite-task" : "gradle/rewrite-11to12.gradle"
+    "rewrite-task" : "gradle/rewrite-12to13.gradle"
+    "rewrite-recipes" : "gradle/rewrite-12to13.yaml"
   target-map:
     # target file in the root project
     "rewrite-task" : "rewrite.gradle"
+    "rewrite-recipes" : "rewrite.yaml"
   log-map:
     # optional log message for the copied file
     "rewrite-task" : "Created rewrite.gradle in root project. Adjust the file to your needs and execute 'gradle --init-script rewrite.gradle rewriteRun' afterwards."
