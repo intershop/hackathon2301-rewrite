@@ -26,7 +26,7 @@ Since the cartridge list in ICM 11+ is generated based on the declared dependenc
 
 ## Migration
 The migration tool tries to commit changes automatically after each step.  
-This fine-grained commit approach allows users to revert changes step by step if necessary.  
+This fine-grained commit approach allows users to revert automatically applied changes step by step if necessary.  
 
 Currently, this option cannot be used with a subproject because the `.git` folder is unavailable at the subproject level.
 
